@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">NewApp</string>
+    <string name="proceed_with_your">Proceed with your</string>
+    <string name="login">Login</string>
+    <string name="enter_your_username_or_phone_number">Enter your username or phone number</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="forgot_password">Forgot Password ?</string>
+    <string name="no_internet">Please connect to internet</string>
+    <string name="enter_email_address">Enter email address</string>
+    <string name="enter_valid_address">Enter valid email address</string>
+    <string name="enter_pass">Enter Password</string>
+    <string name="enter_pass_validate">Enter Password with minimum 6 characters</string>
+
+</resources>
