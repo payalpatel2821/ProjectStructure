@@ -8,12 +8,13 @@ import androidx.viewpager.widget.ViewPager
 import com.task.newapp.R
 import com.task.newapp.adapter.RegistrationPagerAdapter
 import com.task.newapp.databinding.ActivityRegistrationBinding
+import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.ui.fragments.registration.RegistrationStep1Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep2Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep3Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep4Fragment
 
-class RegistrationActivity : AppCompatActivity() {
+class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
 
     lateinit var binding: ActivityRegistrationBinding
 
@@ -36,6 +37,12 @@ class RegistrationActivity : AppCompatActivity() {
 
         // setting adapter to view pager.
         viewPager.adapter = adapter
-        
+
     }
+
+    override fun onPageChange(index: Int) {
+        binding.vpRegistration.currentItem = index
+    }
+
+
 }

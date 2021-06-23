@@ -33,5 +33,9 @@
     <string name="choose_a_default_name_or_use_your_creativity">Choose a default name or use your creativity!</string>
     <string name="done">Done</string>
     <string name="change_username"><u>Change Username</u></string>
+    <string name="mobile">Mobile</string>
+    <string name="email">Email</string>
+    <string name="send_code">Send Code</string>
+    <string name="verification_code">Verification code</string>
 
 </resources>

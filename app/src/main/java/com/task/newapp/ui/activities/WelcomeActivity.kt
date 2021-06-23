@@ -1,6 +1,7 @@
 package com.task.newapp.ui.activities
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.task.newapp.R
@@ -8,7 +9,7 @@ import com.task.newapp.databinding.ActivityWelcomeBinding
 import com.task.newapp.utils.launchActivity
 
 
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var binding: ActivityWelcomeBinding
 
@@ -17,7 +18,16 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_welcome)
 
-        launchActivity<RegistrationActivity> {  }
+
+    }
+
+    override fun onClick(v: View?) {
+
+        when (v?.id) {
+            R.id.centerImage -> {
+                launchActivity<LoginActivity> { }
+            }
+        }
     }
 
 

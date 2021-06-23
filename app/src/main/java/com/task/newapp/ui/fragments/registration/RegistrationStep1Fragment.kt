@@ -1,6 +1,7 @@
 package com.task.newapp.ui.fragments.registration
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.databinding.FragmentRegistrationStep1Binding
+import com.task.newapp.interfaces.OnPageChangeListener
+import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
 import com.task.newapp.utils.showLog
 import com.theartofdev.edmodo.cropper.CropImage
 import lv.chi.photopicker.PhotoPickerFragment
@@ -20,11 +23,17 @@ import lv.chi.photopicker.PhotoPickerFragment
 class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View.OnClickListener {
 
     private lateinit var binding: FragmentRegistrationStep1Binding
+    private lateinit var onPageChangeListener: OnPageChangeListener
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onPageChangeListener = context as OnPageChangeListener
     }
 
     override fun onCreateView(
@@ -45,6 +54,8 @@ class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View
         super.onViewCreated(view, savedInstanceState)
 
         binding.relProfile.setOnClickListener(this)
+        binding.btnNext.setOnClickListener(this)
+        binding.layoutBack.tvBack.setOnClickListener(this)
     }
 
     private fun openPicker() {
@@ -68,6 +79,15 @@ class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View
         when (v!!.id) {
             R.id.rel_profile -> {
                 openPicker()
+            }
+
+            R.id.btn_next -> {
+                //Redirect to next registration step fragment
+                onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_2.index)
+
+            }
+            R.id.tv_back ->{
+                activity?.onBackPressed()
             }
         }
     }

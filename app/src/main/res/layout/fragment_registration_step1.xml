@@ -8,115 +8,118 @@
         android:padding="@dimen/_15sdp"
         tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
 
-        <include layout="@layout/layout_back_btn" />
+        <include
+            android:id="@+id/layout_back"
+            layout="@layout/layout_back_btn" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="none">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_25sdp"
-                android:text="@string/hello"
-                android:textColor="@color/black" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/please_enter_your_basic_details" />
-
-
-            <RelativeLayout
-                android:id="@+id/rel_profile"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="@dimen/_100sdp"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="@dimen/_30sdp"
-                android:onClick="onClick">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/iv_profile"
-                    android:layout_width="@dimen/_100sdp"
-                    android:layout_height="@dimen/_100sdp"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/btn_rounded_bg"
-                    android:src="@drawable/white_logo" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_edit_img"
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewLarge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
+                    android:layout_marginTop="@dimen/_25sdp"
+                    android:text="@string/hello"
+                    android:textColor="@color/black" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/please_enter_your_basic_details" />
+
+
+                <RelativeLayout
+                    android:id="@+id/rel_profile"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="@dimen/_100sdp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/_30sdp"
+                    android:onClick="onClick">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_profile"
+                        android:layout_width="@dimen/_100sdp"
+                        android:layout_height="@dimen/_100sdp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/btn_rounded_bg"
+                        android:src="@drawable/white_logo" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_edit_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="center"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:background="@drawable/btn_edit_rounded_bg"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:padding="@dimen/_5sdp"
+                        android:singleLine="true"
+                        android:src="@drawable/ic_edit" />
+                </RelativeLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_45sdp"
                     android:layout_gravity="center"
-                    android:layout_margin="@dimen/_5sdp"
-                    android:background="@drawable/btn_edit_rounded_bg"
                     android:gravity="center"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:padding="@dimen/_5sdp"
-                    android:singleLine="true"
-                    android:src="@drawable/ic_edit" />
-            </RelativeLayout>
+                    android:theme="@style/EditTextThemeOverlay">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:theme="@style/EditTextThemeOverlay">
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_first_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:hint="@string/first_name"
+                        android:inputType="text|textNoSuggestions"
+                        android:singleLine="true"
+                        android:textSize="@dimen/_12ssp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edt_first_name"
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/_45sdp"
                     android:layout_gravity="center"
-                    android:hint="@string/first_name"
-                    android:inputType="text|textNoSuggestions"
-                    android:singleLine="true"
-                    android:textSize="@dimen/_12ssp" />
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:theme="@style/EditTextThemeOverlay">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_last_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:hint="@string/last_name"
+                        android:inputType="text|textNoSuggestions"
+                        android:singleLine="true"
+                        android:textSize="@dimen/_12ssp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_45sdp"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:gravity="center"
-                android:theme="@style/EditTextThemeOverlay">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edt_last_name"
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_next"
+                    style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:hint="@string/last_name"
-                    android:inputType="text|textNoSuggestions"
-                    android:singleLine="true"
-                    android:textSize="@dimen/_12ssp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_step_1"
-                style="@style/styleTextViewNormal"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_marginTop="@dimen/_80sdp"
-                android:background="@drawable/btn_rect_rounded_bg"
-                android:gravity="center"
-                android:text="@string/next"
-                android:textColor="@color/white" />
-        </LinearLayout>
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_50sdp"
+                    android:background="@drawable/btn_rect_rounded_bg"
+                    android:gravity="center"
+                    android:text="@string/next"
+                    android:textColor="@color/white" />
+            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>
 </layout>
