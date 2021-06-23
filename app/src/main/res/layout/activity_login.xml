@@ -97,6 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:gravity="end"
+                    android:onClick="onClick"
                     android:text="@string/forgot_password"
                     android:textColor="@color/gray"
                     android:textSize="@dimen/_10ssp" />
