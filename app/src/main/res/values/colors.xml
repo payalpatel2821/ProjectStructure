@@ -13,5 +13,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="theme_color">#6CAEC4</color>
     <color name="gray">#AAA1A1</color>
+    <color name="darkgray">#8F8383</color>
 
 </resources>
