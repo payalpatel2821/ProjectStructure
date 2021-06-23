@@ -1,10 +1,10 @@
 package com.task.newapp.ui.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
@@ -16,7 +16,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
-import java.util.HashMap
+import java.util.*
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -44,16 +44,18 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     showToast(getString(R.string.no_internet))
                     return
                 }
-
                 if (isValid()) {
                     callAPILogin()
                 }
+            }
+            R.id.txt_forgot_password->{
+                launchActivity<ForgotPasswordActivity> {  }
             }
         }
     }
 
     private fun isValid(): Boolean {
-        if (binding.edtUsername.text!!.isNotEmpty()) {
+        if (binding.edtEmailOrMobile.text!!.isNotEmpty()) {
 //            if (isValidEmail(binding.edtUsername.text.toString())) {
             if (binding.edtPassword.text!!.isNotEmpty()) {
                 if (binding.edtPassword.text.toString().length > 6) {
