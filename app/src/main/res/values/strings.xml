@@ -18,5 +18,19 @@
         <u>Resend Code</u>.
     </string>
     <string name="register"><u>Register</u></string>
+    <string name="tab_below_to_get_started">Tab below to get started!</string>
+    <string name="how_the_public_media">HOW - The Public Media</string>
+    <string name="safety_secrecy_simplicity">Safety.Secrecy.Simplicity.</string>
+    <string name="powered_by">Powered by</string>
+    <string name="adbiz_directory">ADBIZ DIRECTORY</string>
+    <string name="hello">Hello!</string>
+    <string name="please_enter_your_basic_details">Please enter your basic details.</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="back">Back</string>
+    <string name="create_your_nickname">Create Your Nickname</string>
+    <string name="choose_a_default_name_or_use_your_creativity">Choose a default name or use your creativity!</string>
+    <string name="done">Done</string>
+    <string name="change_username"><u>Change Username</u></string>
 
 </resources>
