@@ -92,6 +92,17 @@
             android:onClick="onClick"
             android:text="@string/login" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_register"
+            style="@style/styleTextViewSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:gravity="center"
+            android:text="@string/register"
+            android:textColor="@color/theme_color"
+            android:textSize="@dimen/_10ssp" />
+
     </LinearLayout>
 
 </layout>

@@ -29,8 +29,6 @@ class RegistrationActivity : AppCompatActivity() {
             FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
 
-        // LoginFragment is the name of Fragment and the Login
-        // is a title of tab
         adapter.addFragment(RegistrationStep1Fragment(), "Basic Info")
         adapter.addFragment(RegistrationStep2Fragment(), "Validate Yourself")
         adapter.addFragment(RegistrationStep3Fragment(), "Setup Password")
