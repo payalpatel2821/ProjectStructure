@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
@@ -16,27 +17,38 @@ import android.util.Patterns
 import android.widget.Toast
 
 
-fun Context.isNetworkAvailable(): Boolean {
-    var isNetwork = false
-    val cm: ConnectivityManager =
+/**
+ * check network
+ */
+fun Context.isNetworkConnected(): Boolean {
+    var result = false
+    val connectivityManager =
         getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val builder: NetworkRequest.Builder = NetworkRequest.Builder()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val networkCapabilities = connectivityManager.activeNetwork ?: return false
+        val activeNetwork =
+            connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        result = when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    } else {
+        connectivityManager.run {
+            connectivityManager.activeNetworkInfo?.run {
+                result = when (type) {
+                    ConnectivityManager.TYPE_WIFI -> true
+                    ConnectivityManager.TYPE_MOBILE -> true
+                    ConnectivityManager.TYPE_ETHERNET -> true
+                    else -> false
+                }
 
-    cm.registerNetworkCallback(
-        builder.build(),
-        object : ConnectivityManager.NetworkCallback() {
-
-            override fun onAvailable(network: Network) {
-                isNetwork = true
-                return true
-            }
-
-            override fun onLost(network: Network) {
-                isNetwork = false
             }
         }
-    )
-    return isNetwork
+    }
+
+    return result
 }
 
 /**

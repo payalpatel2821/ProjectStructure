@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.task.newapp.R
 
 
-internal const val LoginToken = "LoginToken"
+internal const val LOGINTOKEN = "LoginToken"
 internal const val DeviceToken = "DeviceToken"
 internal const val Latitude = "Latitude"
 internal const val Longitude = "Longitude"

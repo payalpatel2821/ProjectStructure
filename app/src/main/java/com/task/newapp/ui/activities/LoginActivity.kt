@@ -39,8 +39,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.txtLogin -> {
-                if (!isNetworkAvailable()) {
+            R.id.btn_login -> {
+                if (!isNetworkConnected()) {
                     showToast(getString(R.string.no_internet))
                     return
                 }
@@ -55,8 +55,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun isValid(): Boolean {
         if (binding.edtUsername.text!!.isNotEmpty()) {
 //            if (isValidEmail(binding.edtUsername.text.toString())) {
-            if (binding.edtPass.text!!.isNotEmpty()) {
-                if (binding.edtPass.text.toString().length > 6) {
+            if (binding.edtPassword.text!!.isNotEmpty()) {
+                if (binding.edtPassword.text.toString().length > 6) {
                     return true
                 } else {
                     //showToast(getString(R.string.enter_pass_validate))
@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 }
             } else {
                 //showToast(getString(R.string.enter_pass))
-                binding.inputLayoutPassword.error = getString(R.string.enter_pass)
+                binding.inputLayoutPassword.error = getString(R.string.enter_password)
             }
 //            } else {
 //                showToast(getString(R.string.enter_valid_address))

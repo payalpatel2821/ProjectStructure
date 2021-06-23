@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/_16sdp"
+        tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/styleTextViewLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_45sdp"
+            android:text="@string/title_enter_your_password" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/styleTextViewNormal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Set a password" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45sdp"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTintMode="multiply"
+            android:layout_marginTop="@dimen/_45sdp"
+            android:theme="@style/EditTextThemeOverlay">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edt_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:textSize="@dimen/_12ssp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_45sdp"
+            app:passwordToggleEnabled="true"
+
+            android:layout_marginTop="@dimen/_15sdp"
+            android:theme="@style/EditTextThemeOverlay">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edt_confirm_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/confirm_password"
+                android:inputType="textPassword"
+                android:textSize="@dimen/_12ssp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_next"
+            style="@style/styleCommonButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_80sdp"
+            android:text="@string/next" />
+
+    </LinearLayout>
+</layout>
