@@ -40,7 +40,7 @@
             android:theme="@style/EditTextThemeOverlay">
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edt_username"
+                android:id="@+id/edt_email_or_mobile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/ic_home"
@@ -79,6 +79,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:gravity="end"
             android:text="@string/forgot_password"
+            android:onClick="onClick"
             android:textColor="@color/gray"
             android:textSize="@dimen/_10ssp" />
 

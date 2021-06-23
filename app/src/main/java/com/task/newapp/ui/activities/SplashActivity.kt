@@ -23,7 +23,7 @@ class SplashActivity : AppCompatActivity() {
                 launchActivity<WelcomeActivity> {}
                 FastSave.getInstance().saveBoolean("isfirsttime", false)
             } else {
-                launchActivity<RegistrationActivity> {}
+                launchActivity<LoginActivity> {}
             }
             finish()
         }, 2000)
