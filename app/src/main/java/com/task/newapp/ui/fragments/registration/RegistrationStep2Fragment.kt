@@ -1,5 +1,7 @@
 package com.task.newapp.ui.fragments.registration
 
+import `in`.aabhasjindal.otptextview.OTPListener
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,14 +12,23 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.task.newapp.R
 import com.task.newapp.databinding.FragmentRegistrationStep2Binding
+import com.task.newapp.interfaces.OnPageChangeListener
+import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
 
-class RegistrationStep2Fragment : Fragment() {
+
+class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
+    private lateinit var onPageChangeListener: OnPageChangeListener
 
     private lateinit var binding: FragmentRegistrationStep2Binding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onPageChangeListener = context as OnPageChangeListener
     }
 
     override fun onCreateView(
@@ -49,6 +60,25 @@ class RegistrationStep2Fragment : Fragment() {
                     binding.vLine.visibility = GONE
                     binding.edtEmailOrMobile.setHint(R.string.enter_email_address)
                 }
+            }
+        }
+        binding.otpView.otpListener = object : OTPListener {
+            override fun onInteractionListener() {
+                binding.otpView.resetState()
+            }
+
+            override fun onOTPComplete(otp: String) {
+                onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
+            }
+        }
+        binding.layoutBack.tvBack.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        when (v!!.id) {
+            R.id.tv_back -> {
+
+                onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_1.index)
             }
         }
     }

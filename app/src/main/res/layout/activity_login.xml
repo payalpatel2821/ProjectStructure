@@ -11,10 +11,10 @@
         tools:context=".ui.activities.LoginActivity">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="@dimen/_80sdp"
+            android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_80sdp"
             android:layout_marginTop="@dimen/_45sdp"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/logo" />
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/styleTextViewNormal"
@@ -83,6 +83,18 @@
             android:textColor="@color/gray"
             android:textSize="@dimen/_10ssp" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_register"
+            style="@style/styleTextViewSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:text="@string/register"
+            android:textColor="@color/theme_color"
+            android:textSize="@dimen/_10ssp" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_login"
             style="@style/styleCommonButton"
@@ -93,16 +105,6 @@
             android:onClick="onClick"
             android:text="@string/login" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txt_register"
-            style="@style/styleTextViewSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="center"
-            android:text="@string/register"
-            android:textColor="@color/theme_color"
-            android:textSize="@dimen/_10ssp" />
 
     </LinearLayout>
 

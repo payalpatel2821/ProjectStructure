@@ -51,6 +51,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             R.id.txt_forgot_password->{
                 launchActivity<ForgotPasswordActivity> {  }
             }
+            R.id.txt_register -> {
+                launchActivity<RegistrationActivity> { }
+            }
         }
     }
 

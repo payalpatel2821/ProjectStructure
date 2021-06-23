@@ -10,7 +10,9 @@
         android:padding="@dimen/_15sdp"
         tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
 
-        <include layout="@layout/layout_back_btn" />
+        <include
+            android:id="@+id/layout_back"
+            layout="@layout/layout_back_btn" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

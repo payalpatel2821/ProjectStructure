@@ -2,20 +2,19 @@ package com.task.newapp.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 
 
@@ -95,6 +94,64 @@ fun showLog(name: String, value: String) {
     Log.e(name, value)
 }
 
+/**
+ * show keyboard
+ *
+ * @param mContext
+ * @param view
+ */
+fun showSoftKeyboard(mContext: Context, view: View?) {
+    try {
+        val imm = mContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * hide keyboard if visible
+ *
+ * @param mActivity
+ * @param view
+ */
+fun hideSoftKeyboard(mActivity: Activity, view: View) {
+    // Set up touch listener for non-text box views to hide keyboard.
+    if (view !is EditText) {
+        view.setOnTouchListener { v, event ->
+            hideSoftKeyboard(mActivity)
+            false
+        }
+    }
+
+    //If a layout container, iterate over children and seed recursion.
+    if (view is ViewGroup) {
+        for (i in 0 until view.childCount) {
+            val innerView = view.getChildAt(i)
+            hideSoftKeyboard(mActivity, innerView)
+        }
+    }
+}
+
+/**
+ * hide keyboard if visible
+ *
+ * @param mActivity
+ */
+fun hideSoftKeyboard(mActivity: Activity) {
+    try {
+        val imm = mActivity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        // Find the currently focused view, so we can grab the correct window token from it.
+        var view = mActivity.currentFocus
+        // If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(mActivity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 //    /**
 //    open dialog
 //     */

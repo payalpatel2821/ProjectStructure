@@ -8,5 +8,13 @@ class Constants {
         const val latitude = "latitude"
         const val longitude = "longitude"
         const val password = "password"
+
+        enum class RegistrationStepsEnum(val index: Int) {
+            STEP_1(0), //Basic information
+            STEP_2(1), //Validate yourself
+            STEP_3(2), //set password
+            STEP_4(3)  //set username
+
+        }
     }
 }
