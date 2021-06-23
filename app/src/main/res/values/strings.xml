@@ -14,5 +14,8 @@
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="next">Next</string>
+    <string name="resend_code">
+        <u>Resend Code</u>.
+    </string>
 
 </resources>

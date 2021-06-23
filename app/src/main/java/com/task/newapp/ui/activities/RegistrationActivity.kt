@@ -37,7 +37,7 @@ class RegistrationActivity : AppCompatActivity() {
         adapter.addFragment(RegistrationStep4Fragment(), "Setup UserName")
 
         // setting adapter to view pager.
-        viewPager.setAdapter(adapter)
+        viewPager.adapter = adapter
         
     }
 }
