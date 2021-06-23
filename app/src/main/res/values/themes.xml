@@ -79,7 +79,6 @@
     </style>
 
     <style name="styleCommonButton">
-        <item name="android:background">@drawable/btn_rect_rounded_bg</item>
         <item name="android:textAllCaps">false</item>
          <item name="android:fontFamily">@font/bogleregular</item>
         <item name="android:layout_height">@dimen/_40sdp</item>

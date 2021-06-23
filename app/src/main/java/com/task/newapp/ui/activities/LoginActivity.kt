@@ -1,9 +1,11 @@
 package com.task.newapp.ui.activities
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.Toast
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
@@ -18,18 +20,65 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
+
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var binding: ActivityLoginBinding
     private val mCompositeDisposable = CompositeDisposable()
+    private var flagUser: Boolean = false
+    private var flagPass: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
-        FastSave.init(this)
+        initView()
+    }
 
-        //loginClick()
+    private fun initView() {
+        setRememberMe()
+
+        binding.edtUsername.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                validateUserName()
+            }
+        })
+        binding.edtPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                validatePassword()
+            }
+        })
+    }
+
+    private fun setRememberMe() {
+        if (FastSave.getInstance().getBoolean(Constants.prefIsRemember, false)) {
+            binding.edtUsername.setText(
+                FastSave.getInstance().getString(Constants.prefUserNameRemember, "").toString()
+            )
+
+            binding.edtPassword.setText(
+                FastSave.getInstance().getString(Constants.prefPasswordRemember, "").toString()
+            )
+
+            flagUser = true
+            flagPass = true
+        }
+        binding.chkRemember.isChecked =
+            FastSave.getInstance().getBoolean(Constants.prefIsRemember, false)
+
+        checkAndEnable()
     }
 
     override fun onDestroy() {
@@ -44,12 +93,14 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     showToast(getString(R.string.no_internet))
                     return
                 }
-                if (isValid()) {
-                    callAPILogin()
+
+                if (!validatePassword()) {
+                    return
                 }
-            }
-            R.id.txt_forgot_password->{
-                launchActivity<ForgotPasswordActivity> {  }
+                if (!validateUserName()) {
+                    return
+                }
+                callAPILogin()
             }
             R.id.txt_register -> {
                 launchActivity<RegistrationActivity> { }
@@ -57,61 +108,127 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun isValid(): Boolean {
-        if (binding.edtEmailOrMobile.text!!.isNotEmpty()) {
-//            if (isValidEmail(binding.edtUsername.text.toString())) {
-            if (binding.edtPassword.text!!.isNotEmpty()) {
-                if (binding.edtPassword.text.toString().length > 6) {
-                    return true
-                } else {
-                    //showToast(getString(R.string.enter_pass_validate))
-                    binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
-                }
-            } else {
-                //showToast(getString(R.string.enter_pass))
-                binding.inputLayoutPassword.error = getString(R.string.enter_password)
-            }
-//            } else {
-//                showToast(getString(R.string.enter_valid_address))
-//            }
-        } else {
-            //showToast(getString(R.string.enter_email_address))
-            binding.inputLayoutName.error = getString(R.string.enter_email_address)
-        }
-        return false
+    private fun saveRemember() {
+        FastSave.getInstance().saveBoolean(Constants.prefIsRemember, binding.chkRemember.isChecked)
+
+        FastSave.getInstance()
+            .saveString(
+                Constants.prefUserNameRemember,
+                if (binding.chkRemember.isChecked) binding.edtUsername.text.toString()
+                    .trim() else ""
+            )
+
+        FastSave.getInstance()
+            .saveString(
+                Constants.prefPasswordRemember,
+                if (binding.chkRemember.isChecked) binding.edtPassword.text.toString()
+                    .trim() else ""
+            )
     }
 
     private fun callAPILogin() {
-        val hashMap: HashMap<String, Any> = hashMapOf(
-            Constants.device_token to "dcW4j1KARIe0LS-_SbsbyD:APA91bEcIbE4WeHntuqBBzzghCLcHaUNhgE0G-cFIKmFK0QZewMRkscfX6hrGM-of5A_TETydHnzv981xKd2NYxr13xE0BqWqQ6Hu18SuZM2-dMt2g_xheFCYBhottjyYTVfUCwrCM25",
-            Constants.device_type to "Android",
-            Constants.email to "payaladbiz@gmail.com",
-            Constants.latitude to "21.14805",
-            Constants.longitude to "72.7602871",
-            Constants.password to "123123"
-        )
+        try {
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.user_name to binding.edtUsername.text.toString(),
+                Constants.password to binding.edtPassword.text.toString(),
+                Constants.latitude to "0",
+                Constants.longitude to "0",
+                Constants.device_token to "c926RJ-JQS62C7bolZsMrq:APA91bF-_8V1mRc-cpuKlTmw2kL7iYIua9HI4uZye76jR1lII7gDZT8HOABpBIubisYO7bNnyDbYNNVYoiX47bwkRODU6vAWJjz9z3wNLBCSni5dyzTjc91xQ3FAWDalu4BwZvA4p0h0",
+                Constants.device_type to "Android"
+            )
 
-        mCompositeDisposable.add(
-            ApiClient.create()
-                .doLogin(hashMap)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : DisposableObserver<LoginResponse>() {
-                    override fun onNext(loginResponse: LoginResponse) {
-                        Log.v("onNext: ", loginResponse.toString())
-                        FastSave.getInstance().saveObject("user", loginResponse.data.user)
-                    }
+            openProgressDialog(this)
 
-                    override fun onError(e: Throwable) {
-                        Log.v("onError: ", e.toString())
-                    }
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .doLogin(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<LoginResponse>() {
+                        override fun onNext(loginResponse: LoginResponse) {
+                            Log.v("onNext: ", loginResponse.toString())
+                            showToast(loginResponse.message)
 
-                    override fun onComplete() {
-                        Toast.makeText(this@LoginActivity, "Success", Toast.LENGTH_SHORT).show()
-                        Log.v("onComplete: ", "onComplete")
-                    }
-                })
-        )
+                            if (loginResponse.success == 1) {
+                                saveRemember()
+
+                                FastSave.getInstance()
+                                    .saveObject(Constants.prefToken, loginResponse.data.token)
+                                FastSave.getInstance()
+                                    .saveObject(Constants.prefUser, loginResponse.data.user)
+
+                                //Next Screen
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun requestFocus(view: View) {
+        if (view.requestFocus()) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        }
+    }
+
+    fun validatePassword(): Boolean {
+        when {
+            binding.edtPassword.text.toString().trim().isEmpty() -> {
+                binding.inputLayoutPassword.error = getString(R.string.enter_password)
+                requestFocus(binding.edtPassword)
+                flagPass = false
+                checkAndEnable()
+                return false
+            }
+            binding.edtPassword.text.toString().length < 6 -> {
+                binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
+                requestFocus(binding.edtPassword)
+                flagPass = false
+                checkAndEnable()
+                return false
+            }
+            else -> {
+                binding.inputLayoutPassword.isErrorEnabled = false
+                flagPass = true
+                checkAndEnable()
+            }
+        }
+        return true
+    }
+
+    private fun validateUserName(): Boolean {
+        if (binding.edtUsername.text.toString().trim().isEmpty()) {
+            binding.inputLayoutName.error = getString(R.string.enter_username)
+            flagUser = false
+            checkAndEnable()
+            return false
+        } else {
+            binding.inputLayoutName.isErrorEnabled = false
+            flagUser = true
+            checkAndEnable()
+        }
+        return true
+    }
+
+    private fun checkAndEnable() {
+        if (flagUser && flagPass) {
+            binding.btnLogin.background = getDrawable(R.drawable.btn_rect_rounded_bg)
+            binding.btnLogin.isEnabled = true
+        } else {
+            binding.btnLogin.background = getDrawable(R.drawable.btn_rect_rounded_bg_disable)
+            binding.btnLogin.isEnabled = false
+        }
     }
 
 }

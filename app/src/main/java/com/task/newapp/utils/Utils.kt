@@ -2,10 +2,15 @@ package com.task.newapp.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -16,6 +21,8 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.task.newapp.R
 
 
 /**
@@ -193,3 +200,44 @@ fun hideSoftKeyboard(mActivity: Activity) {
 //        }
 //
 //    }
+/**
+open dialog
+ */
+var dialog: Dialog? = null
+fun openProgressDialog(activity: Activity?) {
+//    hideProgressDialog()
+
+    try {
+        if (dialog != null) {
+            dialog!!.dismiss()
+            dialog = null
+        }
+
+        dialog = Dialog(activity!!)
+        dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog!!.setContentView(R.layout.progress_layout)
+        dialog!!.setCanceledOnTouchOutside(true)
+        //Glide.with(activity!!).load(R.drawable.loader).into(dialog!!.progress)
+        if (dialog != null && !dialog!!.isShowing) {
+            dialog!!.show()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * Dismiss Dialog
+ */
+fun hideProgressDialog() {
+    try {
+        if (dialog != null) {
+            dialog!!.hide()
+            dialog!!.dismiss()
+            dialog = null
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+}

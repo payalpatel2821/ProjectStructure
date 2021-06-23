@@ -2,6 +2,7 @@ package com.task.newapp.utils
 
 class Constants {
     companion object {
+        const val user_name = "user_name"
         const val device_token = "device_token"
         const val device_type = "device_type"
         const val email = "email"
@@ -16,5 +17,12 @@ class Constants {
             STEP_4(3)  //set username
 
         }
+
+        //-----------------Pref--------------------
+        const val prefUser = "prefUser"
+        const val prefToken = "prefToken"
+        const val prefIsRemember = "prefIsRemember"
+        const val prefUserNameRemember = "prefUserNameRemember"
+        const val prefPasswordRemember = "prefPasswordRemember"
     }
 }
