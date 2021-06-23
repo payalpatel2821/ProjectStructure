@@ -9,7 +9,77 @@
         android:padding="@dimen/_16sdp"
         tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
 
+        <include layout="@layout/layout_back_btn" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/styleTextViewLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:text="@string/create_your_nickname"
+            android:textColor="@color/black" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/styleTextViewNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_a_default_name_or_use_your_creativity" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_100sdp"
+            android:layout_marginBottom="@dimen/_100sdp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_acc_id"
+                    style="@style/styleTextViewLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Gohil5005"
+                    android:textColor="@color/theme_color" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_copy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_copy"
+                    android:onClick="onClick"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_change_username"
+                style="@style/styleTextViewSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="onClick"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/change_username" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_step_4"
+            style="@style/styleTextViewNormal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_80sdp"
+            android:background="@drawable/btn_rect_rounded_bg"
+            android:gravity="center"
+            android:text="@string/done"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 </layout>

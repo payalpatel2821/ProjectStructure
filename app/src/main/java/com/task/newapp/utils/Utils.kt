@@ -1,5 +1,6 @@
 package com.task.newapp.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -13,6 +14,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 
@@ -82,6 +84,15 @@ inline fun <reified T : Any> newIntent(context: Context): Intent =
  */
 fun Context.showToast(msg: String) {
     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+}
+
+
+/**
+ * Show Log
+ */
+@SuppressLint("LogNotTimber")
+fun showLog(name: String, value: String) {
+    Log.e(name, value)
 }
 
 //    /**
