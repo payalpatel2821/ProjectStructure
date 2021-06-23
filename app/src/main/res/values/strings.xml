@@ -17,5 +17,6 @@
     <string name="resend_code">
         <u>Resend Code</u>.
     </string>
+    <string name="register"><u>Register</u></string>
 
 </resources>
