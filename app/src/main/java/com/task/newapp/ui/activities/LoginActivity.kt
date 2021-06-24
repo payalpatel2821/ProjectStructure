@@ -5,7 +5,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
@@ -75,8 +74,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             flagUser = true
             flagPass = true
         }
-        binding.chkRemember.isChecked =
-            FastSave.getInstance().getBoolean(Constants.prefIsRemember, false)
+        binding.chkRemember.isChecked = FastSave.getInstance().getBoolean(Constants.prefIsRemember, false)
 
         checkAndEnable()
     }
@@ -106,7 +104,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 launchActivity<RegistrationActivity> { }
             }
             R.id.txt_forgot_password -> {
-                launchActivity<ForgotPasswordActivity> { }
+                launchActivity<ResetPasswordActivity> { }
             }
         }
     }
@@ -115,18 +113,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         FastSave.getInstance().saveBoolean(Constants.prefIsRemember, binding.chkRemember.isChecked)
 
         FastSave.getInstance()
-            .saveString(
-                Constants.prefUserNameRemember,
-                if (binding.chkRemember.isChecked) binding.edtUsername.text.toString()
-                    .trim() else ""
-            )
+            .saveString(Constants.prefUserNameRemember, if (binding.chkRemember.isChecked) binding.edtUsername.text.toString().trim() else "")
 
         FastSave.getInstance()
-            .saveString(
-                Constants.prefPasswordRemember,
-                if (binding.chkRemember.isChecked) binding.edtPassword.text.toString()
-                    .trim() else ""
-            )
+            .saveString(Constants.prefPasswordRemember, if (binding.chkRemember.isChecked) binding.edtPassword.text.toString().trim() else "")
     }
 
     private fun callAPILogin() {
@@ -155,10 +145,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             if (loginResponse.success == 1) {
                                 saveRemember()
 
-                                FastSave.getInstance()
-                                    .saveObject(Constants.prefToken, loginResponse.data.token)
-                                FastSave.getInstance()
-                                    .saveObject(Constants.prefUser, loginResponse.data.user)
+                                FastSave.getInstance().saveObject(Constants.prefToken, loginResponse.data.token)
+                                FastSave.getInstance().saveObject(Constants.prefUser, loginResponse.data.user)
 
                                 //Next Screen
                             }
@@ -179,24 +167,19 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun requestFocus(view: View) {
-        if (view.requestFocus()) {
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-        }
-    }
 
     fun validatePassword(): Boolean {
         when {
             binding.edtPassword.text.toString().trim().isEmpty() -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_password)
-                requestFocus(binding.edtPassword)
+                requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
                 return false
             }
             binding.edtPassword.text.toString().length < 6 -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
-                requestFocus(binding.edtPassword)
+                requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
                 return false
@@ -225,13 +208,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkAndEnable() {
-        if (flagUser && flagPass) {
-            binding.btnLogin.background = getDrawable(R.drawable.btn_rect_rounded_bg)
-            binding.btnLogin.isEnabled = true
-        } else {
-            binding.btnLogin.background = getDrawable(R.drawable.btn_rect_rounded_bg_disable)
-            binding.btnLogin.isEnabled = false
-        }
+        enableOrDisableButton(this@LoginActivity, flagUser && flagPass, binding.btnLogin)
+        /* if (flagUser && flagPass) {
+             enableOrDisableButton(this@LoginActivity, true, binding.btnLogin)
+         } else {
+             enableOrDisableButton(this@LoginActivity, false, binding.btnLogin)
+         }*/
     }
 
 }

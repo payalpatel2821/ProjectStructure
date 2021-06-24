@@ -8,9 +8,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -19,9 +17,10 @@ import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.bumptech.glide.Glide
+import androidx.core.content.ContextCompat
 import com.task.newapp.R
 
 
@@ -240,4 +239,24 @@ fun hideProgressDialog() {
         e.printStackTrace()
     }
 
+}
+
+fun enableOrDisableButton(context: Context, isEnable: Boolean, button: Button) {
+    if (isEnable) {
+        button.background =
+            ContextCompat.getDrawable(context, R.drawable.btn_rect_rounded_bg)
+        button.isEnabled = true
+    } else {
+        button.background =
+            ContextCompat.getDrawable(context, R.drawable.btn_rect_rounded_bg_disable)
+        button.isEnabled = false
+    }
+}
+
+fun requestFocus(context: Context, view: View) {
+    if (view.requestFocus()) {
+        // open the soft keyboard
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
 }
