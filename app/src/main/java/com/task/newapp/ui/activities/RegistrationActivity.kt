@@ -44,5 +44,10 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
         binding.vpRegistration.currentItem = index
     }
 
-
+    override fun onBackPressed() {
+        if (binding.vpRegistration.currentItem == 0)
+            super.onBackPressed()
+        else
+            onPageChange(binding.vpRegistration.currentItem - 1)
+    }
 }
