@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import com.task.newapp.R
 import com.task.newapp.databinding.FragmentRegistrationStep2Binding
 import com.task.newapp.interfaces.OnPageChangeListener
+import com.task.newapp.ui.activities.RegistrationActivity
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
 
 
@@ -28,7 +29,8 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        onPageChangeListener = context as OnPageChangeListener
+        if (context is RegistrationActivity)
+            onPageChangeListener = context as OnPageChangeListener
     }
 
     override fun onCreateView(
@@ -68,7 +70,9 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
             }
 
             override fun onOTPComplete(otp: String) {
-                onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
+                if (context is RegistrationActivity) {
+                    onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
+                }
             }
         }
         binding.layoutBack.tvBack.setOnClickListener(this)
@@ -77,8 +81,11 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.tv_back -> {
-
-                onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_1.index)
+                if (context is RegistrationActivity) {
+                    onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_1.index)
+                } else {
+                    requireActivity().onBackPressed()
+                }
             }
         }
     }
