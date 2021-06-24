@@ -14,11 +14,14 @@
     <string name="enter_confirm_password">Enter Confirm Password</string>
     <string name="password_and_confirm_password_not_match">Password and confirm password doesn\'t matched</string>
     <string name="enter_pass_validate">Enter Password with minimum 6 characters</string>
+    <string name="enter_firstname_validate">Enter first name with minimum 3 characters</string>
     <string name="title_enter_your_password">Enter Your Password</string>
     <string name="title_reset_your_password">Reset Your Password</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="next">Next</string>
+    <string name="enter_first">Enter first name</string>
+    <string name="enter_last">Enter last name</string>
     <string name="resend_code">
         <u>Resend Code</u>.
     </string>
@@ -44,5 +47,6 @@
     <string name="reset_password">Reset password</string>
     <string name="set_a_password">Set a password</string>
     <string name="submit">Submit</string>
+    <string name="password_and_confirm_password_must_be_same">Password and confirm password must be same.</string>
 
 </resources>

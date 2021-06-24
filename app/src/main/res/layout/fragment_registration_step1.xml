@@ -13,10 +13,9 @@
             android:id="@+id/layout_back"
             layout="@layout/layout_back_btn" />
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,7 +35,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/please_enter_your_basic_details" />
-
 
                 <RelativeLayout
                     android:id="@+id/rel_profile"
@@ -71,8 +69,9 @@
                 </RelativeLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout_first"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:theme="@style/EditTextThemeOverlay">
@@ -90,8 +89,9 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout_last"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:gravity="center"
@@ -109,18 +109,21 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_next"
                     style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginTop="@dimen/_50sdp"
-                    android:background="@drawable/btn_rect_rounded_bg"
+                    android:background="@drawable/btn_rect_rounded_bg_disable"
                     android:gravity="center"
                     android:text="@string/next"
                     android:textColor="@color/white" />
+
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+
+        </ScrollView>
+
     </LinearLayout>
+
 </layout>

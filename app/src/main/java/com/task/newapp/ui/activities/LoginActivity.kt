@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 Constants.password to binding.edtPassword.text.toString(),
                 Constants.latitude to "0",
                 Constants.longitude to "0",
-                Constants.device_token to "c926RJ-JQS62C7bolZsMrq:APA91bF-_8V1mRc-cpuKlTmw2kL7iYIua9HI4uZye76jR1lII7gDZT8HOABpBIubisYO7bNnyDbYNNVYoiX47bwkRODU6vAWJjz9z3wNLBCSni5dyzTjc91xQ3FAWDalu4BwZvA4p0h0",
+                Constants.device_token to Constants.deviceToken,
                 Constants.device_type to "Android"
             )
 
@@ -148,6 +148,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                 FastSave.getInstance().saveObject(Constants.prefToken, loginResponse.data.token)
                                 FastSave.getInstance().saveObject(Constants.prefUser, loginResponse.data.user)
 
+                                FastSave.getInstance().saveObject(Constants.userClass, loginResponse.data.user)
+                                FastSave.getInstance().saveBoolean(Constants.isLogin, true)
+
                                 //Next Screen
                             }
                         }
@@ -155,6 +158,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
                             hideProgressDialog()
+                            FastSave.getInstance().saveBoolean(Constants.isLogin, false)
                         }
 
                         override fun onComplete() {
