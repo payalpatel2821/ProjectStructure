@@ -81,8 +81,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_80sdp"
+                    android:background="@drawable/btn_rect_rounded_bg_disable"
                     android:text="@string/next" />
+
             </LinearLayout>
+
         </androidx.core.widget.NestedScrollView>
+
     </LinearLayout>
+
 </layout>

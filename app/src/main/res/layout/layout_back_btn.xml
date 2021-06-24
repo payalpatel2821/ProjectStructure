@@ -5,14 +5,13 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_back"
+        style="@style/styleTextViewNormal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/ic_back"
-        android:drawableTint="@color/black"
-        style="@style/styleTextViewNormal"
-        android:text="@string/back"
         android:drawablePadding="@dimen/_5sdp"
-        />
+        android:drawableTint="@color/black"
+        android:text="@string/back" />
 
 
 </LinearLayout>

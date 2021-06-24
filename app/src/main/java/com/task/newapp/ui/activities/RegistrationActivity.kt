@@ -37,7 +37,6 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
 
         // setting adapter to view pager.
         viewPager.adapter = adapter
-
     }
 
     override fun onPageChange(index: Int) {
