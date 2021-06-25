@@ -19,7 +19,9 @@
         android:theme="@style/Theme.NewApp">
         <activity android:name=".ui.activities.ForgotPasswordActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar"></activity>
+            android:theme="@style/NoActionBar">
+
+        </activity>
         <activity
             android:name=".ui.activities.SplashActivity"
             android:screenOrientation="portrait"
