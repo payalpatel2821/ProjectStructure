@@ -22,6 +22,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.task.newapp.R
+import eightbitlab.com.blurview.BlurView
 
 
 /**
@@ -259,4 +260,14 @@ fun requestFocus(context: Context, view: View) {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
+}
+
+fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
+    //set background, if your root layout doesn't have one
+    val windowBackground = activity!!.window.decorView.background
+
+    blurView.setupWith(root)
+        .setFrameClearDrawable(windowBackground)
+        .setBlurRadius(25F).setBlurAutoUpdate(true).setBlurEnabled(true)
+        .setHasFixedTransformationMatrix(true)
 }

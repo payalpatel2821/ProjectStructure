@@ -129,4 +129,11 @@ dependencies {
 
     //OtpView
     implementation 'com.github.aabhasr1:OtpView:v1.1.2-ktx' // kotlin
+
+    //Lottie Animation view
+    implementation 'com.airbnb.android:lottie:3.7.0'
+
+    //blur layout
+    implementation 'com.eightbitlab:blurview:1.6.6'
+
 }

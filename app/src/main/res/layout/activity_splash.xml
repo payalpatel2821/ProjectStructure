@@ -17,10 +17,18 @@
                 android:id="@+id/centerImage"
                 android:layout_width="@dimen/_70sdp"
                 android:layout_height="@dimen/_70sdp"
-                android:background="@color/theme_color"
+                android:background="@drawable/btn_rect_rounded_bg"
                 android:padding="@dimen/_10sdp"
                 android:src="@drawable/white_logo" />
 
+        <!--    <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animationView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_cacheComposition="true"
+                app:lottie_rawRes="@raw/loading" />-->
         </LinearLayout>
 
     </LinearLayout>
