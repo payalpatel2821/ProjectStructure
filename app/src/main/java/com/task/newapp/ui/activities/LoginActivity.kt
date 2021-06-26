@@ -36,7 +36,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initView() {
         setRememberMe()
-
         binding.edtUsername.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }

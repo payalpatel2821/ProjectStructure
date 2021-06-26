@@ -268,6 +268,6 @@ fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
 
     blurView.setupWith(root)
         .setFrameClearDrawable(windowBackground)
-        .setBlurRadius(25F).setBlurAutoUpdate(true).setBlurEnabled(true)
+        .setBlurRadius(55F).setBlurAutoUpdate(true).setBlurEnabled(true)
         .setHasFixedTransformationMatrix(true)
 }

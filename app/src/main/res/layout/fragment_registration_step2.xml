@@ -8,7 +8,7 @@
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/_15sdp"
-        tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
+        tools:context=".ui.fragments.registration.RegistrationStep2Fragment">
 
         <include
             android:id="@+id/layout_back"

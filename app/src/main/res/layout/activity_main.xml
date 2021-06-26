@@ -18,40 +18,40 @@
             android:orientation="vertical"
             tools:context=".MainActivity">
 
-              <!-- <com.google.android.material.appbar.AppBarLayout
-                   android:id="@+id/activity_main_appbarlayout"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <!-- <com.google.android.material.appbar.AppBarLayout
+                 android:id="@+id/activity_main_appbarlayout"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-                   <androidx.appcompat.widget.Toolbar
-                       android:id="@+id/activity_main_toolbar"
-                       android:layout_width="match_parent"
-                       android:layout_height="?attr/actionBarSize"
-                       android:background="?attr/colorPrimary"
-                       android:weightSum="1"
-                       app:contentInsetStart="0dp"
-                       app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+                 <androidx.appcompat.widget.Toolbar
+                     android:id="@+id/activity_main_toolbar"
+                     android:layout_width="match_parent"
+                     android:layout_height="?attr/actionBarSize"
+                     android:background="?attr/colorPrimary"
+                     android:weightSum="1"
+                     app:contentInsetStart="0dp"
+                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                       <TextView
-                           android:id="@+id/activity_main_toolbar_title"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:layout_gravity="center"
-                           android:ellipsize="marquee"
-                           android:fadingEdge="horizontal"
-                           android:focusable="true"
-                           android:focusableInTouchMode="true"
-                           android:marqueeRepeatLimit="marquee_forever"
-                           android:scrollHorizontally="true"
-                           android:singleLine="true"
-                           android:text="@string/app_name"
-                           android:textColor="#ff4500"
-                           android:textSize="30sp" />
+                     <TextView
+                         android:id="@+id/activity_main_toolbar_title"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:layout_gravity="center"
+                         android:ellipsize="marquee"
+                         android:fadingEdge="horizontal"
+                         android:focusable="true"
+                         android:focusableInTouchMode="true"
+                         android:marqueeRepeatLimit="marquee_forever"
+                         android:scrollHorizontally="true"
+                         android:singleLine="true"
+                         android:text="@string/app_name"
+                         android:textColor="#ff4500"
+                         android:textSize="30sp" />
 
-                   </androidx.appcompat.widget.Toolbar>
+                 </androidx.appcompat.widget.Toolbar>
 
-               </com.google.android.material.appbar.AppBarLayout>-->
+             </com.google.android.material.appbar.AppBarLayout>-->
 
             <FrameLayout
                 android:id="@+id/activity_main_content_id"
@@ -59,6 +59,56 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/my_post"
                 android:clipToPadding="false">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurView"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="@dimen/_10sdp"
+                    app:blurOverlayColor="@color/transparent">
+
+                    <RelativeLayout
+                        android:id="@+id/rlBottom"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/rect_rounded_transparent">
+
+                        <!--                <androidx.cardview.widget.CardView-->
+                        <!--                    android:layout_width="match_parent"-->
+                        <!--                    android:layout_height="match_parent"-->
+                        <!--                    app:cardBackgroundColor="@color/transparent"-->
+                        <!--                    app:cardCornerRadius="@dimen/_5sdp">-->
+
+                        <com.task.newapp.utils.nicebottombar.NiceBottomBar
+                            android:id="@+id/bottomBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:backgroundColor="@color/transparent"
+                            app:iconSize="@dimen/_20sdp"
+                            app:indicatorGravity="top"
+                            app:indicatorInterpolator="anticipateOvershoot"
+                            app:indicatorWidth="@dimen/_18sdp"
+                            app:itemFontFamily="@font/bogleregular"
+                            app:menu="@menu/bottom_menu" />
+
+                        <!--                </androidx.cardview.widget.CardView>-->
+
+                    </RelativeLayout>
+
+                    <ImageView
+                        android:layout_width="@dimen/_45sdp"
+                        android:layout_height="match_parent"
+                        android:layout_alignTop="@+id/rlBottom"
+                        android:layout_alignBottom="@+id/rlBottom"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center_horizontal"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@mipmap/ic_launcher" />
+
+                </eightbitlab.com.blurview.BlurView>
+
             </FrameLayout>
 
         </LinearLayout>
@@ -66,10 +116,11 @@
 
         <!-- Custom Navigation Drawer Start -->
 
-         <include
-             android:id="@+id/nav_drawer_layout"
-             layout="@layout/layout_navigation_drawer" />
+        <include
+            android:id="@+id/nav_drawer_layout"
+            layout="@layout/layout_navigation_drawer" />
 
         <!-- Custom Navigation Drawer End -->
+
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

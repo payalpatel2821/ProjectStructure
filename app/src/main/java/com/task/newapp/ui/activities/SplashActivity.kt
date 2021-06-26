@@ -20,7 +20,6 @@ class SplashActivity : AppCompatActivity() {
         Handler().postDelayed(Runnable {
             if (FastSave.getInstance().getBoolean("isfirsttime", true)) {
                 launchActivity<WelcomeActivity> {}
-                FastSave.getInstance().saveBoolean("isfirsttime", false)
             } else {
                 launchActivity<LoginActivity> {}
             }

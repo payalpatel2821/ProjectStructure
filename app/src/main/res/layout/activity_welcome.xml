@@ -48,8 +48,6 @@
                     android:src="@drawable/logo" />
 
             </com.task.newapp.utils.RippleBackground>
-            >
-
 
         </LinearLayout>
 

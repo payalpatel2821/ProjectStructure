@@ -71,18 +71,21 @@ class RippleBackground : RelativeLayout {
             val rippleView: RippleView = RippleView(getContext())
             addView(rippleView, rippleParams)
             rippleViewList.add(rippleView)
+
             val scaleXAnimator = ObjectAnimator.ofFloat(rippleView, "ScaleX", 1.0f, rippleScale)
             scaleXAnimator.repeatCount = ObjectAnimator.INFINITE
             scaleXAnimator.repeatMode = ObjectAnimator.RESTART
             scaleXAnimator.startDelay = (i * rippleDelay).toLong()
             scaleXAnimator.duration = rippleDurationTime.toLong()
             animatorList!!.add(scaleXAnimator)
+
             val scaleYAnimator = ObjectAnimator.ofFloat(rippleView, "ScaleY", 1.0f, rippleScale)
             scaleYAnimator.repeatCount = ObjectAnimator.INFINITE
             scaleYAnimator.repeatMode = ObjectAnimator.RESTART
             scaleYAnimator.startDelay = (i * rippleDelay).toLong()
             scaleYAnimator.duration = rippleDurationTime.toLong()
             animatorList!!.add(scaleYAnimator)
+
             val alphaAnimator = ObjectAnimator.ofFloat(rippleView, "Alpha", 1.0f, 0f)
             alphaAnimator.repeatCount = ObjectAnimator.INFINITE
             alphaAnimator.repeatMode = ObjectAnimator.RESTART
@@ -95,18 +98,28 @@ class RippleBackground : RelativeLayout {
 
     private inner class RippleView(context: Context?) : View(context) {
         override fun onDraw(canvas: Canvas) {
-            val radius = Math.min(width, height) / 4
+            //val radius = Math.min(width, height) / 4
             // canvas.drawCircle(radius.toFloat(), radius.toFloat(), radius - rippleStrokeWidth, paint!!)
-            //canvas.drawRoundRect(radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), radius - rippleStrokeWidth,, paint!!)
-
             canvas.drawRoundRect(
                 RectF(
-                    10F, // left
-                    10F, // top
-                    200F, // right
+                    0F,
+                    0F,
+                    200F,
                     200F
-                ), 10F, 10F, paint!!
+                ),
+                0F, 0F,
+                paint!!
             )
+
+//            canvas.drawRoundRect(
+////                RectF(
+//                    0F, // left
+//                    0F, // top
+//                    200F, // right
+//                    200F // bottom
+////                )
+//            , 5F, 5F, paint!!
+//            )
             //canvas.drawRect(0F, 0F, 400F, 400F, paint!!)
         }
 

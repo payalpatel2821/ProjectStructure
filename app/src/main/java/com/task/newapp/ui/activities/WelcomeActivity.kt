@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivityWelcomeBinding
 import com.task.newapp.utils.launchActivity
@@ -24,6 +25,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
         when (v?.id) {
             R.id.centerImage -> {
+                FastSave.getInstance().saveBoolean("isfirsttime", false)
                 launchActivity<LoginActivity> { }
             }
         }

@@ -18,6 +18,7 @@ import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentRegistrationStep4Binding
 import com.task.newapp.interfaces.OnPageChangeListener
+import com.task.newapp.models.ReponseGetUsername
 import com.task.newapp.models.ResponseRegister
 import com.task.newapp.models.ResponseVerifyOTP
 import com.task.newapp.utils.Constants
@@ -45,7 +46,6 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onAttach(context: Context) {
@@ -74,6 +74,8 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
         binding.tvChangeUsername.setOnClickListener(this)
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.btnDone.setOnClickListener(this)
+
+        getUserNameFromAPI()
     }
 
     override fun onClick(v: View?) {
@@ -220,6 +222,37 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                             if (responseVerifyOTP.success == 1) {
                                 //Next Screen
                                 callAPIRegister()
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getUserNameFromAPI() {
+        try {
+            openProgressDialog(activity)
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .getUsername(FastSave.getInstance().getString(Constants.first_name, ""))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ReponseGetUsername>() {
+                        override fun onNext(responseGetUsername: ReponseGetUsername) {
+                            if (responseGetUsername.success == 1) {
+                                binding.edtAccId.setText(responseGetUsername.data)
                             }
                         }
 

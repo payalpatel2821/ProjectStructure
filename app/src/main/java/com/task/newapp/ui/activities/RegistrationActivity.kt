@@ -25,13 +25,20 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
-        var adapter: RegistrationPagerAdapter = RegistrationPagerAdapter(
+        var adapter = RegistrationPagerAdapter(
             supportFragmentManager,
             FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
         )
 
         adapter.addFragment(RegistrationStep1Fragment(), "Basic Info")
-        adapter.addFragment(RegistrationStep2Fragment(), "Validate Yourself")
+
+        val bundle = Bundle()
+        bundle.putBoolean("fromForgotPass", false)
+
+        val registrationStep2Fragment = RegistrationStep2Fragment()
+        registrationStep2Fragment.arguments = bundle
+
+        adapter.addFragment(registrationStep2Fragment, "Validate Yourself")
         adapter.addFragment(RegistrationStep3Fragment(), "Setup Password")
         adapter.addFragment(RegistrationStep4Fragment(), "Setup UserName")
 
