@@ -1,109 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:padding="@dimen/_10sdp"
+        android:fillViewport="true"
         tools:context=".ui.activities.LoginActivity">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:layout_width="@dimen/_80sdp"
-            android:layout_height="@dimen/_80sdp"
-            android:layout_marginTop="@dimen/_45sdp"
-            android:src="@mipmap/ic_launcher" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/styleTextViewNormal"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:text="@string/title_proceed_with_your" />
+            android:focusable="false"
+            android:focusableInTouchMode="true"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/styleTextViewLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/login" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_80sdp"
+                android:layout_marginTop="@dimen/_35sdp"
+                android:src="@drawable/logo" />
 
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_name"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_45sdp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_45sdp"
-            android:gravity="center"
-            android:theme="@style/EditTextThemeOverlay">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edt_email_or_mobile"
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/styleTextViewNormal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableRight="@drawable/ic_home"
-                android:drawableTint="@color/black"
-                android:hint="@string/enter_your_username_or_phone_number"
-                android:inputType="text|textNoSuggestions"
-                android:singleLine="true"
-                android:textSize="@dimen/_12ssp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/title_proceed_with_your" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/input_layout_password"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_45sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:theme="@style/EditTextThemeOverlay">
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edt_password"
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/styleTextViewLarge"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:drawableRight="@drawable/ic_home"
-                android:drawableTint="@color/black"
-                android:hint="@string/enter_your_password"
-                android:inputType="textPassword"
-                android:textSize="@dimen/_12ssp" />
+                android:layout_height="wrap_content"
+                android:text="@string/login" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_45sdp"
+                android:gravity="center"
+                android:theme="@style/EditTextThemeOverlay"
+                app:endIconDrawable="@drawable/ic_username"
+                app:endIconMode="custom"
+                app:endIconTint="@color/black"
+                app:errorEnabled="true">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txt_forgot_password"
-            style="@style/styleTextViewSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="end"
-            android:text="@string/forgot_password"
-            android:onClick="onClick"
-            android:textColor="@color/gray"
-            android:textSize="@dimen/_10ssp" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/enter_your_username_or_phone_number"
+                    android:imeOptions="actionNext"
+                    android:inputType="text|textNoSuggestions"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_12ssp" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_login"
-            style="@style/styleCommonButton"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_40sdp"
-            android:layout_marginTop="@dimen/_80sdp"
-            android:gravity="center"
-            android:onClick="onClick"
-            android:text="@string/login" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txt_register"
-            style="@style/styleTextViewSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:gravity="center"
-            android:text="@string/register"
-            android:textColor="@color/theme_color"
-            android:textSize="@dimen/_10ssp" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_layout_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:theme="@style/EditTextThemeOverlay"
+                app:errorEnabled="true"
+                app:passwordToggleDrawable="@drawable/selector_show_hide_password"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/black">
 
-    </LinearLayout>
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/enter_your_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_12ssp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/chkRemember"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/theme_color"
+                    android:checked="false"
+                    android:text="Remember me" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_forgot_password"
+                    style="@style/styleTextViewSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="end"
+                    android:onClick="onClick"
+                    android:text="@string/forgot_password"
+                    android:textColor="@color/gray"
+                    android:textSize="@dimen/_10ssp" />
+
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_login"
+                style="@style/styleCommonButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_40sdp"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="@string/login" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_register"
+                style="@style/styleTextViewSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:text="@string/register"
+                android:textColor="@color/theme_color"
+                android:textSize="@dimen/_10ssp" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </layout>

@@ -17,8 +17,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NewApp">
-        <activity android:name=".ui.activities.ForgotPasswordActivity"
+        <activity
+            android:name=".ui.activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.ForgotPasswordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
             android:theme="@style/NoActionBar">
 
         </activity>
@@ -43,18 +49,12 @@
         <activity
             android:name=".ui.activities.RegistrationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar"></activity>
+            android:theme="@style/NoActionBar"/>
         <activity
             android:name=".ui.activities.MainActivity"
+            android:theme="@style/NoActionBar"
             android:screenOrientation="portrait">
 
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
         </activity>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

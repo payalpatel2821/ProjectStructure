@@ -8,9 +8,11 @@
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/_15sdp"
-        tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
+        tools:context=".ui.fragments.registration.RegistrationStep2Fragment">
 
-        <include layout="@layout/layout_back_btn" />
+        <include
+            android:id="@+id/layout_back"
+            layout="@layout/layout_back_btn" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -118,6 +120,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -161,34 +164,37 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:fontFamily="@font/bogleregular"
-                        android:inputType="text|textNoSuggestions"
-                        android:singleLine="true"
-                        android:text=""
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="10"
                         android:paddingLeft="@dimen/_4sdp"
                         android:paddingRight="@dimen/_4sdp"
+                        android:singleLine="true"
+                        android:text=""
                         android:textSize="@dimen/_13ssp" />
 
                     <!--            </com.google.android.material.textfield.TextInputLayout>-->
 
 
-
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtSendCode"
+                        android:id="@+id/txt_sendcode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
                         android:fontFamily="@font/bogleregular"
+                        android:onClick="onClick"
                         android:text="Send Code"
                         android:textColor="@color/theme_color"
                         android:textSize="@dimen/_10ssp" />
 
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/black"/>
+                    android:background="@color/black" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -232,18 +238,22 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/txtTimer"
                             style="@style/styleTextViewNormal"
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/_40sdp"
                             android:layout_height="wrap_content"
-                            android:text="00:59"
+                            android:gravity="center_vertical"
+                            android:text="00:00"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_10ssp" />
 
                         <TextView
+                            android:id="@+id/txt_resend"
                             style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_8sdp"
+                            android:onClick="onClick"
                             android:text="@string/resend_code"
                             android:textColor="@color/darkgray"
                             android:textSize="@dimen/_10ssp" />

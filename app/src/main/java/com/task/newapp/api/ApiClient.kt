@@ -28,10 +28,10 @@ class ApiClient {
                     val newRequest = chain.request().newBuilder()
                         .header("content-type", "application/json")
                         .header("charset", "utf-8")
-                        .header(
-                            "",
-                            ""
-                        )
+//                        .header(
+//                            "",
+//                            ""
+//                        )
                         .build()
                     chain.proceed(newRequest)
                 }

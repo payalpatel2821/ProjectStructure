@@ -6,19 +6,26 @@
     <string name="enter_your_password">Enter your password</string>
     <string name="forgot_password">Forgot Password ?</string>
     <string name="no_internet">Please connect to internet</string>
+    <string name="enter_username">Enter user name or mobile number</string>
     <string name="enter_email_address">Enter email address</string>
     <string name="enter_mobile_number">Enter mobile number</string>
     <string name="enter_valid_address">Enter valid email address</string>
     <string name="enter_password">Enter Password</string>
+    <string name="enter_confirm_password">Enter Confirm Password</string>
+    <string name="password_and_confirm_password_not_match">Password and confirm password doesn\'t matched</string>
     <string name="enter_pass_validate">Enter Password with minimum 6 characters</string>
+    <string name="enter_firstname_validate">Enter first name with minimum 3 characters</string>
     <string name="title_enter_your_password">Enter Your Password</string>
+    <string name="title_reset_your_password">Reset Your Password</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="next">Next</string>
+    <string name="enter_first">Enter first name</string>
+    <string name="enter_last">Enter last name</string>
     <string name="resend_code">
         <u>Resend Code</u>.
     </string>
-    <string name="register"><u>Register</u></string>
+    <string name="register">New User ? <u>Register now</u></string>
     <string name="tab_below_to_get_started">Tab below to get started!</string>
     <string name="how_the_public_media">HOW - The Public Media</string>
     <string name="safety_secrecy_simplicity">Safety.Secrecy.Simplicity.</string>
@@ -33,5 +40,35 @@
     <string name="choose_a_default_name_or_use_your_creativity">Choose a default name or use your creativity!</string>
     <string name="done">Done</string>
     <string name="change_username"><u>Change Username</u></string>
+    <string name="mobile">Mobile</string>
+    <string name="email">Email</string>
+    <string name="send_code">Send Code</string>
+    <string name="verification_code">Verification code</string>
+    <string name="reset_password">Reset password</string>
+    <string name="set_a_password">Set a password</string>
+    <string name="submit">Submit</string>
+    <string name="password_and_confirm_password_must_be_same">Password and confirm password must be same.</string>
+    <string name="text_count_down_timer">%02d:%02d</string>
+    <string name="text_count_down_reset">00:00</string>
+    //Navigation drawer
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    //Side Menu Items
+    <string name="personalization">Personalization</string>
+    <string name="account">Account</string>
+    <string name="services">Services</string>
+    <string name="call_history">Call history</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="post_personalization">Post Personalization</string>
+    <string name="account_safety">Account Safety</string>
+    <string name="chat_appearance">Chat Appearance</string>
+    <string name="notifications">Notifications</string>
+    <string name="privacy">Privacy</string>
+    <string name="data_storage"><![CDATA[Data & Storage]]></string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="recent_calls">Recent Calls</string>
+    <string name="ellipsis">&#8230;</string>
 
 </resources>

@@ -8,15 +8,21 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.task.newapp.R
+import eightbitlab.com.blurview.BlurView
 
 
 /**
@@ -95,6 +101,64 @@ fun showLog(name: String, value: String) {
     Log.e(name, value)
 }
 
+/**
+ * show keyboard
+ *
+ * @param mContext
+ * @param view
+ */
+fun showSoftKeyboard(mContext: Context, view: View?) {
+    try {
+        val imm = mContext.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * hide keyboard if visible
+ *
+ * @param mActivity
+ * @param view
+ */
+fun hideSoftKeyboard(mActivity: Activity, view: View) {
+    // Set up touch listener for non-text box views to hide keyboard.
+    if (view !is EditText) {
+        view.setOnTouchListener { v, event ->
+            hideSoftKeyboard(mActivity)
+            false
+        }
+    }
+
+    //If a layout container, iterate over children and seed recursion.
+    if (view is ViewGroup) {
+        for (i in 0 until view.childCount) {
+            val innerView = view.getChildAt(i)
+            hideSoftKeyboard(mActivity, innerView)
+        }
+    }
+}
+
+/**
+ * hide keyboard if visible
+ *
+ * @param mActivity
+ */
+fun hideSoftKeyboard(mActivity: Activity) {
+    try {
+        val imm = mActivity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        // Find the currently focused view, so we can grab the correct window token from it.
+        var view = mActivity.currentFocus
+        // If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(mActivity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 //    /**
 //    open dialog
 //     */
@@ -136,3 +200,74 @@ fun showLog(name: String, value: String) {
 //        }
 //
 //    }
+/**
+open dialog
+ */
+var dialog: Dialog? = null
+fun openProgressDialog(activity: Activity?) {
+//    hideProgressDialog()
+
+    try {
+        if (dialog != null) {
+            dialog!!.dismiss()
+            dialog = null
+        }
+
+        dialog = Dialog(activity!!)
+        dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog!!.setContentView(R.layout.progress_layout)
+        dialog!!.setCanceledOnTouchOutside(true)
+        //Glide.with(activity!!).load(R.drawable.loader).into(dialog!!.progress)
+        if (dialog != null && !dialog!!.isShowing) {
+            dialog!!.show()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * Dismiss Dialog
+ */
+fun hideProgressDialog() {
+    try {
+        if (dialog != null) {
+            dialog!!.hide()
+            dialog!!.dismiss()
+            dialog = null
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+}
+
+fun enableOrDisableButton(context: Context, isEnable: Boolean, button: Button) {
+    if (isEnable) {
+        button.background =
+            ContextCompat.getDrawable(context, R.drawable.btn_rect_rounded_bg)
+        button.isEnabled = true
+    } else {
+        button.background =
+            ContextCompat.getDrawable(context, R.drawable.btn_rect_rounded_bg_disable)
+        button.isEnabled = false
+    }
+}
+
+fun requestFocus(context: Context, view: View) {
+    if (view.requestFocus()) {
+        // open the soft keyboard
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
+}
+
+fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
+    //set background, if your root layout doesn't have one
+    val windowBackground = activity!!.window.decorView.background
+
+    blurView.setupWith(root)
+        .setFrameClearDrawable(windowBackground)
+        .setBlurRadius(55F).setBlurAutoUpdate(true).setBlurEnabled(true)
+        .setHasFixedTransformationMatrix(true)
+}

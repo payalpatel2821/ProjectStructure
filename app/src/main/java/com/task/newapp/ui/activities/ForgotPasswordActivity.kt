@@ -11,9 +11,20 @@ class ForgotPasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
+
+            val bundle = Bundle()
+            bundle.putBoolean("fromForgotPass", true)
+
+            val registrationStep2Fragment = RegistrationStep2Fragment()
+            registrationStep2Fragment.arguments = bundle
+
             supportFragmentManager.beginTransaction()
-                .add(android.R.id.content, RegistrationStep2Fragment()).commit();
+                .add(android.R.id.content, registrationStep2Fragment).commit();
         }
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }

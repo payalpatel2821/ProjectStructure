@@ -5,12 +5,15 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/_15sdp"
         tools:context=".ui.fragments.registration.RegistrationStep3Fragment">
 
 
-        <include layout="@layout/layout_back_btn" />
+        <include
+            android:id="@+id/layout_back"
+            layout="@layout/layout_back_btn" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -33,7 +36,7 @@
                     style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Set a password" />
+                    android:text="@string/set_a_password" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_layout_password"
@@ -41,15 +44,17 @@
                     android:layout_height="@dimen/_45sdp"
                     android:layout_marginTop="@dimen/_45sdp"
                     android:theme="@style/EditTextThemeOverlay"
+                    app:passwordToggleDrawable="@drawable/selector_show_hide_password"
                     app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/black"
                     app:passwordToggleTintMode="multiply">
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_password"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-
                         android:hint="@string/password"
+                        android:imeOptions="actionNext"
                         android:inputType="textPassword"
                         android:textSize="@dimen/_12ssp" />
 
@@ -60,15 +65,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_45sdp"
                     android:layout_marginTop="@dimen/_15sdp"
-
                     android:theme="@style/EditTextThemeOverlay"
-                    app:passwordToggleEnabled="true">
+                    app:passwordToggleDrawable="@drawable/selector_show_hide_password"
+                    app:passwordToggleEnabled="true"
+                    app:passwordToggleTint="@color/black">
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_confirm_password"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="@string/confirm_password"
+                        android:imeOptions="actionDone"
                         android:inputType="textPassword"
                         android:textSize="@dimen/_12ssp" />
 
@@ -80,8 +87,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_80sdp"
+                    android:background="@drawable/btn_rect_rounded_bg_disable"
                     android:text="@string/next" />
+
             </LinearLayout>
+
         </androidx.core.widget.NestedScrollView>
+
     </LinearLayout>
+
 </layout>
