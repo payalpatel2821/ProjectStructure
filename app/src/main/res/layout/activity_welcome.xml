@@ -14,7 +14,7 @@
             style="@style/styleTextViewNormal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_150sdp"
+            android:layout_marginTop="@dimen/_50sdp"
             android:text="@string/tab_below_to_get_started"
             android:textAlignment="center"
             android:textColor="@color/white" />
@@ -22,16 +22,34 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_160sdp"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:minHeight="@dimen/_200sdp">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/centerImage"
-                android:layout_width="@dimen/_70sdp"
-                android:layout_height="@dimen/_70sdp"
-                android:background="@color/white"
-                android:padding="@dimen/_10sdp"
-                android:src="@drawable/logo" />
+            <com.task.newapp.utils.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:rb_color="@color/white"
+                app:rb_duration="3500"
+                app:rb_radius="30dp"
+                app:rb_rippleAmount="6"
+                app:rb_scale="5">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/centerImage"
+                    android:layout_width="@dimen/_70sdp"
+                    android:layout_height="@dimen/_70sdp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/rect_rounded_bg_white"
+                    android:padding="@dimen/_10sdp"
+                    android:src="@drawable/logo" />
+
+            </com.task.newapp.utils.RippleBackground>
+            >
+
 
         </LinearLayout>
 
@@ -71,11 +89,11 @@
                 style="@style/styleTextViewNormal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/adbiz_directory"
-                android:gravity="bottom|center"
-                android:textStyle="bold"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:textColor="@color/white" />
+                android:gravity="bottom|center"
+                android:text="@string/adbiz_directory"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </layout>

@@ -48,5 +48,26 @@
     <string name="set_a_password">Set a password</string>
     <string name="submit">Submit</string>
     <string name="password_and_confirm_password_must_be_same">Password and confirm password must be same.</string>
+    <string name="text_count_down_timer">%02d:%02d</string>
+    <string name="text_count_down_reset">00:00</string>
+    //Navigation drawer
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    //Side Menu Items
+    <string name="personalization">Personalization</string>
+    <string name="account">Account</string>
+    <string name="services">Services</string>
+    <string name="call_history">Call history</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="post_personalization">Post Personalization</string>
+    <string name="account_safety">Account Safety</string>
+    <string name="chat_appearance">Chat Appearance</string>
+    <string name="notifications">Notifications</string>
+    <string name="privacy">Privacy</string>
+    <string name="data_storage"><![CDATA[Data & Storage]]></string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+    <string name="recent_calls">Recent Calls</string>
 
 </resources>

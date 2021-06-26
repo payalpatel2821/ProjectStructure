@@ -17,8 +17,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_welcome)
-
-
+        binding.content.startRippleAnimation();
     }
 
     override fun onClick(v: View?) {

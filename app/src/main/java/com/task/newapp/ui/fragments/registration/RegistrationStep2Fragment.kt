@@ -22,8 +22,10 @@ import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.models.ResponseSendCode
 import com.task.newapp.models.ResponseVerifyOTP
 import com.task.newapp.ui.activities.RegistrationActivity
+import com.task.newapp.ui.activities.ResetPasswordActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
+import com.task.newapp.utils.Constants.Companion.user_name
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -148,22 +150,17 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         countDownTimer = object : CountDownTimer(60000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
-                binding.txtTimer.text = "" + millisUntilFinished / 1000
+                binding.txtTimer.text = (millisUntilFinished / 1000).toString()
 
-                binding.txtTimer.text = "" + String.format(
-                    "%02d:%02d",
+                binding.txtTimer.text = getString(
+                    R.string.text_count_down_timer,
                     TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-                            TimeUnit.MINUTES.toSeconds(
-                                TimeUnit.MILLISECONDS.toMinutes(
-                                    millisUntilFinished
-                                )
-                            )
+                    TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))
                 )
             }
 
             override fun onFinish() {
-                binding.txtTimer.text = "00:00"
+                binding.txtTimer.text = getString(R.string.text_count_down_reset)
 
                 //Enable Again
                 binding.segmentText.isEnabled = true
@@ -253,7 +250,10 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                                     }
                                 } else {
                                     //Reset Password
+                                    requireActivity().launchActivity<ResetPasswordActivity> {
+                                        putExtra(user_name, binding.edtEmailOrMobile.text.toString().trim())
 
+                                    }
                                 }
                             }
                         }
