@@ -11,6 +11,11 @@ import androidx.databinding.DataBindingUtil
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.utils.setBlurLayout
+import com.task.newapp.utils.showToast
+import com.task.newapp.utils.setBlurLayout
+import com.task.newapp.utils.showToast
+import eightbitlab.com.blurview.RenderScriptBlur
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -50,6 +55,21 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
+        //        binding.bottomBar.setActiveItem(1)
+//        binding.bottomBar.setBadge(2)
+//        binding.bottomBar.removeBadge(2)
+
+//        binding.bottomBar.onItemSelected = {
+//            showToast("Item $it selected")
+//        }
+//
+//        binding.bottomBar.onItemReselected = {
+//            showToast("Item $it re-selected")
+//        }
+//
+//        binding.bottomBar.onItemLongClick = {
+//            showToast("Item $it long click")
+//        }
 
     }
 

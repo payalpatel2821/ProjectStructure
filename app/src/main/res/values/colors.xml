@@ -17,4 +17,7 @@
     <color name="overlayColor">#78ffffff</color>
     <color name="white_opacity">#D9FFFFFF</color>
     <color name="ripple_Color">#0099CC</color>
+    <color name="colorOverlay">#78ffffff</color>
+    <color name="whitewithopacity">#D9FFFFFF</color>
+
 </resources>

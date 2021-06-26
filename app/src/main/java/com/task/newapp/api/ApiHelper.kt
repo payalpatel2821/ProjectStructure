@@ -13,7 +13,7 @@ interface ApiHelper {
     @POST(reset_password_url)
     fun doResetPassword(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
 
-    @POST(send_code_url)
+    @POST(send_code_forgot_url)
     fun sendCodeForgotPass(@Body hashMap: HashMap<String, Any>): Observable<ResponseSendCode>
 
     @POST(verify_OTP_url)
@@ -24,4 +24,13 @@ interface ApiHelper {
 
     @GET(check_username_url)
     fun checkUsername(@Path("user") user: String): Observable<ResponseVerifyOTP>
+
+    @GET(get_username_url)
+    fun getUsername(@Path("user") user: String): Observable<ReponseGetUsername>
+
+    @GET(send_code_normal_url)
+    fun sendCodeNormalUrl(@Body hashMap: HashMap<String, Any>): Observable<ResponseSendCode>
+
+    @GET(verify_OTP_normal_url)
+    fun verifyOTPNormal(@Body hashMap: HashMap<String, Any>): Observable<ResponseVerifyOTP>
 }

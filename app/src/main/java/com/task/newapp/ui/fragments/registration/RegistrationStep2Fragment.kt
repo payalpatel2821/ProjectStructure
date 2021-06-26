@@ -41,6 +41,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
     private val mCompositeDisposable = CompositeDisposable()
     private lateinit var onPageChangeListener: OnPageChangeListener
     private lateinit var binding: FragmentRegistrationStep2Binding
+    var fromForgotPass = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +64,8 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
             container,
             false
         )
+
+        fromForgotPass = requireArguments().getBoolean("fromForgotPass")
 
         binding.txtResend.isEnabled = false
         return binding.root
@@ -100,7 +103,11 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
             }
 
             override fun onOTPComplete(otp: String) {
-                callAPIVerifyOTP(otp)
+                if (fromForgotPass) {
+                    callAPIVerifyOTPForgotPass(otp)
+                } else {
+                    callAPIVerifyOTPNormal(otp)
+                }
             }
         }
         binding.layoutBack.tvBack.setOnClickListener(this)
@@ -136,7 +143,11 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                     }
                 }
 
-                callAPISendCode()
+                if (fromForgotPass) {
+                    callAPISendCodeForgot()
+                } else {
+                    callAPISendCodeNormal()
+                }
             }
         }
     }
@@ -176,7 +187,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         mCompositeDisposable.clear()
     }
 
-    private fun callAPISendCode() {
+    private fun callAPISendCodeForgot() {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.typeCode to if (flagMobile) Constants.mobile else Constants.email,
@@ -221,7 +232,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun callAPIVerifyOTP(otp: String) {
+    private fun callAPIVerifyOTPForgotPass(otp: String) {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.user_name to binding.edtEmailOrMobile.text.toString().trim(),
@@ -253,6 +264,97 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                                     requireActivity().launchActivity<ResetPasswordActivity> {
                                         putExtra(user_name, binding.edtEmailOrMobile.text.toString().trim())
 
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callAPISendCodeNormal() {
+        try {
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.typeCode to if (flagMobile) Constants.mobile else Constants.email,
+                if (flagMobile)
+                    Constants.mobile to binding.edtEmailOrMobile.text.toString().trim()
+                else
+                    Constants.email to binding.edtEmailOrMobile.text.toString().trim()
+            )
+
+            openProgressDialog(activity)
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .sendCodeNormalUrl(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponseSendCode>() {
+                        override fun onNext(responseSendCode: ResponseSendCode) {
+                            activity!!.showToast(responseSendCode.message)
+
+                            if (responseSendCode.success == 1) {
+                                startTimer()
+
+                                //Disable
+                                binding.segmentText.isEnabled = false
+                                binding.llText.isEnabled = false
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callAPIVerifyOTPNormal(otp: String) {
+        try {
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.user_name to binding.edtEmailOrMobile.text.toString().trim(),
+                Constants.code to otp
+            )
+
+            openProgressDialog(activity)
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .verifyOTPNormal(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponseVerifyOTP>() {
+                        override fun onNext(responseVerifyOTP: ResponseVerifyOTP) {
+                            activity!!.showToast(responseVerifyOTP.message)
+
+                            if (responseVerifyOTP.success == 1) {
+                                //Next Screen
+                                if (context is RegistrationActivity) {
+                                    FastSave.getInstance().saveBoolean(Constants.typeCode, flagMobile)
+                                    FastSave.getInstance().saveString(Constants.mobile, binding.edtEmailOrMobile.text.toString().trim())
+
+                                    if (context is RegistrationActivity) {
+                                        onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
                                     }
                                 }
                             }
