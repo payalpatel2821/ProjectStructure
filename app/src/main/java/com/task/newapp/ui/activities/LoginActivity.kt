@@ -103,7 +103,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 launchActivity<RegistrationActivity> { }
             }
             R.id.txt_forgot_password -> {
-                launchActivity<ResetPasswordActivity> { }
+                launchActivity<ForgotPasswordActivity> { }
             }
         }
     }

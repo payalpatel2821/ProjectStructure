@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:orientation="vertical"
     android:padding="@dimen/_5sdp"
     tools:ignore="MissingPrefix">
@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_5sdp"
         android:layout_marginRight="@dimen/_5sdp"
+        android:visibility="gone"
         android:progressTint="@color/theme_color" />
 
     <TextView
@@ -26,7 +27,16 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/bogleregular"
         android:gravity="center"
+        android:visibility="gone"
         android:text="Loading Data.."
         android:textSize="@dimen/_7ssp" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lottie_autoPlay="true"
+        app:lottie_cacheComposition="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/progress_loader" />
 </LinearLayout>

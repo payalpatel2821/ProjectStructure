@@ -23,10 +23,12 @@ class ResetPasswordActivity : AppCompatActivity(), View.OnClickListener {
     private val mCompositeDisposable = CompositeDisposable()
     private var flagPass: Boolean = false
     private var flagConfirmPass: Boolean = false
+    private var userName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reset_password)
+        userName = intent.getStringExtra(Constants.user_name).toString()
         initView()
     }
 
@@ -148,7 +150,7 @@ class ResetPasswordActivity : AppCompatActivity(), View.OnClickListener {
     private fun callAPIResetPassword() {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.user_name to binding.edtPassword.text.toString(),
+                Constants.user_name to userName,
                 Constants.password to binding.edtPassword.text.toString()
             )
 

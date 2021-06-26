@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_layout"
+    android:layout_width="@dimen/navigation_drawer_width"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:background="@color/transparent"
+    android:orientation="vertical">
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:blurOverlayColor="@color/transparent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10sdp"
+            app:cardBackgroundColor="@color/white_opacity"
+            app:cardCornerRadius="@dimen/_5sdp"
+            app:cardUseCompatPadding="true"
+            app:contentPadding="@dimen/_5sdp">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_20sdp">
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_47sdp"
+                        app:srcCompat="@drawable/logo" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:text="@string/personalization"
+                            android:textAllCaps="true"
+                            android:textColor="@color/darkgray" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="@dimen/_5sdp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/_5sdp"
+                            app:cardUseCompatPadding="true"
+                            app:contentPadding="@dimen/_5sdp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/chat_appearance" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_1sdp"
+                                    android:layout_marginTop="@dimen/_3sdp"
+                                    android:layout_marginBottom="@dimen/_3sdp"
+                                    android:background="@drawable/divider_black_gradient" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/notifications" />
+                            </LinearLayout>
+
+
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:text="@string/account"
+                            android:textAllCaps="true"
+                            android:textColor="@color/darkgray" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="@dimen/_5sdp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/_5sdp"
+                            app:cardUseCompatPadding="true"
+                            app:contentPadding="@dimen/_5sdp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/privacy" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_1sdp"
+                                    android:layout_marginTop="@dimen/_3sdp"
+                                    android:layout_marginBottom="@dimen/_3sdp"
+                                    android:background="@drawable/divider_black_gradient" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/data_storage" />
+                            </LinearLayout>
+
+
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:text="@string/services"
+                            android:textAllCaps="true"
+                            android:textColor="@color/darkgray" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="@dimen/_5sdp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/_5sdp"
+                            app:cardUseCompatPadding="true"
+                            app:contentPadding="@dimen/_5sdp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/help" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_1sdp"
+                                    android:layout_marginTop="@dimen/_3sdp"
+                                    android:layout_marginBottom="@dimen/_3sdp"
+                                    android:background="@drawable/divider_black_gradient" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/about" />
+                            </LinearLayout>
+
+
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:text="@string/call_history"
+                            android:textAllCaps="true"
+                            android:textColor="@color/darkgray" />
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="@dimen/_5sdp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/_5sdp"
+                            app:cardUseCompatPadding="true"
+                            app:contentPadding="@dimen/_5sdp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:drawableStart="@drawable/ic_username"
+                                    android:drawablePadding="@dimen/_15sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/recent_calls" />
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_3sdp"
+                            android:background="@drawable/divider_black_gradient" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:drawableStart="@drawable/ic_username"
+                            android:drawablePadding="@dimen/_10sdp"
+                            android:gravity="center"
+                            android:text="Logout"
+                            android:textColor="@color/red"
+                            android:textStyle="bold" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:layout_marginBottom="@dimen/_3sdp"
+                            android:background="@drawable/divider_black_gradient" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </ScrollView>
+        </androidx.cardview.widget.CardView>
+    </eightbitlab.com.blurview.BlurView>
+</LinearLayout>
