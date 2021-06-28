@@ -5,19 +5,6 @@ import android.content.SharedPreferences
 import com.task.newapp.R
 
 
-internal const val LOGINTOKEN = "LoginToken"
-internal const val DeviceToken = "DeviceToken"
-internal const val Latitude = "Latitude"
-internal const val Longitude = "Longitude"
-internal const val Robot = "Robot"
-internal const val IsLogin = "IsLogin"
-internal const val FirstName = "FirstName"
-internal const val LastName = "LastName"
-internal const val Email = "Email"
-internal const val ProfileImage = "ProfileImage"
-internal const val language = "Language"
-internal const val LoginId = "LoginId"
-
 
 fun Context.getSharedPreferences(): SharedPreferences {
     return getSharedPreferences(

@@ -21,11 +21,9 @@ import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.models.ReponseGetUsername
 import com.task.newapp.models.ResponseRegister
 import com.task.newapp.models.ResponseVerifyOTP
-import com.task.newapp.utils.Constants
+import com.task.newapp.ui.activities.MainActivity
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
-import com.task.newapp.utils.hideProgressDialog
-import com.task.newapp.utils.openProgressDialog
-import com.task.newapp.utils.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -121,7 +119,7 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                 .addFormDataPart(Constants.latitude, "0")
                 .addFormDataPart(Constants.longitude, "0")
                 .addFormDataPart(Constants.device_token, Constants.deviceToken)
-                .addFormDataPart(Constants.device_type, "Android")
+                .addFormDataPart(Constants.device_type, Constants.device_type_android)
                 .addFormDataPart(Constants.account_id, binding.edtAccId.text.toString().trim())
 
             var imagePath = FastSave.getInstance().getString(Constants.profile_image, "")
@@ -130,16 +128,12 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
                 val file = File(imagePath.toString())
                 if (file.exists()) {
-                    val inputStream: InputStream =
-                        requireActivity().contentResolver.openInputStream(Uri.fromFile(File(imagePath))!!)!!
-
-                    val bmp =
-                        BitmapFactory.decodeFile(file.absolutePath)
+                    val inputStream: InputStream = requireActivity().contentResolver.openInputStream(Uri.fromFile(File(imagePath))!!)!!
+                    val bmp = BitmapFactory.decodeFile(file.absolutePath)
                     val bos = ByteArrayOutputStream()
                     if (bmp != null) {
                         bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-                        builder.addFormDataPart(
-                            Constants.profile_image, file.name, RequestBody.create(
+                        builder.addFormDataPart(Constants.profile_image, file.name, RequestBody.create(
                                 MultipartBody.FORM,
 //                                                    bos.toByteArray()
                                 getBytes(inputStream)!!
@@ -168,8 +162,9 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                                 FastSave.getInstance().saveObject(Constants.userClass, responseRegister.data.user)
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
-                                //Home Screen
-
+                                //Main Screen
+                                requireActivity().launchActivity<MainActivity> { }
+                                requireActivity().finish()
                             }
                         }
 

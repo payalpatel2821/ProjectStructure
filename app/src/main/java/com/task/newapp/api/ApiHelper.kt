@@ -28,9 +28,9 @@ interface ApiHelper {
     @GET(get_username_url)
     fun getUsername(@Path("user") user: String): Observable<ReponseGetUsername>
 
-    @GET(send_code_normal_url)
+    @POST(send_code_normal_url)
     fun sendCodeNormalUrl(@Body hashMap: HashMap<String, Any>): Observable<ResponseSendCode>
 
-    @GET(verify_OTP_normal_url)
+    @POST(verify_OTP_normal_url)
     fun verifyOTPNormal(@Body hashMap: HashMap<String, Any>): Observable<ResponseVerifyOTP>
 }

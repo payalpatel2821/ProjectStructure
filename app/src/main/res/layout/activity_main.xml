@@ -54,11 +54,15 @@
              </com.google.android.material.appbar.AppBarLayout>-->
 
             <FrameLayout
-                android:id="@+id/activity_main_content_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/my_post"
                 android:clipToPadding="false">
+
+                <FrameLayout
+                    android:id="@+id/activity_main_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false" />
 
                 <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurView"
@@ -98,12 +102,14 @@
                     </RelativeLayout>
 
                     <ImageView
+                        android:id="@+id/img_center"
                         android:layout_width="@dimen/_45sdp"
                         android:layout_height="match_parent"
                         android:layout_alignTop="@+id/rlBottom"
                         android:layout_alignBottom="@+id/rlBottom"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
+                        android:onClick="onClick"
                         android:padding="@dimen/_5sdp"
                         android:src="@mipmap/ic_launcher" />
 
