@@ -21,11 +21,9 @@ import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.models.ReponseGetUsername
 import com.task.newapp.models.ResponseRegister
 import com.task.newapp.models.ResponseVerifyOTP
-import com.task.newapp.utils.Constants
+import com.task.newapp.ui.activities.MainActivity
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
-import com.task.newapp.utils.hideProgressDialog
-import com.task.newapp.utils.openProgressDialog
-import com.task.newapp.utils.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -168,8 +166,9 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                                 FastSave.getInstance().saveObject(Constants.userClass, responseRegister.data.user)
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
-                                //Home Screen
-
+                                //Main Screen
+                                requireActivity().launchActivity<MainActivity> { }
+                                requireActivity().finish()
                             }
                         }
 

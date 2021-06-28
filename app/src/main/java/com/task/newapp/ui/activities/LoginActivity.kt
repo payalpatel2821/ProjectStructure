@@ -151,6 +151,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
                                 //Next Screen
+                                launchActivity<MainActivity> {  }
+                                finish()
                             }
                         }
 
@@ -169,7 +171,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             e.printStackTrace()
         }
     }
-
 
     fun validatePassword(): Boolean {
         when {
