@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivitySplashBinding
+import com.task.newapp.utils.Constants
 import com.task.newapp.utils.launchActivity
 
 class SplashActivity : AppCompatActivity() {
@@ -18,10 +19,15 @@ class SplashActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
 
         Handler().postDelayed(Runnable {
-            if (FastSave.getInstance().getBoolean("isfirsttime", true)) {
+            if (FastSave.getInstance().getBoolean(Constants.isFirstTime, true)) {
                 launchActivity<WelcomeActivity> {}
             } else {
-                launchActivity<LoginActivity> {}
+                if (FastSave.getInstance().getBoolean(Constants.isLogin, true)) {
+
+                    launchActivity<MainActivity> {}
+                } else {
+                    launchActivity<LoginActivity> {}
+                }
             }
             finish()
         }, 2000)

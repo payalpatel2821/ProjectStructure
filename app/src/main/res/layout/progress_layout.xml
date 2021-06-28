@@ -7,30 +7,6 @@
     android:orientation="vertical"
     android:padding="@dimen/_5sdp"
     tools:ignore="MissingPrefix">
-
-    <!--    <ImageView-->
-    <!--        android:id="@+id/progress"-->
-    <!--        android:layout_width="@dimen/_60sdp"-->
-    <!--        android:layout_height="@dimen/_50sdp"-->
-    <!--        android:src="@drawable/loader" />-->
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/_5sdp"
-        android:layout_marginRight="@dimen/_5sdp"
-        android:visibility="gone"
-        android:progressTint="@color/theme_color" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/bogleregular"
-        android:gravity="center"
-        android:visibility="gone"
-        android:text="Loading Data.."
-        android:textSize="@dimen/_7ssp" />
-
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
         android:layout_width="match_parent"

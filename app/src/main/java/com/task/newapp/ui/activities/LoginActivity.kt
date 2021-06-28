@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 Constants.latitude to "0",
                 Constants.longitude to "0",
                 Constants.device_token to Constants.deviceToken,
-                Constants.device_type to "Android"
+                Constants.device_type to Constants.device_type_android
             )
 
             openProgressDialog(this)
@@ -143,10 +143,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
                             if (loginResponse.success == 1) {
                                 saveRemember()
-
                                 FastSave.getInstance().saveObject(Constants.prefToken, loginResponse.data.token)
                                 FastSave.getInstance().saveObject(Constants.prefUser, loginResponse.data.user)
-
                                 FastSave.getInstance().saveObject(Constants.userClass, loginResponse.data.user)
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
@@ -213,11 +211,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun checkAndEnable() {
         enableOrDisableButton(this@LoginActivity, flagUser && flagPass, binding.btnLogin)
-        /* if (flagUser && flagPass) {
-             enableOrDisableButton(this@LoginActivity, true, binding.btnLogin)
-         } else {
-             enableOrDisableButton(this@LoginActivity, false, binding.btnLogin)
-         }*/
     }
 
 }

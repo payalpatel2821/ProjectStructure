@@ -10,15 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.ui.fragments.registration.ChatsFragment
-import com.task.newapp.ui.fragments.registration.RegistrationStep1Fragment
+import com.task.newapp.utils.Constants
+import com.task.newapp.utils.launchActivity
 import com.task.newapp.utils.setBlurLayout
 import com.task.newapp.utils.showToast
-import com.task.newapp.utils.setBlurLayout
-import com.task.newapp.utils.showToast
-import eightbitlab.com.blurview.RenderScriptBlur
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -32,7 +31,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        setupNavigationDrawer()
+        setupBottomNavigationBar()
+    }
 
+    private fun setupNavigationDrawer() {
         setBlurLayout(this@MainActivity, binding.root as ViewGroup, binding.navDrawerLayout.blurView)
         val toggle: ActionBarDrawerToggle = object : ActionBarDrawerToggle(
             this, binding.drawerLayout,
@@ -42,8 +45,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 // Triggered once the drawer closes
                 super.onDrawerClosed(drawerView)
                 try {
-                    val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
                 } catch (e: Exception) {
                     e.stackTrace
@@ -54,8 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 // Triggered once the drawer opens
                 super.onDrawerOpened(drawerView)
                 try {
-                    val inputMethodManager =
-                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
                 } catch (e: Exception) {
                     e.stackTrace
@@ -65,7 +66,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-//        binding.bottomBar.setActiveItem(1)
+
+    }
+
+    private fun setupBottomNavigationBar() {
+        //        binding.bottomBar.setActiveItem(1)
 //        binding.bottomBar.setBadge(2)
 //        binding.bottomBar.removeBadge(2)
 
@@ -126,6 +131,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             binding.drawerLayout.closeDrawer(GravityCompat.END)
         } else {
             binding.drawerLayout.openDrawer(GravityCompat.END)
+            binding.drawerLayout.openDrawer(GravityCompat.END)
         }
     }
 
@@ -135,11 +141,47 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             commit()
         }
 
-    override fun onClick(v: View?) {
-        when (v?.id) {
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.txt_chat_appearance -> {
+                showToast(getString(R.string.chat_appearance))
+            }
+            R.id.txt_notifications -> {
+                showToast(getString(R.string.notifications))
+            }
+            R.id.txt_post -> {
+                showToast(getString(R.string.post))
+            }
+            R.id.txt_story -> {
+                showToast(getString(R.string.story))
+            }
+            R.id.txt_privacy -> {
+                showToast(getString(R.string.privacy))
+            }
+            R.id.txt_data_storage -> {
+                showToast(getString(R.string.data_storage))
+            }
+            R.id.txt_help -> {
+                showToast(getString(R.string.help))
+            }
+            R.id.txt_about -> {
+                showToast(getString(R.string.about))
+            }
+            R.id.txt_recent_calls -> {
+                showToast(getString(R.string.recent_calls))
+            }
+            R.id.txt_logout -> {
+                FastSave.getInstance().saveBoolean(Constants.isLogin, false)
+                launchActivity<LoginActivity> { }
+                showToast(getString(R.string.logout))
+                finish()
+
+            }
             R.id.img_center -> {
 
             }
         }
     }
+
 }

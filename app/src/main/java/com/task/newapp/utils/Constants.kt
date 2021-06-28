@@ -6,6 +6,7 @@ class Constants {
         const val user_name = "user_name"
         const val device_token = "device_token"
         const val device_type = "device_type"
+        const val device_type_android = "Android"
         const val email = "email"
         const val mobile = "mobile"
         const val typeCode = "type"
@@ -20,6 +21,7 @@ class Constants {
         const val profile_image = "profile_image"
         const val userClass = "userClass"
         const val isLogin = "isLogin"
+        const val isFirstTime = "isFirstTime"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information
