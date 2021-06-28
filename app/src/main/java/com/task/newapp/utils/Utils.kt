@@ -12,6 +12,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Patterns
 import android.view.View
@@ -138,6 +139,10 @@ fun hideSoftKeyboard(mActivity: Activity, view: View) {
             hideSoftKeyboard(mActivity, innerView)
         }
     }
+}
+
+fun Context.getDisplayMatrix(): DisplayMetrics {
+   return resources.displayMetrics
 }
 
 /**
@@ -271,3 +276,4 @@ fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
         .setBlurRadius(55F).setBlurAutoUpdate(true).setBlurEnabled(true)
         .setHasFixedTransformationMatrix(true)
 }
+

@@ -25,9 +25,6 @@
             android:name=".ui.activities.ForgotPasswordActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
-            android:theme="@style/NoActionBar">
-
-        </activity>
         <activity
             android:name=".ui.activities.SplashActivity"
             android:screenOrientation="portrait"
@@ -52,6 +49,17 @@
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".ui.activities.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity android:name=".ui.activities.profile.EditProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity
+            android:name=".ui.activities.profile.OtherUserProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity
+            android:name=".ui.activities.profile.MyProfileActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"/>
         <activity
