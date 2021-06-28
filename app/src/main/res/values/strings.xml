@@ -64,6 +64,19 @@
     <string name="choose_a_default_name_or_use_your_creativity">Choose a default name or use your creativity!</string>
     <string name="done">Done</string>
     <string name="change_username"><u>Change Username</u></string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="profile_views">Profile Views</string>
+    <string name="visibility">Visibility</string>
+    <string name="show_me_nearby">Show me Nearby</string>
+    <string name="performance_rewards">Performance rewards</string>
+    <string name="my_post">My posts</string>
+    <string name="tagged_posts">Tagged Posts</string>
+    <string name="saved_posts">Saved Posts</string>
+    <string name="groups">Groups</string>
+    <string name="pages">Pages</string>
+    <string name="friends">Friends</string>
+    <string name="message">Message</string>
     <string name="mobile">Mobile</string>
     <string name="email">Email</string>
     <string name="send_code">Send Code</string>
@@ -75,6 +88,20 @@
     <string name="text_count_down_timer">%02d:%02d</string>
     <string name="text_count_down_reset">00:00</string>
     <string name="ellipsis">&#8230;</string>
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
+    <string name="mute">Mute</string>
+    <string name="search">Search</string>
+    <string name="contact_detail">Contact Detail</string>
+    <string name="chat_search">Chat Search</string>
+    <string name="custom_notification">Custom Notification</string>
+    <string name="photo_video_link_docs">Photo,Video,Link,Docs</string>
+    <string name="star_message">Star Message</string>
+    <string name="groups_in_common">Groups in common</string>
+    <string name="pages_in_common">Pages in common</string>
+    <string name="friends_in_common">Friends in common</string>
+    <string name="block">Block</string>
+    <string name="report">Report</string>
 
 
 

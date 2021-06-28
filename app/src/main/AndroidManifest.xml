@@ -51,6 +51,17 @@
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"/>
+        <activity android:name=".ui.activities.profile.EditProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity
+            android:name=".ui.activities.profile.OtherUserProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity
+            android:name=".ui.activities.profile.MyProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
