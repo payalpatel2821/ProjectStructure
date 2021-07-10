@@ -254,13 +254,13 @@ public class SiliCompressor {
         /*if (Pattern.matches("^[.][p][n][g]", filename)){
             ext = ".png";
         }*/
-        String nameFirstPart = file.getAbsolutePath() + "/IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String nameFull = nameFirstPart + ext;
-        int x = 1;
-        while (new File(nameFull).exists()) {
-            nameFull = nameFirstPart + "_" + x + ext;
-            x++;
-        }
+        String nameFirstPart = file.getAbsolutePath();// + "/IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String nameFull = nameFirstPart; // + ext;
+//        int x = 1;
+//        while (new File(nameFull).exists()) {
+//            nameFull = nameFirstPart + "_" + x + ext;
+//            x++;
+//        }
 
         return nameFull;
     }
@@ -392,7 +392,13 @@ public class SiliCompressor {
                 return realPathFromUri;
 
             } else {
-                String filename = getFilename(uriString, destDirectory);
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SiliCompressor");
+                if (!file.exists()) {
+                    file.mkdir();
+                    file.mkdirs();
+                }
+
+                String filename = new File(file.getAbsolutePath(), "temp_profile.jpg").getAbsolutePath();
 
                 FileOutputStream out = new FileOutputStream(filename);
 

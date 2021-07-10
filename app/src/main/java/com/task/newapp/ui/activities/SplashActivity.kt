@@ -18,7 +18,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
 
-        Handler().postDelayed(Runnable {
+        Handler().postDelayed({
             if (FastSave.getInstance().getBoolean(Constants.isFirstTime, true)) {
                 launchActivity<WelcomeActivity> {}
             } else {

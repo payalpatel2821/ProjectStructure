@@ -10,6 +10,10 @@ class Constants {
         const val email = "email"
         const val mobile = "mobile"
         const val typeCode = "type"
+        const val comment_text = "comment_text"
+        const val post_id = "post_id"
+        const val offset = "offset"
+        const val limit = "limit"
         const val latitude = "latitude"
         const val longitude = "longitude"
         const val password = "password"
@@ -19,7 +23,6 @@ class Constants {
         const val last_name = "last_name"
         const val account_id = "account_id"
         const val profile_image = "profile_image"
-        const val userClass = "userClass"
         const val isLogin = "isLogin"
         const val isFirstTime = "isFirstTime"
         const val type = "type"
@@ -115,5 +118,17 @@ class Constants {
         const val prefIsRemember = "prefIsRemember"
         const val prefUserNameRemember = "prefUserNameRemember"
         const val prefPasswordRemember = "prefPasswordRemember"
+
+        //----------------------Socket-------------------------
+        const val post_delete_response = "post_delete_response"
+        const val story_broadcast = "story_broadcast"
+        const val story_delete_response = "story_delete_response"
+        const val post_like = "post_like"
+        const val post_like_response = "post_like_response"
+        const val disconnect = "disconnect"
+
+        // emit event
+        const val join = "join"
+        const val isonline = "isonline"
     }
 }

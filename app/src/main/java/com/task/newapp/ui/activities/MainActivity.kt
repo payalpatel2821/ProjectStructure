@@ -16,6 +16,7 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.ui.fragments.chat.ChatsFragment
+import com.task.newapp.ui.fragments.registration.PostFragment
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.launchActivity
 import com.task.newapp.utils.setBlurLayout
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var binding: ActivityMainBinding
 
     val chatsFragment = ChatsFragment()
-    val secondFragment = ChatsFragment()
+    val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,25 +69,22 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
-
     }
 
     private fun setupBottomNavigationBar() {
-        //        binding.bottomBar.setActiveItem(1)
+        binding.bottomBar.setActiveItem(1)
 //        binding.bottomBar.setBadge(2)
 //        binding.bottomBar.removeBadge(2)
 
         binding.bottomBar.onItemSelected = { position ->
             showToast("Item $position selected")
-            setCurrentFragment(chatsFragment)
 
             when (position) {
                 0 -> {
                     setCurrentFragment(chatsFragment)
                 }
                 1 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 2 -> {
                     setCurrentFragment(chatsFragment)
@@ -108,7 +106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     setCurrentFragment(chatsFragment)
                 }
                 1 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 2 -> {
                     setCurrentFragment(chatsFragment)
@@ -126,7 +124,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            showToast("Item $it long click")
 //        }
 
-        setCurrentFragment(chatsFragment)
+        setCurrentFragment(postFragment)
     }
 
     private fun toggleRightDrawer() {
@@ -143,19 +141,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             replace(R.id.activity_main_content, fragment)
             commit()
         }
-   /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        var drawable = menu.findItem(R.id.action_emergency_alert).icon
-        drawable = DrawableCompat.wrap(drawable!!)
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.black))
-        menu.findItem(R.id.action_emergency_alert).icon = drawable
-        return true
-    }*/
+
+    /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
+         menuInflater.inflate(R.menu.main_menu, menu)
+         var drawable = menu.findItem(R.id.action_emergency_alert).icon
+         drawable = DrawableCompat.wrap(drawable!!)
+         DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.black))
+         menu.findItem(R.id.action_emergency_alert).icon = drawable
+         return true
+     }*/
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
     }
+
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_chat_appearance -> {
@@ -196,6 +196,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.img_center -> {
 
             }
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        if (postFragment.myBottomSheetMoment.isVisible) {
+            postFragment.myBottomSheetMoment.dismiss()
+        }
+        if (postFragment.myBottomSheetThought.isVisible) {
+            postFragment.myBottomSheetThought.dismiss()
         }
     }
 

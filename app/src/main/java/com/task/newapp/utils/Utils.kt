@@ -5,7 +5,10 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -22,6 +25,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -31,6 +35,9 @@ import com.bumptech.glide.request.RequestOptions
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
 import eightbitlab.com.blurview.BlurView
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -385,4 +392,36 @@ fun ImageView.load(
             }
         }
         .into(this)
+}
+//fun setImageToImageView(context: Context?, imageURL: String, name: String?, isCaching: Boolean, imageView: ImageView) {
+//    Glide.with(context!!)
+//        .load(imageURL + "?q=" + System.currentTimeMillis()) //.placeholder(R.drawable.default_dp)
+//        .placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.CIRCLE, name!!, AvatarGenerator.COLOR400))
+//        .skipMemoryCache(!isCaching)
+//        .diskCacheStrategy(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE)
+//        .into(imageView)
+//}
+
+fun parseDate(inputDateString: String?, inputDateFormat: SimpleDateFormat, outputDateFormat: SimpleDateFormat): String? {
+    var date: Date? = null
+    var outputDateString: String? = null
+    try {
+        date = inputDateFormat.parse(inputDateString)
+        outputDateString = outputDateFormat.format(date)
+    } catch (e: ParseException) {
+//        FirebaseCrashlytics.getInstance().setCustomKey("ParseDate", e.message)
+//        FirebaseCrashlytics.getInstance().recordException(e)
+        e.printStackTrace()
+    }
+    return outputDateString
+}
+
+fun AppCompatEditText.setUnderlineColor(color: Int) {
+    background.apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            colorFilter = BlendModeColorFilter(color, BlendMode.SRC_IN)
+        } else {
+            setColorFilter(color, PorterDuff.Mode.SRC_IN)
+        }
+    }
 }

@@ -112,6 +112,45 @@
     <string name="broadcast_lists">Broadcast Lists</string>
     <string name="archive_chat">Archive Chat</string>
     <string name="unhook">Unhook</string>
+    <string name="copylink">Copy Link</string>
+    <string name="turnonpost">Turn on Post Notification</string>
+    <string name="welcome_to_how_no_post_yet">Welcome to HOW.\n You haven\'t seen any post Yet.</string>
+    <string name="get_al_post">20</string>
+    <string name="get_comments">10</string>
+    <string name="delete">Delete</string>
+    <string name="reply">Reply</string>
+    <string name="enter_your_comment">Enter Your Comment</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+    <string name="you">You</string>
+    <string name="edit">Edit</string>
+    <string name="username">Username</string>
+    <string name="unfollow_confirm_msg">Username</string>
+    <string name="unfollow">Unfollow</string>
 
+    <array name="colorArrayThoughts">
+        <item>@color/white</item>
+        <item>@color/red</item>
+        <item>@color/theme_color</item>
+    </array>
+
+    <integer-array name="colorFontArrayThoughts">
+        <item>@color/white</item>
+        <item>@color/red</item>
+        <item>@color/theme_color</item>
+    </integer-array>
+
+    <integer-array name="patternArrayThoughts">
+        <item>@drawable/default_dp</item>
+        <item>@drawable/default_dp</item>
+        <item>@drawable/default_dp</item>
+    </integer-array>
+
+    <string-array name="fontArrayThoughts">
+        <item>boglebold.otf</item>
+        <item>bogleregular.otf</item>
+        <item>boglebold.otf</item>
+        <item>bogleregular.otf</item>
+    </string-array>
 
 </resources>

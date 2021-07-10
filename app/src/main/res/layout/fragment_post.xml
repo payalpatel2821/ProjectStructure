@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/llCoordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/graybg"
+        android:fitsSystemWindows="false"
+        android:orientation="vertical"
+        tools:context=".ui.fragments.registration.PostFragment">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/toolbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:fitsSystemWindows="false"
+                app:contentScrim="@android:color/transparent"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:orientation="vertical">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/img_user"
+                            android:layout_width="@dimen/_25sdp"
+                            android:layout_height="@dimen/_25sdp"
+                            android:src="@drawable/default_dp" />
+
+                        <TextView
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_8sdp"
+                            android:gravity="center_vertical"
+                            android:text="TIMELINE"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollIndicators="none"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/my_status"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_3sdp"
+                                android:orientation="vertical">
+
+                                <RelativeLayout
+                                    android:id="@+id/image_layout"
+                                    android:layout_width="@dimen/_50sdp"
+                                    android:layout_height="@dimen/_50sdp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/my_story"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_centerInParent="true"
+                                        android:padding="@dimen/_5sdp"
+                                        android:src="@drawable/add_status" />
+
+                                    <com.task.newapp.utils.CircularStatusView
+                                        android:id="@+id/circular_status_view"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_centerInParent="true"
+                                        android:padding="@dimen/_3sdp"
+                                        app:portion_color="@color/red"
+                                        app:portion_spacing="@dimen/_3sdp"
+                                        app:portion_width="@dimen/_1sdp"
+                                        app:portions_count="0" />
+
+                                </RelativeLayout>
+
+                                <TextView
+                                    android:id="@+id/textView"
+                                    android:layout_width="@dimen/_50sdp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="@dimen/_2sdp"
+                                    android:fontFamily="@font/bogleregular"
+                                    android:gravity="center"
+                                    android:text="Me"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="@dimen/_7ssp" />
+
+                            </LinearLayout>
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rec_status"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"
+                                android:orientation="horizontal"
+                                android:scrollIndicators="none"
+                                android:scrollbars="none"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                tools:listitem="@layout/chat_status_adpter" />
+                        </LinearLayout>
+
+                    </HorizontalScrollView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="@dimen/_8sdp"
+                        app:cardElevation="@dimen/_5sdp"
+                        app:cardUseCompatPadding="true">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_5sdp">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/ll_thoughts"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:text="Thoughts"
+                                    android:textSize="@dimen/_8ssp" />
+
+                                <ImageView
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
+                                    android:layout_margin="@dimen/_2sdp"
+                                    android:src="@drawable/ic_thought" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/gray" />
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:text="Moments"
+                                    android:textSize="@dimen/_8ssp" />
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <ImageView
+                                        android:id="@+id/ll_moments_photos"
+                                        android:layout_width="@dimen/_25sdp"
+                                        android:layout_height="@dimen/_25sdp"
+                                        android:layout_margin="@dimen/_2sdp"
+                                        android:layout_weight="1"
+                                        android:src="@drawable/ic_moments" />
+
+                                    <View
+                                        android:layout_width="0.5dp"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginVertical="@dimen/_8sdp"
+                                        android:background="@color/gray" />
+
+                                    <ImageView
+                                        android:id="@+id/ll_moments_videos"
+                                        android:layout_width="@dimen/_25sdp"
+                                        android:layout_height="@dimen/_25sdp"
+                                        android:layout_margin="@dimen/_2sdp"
+                                        android:layout_weight="1"
+                                        android:src="@drawable/ic_moments" />
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="match_parent"
+                                android:background="@color/gray" />
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/ll_locations"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    style="@style/styleTextViewSmall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:text="Location"
+                                    android:textSize="@dimen/_8ssp" />
+
+                                <ImageView
+                                    android:layout_width="@dimen/_25sdp"
+                                    android:layout_height="@dimen/_25sdp"
+                                    android:layout_margin="@dimen/_2sdp"
+                                    android:src="@drawable/ic_location" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5pt"
+                        android:layout_marginLeft="7pt"
+                        android:layout_marginTop="7pt"
+                        android:layout_marginRight="7pt"
+                        android:background="@color/gray"
+                        android:visibility="gone" />
+
+                    <!--                <include layout="@layout/add_post" />-->
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!--        <androidx.core.widget.NestedScrollView-->
+        <!--            android:id="@+id/nsMain"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent">-->
+
+        <LinearLayout
+            android:id="@+id/llMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_anchor="@id/app_bar_layout"
+            app:layout_anchorGravity="bottom"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/no_posts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_90sdp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:layout_width="@dimen/_180sdp"
+                            android:layout_height="@dimen/_180sdp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/no_post" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10pt"
+                            android:fontFamily="@font/bogleregular"
+                            android:gravity="center"
+                            android:letterSpacing="0.1"
+                            android:text="@string/welcome_to_how_no_post_yet"
+                            android:textColor="#a5a5a5"
+                            android:textSize="6.5pt" />
+
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/progress_lay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:ignore="MissingConstraints">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
+                            android:background="@drawable/background_border"
+                            android:backgroundTint="@color/change_color"
+                            android:padding="3pt">
+
+                            <LinearLayout
+                                android:id="@+id/image_layout1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="0pt">
+
+                                <ImageView
+                                    android:id="@+id/post_iv"
+                                    android:layout_width="@dimen/_27sdp"
+                                    android:layout_height="@dimen/_27sdp"
+                                    android:layout_centerInParent="true"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/default_dp" />
+
+                            </LinearLayout>
+
+                            <ProgressBar
+                                android:id="@+id/progressBar1"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/_8sdp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:layout_toLeftOf="@+id/close_iv"
+                                android:layout_toRightOf="@+id/image_layout1"
+                                android:indeterminateDrawable="@drawable/add_post_progress"
+                                android:indeterminateOnly="true" />
+
+                            <ImageView
+                                android:id="@+id/close_iv"
+                                android:layout_width="@dimen/_27sdp"
+                                android:layout_height="@dimen/_27sdp"
+                                android:layout_alignParentRight="true"
+                                android:padding="@dimen/_5sdp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/cont_close" />
+
+                            <View
+                                android:id="@+id/vv"
+                                android:layout_width="match_parent"
+                                android:layout_height="0.8pt"
+                                android:layout_marginTop="@dimen/_65sdp"
+                                android:background="@color/gray"
+                                android:visibility="gone" />
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rec_post"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipToPadding="false"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/_65sdp"
+                        android:scrollbars="none"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_post" />
+
+                </LinearLayout>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </LinearLayout>
+
+        <!-- Adding bottom sheet after main content -->
+        <include
+            android:id="@+id/layoutBottomSheet"
+            layout="@layout/bottom_sheet_post" />
+
+        <!--        </androidx.core.widget.NestedScrollView>-->
+
+        <!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>
