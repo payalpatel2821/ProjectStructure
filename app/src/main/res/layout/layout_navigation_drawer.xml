@@ -9,6 +9,7 @@
         android:layout_gravity="end"
         android:background="@color/transparent"
         android:orientation="vertical"
+        tools:visibility="gone"
         tools:context=".ui.activities.MainActivity">
 
         <eightbitlab.com.blurview.BlurView

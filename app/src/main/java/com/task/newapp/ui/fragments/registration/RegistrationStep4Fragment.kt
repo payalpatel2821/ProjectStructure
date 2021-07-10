@@ -18,7 +18,7 @@ import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentRegistrationStep4Binding
 import com.task.newapp.interfaces.OnPageChangeListener
-import com.task.newapp.models.ReponseGetUsername
+import com.task.newapp.models.ResponseGetUsername
 import com.task.newapp.models.ResponseRegister
 import com.task.newapp.models.ResponseVerifyOTP
 import com.task.newapp.ui.activities.MainActivity
@@ -107,6 +107,12 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     private fun callAPIRegister() {
         try {
+            if (!requireActivity().isNetworkConnected()) {
+                requireActivity().showToast(getString(R.string.no_internet))
+                return
+            }
+            openProgressDialog(activity)
+
             val flagMobile = FastSave.getInstance().getBoolean(Constants.typeCode, false)
 
             val builder = MultipartBody.Builder().setType(MultipartBody.FORM)
@@ -133,7 +139,8 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     val bos = ByteArrayOutputStream()
                     if (bmp != null) {
                         bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos)
-                        builder.addFormDataPart(Constants.profile_image, file.name, RequestBody.create(
+                        builder.addFormDataPart(
+                            Constants.profile_image, file.name, RequestBody.create(
                                 MultipartBody.FORM,
 //                                                    bos.toByteArray()
                                 getBytes(inputStream)!!
@@ -147,8 +154,6 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
             //------------------------Call API-------------------------
             val requestBody: RequestBody = builder.build()
 
-            openProgressDialog(activity)
-
             mCompositeDisposable.add(
                 ApiClient.create()
                     .doRegister(requestBody)
@@ -156,15 +161,19 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseRegister>() {
                         override fun onNext(responseRegister: ResponseRegister) {
+                            hideProgressDialog()
                             activity!!.showToast(responseRegister.message)
 
                             if (responseRegister.success == 1) {
-                                FastSave.getInstance().saveObject(Constants.userClass, responseRegister.data.user)
+                                FastSave.getInstance().saveString(Constants.prefToken, responseRegister.data.token)
+                                FastSave.getInstance().saveObject(Constants.prefUser, responseRegister.data.user)
+                                FastSave.getInstance().saveInt(Constants.prefUserId, responseRegister.data.user.id)
+
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
                                 //Main Screen
                                 requireActivity().launchActivity<MainActivity> { }
-                                requireActivity().finish()
+                                requireActivity().finishAffinity()
                             }
                         }
 
@@ -203,6 +212,11 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     private fun callVerifyUsername() {
         try {
+            if (!requireActivity().isNetworkConnected()) {
+                requireActivity().showToast(getString(R.string.no_internet))
+                return
+            }
+
             openProgressDialog(activity)
 
             mCompositeDisposable.add(
@@ -237,6 +251,11 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     private fun getUserNameFromAPI() {
         try {
+            if (!requireActivity().isNetworkConnected()) {
+                requireActivity().showToast(getString(R.string.no_internet))
+                return
+            }
+
             openProgressDialog(activity)
 
             mCompositeDisposable.add(
@@ -244,8 +263,8 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     .getUsername(FastSave.getInstance().getString(Constants.first_name, ""))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<ReponseGetUsername>() {
-                        override fun onNext(responseGetUsername: ReponseGetUsername) {
+                    .subscribeWith(object : DisposableObserver<ResponseGetUsername>() {
+                        override fun onNext(responseGetUsername: ResponseGetUsername) {
                             if (responseGetUsername.success == 1) {
                                 binding.edtAccId.setText(responseGetUsername.data)
                             }

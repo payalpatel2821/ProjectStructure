@@ -66,9 +66,15 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         )
 
         fromForgotPass = requireArguments().getBoolean("fromForgotPass")
-
         binding.txtResend.isEnabled = false
+
+        clearAll()
         return binding.root
+    }
+
+    private fun clearAll() {
+        binding.edtEmailOrMobile.setText("")
+        binding.otpView.setOTP("")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -363,6 +369,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
                             hideProgressDialog()
+                            binding.otpView.setOTP("")
                         }
 
                         override fun onComplete() {

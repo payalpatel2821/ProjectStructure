@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,17 +12,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
-import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentRegistrationStep3Binding
 import com.task.newapp.interfaces.OnPageChangeListener
-import com.task.newapp.models.ResponseVerifyOTP
-import com.task.newapp.ui.activities.RegistrationActivity
-import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.observers.DisposableObserver
-import io.reactivex.schedulers.Schedulers
-import java.util.HashMap
+import com.task.newapp.utils.isNetworkConnected
+import com.task.newapp.utils.showToast
 
 
 class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
@@ -54,7 +48,15 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             false
         )
         // Inflate the layout for this fragment
+
+        clearAll()
+
         return binding.root
+    }
+
+    private fun clearAll() {
+        binding.edtPassword.setText("")
+        binding.edtConfirmPassword.setText("")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

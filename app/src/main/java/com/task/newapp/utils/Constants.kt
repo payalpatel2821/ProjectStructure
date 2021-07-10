@@ -22,6 +22,15 @@ class Constants {
         const val userClass = "userClass"
         const val isLogin = "isLogin"
         const val isFirstTime = "isFirstTime"
+        const val type = "type"
+        const val hook_id = "hook_id"
+        const val is_hook = "is_hook"
+        const val group = "group"
+        const val friend = "friend"
+        const val archive_id = "archive_id"
+        const val is_archive = "is_archive"
+        const val receiver_id = "receiver_id"
+        const val is_secret = "is_secret"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information
@@ -30,7 +39,77 @@ class Constants {
             STEP_4(3)  //set username
         }
 
+        enum class ProfileNavigation() {
+            FROM_FOLLOWERS,
+            FROM_FOLLOWINGS,
+            FROM_PROFILE_VIEWERS,
+            FROM_FRIENDS,
+
+        }
+
+        enum class MessageEvents(val eventName: String) {
+
+            CREATE("create"),
+            ADD_USER("add_user"),
+            REMOVE_USER("remove_user"),
+            CHAT("chat"),
+            DATE("date");
+
+            companion object {
+                fun getMessageEventFromName(name: String): MessageEvents {
+                    for (events in values()) {
+                        if (events.eventName.equals(name)) {
+                            return events
+                        }
+                    }
+                    return MessageEvents.CHAT
+                }
+            }
+
+        }
+
+        enum class MessageType(val type: String) {
+            TYPE_INDICATOR("type_indicator"),
+            LABEL("lbl"),
+            TEXT("text"),
+            MIX("mix"),
+            LOCATION("location"),
+            CONTACT("contact"),
+            AUDIO("audio"),
+            VOICE("voice"),
+            DOCUMENT("document"),
+            STORY("story"),
+            VIDEO("video"),
+            LINK("link"),
+            DATE("date");
+
+            companion object {
+                fun getMessageTypeFromText(text: String): MessageType {
+                    for (obj in values()) {
+                        if (obj.type == text) {
+                            return obj
+                        }
+                    }
+                    return TEXT
+                }
+            }
+        }
+
+        enum class ChatContentType(val contentType: String) {
+            IMAGE("image"),
+            VIDEO("video"),
+            AUDIO("audio"),
+            VOICE("voice"),
+            CONTACT("contact"),
+            CURRENT("current"),
+            PDF("pdf"),
+            DOCUMENT("document"),
+            LOCATION("location")
+
+        }
+
         //-----------------Pref--------------------
+        const val prefUserId = "prefUserId"
         const val prefUser = "prefUser"
         const val prefToken = "prefToken"
         const val prefIsRemember = "prefIsRemember"

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -21,6 +22,7 @@ import com.task.newapp.databinding.FragmentRegistrationStep1Binding
 import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
+import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.showLog
 import com.theartofdev.edmodo.cropper.CropImage
 import lv.chi.photopicker.PhotoPickerFragment
@@ -55,7 +57,15 @@ class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View
             false
         )
         // Inflate the layout for this fragment
+
+        clearAll()
+
         return binding.root
+    }
+
+    private fun clearAll() {
+        binding.edtFirstName.setText("")
+        binding.edtLastName.setText("")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -111,9 +121,22 @@ class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 val resultUri = result.uri
-                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
-                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
-                Log.e("callAPIRegister:result", resultUri.path.toString())
+//                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
+//                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
+                Log.e("callAPI:result", resultUri.path.toString())
+
+                //------------------------Add New------------------------
+
+//                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
+                val filePath: String = SiliCompressor.with(activity).compress(
+                    resultUri.toString(),
+                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg")
+                )
+                Log.e("callAPI:resultPath", filePath)
+
+                Glide.with(requireActivity()).load(filePath).into(binding.ivProfile)
+                FastSave.getInstance().saveString(Constants.profile_image, filePath)
+
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error

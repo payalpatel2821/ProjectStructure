@@ -50,7 +50,7 @@
         <u>Resend Code</u>.
     </string>
     <string name="register">New User ? <u>Register now</u></string>
-    <string name="tab_below_to_get_started">Tab below to get started!</string>
+    <string name="tap_below_to_get_started">Tap below to get started!</string>
     <string name="how_the_public_media">HOW - The Public Media</string>
     <string name="safety_secrecy_simplicity">Safety.Secrecy.Simplicity.</string>
     <string name="powered_by">Powered by</string>
@@ -102,7 +102,16 @@
     <string name="friends_in_common">Friends in common</string>
     <string name="block">Block</string>
     <string name="report">Report</string>
-
+    <string name="chats">Chats</string>
+    <string name="hook">Hook</string>
+    <string name="clear">Clear</string>
+    <string name="archive">Archive</string>
+    <string name="all_of_your_chat_are_archived">All of your chat are archived.</string>
+    <string name="icon_to_start_new_chat">icon to start new chat.</string>
+    <string name="tap_the">Tap the</string>
+    <string name="broadcast_lists">Broadcast Lists</string>
+    <string name="archive_chat">Archive Chat</string>
+    <string name="unhook">Unhook</string>
 
 
 </resources>
