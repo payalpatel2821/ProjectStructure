@@ -339,7 +339,7 @@
                 android:layout_height="@dimen/_50sdp"
                 android:layout_below="@+id/rl_first"
                 android:scaleType="centerCrop"
-                android:src="@drawable/shadowpost"
+                android:src="@drawable/shadowpostitem"
                 app:tint="@color/black" />
 
         </RelativeLayout>

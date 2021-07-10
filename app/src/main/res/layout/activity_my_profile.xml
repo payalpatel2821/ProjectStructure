@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/black">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -14,6 +15,8 @@
                 android:id="@+id/iv_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
                 android:src="@drawable/logo" />
 
             <ImageView
@@ -21,7 +24,9 @@
                 android:layout_width="@dimen/_50sdp"
                 android:layout_height="@dimen/_50sdp"
                 android:src="@drawable/ic_back"
-                android:padding="@dimen/_17sdp"/>
+                android:padding="@dimen/_17sdp"
+                app:tint="@color/white"
+                android:onClick="onClick"/>
 
             <include
                 android:id="@+id/layout_content_myprofile"

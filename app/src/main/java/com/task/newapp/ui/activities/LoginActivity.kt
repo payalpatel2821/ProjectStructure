@@ -1,5 +1,6 @@
 package com.task.newapp.ui.activities
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -38,7 +39,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
 
         initView()
+        setupKeyboardListener(binding.scrollview) // call in OnCreate or similar
+
     }
+
 
     private fun initView() {
         setRememberMe()
@@ -178,6 +182,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         when {
             binding.edtPassword.text.toString().trim().isEmpty() -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_password)
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
                 requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -185,6 +190,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
             binding.edtPassword.text.toString().length < 6 -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
                 requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -192,6 +198,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
             else -> {
                 binding.inputLayoutPassword.isErrorEnabled = false
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.black))
                 flagPass = true
                 checkAndEnable()
             }
@@ -199,14 +206,17 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         return true
     }
 
+
     private fun validateUserName(): Boolean {
         if (binding.edtUsername.text.toString().trim().isEmpty()) {
-            binding.inputLayoutName.error = getString(R.string.enter_username)
+            binding.inputLayoutName.error = getString(R.string.enter_your_username_or_phone_number)
+            binding.inputLayoutName.endIconDrawable!!.setTint(resources.getColor(R.color.red))
             flagUser = false
             checkAndEnable()
             return false
         } else {
             binding.inputLayoutName.isErrorEnabled = false
+            binding.inputLayoutName.endIconDrawable!!.setTint(resources.getColor(R.color.black))
             flagUser = true
             checkAndEnable()
         }

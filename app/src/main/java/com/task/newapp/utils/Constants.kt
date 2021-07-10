@@ -1,5 +1,7 @@
 package com.task.newapp.utils
 
+import com.task.newapp.R
+
 class Constants {
     companion object {
         const val deviceToken = "c926RJ-JQS62C7bolZsMrq:APA91bF-_8V1mRc-cpuKlTmw2kL7iYIua9HI4uZye76jR1lII7gDZT8HOABpBIubisYO7bNnyDbYNNVYoiX47bwkRODU6vAWJjz9z3wNLBCSni5dyzTjc91xQ3FAWDalu4BwZvA4p0h0"
@@ -25,6 +27,14 @@ class Constants {
         const val profile_image = "profile_image"
         const val isLogin = "isLogin"
         const val isFirstTime = "isFirstTime"
+        const val isVisible = "is_visible"
+        const val nearLocation = "near_location"
+        const val follow_id = "follow_id"
+        const val user_id = "user_id"
+        const val tag_follow = "tag_follow"
+        const val tag_message = "tag_message"
+        const val id = "id"
+        const val title = "title"
         const val type = "type"
         const val hook_id = "hook_id"
         const val is_hook = "is_hook"
@@ -42,13 +52,6 @@ class Constants {
             STEP_4(3)  //set username
         }
 
-        enum class ProfileNavigation() {
-            FROM_FOLLOWERS,
-            FROM_FOLLOWINGS,
-            FROM_PROFILE_VIEWERS,
-            FROM_FRIENDS,
-
-        }
 
         enum class MessageEvents(val eventName: String) {
 
@@ -109,6 +112,19 @@ class Constants {
             DOCUMENT("document"),
             LOCATION("location")
 
+        }
+
+        enum class ProfileNavigation(val fromname: String, val title: Int) {
+            FROM_FOLLOWINGS("following", R.string.following),
+            FROM_FOLLOWERS("follower", R.string.followers),
+            FROM_PROFILE_VIEWS("profile_view", R.string.profile_views),
+            FROM_FRIENDS("friend", R.string.friends);
+        }
+
+        enum class PostNavigation(val flag : String,val title:Int){
+            FROM_POST("post",R.string.my_post),
+            FROM_TAGGED_POST("tag_post",R.string.tagged_posts),
+            FROM_SAVED_POST("save_post",R.string.saved_posts)
         }
 
         //-----------------Pref--------------------

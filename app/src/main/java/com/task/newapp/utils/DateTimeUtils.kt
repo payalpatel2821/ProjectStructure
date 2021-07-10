@@ -1,5 +1,6 @@
 package com.task.newapp.utils
 
+import android.os.Build
 import android.text.TextUtils
 import android.text.format.DateFormat
 import android.text.format.Time
@@ -7,6 +8,7 @@ import android.util.Log
 import com.task.newapp.App
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -520,7 +522,7 @@ class DateTimeUtils private constructor() {
             formattedPattern = formattedPattern
                 .replace("h", "HH")
                 .replace("K", "HH")
-                .replace(" a".toRegex(), "")
+//                .replace(" a".toRegex(), "")
         }
 
         return SimpleDateFormat(formattedPattern, Locale.getDefault())
@@ -583,4 +585,12 @@ class DateTimeUtils private constructor() {
     fun Calendar.isSameYear(other: Calendar): Boolean {
         return get(Calendar.YEAR) == other.get(Calendar.YEAR)
     }
+
+    fun getLongFromDateString(date : String, format:SimpleDateFormat): Long{
+        val parseDate: Date = format.parse(date)
+        val milliseconds = parseDate.time
+        return milliseconds
+    }
+
+
 }

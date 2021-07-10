@@ -4,13 +4,21 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
@@ -38,6 +46,7 @@ import java.io.InputStream
 
 class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
+    private var flagChangeUsername: Boolean = false
     private lateinit var binding: FragmentRegistrationStep4Binding
     private lateinit var onPageChangeListener: OnPageChangeListener
     private val mCompositeDisposable = CompositeDisposable()
@@ -67,12 +76,27 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
+    }
+
+    private fun initView() {
+        setupKeyboardListener(binding.scrollview)
         binding.edtAccId.isEnabled = false
         binding.ivCopy.setOnClickListener(this)
         binding.tvChangeUsername.setOnClickListener(this)
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.btnDone.setOnClickListener(this)
-
+        val strSpannable = binding.tvTerm.text.toSpannable() as SpannableString
+        strSpannable.withClickableSpan(
+            "Terms of Use", onClickListener = (
+                    { requireActivity().showToast("Clicked Terms of Use") }
+                    ))
+        strSpannable.withClickableSpan(
+            "Privacy Policy", onClickListener = (
+                    { requireActivity().showToast("Clicked Privacy Policy") }
+                    ))
+        binding.tvTerm.setText(strSpannable)
+        binding.tvTerm.setMovementMethod(LinkMovementMethod.getInstance());
         getUserNameFromAPI()
     }
 
@@ -89,6 +113,8 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                 binding.edtAccId.isFocusable = true
                 binding.edtAccId.requestFocus()
                 binding.edtAccId.setSelection(binding.edtAccId.text!!.length)
+                binding.btnDone.text = resources.getString(R.string.verify)
+                flagChangeUsername = true
             }
             R.id.tv_back -> {
                 onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
@@ -99,11 +125,22 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     requireActivity().showToast("Please enter username")
                 } else {
                     //check username exists
-                    callVerifyUsername()
+                    if (flagChangeUsername) {
+                        callVerifyUsername()
+                    } else {
+                        if (binding.cbTerm.isChecked){
+                            callAPIRegister()
+                        }else{
+                            requireActivity().showToast(resources.getString(R.string.termmessage))
+                        }
+
+                    }
+
                 }
             }
         }
     }
+
 
     private fun callAPIRegister() {
         try {
@@ -225,11 +262,12 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseVerifyOTP>() {
                         override fun onNext(responseVerifyOTP: ResponseVerifyOTP) {
-//                            activity!!.showToast(responseVerifyOTP.message)
+                            activity!!.showToast(responseVerifyOTP.message)
 
                             if (responseVerifyOTP.success == 1) {
                                 //Next Screen
-                                callAPIRegister()
+                                flagChangeUsername = false
+                                binding.btnDone.text = resources.getString(R.string.done)
                             }
                         }
 

@@ -78,12 +78,6 @@ class ResetPasswordActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 callAPIResetPassword()
             }
-            R.id.txt_register -> {
-                launchActivity<RegistrationActivity> { }
-            }
-            R.id.txt_forgot_password -> {
-                launchActivity<ForgotPasswordActivity> { }
-            }
             R.id.tv_back -> {
                 finish()
             }
@@ -169,6 +163,7 @@ class ResetPasswordActivity : AppCompatActivity(), View.OnClickListener {
                             if (commonResponse.success == 1) {
                                 //Next Screen
                                 launchActivity<LoginActivity> { }
+                                finishAffinity()
                             }
                         }
 

@@ -67,4 +67,27 @@ interface ApiHelper {
 
     @POST(post_comment)
     fun post_comment(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostComment>
+
+    @GET(get_myprofile_url)
+    fun getMyProfile(@Path("user") user: String): Observable<ResponseMyProfile>
+
+    @POST(get_usersetting_url)
+    fun getUserSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserSetting>
+
+    @POST(get_user_follower_following_url)
+    fun getUserFollowerFollowing(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
+
+    @POST(get_user_profileviewer)
+    fun getUserProfileViwer(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
+
+    @POST(set_user_follow_unfollow)
+    fun setUserFollowUnfollow(@Body hashMap: HashMap<String, Any>): Observable<ResponseFollowUnfollow>
+
+    @POST(set_profile_group_page_friend_post)
+    fun setProfileGroupPageFriendPost(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostList>
+
+    @POST(set_profile_group_page_friend_post)
+    fun getFriendList(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
+
+
 }

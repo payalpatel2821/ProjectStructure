@@ -28,6 +28,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
             R.id.centerImage -> {
                 FastSave.getInstance().saveBoolean(Constants.isFirstTime, false)
                 launchActivity<LoginActivity> { }
+                finish()
             }
         }
     }

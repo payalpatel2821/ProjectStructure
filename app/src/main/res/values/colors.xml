@@ -23,6 +23,8 @@
     <color name="color_overlay">#78ffffff</color>
     <color name="bottomsheet_bg">#F0F0F0</color>
     <color name="green">#0CAE2F</color>
+    <color name="yellow">#ED9A07</color>
+    <color name="gray5">#E6E6E6</color>
     <color name="archive_chat">#FF8080</color>
     <color name="block_chat">#9FA6EC</color>
     <color name="clear_chat">#ECC99F</color>

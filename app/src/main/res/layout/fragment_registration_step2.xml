@@ -14,10 +14,14 @@
             android:id="@+id/layout_back"
             layout="@layout/layout_back_btn" />
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
+            android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none">
+            android:fillViewport="true"
+            android:background="@color/white"
+            android:scrollbars="none"
+            tools:context=".ui.activities.LoginActivity">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,6 +104,7 @@
                             android:gravity="center"
                             android:minWidth="40dip"
                             android:minHeight="33dip"
+                            android:background="@drawable/segment_radio_left"
                             android:text="Mobile"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 
@@ -111,6 +116,7 @@
                             android:button="@null"
                             android:gravity="center"
                             android:minWidth="40dip"
+                            android:background="@drawable/segment_radio_right"
                             android:minHeight="33dip"
                             android:text="Email"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -120,11 +126,16 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_editview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_25sdp">
+                <LinearLayout
                     android:id="@+id/ll_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_25sdp"
                     android:gravity="center"
                     android:orientation="horizontal">
 
@@ -179,13 +190,29 @@
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt_sendcode"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
+                        android:gravity="center"
                         android:fontFamily="@font/bogleregular"
                         android:onClick="onClick"
-                        android:text="Send Code"
+                        android:visibility="gone"
+                        android:text="@string/send_code"
+                        android:textColor="@color/theme_color"
+                        android:textSize="@dimen/_10ssp" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_changeemail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:fontFamily="@font/bogleregular"
+                        android:onClick="onClick"
+                        android:visibility="gone"
+                        android:text="@string/change_email"
                         android:textColor="@color/theme_color"
                         android:textSize="@dimen/_10ssp" />
 
@@ -195,11 +222,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:background="@color/black" />
-
+                </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/ll_verify"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_35sdp"
+                    android:visibility="gone"
                     android:background="@drawable/rect_rounded_gray"
                     android:orientation="vertical">
 
@@ -262,7 +291,7 @@
 
                 </LinearLayout>
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
     </LinearLayout>
 
 </layout>

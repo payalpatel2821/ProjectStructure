@@ -15,13 +15,13 @@ import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.realmDB.clearDatabase
+import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.registration.PostFragment
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.launchActivity
 import com.task.newapp.utils.setBlurLayout
 import com.task.newapp.utils.showToast
-
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -194,7 +194,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             }
             R.id.img_center -> {
-
+//                launchActivity<OtherUserProfileActivity> {  }
+                launchActivity<MyProfileActivity> {  }
             }
         }
     }

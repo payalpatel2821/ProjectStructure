@@ -4,8 +4,10 @@ import `in`.aabhasjindal.otptextview.OTPListener
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +39,7 @@ import java.util.concurrent.TimeUnit
 class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
     var flagMobile = true
-    private lateinit var countDownTimer: CountDownTimer
+    private var countDownTimer: CountDownTimer? = null
     private val mCompositeDisposable = CompositeDisposable()
     private lateinit var onPageChangeListener: OnPageChangeListener
     private lateinit var binding: FragmentRegistrationStep2Binding
@@ -79,10 +81,14 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupKeyboardListener(binding.scrollview)
         binding.edtEmailOrMobile.setHint(R.string.enter_mobile_number)
         binding.segmentText.setOnCheckedChangeListener { group, checkedId ->
+
+            flipAnimation(binding.llEditview)
             binding.edtEmailOrMobile.setText("")
             binding.edtEmailOrMobile.error = null
+            afterClickSwitch()
             when (checkedId) {
                 R.id.rb_mobile -> {
                     flagMobile = true
@@ -119,6 +125,34 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.txtSendcode.setOnClickListener(this)
         binding.txtResend.setOnClickListener(this)
+        binding.txtChangeemail.setOnClickListener(this)
+
+        binding.edtEmailOrMobile.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.txtChangeemail.visibility = GONE
+                if (!flagMobile) {
+                    if (isValidEmail(s.toString().trim())) {
+                        binding.txtSendcode.visibility = VISIBLE
+                    } else {
+                        binding.txtSendcode.visibility = GONE
+                    }
+                } else {
+                    if (isValidPhoneNumber(s.toString().trim())) {
+                        binding.txtSendcode.visibility = VISIBLE
+                    } else {
+                        binding.txtSendcode.visibility = GONE
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
     }
 
     override fun onClick(v: View?) {
@@ -130,8 +164,13 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                     requireActivity().onBackPressed()
                 }
             }
+            R.id.txt_changeemail -> {
+                binding.edtEmailOrMobile.isEnabled = true
+                afterClickSwitch()
+            }
             R.id.txt_sendcode, R.id.txt_resend -> {
 
+                clearOtpNTimer()
                 binding.txtResend.isEnabled = false
 
                 if (binding.edtEmailOrMobile.text.toString().trim().isEmpty()) {
@@ -164,7 +203,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         binding.txtTimer.text = "00:00"
 //        }
 
-        countDownTimer = object : CountDownTimer(60000, 1000) {
+        countDownTimer = object : CountDownTimer(30000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.txtTimer.text = (millisUntilFinished / 1000).toString()
@@ -179,17 +218,15 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
             override fun onFinish() {
                 binding.txtTimer.text = getString(R.string.text_count_down_reset)
 
-                //Enable Again
-                binding.segmentText.isEnabled = true
-                binding.llText.isEnabled = true
-                binding.txtResend.isEnabled = true
+                afterTimerStop()
             }
         }
-        countDownTimer.start()
+        countDownTimer!!.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+
         mCompositeDisposable.clear()
     }
 
@@ -216,10 +253,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                             if (responseSendCode.success == 1) {
                                 startTimer()
-
-                                //Disable
-                                binding.segmentText.isEnabled = false
-                                binding.llText.isEnabled = false
+                                afterSendCode()
                             }
                         }
 
@@ -313,10 +347,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                             if (responseSendCode.success == 1) {
                                 startTimer()
-
-                                //Disable
-                                binding.segmentText.isEnabled = false
-                                binding.llText.isEnabled = false
+                                afterSendCode()
                             }
                         }
 
@@ -335,6 +366,47 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         }
     }
 
+    fun afterSendCode() {
+        binding.rbEmail.isEnabled = false
+        binding.rbMobile.isEnabled = false
+
+        binding.txtSendcode.visibility = GONE
+        binding.txtChangeemail.visibility = VISIBLE
+        binding.llVerify.visibility = VISIBLE
+
+        binding.edtEmailOrMobile.isEnabled = false
+        binding.txtChangeemail.isEnabled = false
+    }
+
+    fun afterTimerStop() {
+        binding.rbEmail.isEnabled = true
+        binding.rbMobile.isEnabled = true
+        binding.txtChangeemail.isEnabled = true
+        binding.txtResend.isEnabled = true
+    }
+
+    fun afterClickSwitch() {
+        binding.llVerify.visibility = GONE
+        binding.edtEmailOrMobile.isEnabled = true
+        binding.txtChangeemail.visibility = GONE
+        clearOtpNTimer()
+//        binding.txtSendcode.visibility = VISIBLE
+    }
+
+    fun clearOtpNTimer(){
+        binding.otpView.setOTP("")
+        countDownTimer?.let {
+            countDownTimer!!.cancel()
+        }
+    }
+
+    override fun onDetach() {
+        countDownTimer?.let {
+            countDownTimer!!.cancel()
+        }
+        super.onDetach()
+    }
+
     private fun callAPIVerifyOTPNormal(otp: String) {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
@@ -351,8 +423,6 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseVerifyOTP>() {
                         override fun onNext(responseVerifyOTP: ResponseVerifyOTP) {
-                            activity!!.showToast(responseVerifyOTP.message)
-
                             if (responseVerifyOTP.success == 1) {
                                 //Next Screen
                                 if (context is RegistrationActivity) {
@@ -363,6 +433,8 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                                         onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
                                     }
                                 }
+                            } else {
+                                activity!!.showToast(responseVerifyOTP.message)
                             }
                         }
 

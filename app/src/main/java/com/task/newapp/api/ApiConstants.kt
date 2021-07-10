@@ -18,3 +18,11 @@ const val add_postlikeunlike = "/api_v1/post_like"
 const val post_comment = "/api_v1/post_comment"
 const val postSaveUnsave = "/api_v1/post-save"
 const val allpostcomment = "/api_v1/post-comment-detail"
+const val get_myprofile_url = "/api_v1/view_profile/{user}"
+const val get_usersetting_url = "/api_v1/user-settings"
+const val get_user_follower_following_url = "/api_v1/user-follower-following"
+const val get_user_profileviewer = "/api_v1/profile_view_list"
+const val set_user_follow_unfollow = "/api_v1/follow"
+const val set_profile_group_page_friend_post = "/api_v1/profile_group_page_friend_post"
+
+

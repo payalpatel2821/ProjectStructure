@@ -17,6 +17,7 @@ import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
 import com.task.newapp.utils.isNetworkConnected
+import com.task.newapp.utils.setupKeyboardListener
 import com.task.newapp.utils.showToast
 
 
@@ -61,6 +62,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupKeyboardListener(binding.scrollview)
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.btnNext.setOnClickListener(this)
 
@@ -92,6 +94,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
         when {
             binding.edtPassword.text.toString().trim().isEmpty() -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_password)
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
                 requestFocus(binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -99,6 +102,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             }
             binding.edtPassword.text.toString().length < 6 -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
                 requestFocus(binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -106,6 +110,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             }
             else -> {
                 binding.inputLayoutPassword.isErrorEnabled = false
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.black))
                 flagPass = true
                 checkAndEnable()
             }
