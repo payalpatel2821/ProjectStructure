@@ -100,7 +100,7 @@ class RippleBackground : RelativeLayout {
         override fun onDraw(canvas: Canvas) {
             //val radius = Math.min(width, height) / 4
             // canvas.drawCircle(radius.toFloat(), radius.toFloat(), radius - rippleStrokeWidth, paint!!)
-            canvas.drawRoundRect(RectF(0F, 0F, 200F, 200F), 0F, 0F, paint!!)
+//            canvas.drawRoundRect(RectF(0F, 0F, 200F, 200F), 10F, 10F, paint!!)
 
 //            canvas.drawRoundRect(
 ////                RectF(
@@ -111,7 +111,7 @@ class RippleBackground : RelativeLayout {
 ////                )
 //            , 5F, 5F, paint!!
 //            )
-            //canvas.drawRect(0F, 0F, 400F, 400F, paint!!)
+            canvas.drawRect(0F, 0F, 200F, 200F, paint!!)
         }
 
         init {

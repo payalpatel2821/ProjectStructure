@@ -11,7 +11,7 @@ class SegmentedRadioGroup : RadioGroup {
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        changeButtonsImages()
+       // changeButtonsImages()
     }
 
     private fun changeButtonsImages() {

@@ -3,6 +3,7 @@ package com.task.newapp.ui.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.task.newapp.ui.fragments.registration.RegistrationStep2Fragment
+import com.task.newapp.utils.setupKeyboardListener
 
 class ForgotPasswordActivity : AppCompatActivity() {
 
@@ -20,6 +21,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
 
             supportFragmentManager.beginTransaction()
                 .add(android.R.id.content, registrationStep2Fragment).commit();
+
         }
 
     }

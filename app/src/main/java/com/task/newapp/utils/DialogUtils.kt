@@ -38,6 +38,7 @@ class DialogUtils {
         })
     }
 
+
     interface DialogCallbacks {
         fun onPositiveButtonClick()
         fun onNegativeButtonClick()
@@ -46,9 +47,8 @@ class DialogUtils {
 
     enum class UnfollowDialogActionName(val value: String) {
         CANCEL("Cancel"),
-        UNFOLLOW("Unfollow")
+        UNFOLLOW("Unfollow");
     }
-
     enum class PostDialogActionName(val value: String) {
         REPORT("Report"),
         COPYLINK("Copy Link"),

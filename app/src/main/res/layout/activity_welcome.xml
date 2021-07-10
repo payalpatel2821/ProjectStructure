@@ -19,69 +19,44 @@
             android:textAlignment="center"
             android:textColor="@color/white" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:minHeight="@dimen/_200sdp">
-
-            <com.task.newapp.utils.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:rb_color="@color/white"
-                app:rb_duration="3500"
-                app:rb_radius="30dp"
-                app:rb_rippleAmount="6"
-                app:rb_scale="5">
+                android:layout_height="@dimen/_200sdp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:minHeight="@dimen/_100sdp">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/centerImage"
-                    android:layout_width="@dimen/_70sdp"
-                    android:layout_height="@dimen/_70sdp"
-                    android:layout_centerInParent="true"
-                    android:onClick="onClick"
-                    android:background="@drawable/rect_rounded_bg_white"
-                    android:padding="@dimen/_10sdp"
-                    android:src="@drawable/logo" />
+                <com.task.newapp.utils.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:rb_color="@color/white"
+                    app:rb_duration="3500"
+                    app:rb_radius="30dp"
+                    app:rb_rippleAmount="5"
+                    app:rb_scale="3">
 
-            </com.task.newapp.utils.RippleBackground>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/centerImage"
+                        android:layout_width="@dimen/_70sdp"
+                        android:layout_height="@dimen/_70sdp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/rect_rounded_bg_white"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:src="@drawable/logo" />
 
-        </LinearLayout>
+                </com.task.newapp.utils.RippleBackground>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/styleTextViewLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/how_the_public_media"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            style="@style/styleTextViewNormal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:text="@string/safety_secrecy_simplicity"
-            android:textAlignment="center"
-            android:textColor="@color/white" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/_35sdp"
-            android:gravity="bottom|center"
-            android:orientation="vertical">
+            </LinearLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewSmall"
+                style="@style/styleTextViewLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="bottom|center"
-                android:text="@string/powered_by"
+                android:text="@string/how_the_public_media"
+                android:textAlignment="center"
                 android:textColor="@color/white" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -89,10 +64,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:text="@string/safety_secrecy_simplicity"
+                android:textAlignment="center"
+                android:textColor="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="bottom|center"
-                android:text="@string/adbiz_directory"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewSmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom|center"
+                    android:text="@string/powered_by"
+                    android:textColor="@color/white" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="bottom|center"
+                    android:text="@string/adbiz_directory"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/_20sdp" />
+
+
         </LinearLayout>
+
     </LinearLayout>
 </layout>

@@ -1,93 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="@dimen/_15sdp"
+        android:background="@color/white"
         tools:context=".ui.fragments.registration.RegistrationStep1Fragment">
 
         <include
             android:id="@+id/layout_back"
             layout="@layout/layout_back_btn" />
 
-        <LinearLayout
+        <ScrollView
+            android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_25sdp"
-                android:text="@string/create_your_nickname"
-                android:textColor="@color/black" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/choose_a_default_name_or_use_your_creativity" />
-
+            android:background="@color/white"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_100sdp"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_25sdp"
+                    android:text="@string/create_your_nickname"
+                    android:textColor="@color/black" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose_a_default_name_or_use_your_creativity" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/_100sdp"
+                    android:orientation="vertical">
 
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/edt_acc_id"
-                        style="@style/styleTextViewLarge"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edt_acc_id"
+                            style="@style/styleTextViewLarge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            android:imeOptions="actionDone"
+                            android:maxLength="18"
+                            android:text="Gohil5005"
+                            android:textColor="@color/theme_color" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_copy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_10sdp"
+                            android:onClick="onClick"
+                            android:src="@drawable/ic_copy" />
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_change_username"
+                        style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:text="Gohil5005"
-                        android:textColor="@color/theme_color" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:id="@+id/iv_copy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_10sdp"
                         android:onClick="onClick"
-                        android:src="@drawable/ic_copy" />
+                        android:text="@string/change_username" />
 
                 </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv_change_username"
-                    style="@style/styleTextViewSmall"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:onClick="onClick"
-                    android:text="@string/change_username" />
+                    android:layout_marginTop="@dimen/_60sdp"
+                    android:layout_marginRight="@dimen/_15sdp"
+                    android:layout_marginLeft="@dimen/_15sdp">
+
+                    <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id="@+id/cb_term"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/theme_color"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_term"
+                        style="@style/styleTextViewSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/term_condition"
+                        android:textColor="@color/gray2" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_done"
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_60sdp"
+                    android:background="@drawable/btn_rect_rounded_bg"
+                    android:gravity="center"
+                    android:text="@string/done"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_done"
-                style="@style/styleTextViewNormal"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_marginTop="@dimen/_100sdp"
-                android:background="@drawable/btn_rect_rounded_bg"
-                android:gravity="center"
-                android:text="@string/done"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 </layout>

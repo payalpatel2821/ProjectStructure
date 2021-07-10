@@ -14,9 +14,12 @@
             android:id="@+id/layout_back"
             layout="@layout/layout_back_btn" />
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
+            android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:background="@color/white"
             android:scrollbars="none">
 
             <LinearLayout
@@ -43,6 +46,9 @@
                     android:layout_height="@dimen/_45sdp"
                     android:layout_marginTop="@dimen/_45sdp"
                     android:theme="@style/EditTextThemeOverlay"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
                     app:passwordToggleDrawable="@drawable/selector_show_hide_password"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/black"
@@ -65,6 +71,9 @@
                     android:layout_height="@dimen/_45sdp"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:theme="@style/EditTextThemeOverlay"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
                     app:passwordToggleDrawable="@drawable/selector_show_hide_password"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/black">
@@ -91,7 +100,7 @@
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
     </LinearLayout>
 

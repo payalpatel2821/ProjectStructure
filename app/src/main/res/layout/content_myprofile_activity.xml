@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     app:behavior_hideable="true"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -38,10 +38,12 @@
                     android:orientation="vertical" />
 
                 <LinearLayout
+                    android:id="@+id/ll_following"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="onClick"
                     android:orientation="vertical">
 
                     <TextView
@@ -62,10 +64,12 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_follower"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="onClick"
                     android:orientation="vertical">
 
                     <TextView
@@ -86,10 +90,12 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_profile_viewer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="onClick"
                     android:orientation="vertical">
 
                     <TextView
@@ -117,16 +123,17 @@
                     android:orientation="vertical" />
 
             </LinearLayout>
+
         </RelativeLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="-20dp"
             android:background="@drawable/bg_bottomsheet"
             android:backgroundTint="@color/bottomsheet_bg"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
+            android:padding="@dimen/_5sdp">
 
             <View
                 android:id="@+id/viewaa"
@@ -161,13 +168,15 @@
                             android:text="Prinsa adbiz" />
 
                         <ImageView
-                            android:layout_width="@dimen/_20sdp"
+                            android:layout_width="@dimen/_40sdp"
                             android:layout_height="@dimen/_20sdp"
                             android:layout_gravity="center"
                             android:layout_marginLeft="@dimen/_10sdp"
                             android:padding="@dimen/_2sdp"
                             android:src="@drawable/ic_edit"
-                            app:tint="@color/theme_color" />
+                            android:onClick="onClick"
+                            android:visibility="gone"
+                            style="@style/styleImageThemeColorTint" />
 
                     </LinearLayout>
 
@@ -192,10 +201,10 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_15sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
                         app:cardBackgroundColor="@color/white"
                         app:cardCornerRadius="@dimen/_10sdp"
-                        app:cardElevation="@dimen/_1sdp"
+                        app:cardElevation="0dp"
                         app:cardUseCompatPadding="true">
 
                         <LinearLayout
@@ -203,18 +212,43 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="@dimen/_5sdp">
-
                             <RelativeLayout
+                                android:id="@+id/iv_edit_profile"
                                 android:layout_width="match_parent"
+                                android:gravity="center_vertical"
+                                android:onClick="onClick"
                                 android:layout_height="wrap_content">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_hide"
+                                    android:drawableLeft="@drawable/ic_edit_profile"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
+                                    android:padding="@dimen/_5sdp"
+                                    android:textSize="@dimen/_14ssp"
+                                    android:text="@string/edit_my_profile" />
+
+                            </RelativeLayout>
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@color/gray"
+                                android:visibility="visible"/>
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    style="@style/styleTextViewNormal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:drawableLeft="@drawable/ic_visibility"
+                                    android:drawablePadding="@dimen/_10sdp"
+                                    android:gravity="center"
+                                    android:layout_centerVertical="true"
                                     android:padding="@dimen/_5sdp"
                                     android:textSize="@dimen/_14ssp"
                                     android:text="@string/visibility" />
@@ -223,23 +257,26 @@
                                     android:id="@+id/switch_visibility"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
                                     android:layout_alignParentRight="true" />
                             </RelativeLayout>
 
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
-                                android:background="@color/gray" />
+                                android:background="@color/gray"
+                                android:visibility="gone"/>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:visibility="gone">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_hide"
+                                    android:drawableLeft="@drawable/ic_nearby"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
                                     android:padding="@dimen/_5sdp"
@@ -251,23 +288,26 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true" />
+
                             </RelativeLayout>
 
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
-                                android:background="@color/gray" />
+                                android:background="@color/gray"
+                                android:visibility="gone"/>
 
                             <RelativeLayout
                                 android:id="@+id/rl_performance"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:visibility="gone">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_hide"
+                                    android:drawableLeft="@drawable/ic_performance"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
                                     android:padding="@dimen/_5sdp"
@@ -278,16 +318,14 @@
 
                         </LinearLayout>
 
-
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
                         app:cardBackgroundColor="@color/white"
                         app:cardCornerRadius="@dimen/_10sdp"
-                        app:cardElevation="@dimen/_1sdp"
+                        app:cardElevation="0dp"
                         app:cardUseCompatPadding="true">
 
                         <LinearLayout
@@ -302,11 +340,11 @@
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableRight="@drawable/ic_back"
-                                android:drawablePadding="@dimen/_10sdp"
+                                android:drawableRight="@drawable/ic_next"
                                 android:drawableTint="@color/black"
                                 android:padding="@dimen/_5sdp"
                                 android:textSize="@dimen/_14ssp"
+                                android:onClick="onClick"
                                 android:text="@string/my_post" />
 
                             <View
@@ -319,11 +357,12 @@
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableRight="@drawable/ic_back"
+                                android:drawableRight="@drawable/ic_next"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:drawableTint="@color/black"
                                 android:padding="@dimen/_5sdp"
                                 android:textSize="@dimen/_14ssp"
+                                android:onClick="onClick"
                                 android:text="@string/tagged_posts" />
 
                             <View
@@ -336,11 +375,12 @@
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableRight="@drawable/ic_back"
+                                android:drawableRight="@drawable/ic_next"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:drawableTint="@color/black"
                                 android:padding="@dimen/_5sdp"
                                 android:textSize="@dimen/_14ssp"
+                                android:onClick="onClick"
                                 android:text="@string/saved_posts" />
 
 
@@ -350,10 +390,9 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
                         app:cardBackgroundColor="@color/white"
                         app:cardCornerRadius="@dimen/_10sdp"
-                        app:cardElevation="@dimen/_1sdp"
+                        app:cardElevation="0dp"
                         app:cardUseCompatPadding="true">
 
                         <LinearLayout
@@ -382,7 +421,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:drawableRight="@drawable/ic_back"
+                                    android:drawableRight="@drawable/ic_next"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:drawableTint="@color/black"
                                     android:padding="@dimen/_5sdp"
@@ -394,11 +433,11 @@
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
 
-
                             <RelativeLayout
                                 android:id="@+id/rl_pages"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:onClick="onClick">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
@@ -414,7 +453,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:drawableRight="@drawable/ic_back"
+                                    android:drawableRight="@drawable/ic_next"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:drawableTint="@color/black"
                                     android:padding="@dimen/_5sdp"
@@ -430,7 +469,8 @@
                             <RelativeLayout
                                 android:id="@+id/rl_frds"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:onClick="onClick">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
@@ -446,7 +486,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:drawableRight="@drawable/ic_back"
+                                    android:drawableRight="@drawable/ic_next"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:drawableTint="@color/black"
                                     android:padding="@dimen/_5sdp"
@@ -455,7 +495,9 @@
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
+
                 </LinearLayout>
+
             </androidx.core.widget.NestedScrollView>
         </androidx.appcompat.widget.LinearLayoutCompat>
     </LinearLayout>

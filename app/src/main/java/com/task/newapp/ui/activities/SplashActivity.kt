@@ -22,7 +22,7 @@ class SplashActivity : AppCompatActivity() {
             if (FastSave.getInstance().getBoolean(Constants.isFirstTime, true)) {
                 launchActivity<WelcomeActivity> {}
             } else {
-                if (FastSave.getInstance().getBoolean(Constants.isLogin, true)) {
+                if (FastSave.getInstance().getBoolean(Constants.isLogin, false)) {
 
                     launchActivity<MainActivity> {}
                 } else {

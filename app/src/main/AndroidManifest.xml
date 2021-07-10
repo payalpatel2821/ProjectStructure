@@ -25,7 +25,8 @@
         <activity
             android:name=".ui.activities.ForgotPasswordActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.SplashActivity"
             android:screenOrientation="portrait"
@@ -43,11 +44,13 @@
         <activity
             android:name=".ui.activities.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.RegistrationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait"
@@ -62,6 +65,18 @@
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".ui.activities.profile.MyProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.profile.PostListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.profile.FollowesFollowingListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.profile.PageListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
         <activity

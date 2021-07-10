@@ -1,0 +1,75 @@
+package com.task.newapp.models
+
+data class ResponseMyProfile(
+    val `data`: MyProfileData,
+    val message: String,
+    val success: Int
+) {
+
+    data class MyProfileData(
+        val about: String,
+        val account_id: String,
+        val age: String,
+        val anniversary: Any,
+        val app_version: String,
+        val blood_gp: String,
+        val count_common_friends: Int,
+        val count_common_groups: Int,
+        val count_common_pages: Int,
+        val count_post: Int,
+        val created_at: String,
+        val date_of_birth: String,
+        val del_request: Int,
+        val delete_reason: Any,
+        val device_arn: String,
+        val device_token: String,
+        val device_type: String,
+        val email: String,
+        val expired_at: String,
+        val first_name: String,
+        val flag: String,
+        val followers: String,
+        val following: String,
+        val forgot_token: String,
+        val gender: String,
+        val id: Int,
+        val is_block: Int,
+        val is_blocked_by_admin: Int,
+        val is_deleted: Int,
+        val is_follow: Boolean,
+        val is_friend: Boolean,
+        val is_last_seen: Int,
+        val is_login: Int,
+        val is_online: Int,
+        val is_reported_by_admin: Int,
+        val is_verified_email: Int,
+        val last_logout_time: Any,
+        val last_name: String,
+        val last_seen_time: String,
+        val latitude: String,
+        val location: Any,
+        val longitude: String,
+        val mobile: Any,
+        val profession: Any,
+        val profile_image: String,
+        val profile_views: Int,
+        val request_date: String,
+        val secret_password: String,
+        val status: String,
+        val tag_post_count: Int,
+        val u_name: String,
+        val updated_at: String,
+        val usersetting: MyProfileUsersetting
+    ) {
+        data class MyProfileUsersetting(
+            val about_seen: String,
+            val id: Int,
+            val is_visible: Int,
+            val last_seen: String,
+            val near_location: Int,
+            val notification_tone_id: Int,
+            val sound: String,
+            val story_view: String
+        )
+    }
+}

@@ -41,7 +41,7 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
             }
             Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS -> {
             }
-            Constants.Companion.ProfileNavigation.FROM_PROFILE_VIEWERS -> {
+            Constants.Companion.ProfileNavigation.FROM_PROFILE_VIEWS -> {
             }
             Constants.Companion.ProfileNavigation.FROM_FRIENDS -> {
             }
@@ -67,4 +67,5 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
         else
             onPageChange(binding.vpRegistration.currentItem - 1)
     }
+
 }

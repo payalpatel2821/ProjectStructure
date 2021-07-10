@@ -1,5 +1,8 @@
 package com.task.newapp.utils
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
@@ -9,20 +12,27 @@ import android.graphics.BlendMode
 import android.graphics.BlendModeColorFilter
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
-import android.text.TextUtils
+import android.text.*
+import android.text.style.ClickableSpan
+import android.text.style.StyleSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatEditText
@@ -35,6 +45,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
 import eightbitlab.com.blurview.BlurView
+import java.time.format.TextStyle
+import java.util.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -178,6 +190,32 @@ fun hideSoftKeyboard(mActivity: Activity) {
         e.printStackTrace()
     }
 }
+
+/**
+ * scroll view when soft keyboard is open
+ *
+ * @param view enter scrollview
+ */
+fun setupKeyboardListener(view: ScrollView) {
+    view.viewTreeObserver.addOnGlobalLayoutListener {
+        val r = Rect()
+        view.getWindowVisibleDisplayFrame(r)
+        if (Math.abs(view.rootView.height - (r.bottom - r.top)) > 100) { // if more than 100 pixels, its probably a keyboard...
+            onKeyboardShow(view)
+        }
+    }
+}
+
+fun onKeyboardShow(view: ScrollView) {
+    view.scrollToBottomWithoutFocusChange()
+}
+
+fun ScrollView.scrollToBottomWithoutFocusChange() { // Kotlin extension to scrollView
+    val lastChild = getChildAt(childCount - 1)
+    val bottom = lastChild.bottom + paddingBottom
+    val delta = bottom - (scrollY + height)
+    smoothScrollBy(0, delta)
+}
 //    /**
 //    open dialog
 //     */
@@ -291,6 +329,40 @@ fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
         .setHasFixedTransformationMatrix(true)
 }
 
+/**
+ * Check mobile number valid or not
+ *
+ * @param phone enter mobile number
+ * @return
+ */
+fun isValidPhoneNumber(target: CharSequence): Boolean {
+    return if (target.length != 10) {
+        false
+    } else {
+        Patterns.PHONE.matcher(target).matches()
+    }
+}
+
+/**
+ * Flip animation of View
+ *
+ * @param view Enter view which you have to flip
+ */
+fun flipAnimation(view: View) {
+    val oa1 = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0f)
+    val oa2 = ObjectAnimator.ofFloat(view, "scaleX", 0f, 1f)
+    oa1.interpolator = DecelerateInterpolator()
+    oa2.interpolator = AccelerateDecelerateInterpolator()
+    oa1.duration = 300
+    oa2.duration = 300
+    oa1.addListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator?) {
+            super.onAnimationEnd(animation)
+            oa2.start()
+        }
+    })
+    oa1.start()
+}
 fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
     val user = getUserByUserId(userId)
     val message = ""
@@ -424,4 +496,65 @@ fun AppCompatEditText.setUnderlineColor(color: Int) {
             setColorFilter(color, PorterDuff.Mode.SRC_IN)
         }
     }
+}
+/**
+ * get first character from string
+ *
+ * @param name
+ * @return
+ */
+fun firstCharacter(name: String): String? {
+    val words = name.split(" ").toTypedArray()
+    return if (words.size >= 2) {
+        var first = if (words[0].toString().isNotEmpty()) {
+            words[0].first().toString().toUpperCase(Locale.ROOT)
+        } else {
+            ""
+        }
+        var last = if (words[1].toString().isNotEmpty()) {
+            words[1].first().toString().toUpperCase(Locale.ROOT)
+        } else {
+            ""
+        }
+        first + last
+    } else name.first().toString().toUpperCase(Locale.ROOT)
+}
+
+/**
+ * Username Validation
+ */
+var blockCharacterSet: String? = "%&\"<>\\'₹.\$*()-+=!:;?,{}[]|"
+
+var filter: InputFilter? = InputFilter { source, start, end, dest, dstart, dend ->
+    if (source != null && blockCharacterSet!!.contains("" + source)) {
+        ""
+    } else null
+}
+
+/**
+ * Helps to set clickable part in text.
+ *
+ * Don't forget to set android:textColorLink="@color/link" (click selector) and
+ * android:textColorHighlight="@color/window_background" (background color while clicks)
+ * in the TextView where you will use this.
+ */
+fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: () -> Unit): SpannableString {
+    val clickableSpan = object : ClickableSpan() {
+        override fun onClick(widget: View) = onClickListener.invoke()
+        override fun updateDrawState(ds: TextPaint) {
+            super.updateDrawState(ds)
+            ds.color = Color.BLACK
+           // ds.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
+
+            ds.isUnderlineText = false
+        }
+    }
+    val clickablePartStart = indexOf(clickablePart)
+    setSpan(
+        clickableSpan,
+        clickablePartStart,
+        clickablePartStart + clickablePart.length,
+        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+    return this
 }
