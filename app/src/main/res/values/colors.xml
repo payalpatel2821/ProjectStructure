@@ -13,11 +13,20 @@
     <color name="white">#FFFFFFFF</color>
     <color name="theme_color">#6CAEC4</color>
     <color name="gray">#AAA1A1</color>
+    <color name="gray1">#EEF1F5</color> <!--search bg color-->
+    <color name="gray2">#858585</color> <!--chat text color-->
+    <color name="gray3">#A0A0A0</color> <!--chat time text color-->
+    <color name="gray4">#666666</color> <!--overflow menu icon color-->
     <color name="darkgray">#8F8383</color>
-    <color name="overlayColor">#78ffffff</color>
     <color name="white_opacity">#D9FFFFFF</color>
     <color name="ripple_Color">#0099CC</color>
-    <color name="colorOverlay">#78ffffff</color>
+    <color name="color_overlay">#78ffffff</color>
     <color name="bottomsheet_bg">#F0F0F0</color>
+    <color name="green">#0CAE2F</color>
+    <color name="archive_chat">#FF8080</color>
+    <color name="block_chat">#9FA6EC</color>
+    <color name="clear_chat">#ECC99F</color>
+    <color name="delete_chat">#B22225</color>
+    <color name="hook_chat">#ECA89F</color>
 
 </resources>

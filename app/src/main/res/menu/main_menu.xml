@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.home.activities.TransactionSearchActivity">
+
+    <item
+        android:id="@+id/action_secret_chat"
+        android:icon="@drawable/ic_secret_chat"
+        android:iconTint="@color/black"
+        android:title="Secret Chat"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_emergency_alert"
+        android:icon="@drawable/ic_emargency"
+        android:iconTint="@color/black"
+        android:title="Emergency Alert"
+        app:showAsAction="never" />
+</menu>

@@ -20,9 +20,16 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.task.newapp.R
+import com.task.newapp.realmDB.getUserByUserId
 import eightbitlab.com.blurview.BlurView
 
 
@@ -142,7 +149,7 @@ fun hideSoftKeyboard(mActivity: Activity, view: View) {
 }
 
 fun Context.getDisplayMatrix(): DisplayMetrics {
-   return resources.displayMetrics
+    return resources.displayMetrics
 }
 
 /**
@@ -277,3 +284,105 @@ fun setBlurLayout(activity: Activity?, root: ViewGroup, blurView: BlurView) {
         .setHasFixedTransformationMatrix(true)
 }
 
+fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
+    val user = getUserByUserId(userId)
+    val message = ""
+    if (user != null) {
+        if (Constants.Companion.MessageEvents.getMessageEventFromName(event) == Constants.Companion.MessageEvents.CREATE) {
+            return if (isCurrentUser)
+                "You $messageText"
+            else
+                "${user.first_name} ${user.last_name} $messageText"
+
+        } else if (Constants.Companion.MessageEvents.getMessageEventFromName(event) == Constants.Companion.MessageEvents.ADD_USER) {
+            return "${user.first_name} ${user.last_name} added you"
+        }
+    }
+    return message
+}
+
+fun getFileNameFromURLString(URLString: String): String {
+    return URLString.substring(URLString.lastIndexOf('/') + 1);
+
+}
+
+fun convertDurationStringToSeconds(duration: String): String {
+    var duration = "0"
+    val arrDuration = duration?.split(":")
+    var totalSec = 0
+    if (arrDuration.isNotEmpty()) {
+        val min = arrDuration[0].toInt()
+        val sec = arrDuration[1].toInt()
+        totalSec = (min * 60) + sec
+        return totalSec.toString()
+    } else {
+        return duration
+    }
+}
+
+/**
+ * Loads image with Glide into the [ImageView].
+ *
+ * @param url url to load
+ * @param previousUrl url that already loaded in this target. Needed to prevent white flickering.
+ * @param round if set, the image will be round.
+ * @param cornersRadius the corner radius to set. Only used if [round] is `false`(by default).
+ * @param crop if set to `true` then [CenterCrop] will be used. Default is `false` so [FitCenter] is used.
+ */
+@SuppressLint("CheckResult")
+fun ImageView.load(
+    url: String,
+    previousUrl: String? = null,
+    round: Boolean = false,
+    cornersRadius: Int = 0,
+    crop: Boolean = false
+) {
+
+    val requestOptions = when {
+        round -> RequestOptions.circleCropTransform()
+
+        cornersRadius > 0 -> {
+            RequestOptions().transforms(
+                if (crop) CenterCrop() else FitCenter(),
+                RoundedCorners(cornersRadius)
+            )
+        }
+
+        else -> null
+    }
+
+    Glide
+        .with(context)
+        .load(url)
+        .let {
+            // Apply request options
+            if (requestOptions != null) {
+                it.apply(requestOptions)
+            } else {
+                it
+            }
+        }
+        .let {
+            // Workaround for the white flickering.
+            // See https://github.com/bumptech/glide/issues/527
+            // Thumbnail changes must be the same to catch the memory cache.
+            if (previousUrl != null) {
+                it.thumbnail(
+                    Glide
+                        .with(context)
+                        .load(previousUrl)
+                        .let {
+                            // Apply request options
+                            if (requestOptions != null) {
+                                it.apply(requestOptions)
+                            } else {
+                                it
+                            }
+                        }
+                )
+            } else {
+                it
+            }
+        }
+        .into(this)
+}

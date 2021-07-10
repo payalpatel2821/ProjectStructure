@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.text.format.DateFormat
 import android.text.format.Time
 import android.util.Log
+import com.task.newapp.App
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -51,12 +52,7 @@ class DateTimeUtils private constructor() {
      * @param timeZone
      * @return
      */
-    fun formatDateTimeToUTC(
-        sourceString: String?,
-        sourceDateFormat: String?,
-        targetDateFormat: String?,
-        timeZone: String?
-    ): String {
+    fun formatDateTimeToUTC(sourceString: String?, sourceDateFormat: String?, targetDateFormat: String?, timeZone: String?): String {
         return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(
                 targetDateFormat
             ) || TextUtils.isEmpty(timeZone)
@@ -84,15 +80,9 @@ class DateTimeUtils private constructor() {
      * @param targetDateFormat
      * @return
      */
-    fun formatDateTimeToUTC(
-        sourceString: String?,
-        sourceDateFormat: String?,
-        targetDateFormat: String?
-    ): String {
-        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(
-                targetDateFormat
-            )
-        ) "" else try {
+    fun formatDateTimeToUTC(sourceString: String?, sourceDateFormat: String?, targetDateFormat: String?): String {
+        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(targetDateFormat)) ""
+        else try {
             val sourceFormat =
                 SimpleDateFormat(sourceDateFormat, Locale.US)
             sourceFormat.timeZone = TimeZone.getDefault()
@@ -137,16 +127,8 @@ class DateTimeUtils private constructor() {
      * @param timeZone
      * @return
      */
-    fun formatUTCToDateTime(
-        sourceString: String?,
-        sourceDateFormat: String?,
-        targetDateFormat: String?,
-        timeZone: String?
-    ): String {
-        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(
-                targetDateFormat
-            ) || TextUtils.isEmpty(timeZone)
-        ) "" else try {
+    fun formatUTCToDateTime(sourceString: String?, sourceDateFormat: String?, targetDateFormat: String?, timeZone: String?): String {
+        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(targetDateFormat) || TextUtils.isEmpty(timeZone)) "" else try {
             val sourceFormat =
                 SimpleDateFormat(sourceDateFormat, Locale.US)
             sourceFormat.timeZone =
@@ -170,15 +152,8 @@ class DateTimeUtils private constructor() {
      * @param targetDateFormat
      * @return
      */
-    fun formatUTCToDateTime(
-        sourceString: String?,
-        sourceDateFormat: String?,
-        targetDateFormat: String?
-    ): String {
-        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(
-                targetDateFormat
-            )
-        ) "" else try {
+    fun formatUTCToDateTime(sourceString: String?, sourceDateFormat: String?, targetDateFormat: String?): String {
+        return if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(targetDateFormat)) "" else try {
             val sourceFormat =
                 SimpleDateFormat(sourceDateFormat, Locale.US)
             sourceFormat.timeZone =
@@ -201,15 +176,8 @@ class DateTimeUtils private constructor() {
      * @param targetDateFormat
      * @return
      */
-    fun formatDateTime(
-        sourceString: String?,
-        sourceDateFormat: String?,
-        targetDateFormat: String?
-    ): String {
-        if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(
-                targetDateFormat
-            )
-        ) {
+    fun formatDateTime(sourceString: String?, sourceDateFormat: String?, targetDateFormat: String?): String {
+        if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat) || TextUtils.isEmpty(targetDateFormat)) {
             return ""
         }
         val sourceFormat =
@@ -232,15 +200,11 @@ class DateTimeUtils private constructor() {
      * @param targetDateFormat
      * @return
      */
-    fun formatDateTime(
-        sourceDate: Date?,
-        targetDateFormat: String?
-    ): String {
+    fun formatDateTime(sourceDate: Date?, targetDateFormat: String?): String {
         if (sourceDate == null || TextUtils.isEmpty(targetDateFormat)) {
             return ""
         }
-        val targetFormat =
-            SimpleDateFormat(targetDateFormat, Locale.US)
+        val targetFormat = SimpleDateFormat(targetDateFormat, Locale.US)
         return targetFormat.format(sourceDate)
     }
 
@@ -359,11 +323,7 @@ class DateTimeUtils private constructor() {
         todayCalendar[Calendar.MINUTE] = 0
         todayCalendar[Calendar.SECOND] = 0
         todayCalendar[Calendar.MILLISECOND] = 0
-        return if (calendar.time == todayCalendar.time) {
-            true
-        } else {
-            false
-        }
+        return calendar.time == todayCalendar.time
     }
 
     /**
@@ -388,11 +348,7 @@ class DateTimeUtils private constructor() {
         tomorrowCalendar[Calendar.MINUTE] = 0
         tomorrowCalendar[Calendar.SECOND] = 0
         tomorrowCalendar[Calendar.MILLISECOND] = 0
-        return if (calendar.time == tomorrowCalendar.time) {
-            true
-        } else {
-            false
-        }
+        return calendar.time == tomorrowCalendar.time
     }
 
     /**
@@ -409,11 +365,7 @@ class DateTimeUtils private constructor() {
         val calendar = Calendar.getInstance()
         calendar.time = sourceDate
         val todayCalendar = Calendar.getInstance()
-        return if (calendar[Calendar.YEAR] == todayCalendar[Calendar.YEAR]) {
-            true
-        } else {
-            false
-        }
+        return calendar[Calendar.YEAR] == todayCalendar[Calendar.YEAR]
     }
 
     /**
@@ -452,7 +404,7 @@ class DateTimeUtils private constructor() {
      * @param sourceDate
      * @return
      */
-    fun getYearinTwoDigit(sourceDate: Date?): String {
+    fun getYearInTwoDigit(sourceDate: Date?): String {
         return DateFormat.format(DateFormats.yy.label, sourceDate) as String
     }
 
@@ -513,14 +465,19 @@ class DateTimeUtils private constructor() {
      * @return
      */
     fun getRoundedMinute(minute: Int): Int {
-        return if (minute >= 0 && minute < 15) {
-            15
-        } else if (minute >= 15 && minute < 30) {
-            30
-        } else if (minute >= 30 && minute < 45) {
-            45
-        } else {
-            0
+        return when (minute) {
+            in 0..14 -> {
+                15
+            }
+            in 15..29 -> {
+                30
+            }
+            in 30..44 -> {
+                45
+            }
+            else -> {
+                0
+            }
         }
     }
 
@@ -531,15 +488,11 @@ class DateTimeUtils private constructor() {
      * @param sourceDateFormat
      * @return
      */
-    fun getTimeStampWithTimezone(
-        sourceString: String,
-        sourceDateFormat: String?
-    ): String {
+    fun getTimeStampWithTimezone(sourceString: String, sourceDateFormat: String?): String {
         if (TextUtils.isEmpty(sourceString) || TextUtils.isEmpty(sourceDateFormat)) {
             return ""
         }
-        val pickUpDateTime =
-            formatDateTime(sourceString.trim { it <= ' ' }, sourceDateFormat)
+        val pickUpDateTime = formatDateTime(sourceString.trim { it <= ' ' }, sourceDateFormat)
         return "/Date(" + pickUpDateTime!!.time + "+0530" + ")/"
     }
 
@@ -553,5 +506,81 @@ class DateTimeUtils private constructor() {
                 return field
             }
             private set
+    }
+
+
+    /**
+     * Formats the [pattern] correctly for the current locale, and replaces 12 hour format with
+     * 24 hour format if necessary
+     */
+    private fun getFormatter(pattern: String): SimpleDateFormat {
+        var formattedPattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), pattern)
+
+        if (DateFormat.is24HourFormat(App.appInstance)) {
+            formattedPattern = formattedPattern
+                .replace("h", "HH")
+                .replace("K", "HH")
+                .replace(" a".toRegex(), "")
+        }
+
+        return SimpleDateFormat(formattedPattern, Locale.getDefault())
+    }
+
+    fun getDetailedTimestamp(date: Long): String {
+        return getFormatter("M/d/y, h:mm:ss a").format(date)
+    }
+
+    fun getTimestamp(date: Long): String {
+        return getFormatter("h:mm a").format(date)
+    }
+
+    fun getMessageTimestamp(date: Long): String {
+        val now = Calendar.getInstance()
+        val then = Calendar.getInstance()
+        then.timeInMillis = date
+
+        return when {
+            now.isSameDay(then) -> getFormatter("h:mm a")
+            now.isSameWeek(then) -> getFormatter("E h:mm a")
+            now.isSameYear(then) -> getFormatter("MMM d, h:mm a")
+            else -> getFormatter("MMM d yyyy, h:mm a")
+        }.format(date)
+    }
+
+    fun getConversationTimestamp(date: Long): String {
+        val now = Calendar.getInstance()
+        val then = Calendar.getInstance()
+        then.timeInMillis = date
+
+        return when {
+            now.isSameDay(then) -> getFormatter("h:mm a")
+            now.isSameWeek(then) -> getFormatter("E")
+            now.isSameYear(then) -> getFormatter("MMM d")
+            else -> getFormatter("MM/d/yy")
+        }.format(date)
+    }
+
+    fun getScheduledTimestamp(date: Long): String {
+        val now = Calendar.getInstance()
+        val then = Calendar.getInstance()
+        then.timeInMillis = date
+
+        return when {
+            now.isSameDay(then) -> getFormatter("h:mm a")
+            now.isSameYear(then) -> getFormatter("MMM d h:mm a")
+            else -> getFormatter("MMM d yyyy h:mm a")
+        }.format(date)
+    }
+
+    fun Calendar.isSameDay(other: Calendar): Boolean {
+        return get(Calendar.YEAR) == other.get(Calendar.YEAR) && get(Calendar.DAY_OF_YEAR) == other.get(Calendar.DAY_OF_YEAR)
+    }
+
+    fun Calendar.isSameWeek(other: Calendar): Boolean {
+        return get(Calendar.YEAR) == other.get(Calendar.YEAR) && get(Calendar.WEEK_OF_YEAR) == other.get(Calendar.WEEK_OF_YEAR)
+    }
+
+    fun Calendar.isSameYear(other: Calendar): Boolean {
+        return get(Calendar.YEAR) == other.get(Calendar.YEAR)
     }
 }

@@ -1,6 +1,8 @@
 package com.task.newapp.api
 
+import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.BuildConfig
+import com.task.newapp.utils.Constants
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -28,10 +30,14 @@ class ApiClient {
                     val newRequest = chain.request().newBuilder()
                         .header("content-type", "application/json")
                         .header("charset", "utf-8")
-//                        .header(
-//                            "",
-//                            ""
-//                        )
+                        .header(
+                            "Authorization",
+                            if (FastSave.getInstance().getString(Constants.prefToken, "") != "") {
+                                "bearer "+FastSave.getInstance().getString(Constants.prefToken, "")
+                            } else {
+                                ""
+                            }
+                        )
                         .build()
                     chain.proceed(newRequest)
                 }

@@ -142,4 +142,6 @@ dependencies {
     //blur layout
     implementation 'com.eightbitlab:blurview:1.6.6'
 
+    //header Recyclerview
+    implementation 'com.mikhaellopez:hfrecyclerview:1.2.0'
 }

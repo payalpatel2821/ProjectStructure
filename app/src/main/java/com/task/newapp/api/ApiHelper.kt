@@ -3,7 +3,10 @@ package com.task.newapp.api
 import com.task.newapp.models.*
 import io.reactivex.Observable
 import okhttp3.RequestBody
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiHelper {
 
@@ -26,11 +29,24 @@ interface ApiHelper {
     fun checkUsername(@Path("user") user: String): Observable<ResponseVerifyOTP>
 
     @GET(get_username_url)
-    fun getUsername(@Path("user") user: String): Observable<ReponseGetUsername>
+    fun getUsername(@Path("user") user: String): Observable<ResponseGetUsername>
 
     @POST(send_code_normal_url)
     fun sendCodeNormalUrl(@Body hashMap: HashMap<String, Any>): Observable<ResponseSendCode>
 
     @POST(verify_OTP_normal_url)
     fun verifyOTPNormal(@Body hashMap: HashMap<String, Any>): Observable<ResponseVerifyOTP>
+
+    @GET(get_unread_messages)
+    fun getUnreadMessage(): Observable<ResponseGetUnreadMessage>
+
+    @POST(hook_chat)
+    fun hookChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(archive_chat)
+    fun archiveChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(delete_chat)
+    fun deleteChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
 }

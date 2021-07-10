@@ -2,28 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/item0"
-        android:icon="@drawable/ic_edit"
+        android:id="@+id/action_chat"
+        android:icon="@drawable/ic_chat"
+        android:iconTint="@color/black"
         android:title="" />
 
     <item
-        android:id="@+id/item1"
-        android:icon="@drawable/ic_edit"
+        android:id="@+id/action_nearby"
+        android:icon="@drawable/ic_near_by"
+        android:iconTint="@color/black"
         android:title="" />
 
     <item
-        android:id="@+id/itemM"
-        android:icon="@drawable/ic_edit"
+        android:id="@+id/action_new"
+        android:icon="@drawable/ic_feather"
+        android:iconTint="@color/black"
         android:title="" />
 
-    <item
-        android:id="@+id/item2"
-        android:icon="@drawable/ic_edit"
-        android:title="" />
 
     <item
-        android:id="@+id/item3"
-        android:icon="@drawable/ic_edit"
+        android:id="@+id/action_post"
+        android:icon="@drawable/ic_post"
+        android:iconTint="@color/black"
+        android:title="" />
+    <item
+        android:id="@+id/action_setting"
+        android:icon="@drawable/ic_menu"
+        android:iconTint="@color/black"
         android:title="" />
 
 </menu>

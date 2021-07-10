@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_50sdp"
-            android:text="@string/tab_below_to_get_started"
+            android:text="@string/tap_below_to_get_started"
             android:textAlignment="center"
             android:textColor="@color/white" />
 
