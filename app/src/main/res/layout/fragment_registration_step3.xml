@@ -10,7 +10,6 @@
         android:padding="@dimen/_15sdp"
         tools:context=".ui.fragments.registration.RegistrationStep3Fragment">
 
-
         <include
             android:id="@+id/layout_back"
             layout="@layout/layout_back_btn" />

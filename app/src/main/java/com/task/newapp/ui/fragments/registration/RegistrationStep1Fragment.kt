@@ -104,10 +104,9 @@ class RegistrationStep1Fragment : Fragment(), PhotoPickerFragment.Callback, View
             multiple = false,
             allowCamera = true,
             maxSelection = 1,
-            theme = R.style.ChiliPhotoPicker_Light
+            theme = R.style.ChiliPhotoPicker_Light,
         ).show(childFragmentManager, "picker")
     }
-
 
     override fun onImagesPicked(photos: ArrayList<Uri>) {
         showLog("URL", photos[0].toString())

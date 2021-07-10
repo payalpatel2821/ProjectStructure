@@ -28,5 +28,8 @@
     <color name="clear_chat">#ECC99F</color>
     <color name="delete_chat">#B22225</color>
     <color name="hook_chat">#ECA89F</color>
+    <color name="change_color">#ededed</color>
+
+    <color name="graybg">#F7F7F7</color>
 
 </resources>

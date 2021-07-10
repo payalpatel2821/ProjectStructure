@@ -1,6 +1,10 @@
 package com.task.newapp.api
 
 import com.task.newapp.models.*
+import com.task.newapp.models.post.ResponseGetAllPost
+import com.task.newapp.models.post.ResponseGetPostLikeUnlike
+import com.task.newapp.models.post.ResponsePostComment
+import com.task.newapp.models.post.ResponsePostCommentDetails
 import io.reactivex.Observable
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -49,4 +53,18 @@ interface ApiHelper {
     @POST(delete_chat)
     fun deleteChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
 
+    @GET(get_all_posts)
+    fun get_all_posts(@Path("limit") limit: Int, @Path("offset") offset: Int): Observable<ResponseGetAllPost>
+
+    @POST(add_postlikeunlike)
+    fun add_postlikeunlike(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetPostLikeUnlike>
+
+    @POST(postSaveUnsave)
+    fun postSaveUnsave(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(allpostcomment)
+    fun allpostcomment(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostCommentDetails>
+
+    @POST(post_comment)
+    fun post_comment(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostComment>
 }

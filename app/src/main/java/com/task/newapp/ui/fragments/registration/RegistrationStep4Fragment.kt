@@ -168,7 +168,6 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                                 FastSave.getInstance().saveString(Constants.prefToken, responseRegister.data.token)
                                 FastSave.getInstance().saveObject(Constants.prefUser, responseRegister.data.user)
                                 FastSave.getInstance().saveInt(Constants.prefUserId, responseRegister.data.user.id)
-
                                 FastSave.getInstance().saveBoolean(Constants.isLogin, true)
 
                                 //Main Screen

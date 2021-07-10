@@ -18,6 +18,9 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
+
+        renderscriptTargetApi 27
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {
@@ -90,6 +93,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation project(path: ':alertview')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -144,4 +148,14 @@ dependencies {
 
     //header Recyclerview
     implementation 'com.mikhaellopez:hfrecyclerview:1.2.0'
+    implementation('com.github.nkzawa:socket.io-client:0.6.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+
+    implementation 'org.java-websocket:Java-WebSocket:1.3.9'
+
+    //Emoji KeyBoard
+    implementation 'com.vanniktech:emoji-ios:0.7.0'
+    implementation 'com.github.markomilos:paginate:1.0.0'
+    implementation 'io.github.florent37:shapeofview:1.4.7'
 }
