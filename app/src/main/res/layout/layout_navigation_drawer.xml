@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -9,8 +10,8 @@
         android:layout_gravity="end"
         android:background="@color/transparent"
         android:orientation="vertical"
-        tools:visibility="gone"
-        tools:context=".ui.activities.MainActivity">
+        tools:context=".ui.activities.MainActivity"
+        tools:visibility="visible">
 
         <eightbitlab.com.blurview.BlurView
             android:id="@+id/blurView"
@@ -85,8 +86,9 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableStart="@drawable/ic_chat"
                                             android:drawablePadding="@dimen/_15sdp"
+                                            android:drawableTint="@color/black"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
                                             android:padding="@dimen/_5sdp"
@@ -104,7 +106,8 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_notification_post"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
@@ -151,7 +154,8 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_private_account"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
@@ -170,11 +174,12 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_add_story"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
-                                            android:padding="@dimen/_5sdp"
                                             android:onClick="onClick"
+                                            android:padding="@dimen/_5sdp"
                                             android:text="@string/story" />
                                     </LinearLayout>
 
@@ -217,11 +222,12 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:padding="@dimen/_5sdp"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_private_account"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
+                                            android:padding="@dimen/_5sdp"
                                             android:text="@string/privacy" />
 
                                         <View
@@ -236,11 +242,12 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:padding="@dimen/_5sdp"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_data_storage"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
+                                            android:padding="@dimen/_5sdp"
                                             android:text="@string/data_storage" />
                                     </LinearLayout>
 
@@ -283,11 +290,12 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_help"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
-                                            android:padding="@dimen/_5sdp"
                                             android:onClick="onClick"
+                                            android:padding="@dimen/_5sdp"
                                             android:text="@string/help" />
 
                                         <View
@@ -302,11 +310,12 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_about"
                                             android:drawablePadding="@dimen/_15sdp"
-                                            android:padding="@dimen/_5sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
+                                            android:padding="@dimen/_5sdp"
                                             android:text="@string/about" />
                                     </LinearLayout>
 
@@ -349,7 +358,8 @@
                                             style="@style/styleTextViewSmall"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:drawableStart="@drawable/ic_username"
+                                            android:drawableTint="@color/black"
+                                            android:drawableStart="@drawable/ic_call"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
@@ -376,8 +386,9 @@
                                 android:layout_gravity="center"
                                 android:layout_marginTop="@dimen/_5sdp"
                                 android:layout_marginBottom="@dimen/_5sdp"
-                                android:drawableStart="@drawable/ic_username"
+                                android:drawableStart="@drawable/ic_logout"
                                 android:drawablePadding="@dimen/_10sdp"
+                                android:drawableTint="@color/red"
                                 android:gravity="center"
                                 android:onClick="onClick"
                                 android:text="@string/logout"

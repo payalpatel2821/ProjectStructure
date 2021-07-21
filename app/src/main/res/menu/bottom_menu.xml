@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/action_chat"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_message_menu"
         android:iconTint="@color/black"
         android:title="" />
 
@@ -22,12 +22,12 @@
 
     <item
         android:id="@+id/action_post"
-        android:icon="@drawable/ic_post"
+        android:icon="@drawable/ic_post_menu"
         android:iconTint="@color/black"
         android:title="" />
     <item
         android:id="@+id/action_setting"
-        android:icon="@drawable/ic_menu"
+        android:icon="@drawable/ic_menu_menu"
         android:iconTint="@color/black"
         android:title="" />
 

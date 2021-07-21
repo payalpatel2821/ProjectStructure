@@ -25,16 +25,16 @@ open class Chats : RealmObject() {
     @PrimaryKey
     var id: Int = 0
     var name: String? = null
-    var group_data: Groups? = null
-    var group_user_with_settings: RealmList<GroupUser> = RealmList()
-    var chat_list: ChatList? = null
+    var is_online: Boolean = false
     var is_group: Boolean = false
     var is_hook: Boolean = false
     var is_archive: Boolean = false
     var is_block: Boolean = false
+    var group_data: Groups? = null
+    var group_user_with_settings: RealmList<GroupUser> = RealmList()
+    var chat_list: ChatList? = null
     var updated_at: String? = null
     var current_time: String? = null
-    var is_online: Boolean = false
     var user_data: Users? = null
 
 }

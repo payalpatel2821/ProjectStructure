@@ -10,7 +10,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -83,15 +86,15 @@ class Post_Frag_Adapter(var context: Context, all_post: List<All_Post_Data>) : R
                 when (payload) {
                     "likePayload" -> {
                         when (all_post_data!!.isLike) {
-                            0 -> holder.imgLike.setImageResource(R.drawable.ic_unlike)
-                            1 -> holder.imgLike.setImageResource(R.drawable.ic_like_fill)
+                            0 -> holder.imgLike.setImageResource(R.drawable.ic_not_like)
+                            1 -> holder.imgLike.setImageResource(R.drawable.ic_like)
                         }
                         holder.txtLikeCount.text = all_post_data.likesCount.toString()
                     }
                     "savePayload" -> {
                         when (all_post_data!!.isSave) {
-                            0 -> holder.imgSave.setImageResource(R.drawable.ic_save)
-                            1 -> holder.imgSave.setImageResource(R.drawable.ic_save_fill)
+                            0 -> holder.imgSave.setImageResource(R.drawable.ic_nonsave)
+                            1 -> holder.imgSave.setImageResource(R.drawable.ic_save)
                         }
                     }
                     "commentPayload" -> {
@@ -125,13 +128,13 @@ class Post_Frag_Adapter(var context: Context, all_post: List<All_Post_Data>) : R
                 }
 
                 when (all_post_data!!.isLike) {
-                    0 -> holder.imgLike.setImageResource(R.drawable.ic_unlike)
-                    1 -> holder.imgLike.setImageResource(R.drawable.ic_like_fill)
+                    0 -> holder.imgLike.setImageResource(R.drawable.ic_not_like)
+                    1 -> holder.imgLike.setImageResource(R.drawable.ic_like)
                 }
 
                 when (all_post_data!!.isSave) {
-                    0 -> holder.imgSave.setImageResource(R.drawable.ic_save)
-                    1 -> holder.imgSave.setImageResource(R.drawable.ic_save_fill)
+                    0 -> holder.imgSave.setImageResource(R.drawable.ic_nonsave)
+                    1 -> holder.imgSave.setImageResource(R.drawable.ic_save)
                 }
 
                 holder.txtLikeCount.text = all_post_data.likesCount.toString()

@@ -19,7 +19,6 @@ import com.task.newapp.utils.Constants.Companion.ProfileNavigation.*
 import com.task.newapp.utils.DateTimeUtils
 import com.task.newapp.utils.DialogUtils
 import com.task.newapp.utils.showToast
-import io.reactivex.disposables.CompositeDisposable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -138,7 +137,7 @@ class FollowerFollowingAdapter(
         viewHolder.btn_follow_unfollow.setBackgroundResource(R.drawable.bg_border)
         val padding: Int = applicationContext.resources.getDimensionPixelSize(R.dimen._5sdp)
         viewHolder.btn_follow_unfollow.setPadding(padding, 0, 0, 0)
-        viewHolder.btn_follow_unfollow.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right_36, 0, 0, 0)
+        viewHolder.btn_follow_unfollow.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right_resize, 0, 0, 0)
         viewHolder.btn_follow_unfollow.text = applicationContext.resources.getString(R.string.following)
         dataSet.isFollow = 1
     }

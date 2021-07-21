@@ -28,7 +28,7 @@ open class Groups : RealmObject() {
     var grp_description: String? = null
     var grp_icon: String? = null
     var grp_profile_color: String? = null
-    var grp_total_user: String? = null
+    var grp_total_user: Int = 0
     var grp_other_user_id: String? = null
     var grp_created_at: String? = null
     var grp_updated_at: String? = null
@@ -36,3 +36,4 @@ open class Groups : RealmObject() {
     var grp_send_msg: String? = null
 
 }
+

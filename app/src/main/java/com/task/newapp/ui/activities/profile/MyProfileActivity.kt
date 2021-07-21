@@ -107,7 +107,7 @@ class MyProfileActivity : AppCompatActivity() {
                     putExtra(Constants.title, PostNavigation.FROM_SAVED_POST.title)
                 }
             }
-            R.id.rl_pages->{
+            R.id.rl_pages -> {
                 launchActivity<PageListActivity> {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 //                    putExtra(Constants.user_id, 0)
@@ -115,7 +115,7 @@ class MyProfileActivity : AppCompatActivity() {
 //                    putExtra(Constants.title, PostNavigation.FROM_POST.title)
                 }
             }
-            R.id.rl_frds->{
+            R.id.rl_frds -> {
                 val intent = Intent(this, FollowesFollowingListActivity::class.java)
                 intent.putExtra("By", "My")
                 intent.putExtra("From", ProfileNavigation.FROM_FRIENDS.fromname)

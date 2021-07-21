@@ -16,7 +16,7 @@
 
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_request_accept"
+            android:src="@drawable/ic_following"
             />
     </item>
 </layer-list>

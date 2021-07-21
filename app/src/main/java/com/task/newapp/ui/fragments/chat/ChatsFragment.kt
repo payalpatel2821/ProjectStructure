@@ -1,5 +1,7 @@
 package com.task.newapp.ui.fragments.chat
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +10,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +19,12 @@ import com.task.newapp.R
 import com.task.newapp.adapter.chat.ChatListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentChatBinding
-import com.task.newapp.models.ChatListAdapterModel
 import com.task.newapp.models.ChatModel
 import com.task.newapp.models.CommonResponse
 import com.task.newapp.models.ResponseGetUnreadMessage
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.*
+import com.task.newapp.ui.activities.chat.ArchivedChatsListActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.MessageType
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,15 +33,30 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import io.realm.RealmList
 import java.util.*
+import kotlin.collections.ArrayList
 import com.task.newapp.realmDB.insertChatContent as insertChatContent1
 
 
 class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener {
 
     private lateinit var binding: FragmentChatBinding
-    private var chats = ArrayList<ChatListAdapterModel>()
+    private lateinit var chats: ArrayList<Chats>
     private lateinit var chatsAdapter: ChatListAdapter
+
+    //private lateinit var socket: Socket
     private val mCompositeDisposable = CompositeDisposable()
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+
+                val isModified = data!!.getBooleanExtra(Constants.isModified, false)
+                if (isModified) {
+                    setAdapter()
+                }
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,6 +64,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat, container, false)
+        chats = ArrayList()
         return binding.root
     }
 
@@ -56,16 +75,43 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mCompositeDisposable.clear()
+        //destroySocketListeners()
+    }
 
-    override fun onClick(v: View?) {
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.txt_archive -> {
+                /*registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val data: Intent? = result.data
 
+                        val change = data!!.getIntExtra("change", 0)
+                        if (change == 1) {
+                            chatsAdapter.addUnarchivedChat()
+                        }
+                    }
+*//*
+                    requireActivity().launchActivity<ArchivedChatActivity> {
+                    }*//*
+                }*/resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
+            }
+        }
+    }
+
+    private fun initListeners() {
+        binding.txtArchive.setOnClickListener(this)
     }
 
     private fun initView() {
-
+        //socket = App.getSocketInstance()
+        //initSocketListeners()
+        initListeners()
         setAdapter()
         callGetUnreadMessageAPI()
-
+        binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
     }
 
     private fun setAdapter() {
@@ -79,16 +125,15 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             //  }
             chatsAdapter.doRefresh(chats)
         }
+
         showHideEmptyView()
     }
 
     private fun prepareChatListAdapterModel(chatsList: List<Chats>) {
         if (chats.isNotEmpty())
             chats.clear()
-        for (chat in chatsList) {
-            chats.add(ChatListAdapterModel(chat))
+        chats.addAll(chatsList)
 
-        }
     }
 
     private fun insertUnreadMessagedToDB(data: List<ChatModel>) {
@@ -353,14 +398,21 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                     val chat = Chats()
                     chat.id = messageObj.userId
                     chat.chat_list = chatListObj
-                    chat.updated_at = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
-                    chat.current_time = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
                     if (singleUser == null) {
                         chat.is_group = false
                         chat.is_hook = false
                         chat.is_archive = false
                         chat.is_block = false
+                        chat.updated_at = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+                        chat.current_time = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
 
+                    } else {
+                        chat.is_group = singleUser.is_group
+                        chat.is_hook = singleUser.is_hook
+                        chat.is_archive = singleUser.is_archive
+                        chat.is_block = singleUser.is_block
+                        chat.current_time = messageObj.createdAt
+                        chat.updated_at = messageObj.updatedAt
                     }
                     insertChatData(chat)
 
@@ -551,7 +603,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             openProgressDialog(activity)
             val type = if (chats.is_group) Constants.group else Constants.friend
             val archive_id = chats.id
-            val is_archive = if (chats.is_hook) 0 else 1
+            val is_archive = if (chats.is_archive) 0 else 1
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.type to type,
                 Constants.archive_id to archive_id,
@@ -565,34 +617,6 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
                         override fun onNext(commonResponse: CommonResponse) {
                             if (commonResponse.success == 1) {
-                                /*  if (is_archive == 1) {
-                                      updateChatsIsHook(archive_id)
-                                      deleteHook(if (type == Constants.group) UserArchive.PROPERTY_group_id else UserArchive.PROPERTY_friend_id, archive_id)
-                                      deleteArchive(if (type == Constants.group) UserArchive.PROPERTY_group_id else UserArchive.PROPERTY_friend_id, archive_id)
-                                  } else {
-                                      val userArchive = UserArchive()
-                                      userArchive.id = archive_id
-                                      userArchive.user_id = App.fastSave.getInt(Constants.prefUserId, 0)
-                                      if (chats.is_group) {
-                                          userArchive.friend_id = 0
-                                          userArchive.group_id = chats.id
-                                          userArchive.is_group = 1
-                                          userArchive.is_friend = 0
-                                      } else {
-                                          userArchive.friend_id = chats.id
-                                          userArchive.group_id = 0
-                                          userArchive.is_group = 0
-                                          userArchive.is_friend = 1
-
-                                      }
-                                      if (chats.is_hook) {
-                                          deleteHook(if (chats.is_group) UserHook.PROPERTY_group_id else UserHook.PROPERTY_friend_id, chats.id)
-                                      }
-                                      insertArchiveData(userArchive)
-
-                                  }
-                                  updateChatsIsArchive(archive_id)
-                                  setAdapter()*/
                                 if (chats.is_hook) {
                                     updateChatsIsHook(archive_id)
                                     deleteHook(if (type == Constants.group) UserArchive.PROPERTY_group_id else UserArchive.PROPERTY_friend_id, archive_id)
@@ -691,4 +715,52 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     private fun callMuteAPI(chats: Chats) {
 
     }
+
+    /*private fun initSocketListeners() {
+        socket.on(Constants.isonlineresponse, onIsOnlineResponse)
+        socket.on(Constants.userdisconnect, onUserDisconnect)
+
+    }
+
+    private fun destroySocketListeners() {
+        socket.off(Constants.isonlineresponse, onIsOnlineResponse)
+        socket.off(Constants.userdisconnect, onUserDisconnect)
+
+    }
+
+    private val onIsOnlineResponse = Emitter.Listener { args ->
+        val data = args[0] as JSONObject
+        Log.println(Log.ASSERT, "onIsOnlineResponse--", Gson().toJson(data))
+        val status = data.getString("status").equals("online")
+        val userId = data.getInt(Constants.receiver_id)
+
+        requireActivity().runOnUiThread(java.lang.Runnable {
+            updateOnlineUser(userId, status)
+        })
+
+    }
+    private val onUserDisconnect = Emitter.Listener { args ->
+        val userId = args[0] as Int
+        Log.e("onUserDisconnect...", "$userId::")
+        requireActivity().runOnUiThread(Runnable {
+            val position = getChatPosition(chats, userId)
+            showLog("find position :::", position.toString())
+            if (position != -1) {
+                updateUserOnlineStatus(userId, false)
+                chatsAdapter.updateOnlineOfflineStatus(position, false)
+            }
+
+        })
+    }*/
+
+    fun updateOnlineUser(userId: Int, status: Boolean) {
+        val position = getChatPosition(chats, userId)
+        showLog("find position :::", position.toString())
+        if (position != -1) {
+            updateUserOnlineStatus(userId, status)
+            chatsAdapter.updateOnlineOfflineStatus(position, status)
+        }
+    }
+
+
 }

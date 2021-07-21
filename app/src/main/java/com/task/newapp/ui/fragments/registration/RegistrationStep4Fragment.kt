@@ -4,24 +4,20 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
 import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentRegistrationStep4Binding
@@ -128,9 +124,9 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                     if (flagChangeUsername) {
                         callVerifyUsername()
                     } else {
-                        if (binding.cbTerm.isChecked){
+                        if (binding.cbTerm.isChecked) {
                             callAPIRegister()
-                        }else{
+                        } else {
                             requireActivity().showToast(resources.getString(R.string.termmessage))
                         }
 
@@ -202,10 +198,11 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                             activity!!.showToast(responseRegister.message)
 
                             if (responseRegister.success == 1) {
-                                FastSave.getInstance().saveString(Constants.prefToken, responseRegister.data.token)
-                                FastSave.getInstance().saveObject(Constants.prefUser, responseRegister.data.user)
-                                FastSave.getInstance().saveInt(Constants.prefUserId, responseRegister.data.user.id)
-                                FastSave.getInstance().saveBoolean(Constants.isLogin, true)
+                                App.fastSave.saveString(Constants.prefToken, responseRegister.data.token)
+                                App.fastSave.saveObject(Constants.prefUser, responseRegister.data.user)
+                                App.fastSave.saveString(Constants.prefUserName, responseRegister.data.user.firstName + " " + responseRegister.data.user.lastName)
+                                App.fastSave.saveInt(Constants.prefUserId, responseRegister.data.user.id)
+                                App.fastSave.saveBoolean(Constants.isLogin, true)
 
                                 //Main Screen
                                 requireActivity().launchActivity<MainActivity> { }

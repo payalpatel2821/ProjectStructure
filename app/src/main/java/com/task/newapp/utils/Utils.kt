@@ -8,12 +8,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -21,7 +16,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.*
 import android.text.style.ClickableSpan
-import android.text.style.StyleSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Patterns
@@ -30,13 +24,10 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
+import com.avatarfirst.avatargenlib.AvatarGenerator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -45,8 +36,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
 import eightbitlab.com.blurview.BlurView
-import java.time.format.TextStyle
-import java.util.*
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -363,6 +352,7 @@ fun flipAnimation(view: View) {
     })
     oa1.start()
 }
+
 fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
     val user = getUserByUserId(userId)
     val message = ""
@@ -411,6 +401,9 @@ fun convertDurationStringToSeconds(duration: String): String {
 @SuppressLint("CheckResult")
 fun ImageView.load(
     url: String,
+    isProfile: Boolean? = false,
+    name: String? = null,
+    color: String? = null,
     previousUrl: String? = null,
     round: Boolean = false,
     cornersRadius: Int = 0,
@@ -429,50 +422,41 @@ fun ImageView.load(
 
         else -> null
     }
-
-    Glide
-        .with(context)
-        .load(url)
-        .let {
-            // Apply request options
-            if (requestOptions != null) {
-                it.apply(requestOptions)
-            } else {
-                it
-            }
+    val glide = Glide.with(context).load(url)
+    if (isProfile == true) {
+        glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.CIRCLE, name ?: "", color ?: ""))
+    } else {
+        glide.placeholder(R.drawable.default_dp)
+    }
+    glide.let {
+        // Apply request options
+        if (requestOptions != null) {
+            it.apply(requestOptions)
+            it.placeholder(R.drawable.default_dp)
+        } else {
+            it
         }
-        .let {
-            // Workaround for the white flickering.
-            // See https://github.com/bumptech/glide/issues/527
-            // Thumbnail changes must be the same to catch the memory cache.
-            if (previousUrl != null) {
-                it.thumbnail(
-                    Glide
-                        .with(context)
-                        .load(previousUrl)
-                        .let {
-                            // Apply request options
-                            if (requestOptions != null) {
-                                it.apply(requestOptions)
-                            } else {
-                                it
-                            }
+    }.let {
+        // Workaround for the white flickering.
+        // See https://github.com/bumptech/glide/issues/527
+        // Thumbnail changes must be the same to catch the memory cache.
+        if (previousUrl != null) {
+            it.thumbnail(
+                Glide.with(context).load(previousUrl)
+                    .let {
+                        // Apply request options
+                        if (requestOptions != null) {
+                            it.apply(requestOptions)
+                        } else {
+                            it
                         }
-                )
-            } else {
-                it
-            }
+                    }
+            )
+        } else {
+            it
         }
-        .into(this)
+    }.into(this)
 }
-//fun setImageToImageView(context: Context?, imageURL: String, name: String?, isCaching: Boolean, imageView: ImageView) {
-//    Glide.with(context!!)
-//        .load(imageURL + "?q=" + System.currentTimeMillis()) //.placeholder(R.drawable.default_dp)
-//        .placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.CIRCLE, name!!, AvatarGenerator.COLOR400))
-//        .skipMemoryCache(!isCaching)
-//        .diskCacheStrategy(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE)
-//        .into(imageView)
-//}
 
 fun parseDate(inputDateString: String?, inputDateFormat: SimpleDateFormat, outputDateFormat: SimpleDateFormat): String? {
     var date: Date? = null
@@ -497,6 +481,7 @@ fun AppCompatEditText.setUnderlineColor(color: Int) {
         }
     }
 }
+
 /**
  * get first character from string
  *
@@ -544,7 +529,7 @@ fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: ()
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
             ds.color = Color.BLACK
-           // ds.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
+            // ds.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
 
             ds.isUnderlineText = false
         }
@@ -557,4 +542,14 @@ fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: ()
         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
     )
     return this
+}
+
+fun dpToPx(context: Context, dp: Float): Int {
+    val scale = context.resources.displayMetrics.density
+    return (dp * scale + 0.5f).toInt()
+}
+
+fun findIndex(arr: List<Int>, item: Int): Int? {
+    return (arr.indices)
+        .firstOrNull { i: Int -> item == arr[i] };
 }

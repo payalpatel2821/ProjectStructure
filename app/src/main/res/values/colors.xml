@@ -17,6 +17,8 @@
     <color name="gray2">#858585</color> <!--chat text color-->
     <color name="gray3">#A0A0A0</color> <!--chat time text color-->
     <color name="gray4">#666666</color> <!--overflow menu icon color-->
+    <color name="chat_icon_color">#353e54</color>
+    <color name="chat_icon_disable_color">#bcbfc6</color>
     <color name="darkgray">#8F8383</color>
     <color name="white_opacity">#D9FFFFFF</color>
     <color name="ripple_Color">#0099CC</color>
@@ -33,5 +35,6 @@
     <color name="change_color">#ededed</color>
 
     <color name="graybg">#F7F7F7</color>
+    <color name="chat_input_bg_color">#EEF1F6</color>
 
 </resources>
