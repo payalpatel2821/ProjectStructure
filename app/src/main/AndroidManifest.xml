@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" /> <!-- for JobIntentService -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
@@ -22,6 +24,12 @@
         android:theme="@style/Theme.NewApp"
         android:usesCleartextTraffic="true">
         <activity android:name=".ui.activities.chat.OneToOneChatActivity"></activity>
+        android:theme="@style/Theme.NewApp"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.activities.post.PostPagerActivity"
+            android:label="Post View"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
@@ -106,7 +114,35 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
+        </provider> <!-- Add new -->
+        <service
+            android:name=".service.FileUploadService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver android:name=".service.FileProgressReceiver">
+            <intent-filter>
+                <action android:name="com.wave.ACTION_CLEAR_NOTIFICATION" />
+                <action android:name="com.wave.ACTION_PROGRESS_NOTIFICATION" />
+                <action android:name="com.wave.ACTION_UPLOADED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".ui.activities.post.EditImageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar">
+            <intent-filter
+                android:label="@string/app_name"
+                android:scheme="http"
+                tools:ignore="AppLinkUrlError">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

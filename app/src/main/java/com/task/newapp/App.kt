@@ -1,5 +1,7 @@
 package com.task.newapp
 
+import android.content.Context
+import android.graphics.Typeface
 import android.net.TrafficStats
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -44,13 +46,17 @@ class App : MultiDexApplication() {
         @JvmStatic
         fun getRealmInstance(): Realm {
             return realm as Realm
-
         }
 
         @JvmStatic
         fun getSocketInstance(): Socket {
             return socket as Socket
         }
+
+        fun setFont(context: Context, str: String?): Typeface? {
+            return Typeface.createFromAsset(context.assets, str)
+        }
+
     }
 
     val TAG = App::class.java.simpleName
@@ -98,4 +104,6 @@ class App : MultiDexApplication() {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
     }
+
+
 }

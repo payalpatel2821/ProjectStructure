@@ -93,4 +93,9 @@
         <attr name="clickToClose" format="boolean" />
     </declare-styleable>
 
+    <!--    photo editor-->
+    <declare-styleable name="PhotoEditorView">
+        <attr name="photo_src" format="integer" />
+    </declare-styleable>
+
 </resources>

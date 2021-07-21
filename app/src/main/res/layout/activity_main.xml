@@ -22,11 +22,10 @@
                 android:id="@+id/activity_main_appbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="0dp"
                 android:background="@color/white"
+                android:elevation="0dp"
                 android:gravity="start"
                 android:theme="@style/NoActionBar">
-
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/activity_main_toolbar"
@@ -39,6 +38,7 @@
                     app:menu="@menu/main_menu"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
                     app:contentInsetStart="0dp"
+
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/img_profile"
                         android:layout_width="@dimen/_30sdp"

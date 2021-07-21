@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_90sdp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/shadowpost" />
+                android:src="@drawable/drop_shadow" />
 
             <LinearLayout
                 android:layout_width="match_parent"

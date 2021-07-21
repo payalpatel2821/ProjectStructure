@@ -6,11 +6,9 @@ import com.task.newapp.models.post.ResponseGetPostLikeUnlike
 import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.models.post.ResponsePostCommentDetails
 import io.reactivex.Observable
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiHelper {
 
@@ -88,6 +86,29 @@ interface ApiHelper {
 
     @POST(set_profile_group_page_friend_post)
     fun getFriendList(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
+
+    @Multipart
+    @POST(add_post)
+    fun addPost(
+        @Part("turn_off_comment") turn_off_comment: RequestBody,
+        @Part("hastags") hastags: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part captionarray: List<MultipartBody.Part>,
+        @Part typearray: List<MultipartBody.Part>,
+        @Part thumbarray: List<MultipartBody.Part>,
+        @Part imagevideoarray: List<MultipartBody.Part>
+    ): Observable<CommonResponse>
+
+
+    @Multipart
+    @POST(add_post)
+    fun addPostThought(
+        @Part("turn_off_comment") turn_off_comment: MultipartBody.Part
+    ): Observable<CommonResponse>
 
     @POST(set_profile_group_page_friend_post)
     fun getPageList(@Body hashMap: HashMap<String, Any>): Observable<ResponsePageList>

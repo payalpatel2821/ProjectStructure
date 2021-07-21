@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rlCreatePost"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_120sdp">
+
+    <ImageView
+        android:id="@+id/imgPost"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_dp" />
+
+    <ImageView
+        android:id="@+id/imgPlay"
+        android:layout_width="20pt"
+        android:layout_height="20pt"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_margin="5pt"
+        android:elevation="10pt"
+        android:src="@drawable/play"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/shadow"
+        android:visibility="gone"
+        app:tint="@color/black" />
+
+    <ImageView
+        android:id="@+id/imgBlur"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/rect_bg_blur"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/txtMore"
+        style="@style/styleTextViewNormal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+</RelativeLayout>

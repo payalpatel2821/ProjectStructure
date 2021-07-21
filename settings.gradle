@@ -2,3 +2,4 @@ rootProject.name = "NewApp"
 include ':app'
 include ':alertview'
 include ':photopicker'
+include ':videocompressor'

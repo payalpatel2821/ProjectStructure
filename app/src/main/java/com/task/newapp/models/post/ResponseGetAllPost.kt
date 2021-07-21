@@ -104,39 +104,39 @@ data class ResponseGetAllPost(
     ) {
         data class Content(
             @SerializedName("alignment")
-            val alignment: Any,
+            val alignment: String,
             @SerializedName("background_type")
-            val backgroundType: Any,
+            val backgroundType: String,
             @SerializedName("caption")
             val caption: String,
             @SerializedName("color")
-            val color: Any,
+            val color: String,
             @SerializedName("content")
             val content: String,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("font_style")
-            val fontStyle: Any,
+            val fontStyle: String,
             @SerializedName("height")
             val height: Int,
             @SerializedName("id")
             val id: Int,
             @SerializedName("is_bold")
-            val isBold: Any,
+            val isBold: Int,
             @SerializedName("is_italic")
-            val isItalic: Any,
+            val isItalic: Int,
             @SerializedName("is_underline")
-            val isUnderline: Any,
+            val isUnderline: Int,
             @SerializedName("likes")
             val likes: Int,
             @SerializedName("pattern_id")
-            val patternId: Any,
+            val patternId: String,
             @SerializedName("post_id")
             val postId: Int,
             @SerializedName("size")
             val size: Any,
             @SerializedName("thought_type")
-            val thoughtType: Any,
+            val thoughtType: String,
             @SerializedName("thumb")
             val thumb: String,
             @SerializedName("type")
