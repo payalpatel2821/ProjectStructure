@@ -8,11 +8,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.paginate.Paginate
 import com.task.newapp.R
-import com.task.newapp.adapter.FollowerFollowingAdapter
+import com.task.newapp.adapter.profile.FollowerFollowingAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityFollowesFollowingListBinding
 import com.task.newapp.models.ResponseFollowUnfollow
-import com.task.newapp.models.ResponsePostList
 import com.task.newapp.models.ResponseUserFollowingFollower
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,7 +26,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
     private lateinit var by: String
     private var titleName: Int = 0
     private lateinit var from: String
-    private var User_ID: Int = 0
+    private var userID: Int = 0
     private lateinit var followerfollowingadapter: FollowerFollowingAdapter
     lateinit var binding: ActivityFollowesFollowingListBinding
     private val mCompositeDisposable = CompositeDisposable()
@@ -55,7 +54,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         titleName = intent.getIntExtra("Title", 0)
         binding.txtTitle.text = resources.getString(titleName)
         if (by == "Other") {
-            User_ID = intent.getIntExtra(Constants.user_id, 0)
+            userID = intent.getIntExtra(Constants.user_id, 0)
         }
     }
 
@@ -81,18 +80,11 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                 applicationContext.launchActivity<MyProfileActivity> {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-//                val intent = Intent(this, MyProfileActivity::class.java)
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                resultLauncher.launch(intent)
             } else {
                 applicationContext.launchActivity<OtherUserProfileActivity> {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra(Constants.user_id, dataset[position].id)
                 }
-//                val intent = Intent(this, OtherUserProfileActivity::class.java)
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                intent.putExtra(Constants.user_id, dataset[position].id)
-//                resultLauncher.launch(intent)
             }
         }
     }
@@ -193,7 +185,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                     Constants.type to type,
                     Constants.limit to limit,
                     Constants.offset to offset,
-                    Constants.user_id to User_ID,
+                    Constants.user_id to userID,
                 )
             } else {
                 hashMap = hashMapOf(
@@ -293,12 +285,11 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.type to type,
-                Constants.id to User_ID,
+                Constants.id to userID,
                 Constants.limit to limit,
                 Constants.offset to offset,
             )
 
-            openProgressDialog(this)
             mCompositeDisposable.add(
                 ApiClient.create()
                     .getFriendList(hashMap)
@@ -328,10 +319,9 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
             e.printStackTrace()
         }
     }
-
-
+    
     override fun onBackPressed() {
-        var intent = Intent().putExtra("change", change1)
+        val intent = Intent().putExtra("change", change1)
         setResult(RESULT_OK, intent)
         finish()
         super.onBackPressed()
@@ -342,5 +332,10 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         hasLoadedAllItems = false
         setAdapter()
         super.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mCompositeDisposable.clear()
     }
 }

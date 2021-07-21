@@ -15,6 +15,7 @@
             android:gravity="center_vertical">
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -26,12 +27,12 @@
                     android:id="@+id/segment_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/rb_mobile"
+                    android:checkedButton="@+id/rb_my_pages"
                     android:orientation="horizontal"
                     android:padding="@dimen/_2sdp">
 
                     <RadioButton
-                        android:id="@id/rb_mobile"
+                        android:id="@+id/rb_followed_pages"
                         style="@style/PageRadioButton"
                         android:layout_width="@dimen/_90sdp"
                         android:layout_height="wrap_content"
@@ -44,7 +45,7 @@
                         android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <RadioButton
-                        android:id="@+id/rb_email"
+                        android:id="@+id/rb_my_pages"
                         style="@style/PageRadioButton"
                         android:layout_width="@dimen/_70sdp"
                         android:layout_height="wrap_content"
@@ -59,6 +60,15 @@
                 </com.task.newapp.utils.SegmentedRadioGroup>
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/styleTextViewNormal"
+               android:layout_centerInParent="true"
+                android:text="@string/pages"
+                android:visibility="visible"/>
 
             <ImageView
                 android:id="@+id/iv_back"

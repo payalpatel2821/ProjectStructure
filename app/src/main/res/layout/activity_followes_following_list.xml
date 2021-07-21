@@ -30,7 +30,6 @@
                 android:gravity="center"
                 android:text="@string/followers" />
 
-
         </RelativeLayout>
 
         <RelativeLayout

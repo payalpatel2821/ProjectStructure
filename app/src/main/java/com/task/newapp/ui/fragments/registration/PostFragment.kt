@@ -629,7 +629,6 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponsePostComment>() {
                         override fun onNext(responsePostComment: ResponsePostComment) {
-
                             if (responsePostComment.success == 1) {
                                 Log.v("callAPIPostComment", "callAPIPostComment")
                                 post_Frag_adapter.updateComment(responsePostComment.data, position)

@@ -3,8 +3,9 @@ package com.task.newapp.realmDB.models
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import java.io.Serializable
 
-open class Groups : RealmObject() {
+open class Groups : RealmObject()   {
 
     companion object {
         const val PROPERTY_grp_id = "grp_id"

@@ -14,6 +14,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -423,11 +424,12 @@ fun ImageView.load(
         else -> null
     }
     val glide = Glide.with(context).load(url)
-    if (isProfile == true) {
+    /*if (isProfile == true) {
         glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.CIRCLE, name ?: "", color ?: ""))
     } else {
         glide.placeholder(R.drawable.default_dp)
-    }
+    }*/
+    glide.placeholder(R.drawable.default_dp)
     glide.let {
         // Apply request options
         if (requestOptions != null) {
@@ -552,4 +554,13 @@ fun dpToPx(context: Context, dp: Float): Int {
 fun findIndex(arr: List<Int>, item: Int): Int? {
     return (arr.indices)
         .firstOrNull { i: Int -> item == arr[i] };
+}
+
+
+fun String.firstCap() = this.replaceFirstChar { it.uppercase() }
+
+
+fun Toolbar.setNavigationIconColor(@ColorInt color: Int) = navigationIcon?.mutate()?.let {
+    it.setTint(color)
+    this.navigationIcon = it
 }

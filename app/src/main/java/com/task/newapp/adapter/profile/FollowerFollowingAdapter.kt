@@ -1,4 +1,4 @@
-package com.task.newapp.adapter
+package com.task.newapp.adapter.profile
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -34,14 +34,13 @@ class FollowerFollowingAdapter(
     var onFollowItemClick: ((String, ResponseUserFollowingFollower.Data, ViewHolder, Int, String) -> Unit)? = null
     var onItemClick: ((Int, ArrayList<ResponseUserFollowingFollower.Data>, Int) -> Unit)? = null
 
-
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val txt_user_name: TextView = view.findViewById(R.id.txt_user_name)
-        val txt_accid: TextView = view.findViewById(R.id.txt_accid)
-        val iv_user_profile: ImageView = view.findViewById(R.id.iv_user_profile)
-        val iv_msg: ImageView = view.findViewById(R.id.iv_msg)
-        val btn_follow_unfollow: TextView = view.findViewById(R.id.btn_follow_unfollow)
-        val btn_time: TextView = view.findViewById(R.id.btn_time)
+        val txtUserName: TextView = view.findViewById(R.id.txt_user_name)
+        val txtAccid: TextView = view.findViewById(R.id.txt_accid)
+        val ivUserProfile: ImageView = view.findViewById(R.id.iv_user_profile)
+        val ivMsg: ImageView = view.findViewById(R.id.iv_msg)
+        val btnFollowUnfollow: TextView = view.findViewById(R.id.btn_follow_unfollow)
+        val btnTime: TextView = view.findViewById(R.id.btn_time)
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -53,15 +52,15 @@ class FollowerFollowingAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         when (from) {
             FROM_FOLLOWERS.fromname -> {
-                viewHolder.iv_msg.visibility = GONE
-                viewHolder.btn_time.visibility = GONE
+                viewHolder.ivMsg.visibility = GONE
+                viewHolder.btnTime.visibility = GONE
                 if (dataSet[position].isFollow != 1) {
                     setFollowText(viewHolder)
                 }
             }
             FROM_FOLLOWINGS.fromname -> {
-                viewHolder.iv_msg.visibility = GONE
-                viewHolder.btn_time.visibility = GONE
+                viewHolder.ivMsg.visibility = GONE
+                viewHolder.btnTime.visibility = GONE
                 if (by != "My") {
                     if (dataSet[position].isFollow != 1) {
                         setFollowText(viewHolder)
@@ -69,25 +68,25 @@ class FollowerFollowingAdapter(
                 }
             }
             FROM_PROFILE_VIEWS.fromname -> {
-                viewHolder.iv_msg.visibility = GONE
-                viewHolder.btn_follow_unfollow.visibility = GONE
-                viewHolder.btn_time.visibility = VISIBLE
+                viewHolder.ivMsg.visibility = GONE
+                viewHolder.btnFollowUnfollow.visibility = GONE
+                viewHolder.btnTime.visibility = VISIBLE
                 val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                viewHolder.btn_time.text=DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(dataSet[position].view_date, formatter))
+                viewHolder.btnTime.text=DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(dataSet[position].view_date, formatter))
             }
             FROM_FRIENDS.fromname -> {
-                viewHolder.iv_msg.visibility = VISIBLE
-                viewHolder.btn_follow_unfollow.visibility = GONE
-                viewHolder.btn_time.visibility = GONE
+                viewHolder.ivMsg.visibility = VISIBLE
+                viewHolder.btnFollowUnfollow.visibility = GONE
+                viewHolder.btnTime.visibility = GONE
             }
         }
 
         var my_id = FastSave.getInstance().getInt(Constants.prefUserId, 0)
         if (my_id == dataSet[position].id) {
-            viewHolder.btn_follow_unfollow.visibility = GONE
+            viewHolder.btnFollowUnfollow.visibility = GONE
         }
 
-        viewHolder.btn_follow_unfollow.setOnClickListener {
+        viewHolder.btnFollowUnfollow.setOnClickListener {
             when (from) {
                 FROM_FOLLOWERS.fromname -> {
                     if (dataSet[position].isFollow == 0) {
@@ -110,13 +109,13 @@ class FollowerFollowingAdapter(
             }
         }
 
-        viewHolder.iv_msg.setOnClickListener{
+        viewHolder.ivMsg.setOnClickListener{
             applicationContext.showToast("Redirect to chatting activity")
         }
 
-        viewHolder.txt_user_name.text = dataSet[position].firstName + " " + dataSet[position].lastName
-        viewHolder.txt_accid.text = dataSet[position].accountId
-        Glide.with(applicationContext).asBitmap().load(dataSet[position].profileImage).into(viewHolder.iv_user_profile)
+        viewHolder.txtUserName.text = dataSet[position].firstName + " " + dataSet[position].lastName
+        viewHolder.txtAccid.text = dataSet[position].accountId
+        Glide.with(applicationContext).asBitmap().load(dataSet[position].profileImage).into(viewHolder.ivUserProfile)
 
         viewHolder.itemView.setOnClickListener {
             if (onItemClick != null) {
@@ -125,20 +124,20 @@ class FollowerFollowingAdapter(
         }
     }
 
-    fun setFollowText(viewHolder: FollowerFollowingAdapter.ViewHolder) {
-        viewHolder.btn_follow_unfollow.setTextColor(applicationContext.resources.getColor(R.color.theme_color))
-        viewHolder.btn_follow_unfollow.setBackgroundResource(0)
-        viewHolder.btn_follow_unfollow.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        viewHolder.btn_follow_unfollow.text = applicationContext.resources.getString(R.string.follow)
+    fun setFollowText(viewHolder: ViewHolder) {
+        viewHolder.btnFollowUnfollow.setTextColor(applicationContext.resources.getColor(R.color.theme_color))
+        viewHolder.btnFollowUnfollow.setBackgroundResource(0)
+        viewHolder.btnFollowUnfollow.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        viewHolder.btnFollowUnfollow.text = applicationContext.resources.getString(R.string.follow)
     }
 
     fun setUnFollowText(viewHolder: ViewHolder, dataSet: ResponseUserFollowingFollower.Data) {
-        viewHolder.btn_follow_unfollow.setTextColor(applicationContext.resources.getColor(R.color.black))
-        viewHolder.btn_follow_unfollow.setBackgroundResource(R.drawable.bg_border)
+        viewHolder.btnFollowUnfollow.setTextColor(applicationContext.resources.getColor(R.color.black))
+        viewHolder.btnFollowUnfollow.setBackgroundResource(R.drawable.bg_border)
         val padding: Int = applicationContext.resources.getDimensionPixelSize(R.dimen._5sdp)
-        viewHolder.btn_follow_unfollow.setPadding(padding, 0, 0, 0)
-        viewHolder.btn_follow_unfollow.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right_resize, 0, 0, 0)
-        viewHolder.btn_follow_unfollow.text = applicationContext.resources.getString(R.string.following)
+        viewHolder.btnFollowUnfollow.setPadding(padding, 0, 0, 0)
+        viewHolder.btnFollowUnfollow.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right_resize, 0, 0, 0)
+        viewHolder.btnFollowUnfollow.text = applicationContext.resources.getString(R.string.following)
         dataSet.isFollow = 1
     }
 

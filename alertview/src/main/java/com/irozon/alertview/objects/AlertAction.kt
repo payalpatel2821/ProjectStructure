@@ -11,11 +11,20 @@ class AlertAction {
     var style: AlertActionStyle
     var action: ((AlertAction) -> Unit)?
     var actionListener: AlertActionListener?
+    var isChecked: Boolean = false
 
     constructor(title: String, style: AlertActionStyle, action: (AlertAction) -> Unit) {
         this.title = title
         this.style = style
         this.action = action
+        this.actionListener = null
+    }
+
+    constructor(title: String, isChecked: Boolean, style: AlertActionStyle, action: (AlertAction) -> Unit) {
+        this.title = title
+        this.style = style
+        this.action = action
+        this.isChecked = isChecked
         this.actionListener = null
     }
 

@@ -37,10 +37,12 @@
                     android:orientation="vertical" />
 
                 <LinearLayout
+                    android:id="@+id/ll_post"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="onClick"
                     android:orientation="vertical">
 
                     <TextView
@@ -120,6 +122,7 @@
                     android:orientation="vertical" />
 
             </LinearLayout>
+
         </RelativeLayout>
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -139,7 +142,6 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginBottom="@dimen/_8sdp"
                 android:background="@color/gray" />
-
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -261,14 +263,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:paddingEnd="@dimen/_2sdp"
-                        android:paddingRight="@dimen/_2sdp">
+                        android:paddingLeft="@dimen/_15sdp"
+                        android:paddingTop="@dimen/_2sdp"
+                        android:paddingRight="@dimen/_15sdp"
+                        android:paddingBottom="@dimen/_2sdp">
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_video"
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:layout_marginLeft="@dimen/_4sdp"
                             android:layout_marginRight="@dimen/_2sdp"
                             android:layout_weight="1"
@@ -286,7 +291,8 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_2sdp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_4sdp"
                             android:layout_marginRight="@dimen/_2sdp"
                             android:layout_weight="1"
                             android:background="@drawable/rect_rounded_bg_white"
@@ -303,14 +309,17 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_2sdp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_4sdp"
                             android:layout_marginRight="@dimen/_2sdp"
                             android:layout_weight="1"
-                            android:drawableTint="@color/black"
                             android:background="@drawable/rect_rounded_bg_white"
                             android:drawableTop="@drawable/ic_mute"
+                            android:drawableTint="@color/black"
+                            android:gravity="center"
+                            android:onClick="onClick"
+                            android:padding="@dimen/_5sdp"
                             android:drawablePadding="@dimen/_2sdp"
-                            android:padding="@dimen/_2sdp"
                             android:text="@string/mute"
                             android:textAllCaps="false"
                             android:textColor="@color/black" />
@@ -320,14 +329,16 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_2sdp"
-                            android:layout_marginRight="@dimen/_4sdp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="@dimen/_4sdp"
+                            android:layout_marginRight="@dimen/_2sdp"
                             android:layout_weight="1"
                             android:drawableTint="@color/black"
                             android:background="@drawable/rect_rounded_bg_white"
                             android:drawableTop="@drawable/ic_search_setting"
                             android:drawablePadding="@dimen/_2sdp"
-                            android:padding="@dimen/_2sdp"
+                            android:padding="@dimen/_5sdp"
+                            android:gravity="center"
                             android:text="@string/search"
                             android:textAllCaps="false"
                             android:textColor="@color/black" />
@@ -352,13 +363,14 @@
 
 
                             <TextView
+                                android:id="@+id/txt_contact_detail"
                                 style="@style/styleTextViewNormal"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:drawableTint="@color/black"
                                 android:drawableLeft="@drawable/ic_contact_detail"
                                 android:drawablePadding="@dimen/_10sdp"
-                                android:gravity="center"
+                                android:onClick="onClick"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/contact_detail"
                                 android:textSize="@dimen/_14ssp" />
@@ -368,27 +380,33 @@
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
 
-
                             <TextView
+                                android:id="@+id/txt_secret_chat"
                                 style="@style/styleTextViewNormal"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:drawableTint="@color/black"
                                 android:drawableLeft="@drawable/ic_secret_chat"
                                 android:drawablePadding="@dimen/_10sdp"
-                                android:gravity="center"
+                                android:onClick="onClick"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/secret_chat"
                                 android:textSize="@dimen/_14ssp" />
-
 
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
 
+                            <LinearLayout
+                                android:id="@+id/ll_custom_notification"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:onClick="onClick">
 
                             <TextView
+                                android:id="@+id/txt_custom_notification"
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -396,11 +414,21 @@
                                 android:drawableTint="@color/black"
                                 android:drawableLeft="@drawable/ic_notification"
                                 android:drawablePadding="@dimen/_10sdp"
-                                android:gravity="center"
+                                android:layout_weight="1"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/custom_notification"
                                 android:textSize="@dimen/_14ssp" />
 
+                                <TextView
+                                    android:id="@+id/txt_custom_notification_status"
+                                    style="@style/styleTextViewNormal"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:padding="@dimen/_5sdp"
+                                    android:text="on"
+                                    android:textSize="@dimen/_12ssp" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -529,7 +557,8 @@
                             <RelativeLayout
                                 android:id="@+id/rl_grps"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:onClick="onClick">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
@@ -561,7 +590,8 @@
                             <RelativeLayout
                                 android:id="@+id/rl_pages"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_height="wrap_content"
+                                android:onClick="onClick">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
@@ -638,9 +668,12 @@
                             <TextView
                                 android:id="@+id/txt_block"
                                 style="@style/styleTextViewNormal"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
+                                android:drawableLeft="@drawable/ic_block"
+                                android:drawablePadding="@dimen/_5sdp"
+                                android:drawableTint="@color/red"
+                                android:onClick="onClick"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/block"
                                 android:textColor="@color/red"
@@ -655,9 +688,12 @@
                             <TextView
                                 android:id="@+id/txt_report"
                                 style="@style/styleTextViewNormal"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center"
+                                android:drawableLeft="@drawable/ic_report"
+                                android:drawablePadding="@dimen/_5sdp"
+                                android:drawableTint="@color/red"
+                                android:onClick="onClick"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/report"
                                 android:textColor="@color/red"
@@ -668,7 +704,11 @@
                     </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
+
             </androidx.core.widget.NestedScrollView>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
+
     </LinearLayout>
+
 </RelativeLayout>

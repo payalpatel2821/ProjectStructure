@@ -11,6 +11,7 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.Sort
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -263,6 +264,12 @@ fun insertChatAudio(chatAudio: RealmList<ChatAudio>) {
     })
 }
 
+fun insertNotificationToneData(notificationTone: RealmList<NotificationTone>) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.copyToRealmOrUpdate(notificationTone)
+    })
+}
+
 fun getUserByUserId(userID: Int): Users? {
     return App.getRealmInstance().where(Users::class.java).equalTo(Users.PROPERTY_receiver_id, userID).findFirst()
 }
@@ -347,6 +354,34 @@ fun getChatPosition(chats: ArrayList<Chats>, userId: Int): Int {
     val ids: List<Int> = chats.map { it.id }
     return findIndex(ids, userId) ?: -1
 }
+fun getMyGroup(): List<Chats> {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_group, true).findAll().toList()
+}
+
+fun getUserNameFromId(groupUserId: List<Int>): String {
+    val getUser = App.getRealmInstance().where(Users::class.java)
+        .`in`(Users.PROPERTY_receiver_id, groupUserId.toTypedArray())
+        .findAll().filter { it.receiver_id != App.fastSave.getInt(Constants.prefUserId, 0) }
+    val getUserName = getUser.map { it.first_name + " " + it.last_name }
+    return getUserName.joinToString()
+}
+
+/**
+ * It returns the common groups list between logged in user and his friend
+ *
+ * @param userID : contains the id of otherUserId
+ * @return
+ */
+fun getCommonGroup(userID: Int): List<Chats> {
+    return App.getRealmInstance().where(Chats::class.java)
+        .equalTo(Chats.PROPERTY_is_group, true).findAll()
+        .filter { (it.group_user_with_settings.map { it.user_id }).contains(userID) }
+        .toList()
+}
+
+fun getAllNotificationTune():List<NotificationTone>{
+    return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
+}
 
 fun updateChatUserData(id: Int, user: Users) {
 
@@ -420,8 +455,19 @@ fun updateUserOnlineStatus(id: Int, isOnline: Boolean) {
             realm.copyToRealm(data)
         }
     })
+}
+
+fun updateNotificationStatus(id: Int, isSet: Boolean) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = realm.where(NotificationTone::class.java).equalTo(NotificationTone.PROPERTY_id, id).findFirst()
+        if (data != null) {
+            data.is_set = isSet
+            realm.copyToRealm(data)
+        }
+    })
 
 }
+
 
 fun deleteHooks(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
@@ -962,6 +1008,22 @@ fun prepareRequestDataForDB(friendRequestList: List<LoginResponse.GetAllRequest>
     return requestList
 }
 
+fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification.Data>): RealmList<NotificationTone> {
+    val notificationToneList = RealmList<NotificationTone>()
+    notificationList.let {
+        for (notificationObj in notificationList) {
+            val notificationTone = NotificationTone()
+            notificationTone.id = notificationObj.id
+            notificationTone.display_name = notificationObj.name
+            notificationTone.notification_url = notificationObj.toneName
+            notificationTone.sound_name = notificationObj.sound
+
+            notificationToneList.add(notificationTone)
+
+        }
+    }
+    return notificationToneList
+}
 
 interface OnRealmTransactionResult {
 

@@ -151,16 +151,21 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
             val builder = MultipartBody.Builder().setType(MultipartBody.FORM)
             builder.addFormDataPart(Constants.first_name, FastSave.getInstance().getString(Constants.first_name, ""))
                 .addFormDataPart(Constants.last_name, FastSave.getInstance().getString(Constants.last_name, ""))
-                .addFormDataPart(Constants.email, if (flagMobile) "" else FastSave.getInstance().getString(Constants.mobile, ""))
-                .addFormDataPart(Constants.mobile, if (flagMobile) FastSave.getInstance().getString(Constants.mobile, "") else "")
                 .addFormDataPart(Constants.password, FastSave.getInstance().getString(Constants.password, ""))
-                .addFormDataPart(Constants.password_confirmation, FastSave.getInstance().getString(Constants.password, ""))
+//                .addFormDataPart(Constants.password_confirmation, FastSave.getInstance().getString(Constants.password, ""))
                 .addFormDataPart(Constants.latitude, "0")
                 .addFormDataPart(Constants.longitude, "0")
                 .addFormDataPart(Constants.device_token, Constants.deviceToken)
                 .addFormDataPart(Constants.device_type, Constants.device_type_android)
                 .addFormDataPart(Constants.account_id, binding.edtAccId.text.toString().trim())
+                .addFormDataPart(Constants.email, if (flagMobile) "" else FastSave.getInstance().getString(Constants.mobile, ""))
+                .addFormDataPart(Constants.mobile, if (flagMobile) FastSave.getInstance().getString(Constants.mobile, "") else "")
 
+            if (flagMobile) {
+                builder.addFormDataPart(Constants.register_type, resources.getString(R.string.mobile).lowercase())
+            } else {
+                builder.addFormDataPart(Constants.register_type, resources.getString(R.string.email).lowercase())
+            }
             var imagePath = FastSave.getInstance().getString(Constants.profile_image, "")
             if (imagePath != null) {
                 Log.e("callAPIRegister: ", imagePath)

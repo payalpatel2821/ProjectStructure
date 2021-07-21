@@ -48,6 +48,20 @@ class Constants {
         const val status = "status"
         const val online = "online"
         const val isModified = "isModified"
+        const val register_type = "register_type"
+        const val page = "page"
+        const val follow = "follow"
+        const val mute_notification = "mute_notification"
+        const val friend_id = "friend_id"
+        const val is_custom_notification_enable = "is_custom_notification_enable"
+        const val notification_tone_id = "notification_tone_id"
+        const val vibrate_status = "vibrate_status"
+
+
+        // bundle value
+        const val bundle_custom_noti = "Custom_notification"
+        const val bundle_noti_tone = "Notification_Tune"
+        const val bundle_vibration = "Vibration"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information

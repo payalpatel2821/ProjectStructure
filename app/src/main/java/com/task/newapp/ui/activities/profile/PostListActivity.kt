@@ -2,12 +2,14 @@ package com.task.newapp.ui.activities.profile
 
 import android.os.Bundle
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.paginate.Paginate
 import com.task.newapp.R
-import com.task.newapp.adapter.PostListAdapter
+import com.task.newapp.adapter.profile.PostListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityPostListBinding
 import com.task.newapp.models.ResponsePostList
@@ -21,6 +23,7 @@ import kotlin.collections.ArrayList
 
 class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
 
+    private val allpost: ArrayList<ResponsePostList.Data> = ArrayList<ResponsePostList.Data>()
     private var userId: Int = 0
     lateinit var binding: ActivityPostListBinding
     private var paginate: Paginate? = null
@@ -53,7 +56,7 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
             paginate!!.unbind()
         }
 
-        postListAdapter = PostListAdapter(applicationContext, ArrayList(), this@PostListActivity)
+        postListAdapter = PostListAdapter(applicationContext, ArrayList())
         val layoutManager = GridLayoutManager(applicationContext, 3)
         binding.rvPostlist.layoutManager = layoutManager
         binding.rvPostlist.adapter = postListAdapter
@@ -109,11 +112,17 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
                     .subscribeWith(object : DisposableObserver<ResponsePostList>() {
                         override fun onNext(responsePostList: ResponsePostList) {
                             if (responsePostList.success == 1) {
+                                allpost.addAll(responsePostList.data)
                                 postListAdapter.setData(responsePostList.data as ArrayList<ResponsePostList.Data>)
                                 isloading = false
                                 hasLoadedAllItems = false
                             } else {
                                 hasLoadedAllItems = true
+                                if (allpost.isEmpty()) {
+                                    binding.ivEmptyPost.visibility = VISIBLE
+                                } else {
+                                    binding.ivEmptyPost.visibility = GONE
+                                }
                             }
                         }
 
@@ -139,4 +148,8 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mCompositeDisposable.clear()
+    }
 }

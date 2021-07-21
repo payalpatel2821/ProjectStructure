@@ -90,6 +90,7 @@
     <string name="video">Video</string>
     <string name="audio">Audio</string>
     <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
     <string name="search">Search</string>
     <string name="contact_detail">Contact Detail</string>
     <string name="chat_search">Chat Search</string>
@@ -106,6 +107,7 @@
     <string name="my_followers">My Followers</string>
     <string name="my_followings">My Followings</string>
     <string name="change_email">Change Email</string>
+    <string name="change_mobile">Change Mobile</string>
     <string name="verify">Verify</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
@@ -142,6 +144,19 @@
     <string name="username">Username</string>
     <string name="archive_count">archive (%d)</string>
     <string name="title_archived_list">Archived List</string>
+    <string name="notification_tune">Notification Tune</string>
+    <string name="vibration">Vibration</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="birthdate">Birth Date</string>
+    <string name="security">Security</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="block_confirm_msg">Do you want to block this user?</string>
+    <string name="unblock_confirm_msg">Do you want to unblock this user?</string>
+    <string name="conform_report">Do you want to report this user?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
 
     <array name="colorArrayThoughts">
         <item>@color/white</item>

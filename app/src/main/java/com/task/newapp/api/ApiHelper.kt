@@ -71,8 +71,8 @@ interface ApiHelper {
     @GET(get_myprofile_url)
     fun getMyProfile(@Path("user") user: String): Observable<ResponseMyProfile>
 
-    @POST(get_usersetting_url)
-    fun getUserSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserSetting>
+    @POST(set_usersetting_url)
+    fun setUserSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserSetting>
 
     @POST(get_user_follower_following_url)
     fun getUserFollowerFollowing(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
@@ -89,5 +89,16 @@ interface ApiHelper {
     @POST(set_profile_group_page_friend_post)
     fun getFriendList(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
 
+    @POST(set_profile_group_page_friend_post)
+    fun getPageList(@Body hashMap: HashMap<String, Any>): Observable<ResponsePageList>
+
+    @POST(set_friendsetting_url)
+    fun setFriendSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseFriendSetting>
+
+    @POST(set_block_unblock_report_url)
+    fun setBlockUnblockReportSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseBlockReportUser>
+
+    @POST(get_notification_tone)
+    fun getNotificationTune(@Body hashMap: HashMap<String, Any>): Observable<ResponseNotification>
 
 }
