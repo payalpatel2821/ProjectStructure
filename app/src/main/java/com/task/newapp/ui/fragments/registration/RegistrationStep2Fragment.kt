@@ -371,6 +371,11 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         binding.rbMobile.isEnabled = false
 
         binding.txtSendcode.visibility = GONE
+        if (flagMobile){
+            binding.txtChangeemail.text=resources.getString(R.string.change_mobile)
+        }else{
+            binding.txtChangeemail.text=resources.getString(R.string.change_email)
+        }
         binding.txtChangeemail.visibility = VISIBLE
         binding.llVerify.visibility = VISIBLE
 

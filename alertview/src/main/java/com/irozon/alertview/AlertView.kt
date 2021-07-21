@@ -5,6 +5,7 @@ import com.irozon.alertview.enums.AlertStyle
 import com.irozon.alertview.enums.AlertTheme
 import com.irozon.alertview.fragments.BottomSheetFragment
 import com.irozon.alertview.fragments.DialogFragment
+import com.irozon.alertview.fragments.IosRadioSheetFragment
 import com.irozon.alertview.fragments.IosSheetFragment
 import com.irozon.alertview.objects.AlertAction
 
@@ -48,6 +49,10 @@ class AlertView(
             }
             AlertStyle.IOS -> {
                 val bottomSheet = IosSheetFragment(title, message, actions, theme, cancelButtonText)
+                bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
+            }
+            AlertStyle.IOS_RADIO -> {
+                val bottomSheet = IosRadioSheetFragment(title, message, actions, theme, cancelButtonText)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
             AlertStyle.DIALOG -> {

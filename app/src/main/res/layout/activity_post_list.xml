@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -49,10 +49,17 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_postlist"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                   />
+                    android:layout_height="match_parent" />
 
-            </LinearLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_empty_post"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_blank_post"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"/>
+
+            </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>
 </layout>

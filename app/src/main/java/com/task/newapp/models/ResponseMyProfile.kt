@@ -33,7 +33,7 @@ data class ResponseMyProfile(
         val forgot_token: String,
         val gender: String,
         val id: Int,
-        val is_block: Int,
+        var is_block: Int,
         val is_blocked_by_admin: Int,
         val is_deleted: Int,
         val is_follow: Boolean,
@@ -49,7 +49,7 @@ data class ResponseMyProfile(
         val latitude: String,
         val location: Any,
         val longitude: String,
-        val mobile: Any,
+        val mobile: String,
         val profession: Any,
         val profile_image: String,
         val profile_views: Int,
@@ -59,7 +59,8 @@ data class ResponseMyProfile(
         val tag_post_count: Int,
         val u_name: String,
         val updated_at: String,
-        val usersetting: MyProfileUsersetting
+        val usersetting: MyProfileUsersetting,
+        val friendsetting: ResponseFriendSetting.Data
     ) {
         data class MyProfileUsersetting(
             val about_seen: String,

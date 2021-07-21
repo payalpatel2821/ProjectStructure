@@ -6,5 +6,6 @@ package com.irozon.alertview.enums
 enum class AlertStyle {
     BOTTOM_SHEET,
     DIALOG,
-    IOS
+    IOS,
+    IOS_RADIO
 }

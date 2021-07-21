@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/media_item"
         app:layout_constraintTop_toTopOf="@+id/media_item"
-        app:srcCompat="@drawable/ic_video"
+        app:srcCompat="@drawable/ic_video_profile"
         tools:ignore="ContentDescription" />
 
     <TextView
