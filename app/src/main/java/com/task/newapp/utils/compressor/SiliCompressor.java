@@ -40,7 +40,8 @@ public class SiliCompressor {
 
     static volatile SiliCompressor singleton = null;
     private static Context mContext;
-    private static final String FILE_PROVIDER_AUTHORITY = ".iceteck.silicompressor.provider";
+    private static final String FILE_PROVIDER_AUTHORITY = ".fileprovider";
+//    private static final String FILE_PROVIDER_AUTHORITY = ".iceteck.silicompressor.provider";
 
     public SiliCompressor(Context context) {
         mContext = context;
@@ -274,7 +275,8 @@ public class SiliCompressor {
      */
     private String compressImage(String uriString, File destDirectory) {
         try {
-            Uri imageUri = Uri.parse(uriString);
+//            Uri imageUri = Uri.parse(uriString);
+            Uri imageUri = Uri.fromFile(new File(uriString));
             Bitmap scaledBitmap = null;
 
             BitmapFactory.Options options = new BitmapFactory.Options();

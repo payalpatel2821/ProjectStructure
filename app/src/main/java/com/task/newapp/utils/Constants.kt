@@ -3,6 +3,7 @@ package com.task.newapp.utils
 import com.task.newapp.R
 
 class Constants {
+
     companion object {
         const val deviceToken = "c926RJ-JQS62C7bolZsMrq:APA91bF-_8V1mRc-cpuKlTmw2kL7iYIua9HI4uZye76jR1lII7gDZT8HOABpBIubisYO7bNnyDbYNNVYoiX47bwkRODU6vAWJjz9z3wNLBCSni5dyzTjc91xQ3FAWDalu4BwZvA4p0h0"
         const val user_name = "user_name"
@@ -14,10 +15,12 @@ class Constants {
         const val typeCode = "type"
         const val comment_text = "comment_text"
         const val post_id = "post_id"
+        const val hastags = "hastags"
         const val offset = "offset"
         const val limit = "limit"
         const val latitude = "latitude"
         const val longitude = "longitude"
+        const val location = "location"
         const val password = "password"
         const val password_confirmation = "password_confirmation"
         const val code = "code"
@@ -44,6 +47,15 @@ class Constants {
         const val is_archive = "is_archive"
         const val receiver_id = "receiver_id"
         const val is_secret = "is_secret"
+        const val MAX_IMAGE_COUNT_IF_VIDEO_SELECTED = 15
+        const val MAX_IMAGE_COUNT = 30
+        const val MAX_VIDEO_COUNT = 5
+        const val data = "data"
+        const val SIZE_DEFAULT = 2048
+        const val SIZE_LIMIT = 4096
+
+        var sInputImageWidth = 0
+        var sInputImageHeight = 0
         const val socket_tag = "SOCKET"
         const val status = "status"
         const val online = "online"
@@ -69,7 +81,6 @@ class Constants {
             STEP_3(2), //set password
             STEP_4(3)  //set username
         }
-
 
         enum class MessageEvents(val eventName: String) {
 

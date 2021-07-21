@@ -33,8 +33,27 @@
     <color name="delete_chat">#B22225</color>
     <color name="hook_chat">#ECA89F</color>
     <color name="change_color">#ededed</color>
-
     <color name="graybg">#F7F7F7</color>
     <color name="chat_input_bg_color">#EEF1F6</color>
+
+    <!--photo editor-->
+    <color name="blue_color_picker">#0066FF</color>
+    <color name="brown_color_picker">#AF593E</color>
+    <color name="green_color_picker">#01A368</color>
+    <color name="orange_color_picker">#FF861F</color>
+    <color name="red_color_picker">#ED0A3F</color>
+    <color name="red_orange_color_picker">#FF3F34</color>
+    <color name="sky_blue_color_picker">#76D7EA</color>
+    <color name="violet_color_picker">#8359A3</color>
+    <color name="yellow_color_picker">#FBE870</color>
+    <color name="yellow_green_color_picker">#C5E17A</color>
+    <color name="tool_bg">#151414</color>
+    <color name="semi_black_transparent">#99000000</color>
+    <color name="gray_edit">#737373</color>
+    <color name="windowBackground">#1C1C1C</color>
+    <color name="overlay">#AA1C1C1C</color>
+    <color name="divider">#333333</color>
+    <color name="textColorPrimary">#FFFFFB</color>
+
 
 </resources>
