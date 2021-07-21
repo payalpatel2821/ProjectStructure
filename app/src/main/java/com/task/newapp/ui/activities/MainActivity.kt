@@ -7,23 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
+import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.registration.PostFragment
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.launchActivity
-import com.task.newapp.utils.setBlurLayout
-import com.task.newapp.utils.showToast
+import com.task.newapp.utils.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener {
 
     lateinit var binding: ActivityMainBinding
 
@@ -34,7 +32,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
+        onSocketEventsListener = this
         setupNavigationDrawer()
         setupBottomNavigationBar()
     }
@@ -72,7 +70,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setupBottomNavigationBar() {
-        binding.bottomBar.setActiveItem(1)
+        binding.bottomBar.setActiveItem(0)
 //        binding.bottomBar.setBadge(2)
 //        binding.bottomBar.removeBadge(2)
 
@@ -124,7 +122,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            showToast("Item $it long click")
 //        }
 
-        setCurrentFragment(postFragment)
+        setCurrentFragment(chatsFragment)
     }
 
     private fun toggleRightDrawer() {
@@ -142,14 +140,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             commit()
         }
 
-    /* override fun onCreateOptionsMenu(menu: Menu): Boolean {
-         menuInflater.inflate(R.menu.main_menu, menu)
-         var drawable = menu.findItem(R.id.action_emergency_alert).icon
-         drawable = DrawableCompat.wrap(drawable!!)
-         DrawableCompat.setTint(drawable, ContextCompat.getColor(this, R.color.black))
-         menu.findItem(R.id.action_emergency_alert).icon = drawable
-         return true
-     }*/
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -190,25 +181,41 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 launchActivity<LoginActivity> { }
                 showToast(getString(R.string.logout))
                 clearDatabase()
+                disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
                 finish()
 
             }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
-                launchActivity<MyProfileActivity> {  }
+                launchActivity<MyProfileActivity> { }
             }
         }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-
-        if (postFragment.myBottomSheetMoment.isVisible) {
-            postFragment.myBottomSheetMoment.dismiss()
-        }
-        if (postFragment.myBottomSheetThought.isVisible) {
-            postFragment.myBottomSheetThought.dismiss()
+        if (binding.bottomBar.getActiveItem() == 1) {
+            if (postFragment.myBottomSheetMoment.isVisible) {
+                postFragment.myBottomSheetMoment.dismiss()
+            }
+            if (postFragment.myBottomSheetThought.isVisible) {
+                postFragment.myBottomSheetThought.dismiss()
+            }
+        } else {
+            super.onBackPressed()
         }
     }
+
+    override fun onOnlineOfflineSocketEvent(userId: Int, status: Boolean) {
+        if (binding.bottomBar.getActiveItem() == 0) {
+            chatsFragment.updateOnlineUser(userId, status)
+        }
+    }
+
+    override fun onPostLikeDislikeEvent() {
+        if (binding.bottomBar.getActiveItem() == 1) {
+            postFragment.postLikeDislike()
+        }
+    }
+
 
 }

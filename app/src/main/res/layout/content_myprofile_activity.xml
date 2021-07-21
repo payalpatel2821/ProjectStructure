@@ -168,15 +168,15 @@
                             android:text="Prinsa adbiz" />
 
                         <ImageView
+                            style="@style/styleImageThemeColorTint"
                             android:layout_width="@dimen/_40sdp"
                             android:layout_height="@dimen/_20sdp"
                             android:layout_gravity="center"
                             android:layout_marginLeft="@dimen/_10sdp"
+                            android:onClick="onClick"
                             android:padding="@dimen/_2sdp"
                             android:src="@drawable/ic_edit"
-                            android:onClick="onClick"
-                            android:visibility="gone"
-                            style="@style/styleImageThemeColorTint" />
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
@@ -195,8 +195,8 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/_10sdp"
                         android:paddingTop="@dimen/_2sdp"
-                        android:textSize="@dimen/_14ssp"
-                        android:text="Hi,i am using HOW" />
+                        android:text="Hi,i am using HOW"
+                        android:textSize="@dimen/_14ssp" />
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -212,30 +212,34 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:padding="@dimen/_5sdp">
+
                             <RelativeLayout
                                 android:id="@+id/iv_edit_profile"
                                 android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
-                                android:onClick="onClick"
-                                android:layout_height="wrap_content">
+                                android:onClick="onClick">
 
                                 <TextView
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_edit_profile"
+                                    android:drawableTint="@color/black"
+                                    android:drawableLeft="@drawable/ic_edit"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/edit_my_profile" />
+                                    android:text="@string/edit_my_profile"
+                                    android:textSize="@dimen/_14ssp" />
 
                             </RelativeLayout>
+
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray"
-                                android:visibility="visible"/>
+                                android:visibility="visible" />
+
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -245,27 +249,28 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_visibility"
-                                    android:drawablePadding="@dimen/_10sdp"
-                                    android:gravity="center"
                                     android:layout_centerVertical="true"
+                                    android:drawableLeft="@drawable/ic_pass_read"
+                                    android:drawablePadding="@dimen/_10sdp"
+                                    android:drawableTint="@color/black"
+                                    android:gravity="center"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/visibility" />
+                                    android:text="@string/visibility"
+                                    android:textSize="@dimen/_14ssp" />
 
                                 <androidx.appcompat.widget.SwitchCompat
                                     android:id="@+id/switch_visibility"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_centerVertical="true"
-                                    android:layout_alignParentRight="true" />
+                                    android:layout_alignParentRight="true"
+                                    android:layout_centerVertical="true" />
                             </RelativeLayout>
 
                             <View
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
@@ -276,12 +281,12 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_nearby"
+                                    android:drawableLeft="@drawable/ic_location"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/show_me_nearby" />
+                                    android:text="@string/show_me_nearby"
+                                    android:textSize="@dimen/_14ssp" />
 
                                 <androidx.appcompat.widget.SwitchCompat
                                     android:id="@+id/switch_showmenearby"
@@ -295,7 +300,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <RelativeLayout
                                 android:id="@+id/rl_performance"
@@ -307,12 +312,12 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:drawableLeft="@drawable/ic_performance"
+                                    android:drawableLeft="@drawable/ic_user"
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:gravity="center"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/performance_rewards" />
+                                    android:text="@string/performance_rewards"
+                                    android:textSize="@dimen/_14ssp" />
 
                             </RelativeLayout>
 
@@ -342,10 +347,10 @@
                                 android:layout_height="wrap_content"
                                 android:drawableRight="@drawable/ic_next"
                                 android:drawableTint="@color/black"
-                                android:padding="@dimen/_5sdp"
-                                android:textSize="@dimen/_14ssp"
                                 android:onClick="onClick"
-                                android:text="@string/my_post" />
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/my_post"
+                                android:textSize="@dimen/_14ssp" />
 
                             <View
                                 android:layout_width="match_parent"
@@ -360,10 +365,10 @@
                                 android:drawableRight="@drawable/ic_next"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:drawableTint="@color/black"
-                                android:padding="@dimen/_5sdp"
-                                android:textSize="@dimen/_14ssp"
                                 android:onClick="onClick"
-                                android:text="@string/tagged_posts" />
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/tagged_posts"
+                                android:textSize="@dimen/_14ssp" />
 
                             <View
                                 android:layout_width="match_parent"
@@ -378,10 +383,10 @@
                                 android:drawableRight="@drawable/ic_next"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:drawableTint="@color/black"
-                                android:padding="@dimen/_5sdp"
-                                android:textSize="@dimen/_14ssp"
                                 android:onClick="onClick"
-                                android:text="@string/saved_posts" />
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/saved_posts"
+                                android:textSize="@dimen/_14ssp" />
 
 
                         </LinearLayout>
@@ -444,8 +449,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/pages" />
+                                    android:text="@string/pages"
+                                    android:textSize="@dimen/_14ssp" />
 
                                 <TextView
                                     android:id="@+id/txt_pages_count"
@@ -477,8 +482,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:padding="@dimen/_5sdp"
-                                    android:textSize="@dimen/_14ssp"
-                                    android:text="@string/friends" />
+                                    android:text="@string/friends"
+                                    android:textSize="@dimen/_14ssp" />
 
                                 <TextView
                                     android:id="@+id/txt_frds_count"

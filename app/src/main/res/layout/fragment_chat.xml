@@ -55,15 +55,39 @@
             android:background="@color/color_overlay"
             android:elevation="@dimen/_1sdp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_chats"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:paddingBottom="@dimen/_60sdp"
-            tools:itemCount="10"
-            tools:listitem="@layout/item_chat" />
+            tools:visibility="gone">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_chats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:itemCount="6"
+                    tools:listitem="@layout/item_chat" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_archive"
+                    style="@style/styleTextViewNormalBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:onClick="onClick"
+                    android:text="@string/archive_count"
+                    android:textAllCaps="false"
+                    android:textColor="@color/gray4" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
             android:id="@+id/ll_empty_chat"
@@ -72,7 +96,8 @@
             android:layout_marginBottom="@dimen/_80sdp"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/styleTextViewNormalBold"
@@ -128,7 +153,7 @@
                     style="@style/styleTextViewNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_archive1"
+                    android:drawableStart="@drawable/ic_archive"
                     android:drawablePadding="@dimen/_10sdp"
                     android:drawableTint="@color/theme_color"
                     android:gravity="start"

@@ -13,7 +13,6 @@ import com.task.newapp.ui.fragments.registration.RegistrationStep1Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep2Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep3Fragment
 import com.task.newapp.ui.fragments.registration.RegistrationStep4Fragment
-import com.task.newapp.utils.Constants
 
 class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
 
@@ -35,17 +34,6 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
 
         val bundle = Bundle()
         bundle.putBoolean("fromForgotPass", false)
-        val navigation: Constants.Companion.ProfileNavigation = intent.getStringExtra("From") as Constants.Companion.ProfileNavigation
-        when (navigation) {
-            Constants.Companion.ProfileNavigation.FROM_FOLLOWERS -> {
-            }
-            Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS -> {
-            }
-            Constants.Companion.ProfileNavigation.FROM_PROFILE_VIEWS -> {
-            }
-            Constants.Companion.ProfileNavigation.FROM_FRIENDS -> {
-            }
-        }
         val registrationStep2Fragment = RegistrationStep2Fragment()
         registrationStep2Fragment.arguments = bundle
 

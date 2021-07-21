@@ -215,7 +215,7 @@
                         android:id="@+id/imgLike"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_unlike" />
+                        android:src="@drawable/ic_not_like" />
 
                     <TextView
                         android:id="@+id/txtLikeCount"

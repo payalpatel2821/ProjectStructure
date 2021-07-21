@@ -1,6 +1,5 @@
 package com.task.newapp.ui.activities
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -126,6 +125,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         App.fastSave.saveString(Constants.prefToken, loginResponse.data.token)
         App.fastSave.saveObject(Constants.prefUser, loginResponse.data.user)
         App.fastSave.saveInt(Constants.prefUserId, loginResponse.data.user.id)
+        App.fastSave.saveString(Constants.prefUserName, loginResponse.data.user.firstName + " " + loginResponse.data.user.lastName)
         App.fastSave.saveBoolean(Constants.isLogin, true)
     }
 

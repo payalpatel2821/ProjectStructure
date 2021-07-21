@@ -54,7 +54,7 @@
                     android:layout_marginTop="@dimen/_45sdp"
                     android:gravity="center"
                     android:theme="@style/EditTextThemeOverlay"
-                    app:endIconDrawable="@drawable/ic_username"
+                    app:endIconDrawable="@drawable/ic_user"
                     app:errorTextAppearance="@style/ErrorTextAppearance"
                     app:hintTextAppearance="@style/HintTextAppearance"
                     app:helperTextTextAppearance="@style/HelperTextAppearance"

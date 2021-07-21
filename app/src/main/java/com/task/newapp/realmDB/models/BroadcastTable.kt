@@ -25,7 +25,7 @@ open class BroadcastTable : RealmObject() {
     var user_id: Int = 0
     var broad_name: String? = null
     var broad_icon: String? = null
-    var broad_total_user: String? = null
+    var broad_total_user: Int = 0
     var broad_other_userid: String? = null
     var created_at: String? = null
     var updated_at: String? = null

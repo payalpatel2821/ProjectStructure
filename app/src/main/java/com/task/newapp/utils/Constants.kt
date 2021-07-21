@@ -44,6 +44,10 @@ class Constants {
         const val is_archive = "is_archive"
         const val receiver_id = "receiver_id"
         const val is_secret = "is_secret"
+        const val socket_tag = "SOCKET"
+        const val status = "status"
+        const val online = "online"
+        const val isModified = "isModified"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information
@@ -121,30 +125,38 @@ class Constants {
             FROM_FRIENDS("friend", R.string.friends);
         }
 
-        enum class PostNavigation(val flag : String,val title:Int){
-            FROM_POST("post",R.string.my_post),
-            FROM_TAGGED_POST("tag_post",R.string.tagged_posts),
-            FROM_SAVED_POST("save_post",R.string.saved_posts)
+        enum class PostNavigation(val flag: String, val title: Int) {
+            FROM_POST("post", R.string.my_post),
+            FROM_TAGGED_POST("tag_post", R.string.tagged_posts),
+            FROM_SAVED_POST("save_post", R.string.saved_posts)
         }
 
         //-----------------Pref--------------------
         const val prefUserId = "prefUserId"
         const val prefUser = "prefUser"
+        const val prefUserName = "prefUserName"
         const val prefToken = "prefToken"
         const val prefIsRemember = "prefIsRemember"
         const val prefUserNameRemember = "prefUserNameRemember"
         const val prefPasswordRemember = "prefPasswordRemember"
 
         //----------------------Socket-------------------------
+
+        //On events
+        const val isonlineresponse = "isonlineresponse"
+        const val userdisconnect = "userdisconnect"
         const val post_delete_response = "post_delete_response"
         const val story_broadcast = "story_broadcast"
         const val story_delete_response = "story_delete_response"
-        const val post_like = "post_like"
         const val post_like_response = "post_like_response"
-        const val disconnect = "disconnect"
+        const val userjoinedthechat = "userjoinedthechat"
+        const val newMessage = "newMessage"
 
-        // emit event
+        // emit events
         const val join = "join"
         const val isonline = "isonline"
+        const val disconnect = "disconnect"
+        const val post_like = "post_like"
+
     }
 }

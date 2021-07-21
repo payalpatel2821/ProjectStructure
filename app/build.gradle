@@ -34,7 +34,8 @@ android {
 //             buildConfigField "String", "call_url", "\"http://howmessenger.com:6000/\""
 //             buildConfigField "String", "call_url", "\"http://howmessenger.com:2222/\""
             buildConfigField "String", "port_url", "\"http://howmessenger.com:9000/\""
-            buildConfigField "String", "server_url", "\"https://howmessenger.com\""
+            //buildConfigField "String", "server_url", "\"https://howmessenger.com\""
+            buildConfigField "String", "server_url", "\"http://192.168.100.85\""
 //            buildConfigField "String", "server_url", "\"http://14.97.16.164\""
 
             //TODO backup server domain
@@ -150,6 +151,7 @@ dependencies {
     //paginate
     implementation 'com.github.markomilos:paginate:1.0.0'
 
+    //socket
     implementation('com.github.nkzawa:socket.io-client:0.6.0') {
         exclude group: 'org.json', module: 'json'
     }
@@ -160,4 +162,8 @@ dependencies {
     implementation 'com.vanniktech:emoji-ios:0.7.0'
     implementation 'com.github.markomilos:paginate:1.0.0'
     implementation 'io.github.florent37:shapeofview:1.4.7'
+
+    //parceler
+    implementation 'org.parceler:parceler-api:1.1.12'
+    kapt 'org.parceler:parceler:1.1.12'
 }

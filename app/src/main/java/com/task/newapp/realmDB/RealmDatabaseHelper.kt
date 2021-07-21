@@ -5,6 +5,7 @@ import com.task.newapp.models.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.realmDB.models.ChatContacts
 import com.task.newapp.utils.Constants
+import com.task.newapp.utils.findIndex
 import com.task.newapp.utils.getGroupLabelText
 import io.realm.Realm
 import io.realm.RealmList
@@ -128,18 +129,38 @@ fun insertBlockUserData(blockUserData: RealmList<BlockUser>) {
     })
 }
 
+/**
+ * Insert LoggedIn user settings data to UserSettings Table
+ *
+ * @param userSettings : contains user settings data from login response
+ */
 fun insertUserSettingsData(userSettings: UserSettings) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(userSettings)
     })
 }
 
+/**
+ * Insert Friend settings data in bulk to FriendSettings Table
+ *
+ * @param friendSettings : contains list of Friend Settings data coming from login response
+ */
 fun insertFriendSettingsData(friendSettings: RealmList<FriendSettings>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(friendSettings)
     })
 }
 
+/**
+ * Insert Groups data in bulk coming from login response
+ *
+ *
+ * @param groups            : contains group details
+ * @param groupUser         : contains group users details
+ * @param chatlist          : contains group create label data
+ * @param addUserChatList   : contains group add user label data
+ * @param chats             : contains main list object of chat list
+ */
 fun insertGroupData(groups: RealmList<Groups>, groupUser: RealmList<GroupUser>, chatlist: RealmList<ChatList>, addUserChatList: RealmList<ChatList>, chats: RealmList<Chats>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(groups)
@@ -151,12 +172,22 @@ fun insertGroupData(groups: RealmList<Groups>, groupUser: RealmList<GroupUser>, 
 
 }
 
+/**
+ * insert hook data in bulk coming from login response
+ *
+ * @param hook
+ */
 fun insertHookData(hook: RealmList<UserHook>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(hook)
     })
 }
 
+/**
+ * Insert single hook object into UserHook table
+ *
+ * @param hook
+ */
 fun insertHookData(hook: UserHook) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(hook)
@@ -254,6 +285,14 @@ fun getAllChats(): List<Chats> {
 
 }
 
+fun getAllArchivedChat(): List<Chats> {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_archive, true).findAll().sort(Chats.PROPERTY_current_time, Sort.DESCENDING)
+}
+
+fun getGroupsFromGroupId(groupId: List<Int>): List<Groups> {
+    return App.getRealmInstance().where(Groups::class.java).`in`(Groups.PROPERTY_grp_id, groupId.toTypedArray()).findAll()
+}
+
 fun getSingleChatContent(chatId: Int): ChatContents? {
     return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents.PROPERTY_chat_id, chatId).findFirst()
 }
@@ -291,6 +330,23 @@ fun getHookCount(): Int {
     return App.getRealmInstance().where(UserHook::class.java).count().toInt()
 }
 
+fun getAllGroups(): List<Groups> {
+    return App.getRealmInstance().where(Groups::class.java).findAll().toList()
+}
+
+fun getAllGroupsInCommon(otherUserId: Int): List<GroupUser> {
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser.PROPERTY_user_id, otherUserId).findAll()
+}
+
+
+fun getArchivedChatCount(): Int {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_archive, true).findAll().size
+}
+
+fun getChatPosition(chats: ArrayList<Chats>, userId: Int): Int {
+    val ids: List<Int> = chats.map { it.id }
+    return findIndex(ids, userId) ?: -1
+}
 
 fun updateChatUserData(id: Int, user: Users) {
 
@@ -354,6 +410,17 @@ fun updateChatsIsArchive(id: Int) {
         }
 
     })
+}
+
+fun updateUserOnlineStatus(id: Int, isOnline: Boolean) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = realm.where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+        if (data != null) {
+            data.is_online = isOnline
+            realm.copyToRealm(data)
+        }
+    })
+
 }
 
 fun deleteHooks(ids: List<Int>) {

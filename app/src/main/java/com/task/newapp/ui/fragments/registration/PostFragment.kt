@@ -18,14 +18,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
-import com.irozon.alertview.enums.AlertActionStyle
-import com.irozon.alertview.objects.AlertAction
 import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.App.Companion.fastSave
@@ -90,7 +87,6 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
             inflater, R.layout.fragment_post, container, false
         )
         act = activity
-        socket = App.socket!!
         instance = this
 
         return binding.root
@@ -117,6 +113,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
     }
 
     private fun initView() {
+        socket = App.getSocketInstance()
+       // initSocketListeners()
         binding.llMomentsPhotos.setOnClickListener(this)
         binding.llMomentsVideos.setOnClickListener(this)
         binding.llThoughts.setOnClickListener(this)
@@ -164,13 +162,6 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
             .error(R.drawable.default_dp).into(binding.imgUser)
     }
 
-    private fun initSocketListeners() {
-        socket.on(Constants.post_like_response, onPostLikeResponse)
-    }
-
-    private fun destroySocketListeners() {
-        socket.off(Constants.post_like_response, onPostLikeResponse)
-    }
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -238,7 +229,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
 
                                                 when (view.id) {
                                                     R.id.imgLike -> {
-                                                        initSocketListeners()
+                                                       // initSocketListeners()
 
                                                         val imgLike: ImageView = view as ImageView
 
@@ -251,7 +242,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
                                                         when (allPostData.isLike) {
                                                             0 -> {
                                                                 likeType = "like"
-                                                                imgLike.setImageResource(R.drawable.ic_like_fill)
+                                                                imgLike.setImageResource(R.drawable.ic_like)
 
                                                                 if (allPostData.likesCount >= 0) {
                                                                     val count = allPostData.likesCount + 1
@@ -261,7 +252,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
                                                             }
                                                             1 -> {
                                                                 likeType = "unlike"
-                                                                imgLike.setImageResource(R.drawable.ic_unlike)
+                                                                imgLike.setImageResource(R.drawable.ic_not_like)
 
                                                                 if (allPostData.likesCount > 0) {
                                                                     val count = allPostData.likesCount - 1
@@ -286,13 +277,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
                                                         when (allPostData.isSave) {
                                                             0 -> {
                                                                 saveType = "save"
-                                                                imgSave.setImageResource(R.drawable.ic_save_fill)
+                                                                imgSave.setImageResource(R.drawable.ic_save)
 
                                                                 post_Frag_adapter.updateSave(1, position)
                                                             }
                                                             1 -> {
                                                                 saveType = "unsave"
-                                                                imgSave.setImageResource(R.drawable.ic_save)
+                                                                imgSave.setImageResource(R.drawable.ic_nonsave)
 
                                                                 post_Frag_adapter.updateSave(0, position)
                                                             }
@@ -429,6 +420,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
     override fun onDestroy() {
         super.onDestroy()
         mCompositeDisposable.clear()
+       // destroySocketListeners()
     }
 
     override fun onLoadMore() {
@@ -493,25 +485,11 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        destroySocketListeners()
-    }
+    /*  override fun onDestroyView() {
+          super.onDestroyView()
+          destroySocketListeners()
+      }*/
 
-    private val onPostLikeResponse = Emitter.Listener { args ->
-        activity?.runOnUiThread(Runnable {
-            Log.e("onPostLikeResponse", args.toString())
-            val data = args[0] as String
-            if (data != null) {
-                val postSocket = Gson().fromJson(data, PostSocket::class.java)
-                if (fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id
-                    && post_id == postSocket.post_id
-                ) {
-                    //post_data_count(postSocket.getPost_id())
-                }
-            }
-        })
-    }
 
     private fun callAPIPostSave(saveType: String, postId: String) {
         try {
@@ -693,5 +671,32 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks {
         })
     }
 
+  /*  private fun initSocketListeners() {
+        socket.on(Constants.post_like_response, onPostLikeResponse)
+    }
 
+    private fun destroySocketListeners() {
+        socket.off(Constants.post_like_response, onPostLikeResponse)
+    }*/
+/*
+    private val onPostLikeResponse = Emitter.Listener { args ->
+        val data = args[0] as String
+        Log.e("onPostLikeResponse", args.toString())
+        *//*activity?.runOnUiThread(Runnable {
+
+            val data = args[0] as String
+            if (data != null) {
+                val postSocket = Gson().fromJson(data, PostSocket::class.java)
+                if (fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id
+                    && post_id == postSocket.post_id
+                ) {
+                    //post_data_count(postSocket.getPost_id())
+                }
+            }
+        })*//*
+    }*/
+
+    fun postLikeDislike() {
+        Log.e("onPostLikeResponse", "postLikeDislike")
+    }
 }
