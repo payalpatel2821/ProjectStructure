@@ -1,5 +1,7 @@
 package com.task.newapp
 
+import android.content.Context
+import android.graphics.Typeface
 import android.net.TrafficStats
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -50,6 +52,10 @@ class App : MultiDexApplication() {
         @JvmStatic
         fun getSocketInstance(): Socket {
             return socket as Socket
+        }
+
+        fun setFont(context: Context, str: String?): Typeface? {
+            return Typeface.createFromAsset(context.assets, str)
         }
     }
 

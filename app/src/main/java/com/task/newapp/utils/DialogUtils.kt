@@ -1,15 +1,20 @@
 package com.task.newapp.utils
 
 import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.Window
 import android.widget.AdapterView
+import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 import com.irozon.alertview.AlertView
 import com.irozon.alertview.enums.AlertActionStyle
 import com.irozon.alertview.enums.AlertStyle
@@ -18,9 +23,14 @@ import com.task.newapp.R
 import com.task.newapp.adapter.profile.NotificationListAdapter
 import com.task.newapp.models.NotificationToneWrapper
 import com.task.newapp.realmDB.getAllNotificationTune
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.forEach
+import kotlin.collections.hashMapOf
 
 
 class DialogUtils {
+
     fun showConfirmationDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert1 = AlertView(title, message, AlertStyle.BOTTOM_SHEET)
         alert1.show(activity)
@@ -57,7 +67,7 @@ class DialogUtils {
         notificationAdp.selectSingleItem(setPosition - 1)
         notificationAdp.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
             notificationAdp.selectSingleItem(position)
-            listener.onItemClick(position,notificationTunes.get(position).notificationTone.notification_url)
+            listener.onItemClick(position, notificationTunes.get(position).notificationTone.notification_url)
         })
         txtDone.setOnClickListener(View.OnClickListener {
             doneClick.onDefaultButtonClick(notificationAdp.getCheckedItem().toString())
@@ -98,18 +108,145 @@ class DialogUtils {
         }
     }
 
-    fun showReportDialog(activity: AppCompatActivity){
+    fun showReportDialog(activity: AppCompatActivity, message: String, listener: DialogCallbacks) {
         val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_report_user)
-        val txtDone: TextView = dialog.findViewById(R.id.txt_done)!!
-        val rvNotification: RecyclerView = dialog.findViewById(R.id.rv_notification)!!
+        val edtReason: EditText = dialog.findViewById(R.id.edt_reason)!!
+        val txtYes: TextView = dialog.findViewById(R.id.txt_yes)!!
+        val txtNo: TextView = dialog.findViewById(R.id.txt_no)!!
+        val txtTitle: TextView = dialog.findViewById(R.id.txt_title)!!
+        txtTitle.text = message
 
-        txtDone.setOnClickListener(View.OnClickListener {
-//            doneClick.onDefaultButtonClick(notificationAdp.getCheckedItem().toString())
+        txtYes.setOnClickListener {
+            listener.onDefaultButtonClick(edtReason.text.toString())
             dialog.dismiss()
+        }
+
+        txtNo.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    fun showChangeEmailDialog(activity: AppCompatActivity, listener: DialogCallbacks) {
+        val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_change_email)
+        val edtEmail: EditText = dialog.findViewById(R.id.edt_email)!!
+        val inputEmail: TextInputLayout = dialog.findViewById(R.id.input_layout_email)!!
+        val txtConfirm: TextView = dialog.findViewById(R.id.txt_confirm)!!
+
+        txtConfirm.setOnClickListener {
+            if (edtEmail.text.toString().trim().isNullOrBlank()) {
+                inputEmail.error = activity.resources.getString(R.string.enter_email_address)
+                return@setOnClickListener
+            }else if (!isValidEmail(edtEmail.text.toString().trim())){
+                 inputEmail.error = activity.resources.getString(R.string.enter_valid_address)
+                return@setOnClickListener
+            }
+            listener.onDefaultButtonClick(edtEmail.text.toString())
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    fun showChangePasswordDialog(activity: AppCompatActivity, listener: ConfirmationDialogCallbacks) {
+        val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_change_password)
+        val edtOldPassword: EditText = dialog.findViewById(R.id.edt_old_password)!!
+        val edtNewPassword: EditText = dialog.findViewById(R.id.edt_new_password)!!
+        val edtConfirmPassword: EditText = dialog.findViewById(R.id.edt_confirm_password)!!
+        val inputOldPassword: TextInputLayout = dialog.findViewById(R.id.input_old_password)!!
+        val inputNewPassword: TextInputLayout = dialog.findViewById(R.id.input_new_password)!!
+        val inputConfirmPassword: TextInputLayout = dialog.findViewById(R.id.input_confirm_password)!!
+        val txtConfirm: TextView = dialog.findViewById(R.id.txt_confirm)!!
+
+        edtOldPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                inputOldPassword.isErrorEnabled = false
+                inputOldPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.black))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        edtNewPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                inputNewPassword.isErrorEnabled = false
+                inputNewPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.black))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+        })
+        edtConfirmPassword.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                inputConfirmPassword.isErrorEnabled = false
+                inputConfirmPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.black))
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
         })
 
+        txtConfirm.setOnClickListener {
+            if (edtOldPassword.text.toString().trim().isNullOrBlank()) {
+                inputOldPassword.error = activity.resources.getString(R.string.enter_password)
+                inputOldPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+                return@setOnClickListener
+            }
+            if (edtNewPassword.text.toString().trim().isNullOrBlank()) {
+                inputNewPassword.error = activity.resources.getString(R.string.enter_new_password)
+                inputNewPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+                return@setOnClickListener
+            }
+            if (edtConfirmPassword.text.toString().trim().isNullOrBlank()) {
+                inputConfirmPassword.error = activity.resources.getString(R.string.enter_confirm_password)
+                inputConfirmPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+                return@setOnClickListener
+            }
+            if (edtNewPassword.text.toString().trim().length < 6) {
+                inputNewPassword.error = activity.resources.getString(R.string.please_enter_minimum_password)
+                inputNewPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+
+                return@setOnClickListener
+            }
+            if (edtConfirmPassword.text.toString().trim().length < 6) {
+                inputConfirmPassword.error = activity.resources.getString(R.string.please_enter_minimum_password)
+                inputConfirmPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+                return@setOnClickListener
+            }
+            if (edtConfirmPassword.text.toString().trim() != edtNewPassword.text.toString().trim()) {
+                inputConfirmPassword.error = activity.resources.getString(R.string.password_and_confirm_password_not_match)
+                inputConfirmPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
+                return@setOnClickListener
+            }
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.current to edtOldPassword.text.toString().trim(),
+                Constants.password to edtNewPassword.text.toString().trim()
+            )
+            listener.onConfirmButtonClick(hashMap)
+            dialog.dismiss()
+        }
         dialog.show()
     }
 
@@ -117,6 +254,10 @@ class DialogUtils {
         fun onPositiveButtonClick()
         fun onNegativeButtonClick()
         fun onDefaultButtonClick(actionName: String)
+    }
+
+    interface ConfirmationDialogCallbacks {
+        fun onConfirmButtonClick(requestBody: HashMap<String, Any>)
     }
 
     interface ListDialogItemClickCallback {

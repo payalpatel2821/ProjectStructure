@@ -1,16 +1,15 @@
 package com.task.newapp.api
 
+//import okhttp3.RequestBody
 import com.task.newapp.models.*
 import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.models.post.ResponseGetPostLikeUnlike
 import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.models.post.ResponsePostCommentDetails
 import io.reactivex.Observable
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiHelper {
 
@@ -89,6 +88,29 @@ interface ApiHelper {
     @POST(set_profile_group_page_friend_post)
     fun getFriendList(@Body hashMap: HashMap<String, Any>): Observable<ResponseUserFollowingFollower>
 
+    @Multipart
+    @POST(add_post)
+    fun addPost(
+        @Part("turn_off_comment") turn_off_comment: RequestBody,
+        @Part("hastags") hastags: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("type") type: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part captionarray: List<MultipartBody.Part>,
+        @Part typearray: List<MultipartBody.Part>,
+        @Part thumbarray: List<MultipartBody.Part>,
+        @Part imagevideoarray: List<MultipartBody.Part>
+    ): Observable<CommonResponse>
+
+
+    @Multipart
+    @POST(add_post)
+    fun addPostThought(
+        @Part("turn_off_comment") turn_off_comment: MultipartBody.Part
+    ): Observable<CommonResponse>
+
     @POST(set_profile_group_page_friend_post)
     fun getPageList(@Body hashMap: HashMap<String, Any>): Observable<ResponsePageList>
 
@@ -101,4 +123,21 @@ interface ApiHelper {
     @POST(get_notification_tone)
     fun getNotificationTune(@Body hashMap: HashMap<String, Any>): Observable<ResponseNotification>
 
+    @POST(update_profile_pic)
+    fun changeProfilePic(@Body data: RequestBody): Observable<ResponseFollowUnfollow>
+
+    @POST(update_profile_detail)
+    fun updateProfile(@Body data: RequestBody): Observable<ResponseMyProfile>
+
+    @POST(change_password)
+    fun changePassword(@Body data: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(change_email)
+    fun changeEmailId(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(check_verify_email)
+    fun verifyEmailCode(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(delete_account)
+    fun deleteAccount(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
 }

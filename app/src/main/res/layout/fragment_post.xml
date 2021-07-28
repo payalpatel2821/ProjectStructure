@@ -10,7 +10,7 @@
         android:background="@color/graybg"
         android:fitsSystemWindows="false"
         android:orientation="vertical"
-        tools:context=".ui.fragments.registration.PostFragment">
+        tools:context=".ui.fragments.post.PostFragment">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"
@@ -302,27 +302,27 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_90sdp"
+                        android:layout_marginTop="@dimen/_80sdp"
                         android:orientation="vertical"
                         android:visibility="gone">
 
                         <ImageView
-                            android:layout_width="@dimen/_180sdp"
-                            android:layout_height="@dimen/_180sdp"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_220sdp"
                             android:layout_gravity="center"
                             android:src="@drawable/no_post" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_margin="10pt"
-                            android:fontFamily="@font/bogleregular"
-                            android:gravity="center"
-                            android:letterSpacing="0.1"
-                            android:text="@string/welcome_to_how_no_post_yet"
-                            android:textColor="#a5a5a5"
-                            android:textSize="6.5pt" />
+                        <!--                        <TextView-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_gravity="center"-->
+                        <!--                            android:layout_margin="10pt"-->
+                        <!--                            android:fontFamily="@font/bogleregular"-->
+                        <!--                            android:gravity="center"-->
+                        <!--                            android:letterSpacing="0.1"-->
+                        <!--                            android:text="@string/welcome_to_how_no_post_yet"-->
+                        <!--                            android:textColor="#a5a5a5"-->
+                        <!--                            android:textSize="6.5pt" />-->
 
                     </LinearLayout>
 
@@ -412,7 +412,8 @@
         <!-- Adding bottom sheet after main content -->
         <include
             android:id="@+id/layoutBottomSheet"
-            layout="@layout/bottom_sheet_post" />
+            layout="@layout/bottom_sheet_post"
+            android:visibility="gone" />
 
         <!--        </androidx.core.widget.NestedScrollView>-->
 

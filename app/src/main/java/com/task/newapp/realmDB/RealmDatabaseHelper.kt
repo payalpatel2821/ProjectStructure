@@ -11,7 +11,6 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.Sort
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -354,6 +353,7 @@ fun getChatPosition(chats: ArrayList<Chats>, userId: Int): Int {
     val ids: List<Int> = chats.map { it.id }
     return findIndex(ids, userId) ?: -1
 }
+
 fun getMyGroup(): List<Chats> {
     return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_group, true).findAll().toList()
 }
@@ -379,8 +379,20 @@ fun getCommonGroup(userID: Int): List<Chats> {
         .toList()
 }
 
-fun getAllNotificationTune():List<NotificationTone>{
+fun getAllNotificationTune(): List<NotificationTone> {
     return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
+}
+
+fun getGroupDetail(grpID: Int): Chats {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, grpID).findFirst()!!
+}
+
+fun getMyGroupSetting(userID: Int): GroupUser? {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, userID).findFirst()?.group_user_with_settings.filter { it.user_id == userID }.first()
+}
+
+fun getGroupCreatedUserName(userID: Int): String? {
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst().let { it!!.first_name + " " + it!!.last_name }
 }
 
 fun updateChatUserData(id: Int, user: Users) {
@@ -690,6 +702,7 @@ fun prepareGroupData(groupData: LoginResponse.GetAllGroup.GroupData): Groups {
     groupObj.grp_name = groupData.name
     groupObj.grp_description = groupData.description
     groupObj.grp_icon = groupData.icon
+    groupObj.grp_created_by = groupData.createdBy
     groupObj.grp_total_user = groupData.totalUsers
     groupObj.grp_other_user_id = groupData.otherUserId
     groupObj.grp_updated_at = groupData.updatedAt

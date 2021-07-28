@@ -29,29 +29,41 @@
 
                 <RelativeLayout
                     android:id="@+id/rel_profile"
-                    android:layout_width="@dimen/_80sdp"
-                    android:layout_height="@dimen/_80sdp"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="@dimen/_100sdp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_margin="@dimen/_20sdp"
+                    android:layout_margin="@dimen/_30sdp"
                     android:onClick="onClick">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/iv_profile"
-                        android:layout_width="@dimen/_80sdp"
-                        android:layout_height="@dimen/_80sdp"
+                        android:layout_width="@dimen/_100sdp"
+                        android:layout_height="@dimen/_100sdp"
                         android:layout_centerInParent="true"
                         android:background="@drawable/btn_rounded_bg"
-                        android:src="@drawable/white_logo" />
+                        android:src="@drawable/ic_user_with_padding" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_dp_name"
+                        style="@style/styleTextViewLarge"
+                        android:layout_width="@dimen/_100sdp"
+                        android:layout_height="@dimen/_100sdp"
+                        android:gravity="center"
+                        android:text="PR"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_35ssp"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/iv_edit_img"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
                         android:layout_alignParentRight="true"
                         android:layout_gravity="center"
                         android:layout_margin="@dimen/_5sdp"
                         android:background="@drawable/btn_edit_rounded_bg"
                         android:gravity="center"
+                        android:src="@drawable/ic_gallery"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -79,7 +91,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
                             android:hint="@string/first_name"
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
@@ -105,7 +117,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
                             android:hint="@string/last_name"
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
@@ -148,6 +160,9 @@
                         android:layout_marginTop="@dimen/_15sdp"
                         android:gravity="center"
                         android:theme="@style/EditTextThemeOverlay"
+                        app:endIconDrawable="@drawable/ic_delete_profile"
+                        app:endIconTint="@color/black"
+                        app:endIconMode="custom"
                         app:errorTextAppearance="@style/ErrorTextAppearance"
                         app:helperTextTextAppearance="@style/HelperTextAppearance"
                         app:hintTextAppearance="@style/HintTextAppearance">
@@ -164,6 +179,7 @@
                             android:inputType="text|textNoSuggestions"
                             android:longClickable="false"
                             android:singleLine="true"
+                            android:onClick="onClick"
                             android:textSize="@dimen/_12ssp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -176,6 +192,9 @@
                         android:layout_marginTop="@dimen/_15sdp"
                         android:gravity="center"
                         android:theme="@style/EditTextThemeOverlay"
+                        app:endIconDrawable="@drawable/ic_delete_profile"
+                        app:endIconTint="@color/black"
+                        app:endIconMode="custom"
                         app:errorTextAppearance="@style/ErrorTextAppearance"
                         app:helperTextTextAppearance="@style/HelperTextAppearance"
                         app:hintTextAppearance="@style/HintTextAppearance">
@@ -187,11 +206,12 @@
                             android:layout_gravity="center"
                             android:focusable="false"
                             android:focusableInTouchMode="false"
-                            android:hint="@string/birthdate"
+                            android:hint="@string/annivarsary_date"
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
                             android:longClickable="false"
                             android:singleLine="true"
+                            android:onClick="onClick"
                             android:textSize="@dimen/_12ssp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -246,14 +266,14 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/txt_my_post"
+                        android:id="@+id/txt_change_email"
                         style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onClick"
                         android:paddingTop="@dimen/_10sdp"
                         android:paddingBottom="@dimen/_10sdp"
-                        android:text="@string/my_post"
+                        android:text="@string/email_id"
                         android:textSize="@dimen/_14ssp" />
 
                     <View
@@ -262,36 +282,38 @@
                         android:background="@color/gray" />
 
                     <TextView
-                        android:id="@+id/txt_tagged_post"
+                        android:id="@+id/txt_change_password"
                         style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onClick"
                         android:paddingTop="@dimen/_10sdp"
                         android:paddingBottom="@dimen/_10sdp"
-                        android:text="@string/tagged_posts"
+                        android:text="@string/change_password"
                         android:textSize="@dimen/_14ssp" />
+
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_delete_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/bottomsheet_bg"
+                    android:onClick="onClick"
                     android:gravity="center">
 
                     <TextView
+                        style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_40sdp"
-                        style="@style/styleTextViewSmall"
-                        android:drawableLeft="@drawable/ic_delete"
-                        android:drawableTint="@color/red"
-                        android:text="@string/delete_account"
-                        android:textColor="@color/red"
-                        android:textAllCaps="false"
                         android:layout_gravity="center"
-                        android:gravity="center"
+                        android:drawableLeft="@drawable/ic_delete"
                         android:drawablePadding="@dimen/_5sdp"
-                       />
+                        android:drawableTint="@color/red"
+                        android:gravity="center"
+                        android:text="@string/delete_account"
+                        android:textAllCaps="false"
+                        android:textColor="@color/red" />
                 </LinearLayout>
 
                 <View

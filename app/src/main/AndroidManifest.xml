@@ -96,6 +96,17 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
         <activity
+            android:name=".ui.activities.profile.EmailVerificationCodeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.profile.DeleteAccountActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity android:name=".ui.activities.profile.GroupProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar"/>
+        <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- optional (needed if default theme has no action bar) -->
         <provider

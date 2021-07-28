@@ -14,10 +14,10 @@
                 android:color="@color/white" />
         </shape>
     </item>
-    <item
-        android:width="@dimen/_10sdp"
-        android:height="@dimen/_10sdp"
-        android:drawable="@drawable/ic_gallery">
+<!--    <item-->
+<!--        android:width="@dimen/_10sdp"-->
+<!--        android:height="@dimen/_10sdp"-->
+<!--        android:drawable="@drawable/ic_gallery">-->
 
-    </item>
+<!--    </item>-->
 </layer-list>

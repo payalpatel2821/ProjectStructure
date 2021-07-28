@@ -16,6 +16,7 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
+import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.registration.PostFragment
@@ -187,7 +188,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
-                launchActivity<MyProfileActivity> { }
+                launchActivity<GroupProfileActivity> { }
             }
         }
     }

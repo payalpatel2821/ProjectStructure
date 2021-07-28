@@ -10,19 +10,19 @@ data class User(
     @SerializedName("age")
     val age: Any,
     @SerializedName("anniversary")
-    val anniversary: Any,
+    val anniversary: String,
     @SerializedName("app_version")
     val appVersion: String,
     @SerializedName("blood_gp")
-    val bloodGp: Any,
+    val bloodGp: String,
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("date_of_birth")
-    val dateOfBirth: Any,
+    val dateOfBirth: String,
     @SerializedName("del_request")
     val delRequest: Int,
     @SerializedName("delete_reason")
-    val deleteReason: Any,
+    val deleteReason: String,
     @SerializedName("device_arn")
     val deviceArn: String,
     @SerializedName("device_token")
@@ -30,17 +30,17 @@ data class User(
     @SerializedName("device_type")
     val deviceType: String,
     @SerializedName("email")
-    val email: String,
+    var email: String,
     @SerializedName("expired_at")
-    val expiredAt: Any,
+    val expiredAt: String,
     @SerializedName("first_name")
     val firstName: String,
     @SerializedName("flag")
     val flag: String,
     @SerializedName("forgot_token")
-    val forgotToken: Any,
+    val forgotToken: String,
     @SerializedName("gender")
-    val gender: Any,
+    val gender: String,
     @SerializedName("id")
     val id: Int,
     @SerializedName("is_blocked_by_admin")
@@ -58,7 +58,7 @@ data class User(
     @SerializedName("is_verified_email")
     val isVerifiedEmail: Int,
     @SerializedName("last_logout_time")
-    val lastLogoutTime: Any,
+    val lastLogoutTime: String,
     @SerializedName("last_name")
     val lastName: String,
     @SerializedName("last_seen_time")
@@ -70,11 +70,11 @@ data class User(
     @SerializedName("longitude")
     val longitude: String,
     @SerializedName("mobile")
-    val mobile: Any,
+    val mobile: String,
     @SerializedName("profession")
     val profession: Any,
     @SerializedName("profile_image")
-    val profileImage: String,
+    var profileImage: String,
     @SerializedName("profile_color")
     val profileColor: String,
     @SerializedName("profile_views")

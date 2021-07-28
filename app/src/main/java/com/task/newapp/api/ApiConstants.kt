@@ -27,5 +27,13 @@ const val set_profile_group_page_friend_post = "/api_v1/profile_group_page_frien
 const val set_friendsetting_url = "/api_v1/friends-setting"
 const val set_block_unblock_report_url = "/api_v1/block-report"
 const val get_notification_tone = "/api_v1/get-notification-tone"
+const val add_post = "/api_v1/post"
+const val update_profile_pic = "/api_v1/update-profile-picture"
+const val update_profile_detail = "/api_v1/update-profile-detail"
+const val change_password = "/api_v1/change-password"
+const val change_email = "/api_v1/update-email-request"
+const val check_verify_email = "/api_v1/check-email-request"
+const val delete_account = "/api_v1/request-delete-account"
+
 
 
