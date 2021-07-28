@@ -28,5 +28,7 @@ const val set_friendsetting_url = "/api_v1/friends-setting"
 const val set_block_unblock_report_url = "/api_v1/block-report"
 const val get_notification_tone = "/api_v1/get-notification-tone"
 const val add_post = "/api_v1/post"
-
+const val search_contacts = "/api_v1/search-contacts"
+const val create_broadcast = "api_v1/broadcast"
+const val delete_broadcast = "/api_v1/broadcast/{id}";
 

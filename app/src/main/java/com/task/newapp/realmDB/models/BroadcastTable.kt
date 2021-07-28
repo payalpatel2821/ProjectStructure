@@ -16,7 +16,7 @@ open class BroadcastTable : RealmObject() {
         const val PROPERTY_created_at = "created_at"
         const val PROPERTY_is_blocked = "is_blocked"
         const val PROPERTY_updated_at = "updated_at"
-        const val PROPERTY_login_user = "login_user"
+      //  const val PROPERTY_login_user = "login_user"
         const val PROPERTY_chats = "chats"
     }
 
@@ -29,7 +29,7 @@ open class BroadcastTable : RealmObject() {
     var broad_other_userid: String? = null
     var created_at: String? = null
     var updated_at: String? = null
-    var login_user: Int = 0
+  //  var login_user: Int = 0
     var chats: RealmList<ChatList> = RealmList()
 
 }

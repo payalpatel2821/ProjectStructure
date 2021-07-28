@@ -3,13 +3,13 @@ package com.task.newapp.realmDB.models
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
-import java.io.Serializable
 
-open class Groups : RealmObject()   {
+open class Groups : RealmObject() {
 
     companion object {
         const val PROPERTY_grp_id = "grp_id"
         const val PROPERTY_grp_user_id = "grp_user_id"
+        const val PROPERTY_grp_created_by = "grp_created_by"
         const val PROPERTY_grp_name = "grp_name"
         const val PROPERTY_grp_description = "grp_description"
         const val PROPERTY_grp_icon = "grp_icon"
@@ -25,6 +25,7 @@ open class Groups : RealmObject()   {
     @PrimaryKey
     var grp_id: Int = 0
     var grp_user_id: Int = 0
+    var grp_created_by: Int = 0
     var grp_name: String? = null
     var grp_description: String? = null
     var grp_icon: String? = null

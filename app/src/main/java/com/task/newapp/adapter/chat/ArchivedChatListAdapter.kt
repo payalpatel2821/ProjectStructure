@@ -117,6 +117,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
 
         }
 
+
         /**
          * populate rows
          *
@@ -127,29 +128,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
 
 
             if (listPayload == null || listPayload.isEmpty()) {
-                layoutBinding.txtChatTitle.text = obj.name
-                layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
-                    DateTimeUtils.instance?.getConversationTimestamp(
-                        it.time
-                    )
-                }
-                layoutBinding.txtChatMsg.text = obj.chat_list?.message_text
-                //load profile picture
-                if (obj.is_group) {
-                    obj.group_data?.let {
-                        layoutBinding.imgProfile.load(it.grp_icon ?: "")
-                    }
-
-                } else {
-                    obj.user_data?.let {
-                        layoutBinding.imgProfile.load(it.profile_image ?: "")
-
-                    }
-
-                    //show/hide online dot
-                    layoutBinding.imgOnline.visibility = if (obj.is_online) VISIBLE else GONE
-
-                }
+                setData(obj)
             } else {
                 showLog("PAYLOAD :", Gson().toJson(listPayload))
                 for (payload in listPayload) {

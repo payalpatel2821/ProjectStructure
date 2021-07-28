@@ -23,7 +23,6 @@ class SplashActivity : AppCompatActivity() {
                 launchActivity<WelcomeActivity> {}
             } else {
                 if (FastSave.getInstance().getBoolean(Constants.isLogin, false)) {
-
                     launchActivity<MainActivity> {}
                 } else {
                     launchActivity<LoginActivity> {}

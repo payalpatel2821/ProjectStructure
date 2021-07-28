@@ -137,7 +137,7 @@
     <string name="copylink">Copy Link</string>
     <string name="turnonpost">Turn on Post Notification</string>
     <string name="welcome_to_how_no_post_yet">Welcome to HOW.\n You haven\'t seen any post Yet.</string>
-    <string name="get_al_post">20</string>
+    <string name="get_all_post">20</string>
     <string name="get_comments">10</string>
     <string name="delete">Delete</string>
     <string name="reply">Reply</string>
@@ -149,6 +149,10 @@
     <string name="username">Username</string>
     <string name="archive_count">archive (%d)</string>
     <string name="title_archived_list">Archived List</string>
+    <string name="title_broadcast_list">Broadcast List</string>
+    <string name="title_new_broadcast">New Broadcast</string>
+    <string name="title_new_group">New Group</string>
+    <string name="title_select_friends">Select Friends</string>
     <string name="notification_tune">Notification Tune</string>
     <string name="vibration">Vibration</string>
     <string name="on">On</string>
@@ -161,7 +165,13 @@
     <string name="conform_report">Do you want to report this user?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
+    <string name="empty_broadcast_text"><![CDATA[You should use broadcast list to message\n
+        multiple people at once\n\n
+        Only your friends will receive your\n
+        broadcast messages.]]></string>
+    <string name="create_broadcast">Create Broadcast</string>
+    <string name="new_broadcast_hint_text"><![CDATA[Provide a broadcast subject and\noptional broadcast icon]]></string>
+    <string name="new_group_hint_text"><![CDATA[Provide a group subject and\noptional group icon]]></string>
 
     <string name="error_msg_cannot_select_more_media_items">You cannot select more than 30 media items</string>
     <string name="error_msg_cannot_select_more_images">You cannot select more than 30 images</string>
@@ -211,7 +221,11 @@
     <string name="popular_pages_limit">20</string>
     <string name="enter_text">Enter Text</string>
     <string name="exit_without_save">The edited image is not saved. Do you want to exit?</string>
-
+    <string name="broadcast_name">Broadcast name</string>
+    <string name="add_members">Add Members</string>
+    <string name="you_have_not_made_any_friends_yet">You have not made any friends yet</string>
+    <string name="create_group">Create Group</string>
+    <string name="group_name">Group name</string>
     <string-array name="photo_editor_emoji">
 
         <!-- Smiles -->

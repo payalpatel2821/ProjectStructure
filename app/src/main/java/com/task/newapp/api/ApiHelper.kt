@@ -1,10 +1,8 @@
 package com.task.newapp.api
 
 import com.task.newapp.models.*
-import com.task.newapp.models.post.ResponseGetAllPost
-import com.task.newapp.models.post.ResponseGetPostLikeUnlike
-import com.task.newapp.models.post.ResponsePostComment
-import com.task.newapp.models.post.ResponsePostCommentDetails
+import com.task.newapp.models.chat.CreateBroadcastResponse
+import com.task.newapp.models.post.*
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -121,5 +119,16 @@ interface ApiHelper {
 
     @POST(get_notification_tone)
     fun getNotificationTune(@Body hashMap: HashMap<String, Any>): Observable<ResponseNotification>
+
+    @POST(search_contacts)
+    fun searchContacts(@Body hashMap: HashMap<String, Any>): Observable<ResponseFriendsList>
+
+    @POST(create_broadcast)
+    fun createBroadcast(@Body data: RequestBody): Observable<CreateBroadcastResponse>
+
+    //    @GET(create_broadcast)
+    //    Call<Get_Broadcast> get_Broadcast(@Header("Authorization") String token);
+    @DELETE(delete_broadcast)
+    fun deleteBroadcast(@Path("id") broadcast_id: Int): Observable<CommonResponse>
 
 }

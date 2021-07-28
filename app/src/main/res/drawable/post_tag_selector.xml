@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--    <item android:drawable="@drawable/disabled_img" android:state_enabled="false" />-->
+    <!--    <item android:drawable="@drawable/unselected_img" android:state_selected="false" />-->
+    <!--    <item android:drawable="@drawable/selected_img" android:state_selected="true" />-->
+
+    <item android:drawable="@drawable/ic_check_round" android:state_enabled="false" />
+    <item android:drawable="@drawable/ic_unchecked_round" android:state_selected="false" />
+    <item android:drawable="@drawable/ic_check_round" android:state_selected="true" />
+
+</selector>

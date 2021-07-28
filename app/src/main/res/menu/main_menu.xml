@@ -12,6 +12,18 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_broadcast_list"
+        android:icon="@drawable/ic_broadcast"
+        android:iconTint="@color/black"
+        android:title="@string/broadcast_lists"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_create_group"
+        android:icon="@drawable/ic_user"
+        android:iconTint="@color/black"
+        android:title="@string/create_group"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_emergency_alert"
         android:icon="@drawable/ic_notification"
         android:iconTint="@color/black"

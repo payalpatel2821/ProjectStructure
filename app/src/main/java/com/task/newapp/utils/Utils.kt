@@ -7,10 +7,8 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.graphics.*
 import android.content.*
+import android.content.res.ColorStateList
 import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -38,14 +36,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
-import com.avatarfirst.avatargenlib.AvatarGenerator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
+import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
@@ -314,6 +314,27 @@ fun enableOrDisableButton(context: Context, isEnable: Boolean, button: Button) {
     } else {
         button.background =
             ContextCompat.getDrawable(context, R.drawable.btn_rect_rounded_bg_disable)
+        button.isEnabled = false
+    }
+}
+
+fun enableOrDisableButtonBgColor(context: Context, isEnable: Boolean, button: Button) {
+    if (isEnable) {
+        button.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_color))
+        button.isEnabled = true
+    } else {
+        button.setBackgroundColor(ContextCompat.getColor(context, R.color.disableColor))
+        button.isEnabled = false
+    }
+}
+
+fun enableOrDisableButtonBgColor(context: Activity, isEnable: Boolean, button: FloatingActionButton) {
+    if (isEnable) {
+
+        button.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.theme_color))
+        button.isEnabled = true
+    } else {
+        button.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.disableColor))
         button.isEnabled = false
     }
 }
@@ -1060,4 +1081,35 @@ fun calculateInSampleSize(context: Context, sourceUri: Uri?, requestSize: Int): 
         inSampleSize *= 2
     }
     return inSampleSize
+}
+
+/**
+ * check and return true if chat message is in-coming else return false for outgoing message
+ *
+ * @param chatMessage
+ * @return
+ */
+fun isIncoming(chatMessage: ChatList): Boolean {
+    return chatMessage.sender_id != App.fastSave.getInt(Constants.prefUserId, 0)
+
+}
+
+/**
+ * returns logged In user's Id from the preference else returns 0
+ * @return
+ */
+fun getCurrentUserId(): Int {
+    return App.fastSave.getInt(Constants.prefUserId, 0)
+}
+
+@Throws(IOException::class)
+fun getBytes(inputStream: InputStream): ByteArray? {
+    val byteBuff = ByteArrayOutputStream()
+    val buffSize = 1024
+    val buff = ByteArray(buffSize)
+    var len = 0
+    while (inputStream.read(buff).also { len = it } != -1) {
+        byteBuff.write(buff, 0, len)
+    }
+    return byteBuff.toByteArray()
 }

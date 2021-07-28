@@ -94,6 +94,7 @@ abstract class BaseAppCompatActivity : AppCompatActivity() {
         socket.off(Constants.userjoinedthechat, onUserJoinedTheChat)
     }
 
+
     private val onIsOnlineResponse = Emitter.Listener { args ->
         val data = args[0] as JSONObject
         showLog(Constants.socket_tag, "onIsOnlineResponse--" + Gson().toJson(data))

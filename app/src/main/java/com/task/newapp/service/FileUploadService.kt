@@ -303,7 +303,7 @@ class FileUploadService : JobIntentService() {
                             //Compress and Stored in .temp folder
                             val filePath: String = SiliCompressor.with(context).compress(
                                 postUriModel.file_path,
-                                storedThumbPath
+                                storedThumbPath,0
                             )
                             thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
                             //thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))

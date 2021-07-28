@@ -7,8 +7,8 @@
         android:endColor="#EAEAEA"
         android:angle="0"/>
 
-    <corners android:topLeftRadius="10pt" android:topRightRadius="10pt"/>
+    <corners android:topLeftRadius="@dimen/_20sdp" android:topRightRadius="@dimen/_20sdp"/>
 
-    <stroke android:color="#EAEAEA" android:width="1dp"/>
+    <stroke android:color="#EAEAEA" android:width="@dimen/_1sdp"/>
 
 </shape>

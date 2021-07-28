@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.task.newapp.App
@@ -27,7 +28,8 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener, ArchivedChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, OnSocketEventsListener {
+class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener, ArchivedChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, OnSocketEventsListener,
+    SearchView.OnQueryTextListener {
     private var chats = ArrayList<Chats>()
     private lateinit var chatsAdapter: ArchivedChatListAdapter
     lateinit var binding: ActivityArchivedChatsListBinding
@@ -45,13 +47,49 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
     private fun initView() {
         binding.toolbarLayout.txtTitle.text = getString(R.string.title_archived_list)
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
+        initSearchView()
         setAdapter()
 
     }
 
+    private fun initSearchView() {
+        binding.searchLayout.searchView.setOnQueryTextListener(this)
+        binding.searchLayout.searchView.onActionViewExpanded()
+        binding.searchLayout.searchView.clearFocus()
+
+        binding.searchLayout.searchView.setOnCloseListener {
+//            issearch = false
+//            if (!isAPICallRunning) initData("", 0, "main")
+            false
+        }
+        binding.searchLayout.searchView.findViewById<View>(R.id.search_close_btn)
+            .setOnClickListener(View.OnClickListener {
+                binding.searchLayout.searchView.isActivated = true
+                binding.searchLayout.searchView.setQuery("", false)
+                binding.searchLayout.searchView.isIconified = true
+                binding.searchLayout.searchView.onActionViewExpanded()
+                binding.searchLayout.searchView.clearFocus()
+                binding.searchLayout.searchView.findViewById<View>(R.id.search_button).performClick()
+            })
+    }
+
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+//        issearch = true
+//        searchtxt = query
+        Log.e("search", "search text change")
+//        if (!isAPICallRunning) initData(searchtxt, 0, "main")
+//        search = false
+//        initScrollListener()
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id: Int = item.getItemId()
-        when (id) {
+        when (item.itemId) {
             android.R.id.home -> finish()
         }
         return super.onOptionsItemSelected(item)
@@ -80,10 +118,8 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
     private fun prepareChatListAdapterModel(chatsList: List<Chats>) {
         if (chats.isNotEmpty())
             chats.clear()
-        //for (chat in chatsList) {
-        //chats.add(ChatListAdapterModel(chat.id, chat))
         chats.addAll(chatsList)
-        //}
+
     }
 
     override fun onClearChatClick(position: Int, chats: Chats) {

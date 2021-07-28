@@ -3,6 +3,7 @@ package com.task.newapp.ui.activities
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -16,14 +17,13 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
+import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
+import com.task.newapp.ui.activities.chat.broadcast.SelectFriendsActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.launchActivity
-import com.task.newapp.utils.setBlurLayout
-import com.task.newapp.utils.showToast
 import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener {
 
@@ -32,12 +32,14 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     val chatsFragment = ChatsFragment()
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
-    private var mainMenu: Menu? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         onSocketEventsListener = this
+        setSupportActionBar(binding.activityMainToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
         setupNavigationDrawer()
         setupBottomNavigationBar()
     }
@@ -139,6 +141,18 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_broadcast_list ->
+                launchActivity<BroadcastListActivity> { }
+
+            R.id.action_create_group -> launchActivity<SelectFriendsActivity> {
+                putExtra(Constants.bundle_navigate_from, SelectFriendsNavigation.FROM_CREATE_GROUP)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun setCurrentFragment(fragment: Fragment) {
 
         binding.activityMainAppbarlayout.visibility = if (fragment is PostFragment) View.GONE else View.VISIBLE
@@ -153,9 +167,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
-
-        mainMenu = menu
-
         return true
     }
 

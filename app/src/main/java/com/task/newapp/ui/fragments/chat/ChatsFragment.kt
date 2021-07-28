@@ -11,6 +11,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,7 +38,7 @@ import kotlin.collections.ArrayList
 import com.task.newapp.realmDB.insertChatContent as insertChatContent1
 
 
-class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener {
+class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentChatBinding
     private lateinit var chats: ArrayList<Chats>
@@ -85,19 +86,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_archive -> {
-                /*registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        val data: Intent? = result.data
-
-                        val change = data!!.getIntExtra("change", 0)
-                        if (change == 1) {
-                            chatsAdapter.addUnarchivedChat()
-                        }
-                    }
-*//*
-                    requireActivity().launchActivity<ArchivedChatActivity> {
-                    }*//*
-                }*/resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
+               resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
             }
         }
     }
@@ -110,11 +99,43 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         //socket = App.getSocketInstance()
         //initSocketListeners()
         initListeners()
+        initSearchView()
         setAdapter()
         callGetUnreadMessageAPI()
         binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
     }
 
+    private fun initSearchView() {
+        binding.searchLayout.searchView.setOnQueryTextListener(this)
+        binding.searchLayout.searchView.onActionViewExpanded()
+        binding.searchLayout.searchView.clearFocus()
+
+        binding.searchLayout.searchView.setOnCloseListener {
+//            issearch = false
+//            if (!isAPICallRunning) initData("", 0, "main")
+            false
+        }
+        binding.searchLayout.searchView.findViewById<View>(R.id.search_close_btn)
+            .setOnClickListener(View.OnClickListener {
+                Log.d("called", "this is called.")
+                binding.searchLayout.searchView.isActivated = true
+                binding.searchLayout.searchView.setQuery("", false)
+                binding.searchLayout.searchView.isIconified = true
+                binding.searchLayout.searchView.onActionViewExpanded()
+                binding.searchLayout.searchView.clearFocus()
+                binding.searchLayout.searchView.findViewById<View>(R.id.search_button).performClick()
+            })
+    }
+
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        Log.e("search", "search text change")
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
+    }
     private fun setAdapter() {
         prepareChatListAdapterModel(getAllChats())
         if (chats.isNotEmpty()) {
@@ -483,12 +504,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             binding.llEmptyChat.visibility = VISIBLE
             binding.rvChats.visibility = GONE
             binding.divider.visibility = GONE
-            binding.searchView.visibility = GONE
+            binding.searchLayout.llSearch.visibility = GONE
         } else {
             binding.llEmptyChat.visibility = GONE
             binding.rvChats.visibility = VISIBLE
             binding.divider.visibility = VISIBLE
-            binding.searchView.visibility = VISIBLE
+            binding.searchLayout.llSearch.visibility = VISIBLE
         }
     }
 

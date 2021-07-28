@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.activities.chat.group.CreateGroupActivity">
+
+        <include
+            android:id="@+id/toolbar_layout"
+            layout="@layout/toolbar_common" />
+
+        <LinearLayout
+            android:id="@+id/ll_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/_20sdp"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+
+            <RelativeLayout
+                android:id="@+id/rl_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_30sdp"
+                android:background="@drawable/select_profile_bg_ring"
+                android:gravity="center"
+                android:padding="@dimen/_4sdp">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_profile"
+                    android:layout_width="@dimen/_70sdp"
+                    android:layout_height="@dimen/_70sdp"
+                    android:background="@drawable/select_profile_placeholder_bg"
+                    android:minWidth="@dimen/_50sdp"
+                    android:minHeight="@dimen/_50sdp" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_edit_img"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignEnd="@+id/img_profile"
+                    android:layout_alignBottom="@+id/img_profile"
+                    android:background="@drawable/btn_edit_rounded_bg"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_edit" />
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_20sdp"
+                android:background="@drawable/rect_rounded_edittext_bg_white"
+                android:elevation="@dimen/_10sdp"
+                android:hint="@string/group_name"
+                android:minWidth="@dimen/_200sdp"
+                android:minHeight="@dimen/_30sdp"
+                android:singleLine="true"
+                android:textAlignment="center" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_20sdp"
+                android:text="@string/new_group_hint_text"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/activity_background_rounded"
+            android:backgroundTint="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_content">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_create_group"
+                style="@style/styleTextViewNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:drawableStart="@drawable/ic_add_plush"
+                android:drawablePadding="@dimen/_10sdp"
+                android:drawableTint="@color/theme_color"
+                android:gravity="start"
+                android:text="@string/add_members" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_selected_friends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clipToPadding="false"
+                android:gravity="center"
+                android:paddingBottom="@dimen/_80sdp"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="4"
+                tools:itemCount="12"
+                tools:listitem="@layout/item_selected_friends" />
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_create_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:contentDescription="Add"
+            android:src="@drawable/ic_next_arrow"
+            app:backgroundTint="@color/theme_color"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@android:color/white" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

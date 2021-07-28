@@ -25,9 +25,9 @@ import com.task.newapp.databinding.FragmentRegistrationStep1Binding
 import com.task.newapp.interfaces.OnPageChangeListener
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
+import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.firstCharacter
 import com.task.newapp.utils.setupKeyboardListener
-import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.showLog
 import com.theartofdev.edmodo.cropper.CropImage
 import lv.chi.photopicker.MediaPickerFragment
@@ -51,16 +51,8 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
         onPageChangeListener = context as OnPageChangeListener
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_registration_step1,
-            container,
-            false
-        )
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_registration_step1, container, false)
         // Inflate the layout for this fragment
 
         clearAll()
@@ -165,7 +157,7 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
 //                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
                 val filePath: String = SiliCompressor.with(activity).compress(
                     resultUri.toString(),
-                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg")
+                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 1
                 )
                 Log.e("callAPI:resultPath", filePath)
 

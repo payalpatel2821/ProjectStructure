@@ -27,6 +27,10 @@
     <color name="green">#0CAE2F</color>
     <color name="yellow">#ED9A07</color>
     <color name="gray5">#E6E6E6</color>
+    <color name="disableColor">#B2C5CC</color>
+
+    <!--Chat module-->
+    <color name="chat_input_bg_color">#EEF1F6</color>
     <color name="archive_chat">#FF8080</color>
     <color name="block_chat">#9FA6EC</color>
     <color name="clear_chat">#ECC99F</color>
@@ -34,7 +38,10 @@
     <color name="hook_chat">#ECA89F</color>
     <color name="change_color">#ededed</color>
     <color name="graybg">#F7F7F7</color>
-    <color name="chat_input_bg_color">#EEF1F6</color>
+    <color name="chat_left_bg_color">#ECECEC</color>
+    <color name="chat_right_bg_color">#F3E4E1</color>
+    <color name="broadcast_icon_bg_color">#E3EDEF</color>
+    <color name="profile_pic_placeholder_bg_color">#393939</color>
 
     <!--photo editor-->
     <color name="blue_color_picker">#0066FF</color>

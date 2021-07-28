@@ -11,7 +11,6 @@ import io.realm.Realm
 import io.realm.RealmList
 import io.realm.Sort
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -213,6 +212,12 @@ fun insertBroadcastData(broadcastTable: RealmList<BroadcastTable>) {
     })
 }
 
+fun insertSingleBroadcastData(broadcastTable: BroadcastTable) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.copyToRealmOrUpdate(broadcastTable)
+    })
+}
+
 fun insertChatListData(chatlist: ChatList) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.copyToRealmOrUpdate(chatlist)
@@ -271,7 +276,7 @@ fun insertNotificationToneData(notificationTone: RealmList<NotificationTone>) {
 }
 
 fun getUserByUserId(userID: Int): Users? {
-    return App.getRealmInstance().where(Users::class.java).equalTo(Users.PROPERTY_receiver_id, userID).findFirst()
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst()
 }
 
 fun isLoggedInUser(userID: Int): Boolean {
@@ -279,57 +284,65 @@ fun isLoggedInUser(userID: Int): Boolean {
     return user != null && user.receiver_id == App.fastSave.getInt(Constants.prefUserId, 0)
 }
 
+fun getSingleUserDetails(userId: Int): Users? {
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userId).findFirst()
+
+}
 
 fun getGroupUserById(groupId: Int, groupUserId: Int): GroupUser? {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser.PROPERTY_grp_id, groupId).and().equalTo(GroupUser.PROPERTY_user_id, groupUserId).findFirst()
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, groupId).and().equalTo(GroupUser::user_id.name, groupUserId).findFirst()
 }
 
 fun getAllChats(): List<Chats> {
     val chats = App.getRealmInstance().where(Chats::class.java).findAll()
-        .sort(Chats.PROPERTY_is_hook, Sort.DESCENDING, Chats.PROPERTY_current_time, Sort.DESCENDING)
+        .sort(Chats::is_hook.name, Sort.DESCENDING, Chats::current_time.name, Sort.DESCENDING)
         .filter { !it.is_archive }.sortedByDescending { it.is_hook }
     return chats.toList()
 
 }
 
 fun getAllArchivedChat(): List<Chats> {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_archive, true).findAll().sort(Chats.PROPERTY_current_time, Sort.DESCENDING)
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().sort(Chats::current_time.name, Sort.DESCENDING)
+}
+
+fun getAllBroadcastChat(): List<BroadcastTable> {
+    return App.getRealmInstance().where(BroadcastTable::class.java).findAll().sort(BroadcastTable::updated_at.name, Sort.DESCENDING)
 }
 
 fun getGroupsFromGroupId(groupId: List<Int>): List<Groups> {
-    return App.getRealmInstance().where(Groups::class.java).`in`(Groups.PROPERTY_grp_id, groupId.toTypedArray()).findAll()
+    return App.getRealmInstance().where(Groups::class.java).`in`(Groups::grp_id.name, groupId.toTypedArray()).findAll()
 }
 
 fun getSingleChatContent(chatId: Int): ChatContents? {
-    return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatAudio(chatId: Int): ChatAudio? {
-    return App.getRealmInstance().where(ChatAudio::class.java).equalTo(ChatAudio.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatAudio::class.java).equalTo(ChatAudio::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatContact(chatId: Int): ChatContacts? {
-    return App.getRealmInstance().where(ChatContacts::class.java).equalTo(ChatContacts.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatContacts::class.java).equalTo(ChatContacts::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatLocation(chatId: Int): ChatLocation? {
-    return App.getRealmInstance().where(ChatLocation::class.java).equalTo(ChatLocation.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatLocation::class.java).equalTo(ChatLocation::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatVoice(chatId: Int): ChatVoice? {
-    return App.getRealmInstance().where(ChatVoice::class.java).equalTo(ChatVoice.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatVoice::class.java).equalTo(ChatVoice::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatDocument(chatId: Int): ChatDocument? {
-    return App.getRealmInstance().where(ChatDocument::class.java).equalTo(ChatDocument.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatDocument::class.java).equalTo(ChatDocument::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChatListItem(chatId: Int): ChatList? {
-    return App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList.PROPERTY_chat_id, chatId).findFirst()
+    return App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleUserChat(id: Int): Chats? {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
 
 }
 
@@ -342,25 +355,26 @@ fun getAllGroups(): List<Groups> {
 }
 
 fun getAllGroupsInCommon(otherUserId: Int): List<GroupUser> {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser.PROPERTY_user_id, otherUserId).findAll()
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::user_id.name, otherUserId).findAll()
 }
 
 
 fun getArchivedChatCount(): Int {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_archive, true).findAll().size
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().size
 }
 
 fun getChatPosition(chats: ArrayList<Chats>, userId: Int): Int {
     val ids: List<Int> = chats.map { it.id }
     return findIndex(ids, userId) ?: -1
 }
+
 fun getMyGroup(): List<Chats> {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_is_group, true).findAll().toList()
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().toList()
 }
 
 fun getUserNameFromId(groupUserId: List<Int>): String {
     val getUser = App.getRealmInstance().where(Users::class.java)
-        .`in`(Users.PROPERTY_receiver_id, groupUserId.toTypedArray())
+        .`in`(Users::receiver_id.name, groupUserId.toTypedArray())
         .findAll().filter { it.receiver_id != App.fastSave.getInt(Constants.prefUserId, 0) }
     val getUserName = getUser.map { it.first_name + " " + it.last_name }
     return getUserName.joinToString()
@@ -374,18 +388,25 @@ fun getUserNameFromId(groupUserId: List<Int>): String {
  */
 fun getCommonGroup(userID: Int): List<Chats> {
     return App.getRealmInstance().where(Chats::class.java)
-        .equalTo(Chats.PROPERTY_is_group, true).findAll()
-        .filter { (it.group_user_with_settings.map { it.user_id }).contains(userID) }
+        .equalTo(Chats::is_group.name, true).findAll()
+        .filter { chats: Chats ->
+            (chats.group_user_with_settings.map { it.user_id }).contains(userID)
+        }
         .toList()
 }
 
-fun getAllNotificationTune():List<NotificationTone>{
+fun getAllNotificationTune(): List<NotificationTone> {
     return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
 }
 
+fun getAllFriends(status: String): List<FriendRequest> {
+    return App.getRealmInstance().where(FriendRequest::class.java).limit(20).findAll().filter { it.status == status }
+}
+
+
 fun updateChatUserData(id: Int, user: Users) {
 
-    val result = App.getRealmInstance().where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+    val result = App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
     if (result != null) {
         result.name = (user.first_name ?: "") + " " + (user.last_name ?: "")
         result.user_data = user
@@ -395,7 +416,7 @@ fun updateChatUserData(id: Int, user: Users) {
 }
 
 fun updateChatListUserData(id: Int, user: Users) {
-    val result = App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList.PROPERTY_sender_id, id).findFirst()
+    val result = App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::sender_id.name, id).findFirst()
     if (result != null) {
         result.user_data = user
         // App.getRealmInstance().copyToRealm(result)
@@ -405,7 +426,7 @@ fun updateChatListUserData(id: Int, user: Users) {
 fun updateChatsList(id: Int, chatlist: ChatList) {
 
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
             data.updated_at = chatlist.created_at
             data.current_time = chatlist.created_at
@@ -425,7 +446,7 @@ fun updateChatListAndUserData(id: Int, user: Users) {
 
 fun updateChatsIsHook(id: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
             data.is_hook = !data.is_hook
             data.current_time = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updated_at
@@ -437,7 +458,7 @@ fun updateChatsIsHook(id: Int) {
 
 fun updateChatsIsArchive(id: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
             data.is_archive = !data.is_archive
             data.current_time = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updated_at
@@ -449,7 +470,7 @@ fun updateChatsIsArchive(id: Int) {
 
 fun updateUserOnlineStatus(id: Int, isOnline: Boolean) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(Chats::class.java).equalTo(Chats.PROPERTY_id, id).findFirst()
+        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
             data.is_online = isOnline
             realm.copyToRealm(data)
@@ -459,7 +480,7 @@ fun updateUserOnlineStatus(id: Int, isOnline: Boolean) {
 
 fun updateNotificationStatus(id: Int, isSet: Boolean) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(NotificationTone::class.java).equalTo(NotificationTone.PROPERTY_id, id).findFirst()
+        val data = realm.where(NotificationTone::class.java).equalTo(NotificationTone::id.name, id).findFirst()
         if (data != null) {
             data.is_set = isSet
             realm.copyToRealm(data)
@@ -468,11 +489,10 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
 
 }
 
-
 fun deleteHooks(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         //val query =
-        realm.where(UserHook::class.java).`in`(UserHook.PROPERTY_id, ids.toTypedArray()).not().findAll().deleteAllFromRealm()
+        realm.where(UserHook::class.java).`in`(UserHook::id.name, ids.toTypedArray()).not().findAll().deleteAllFromRealm()
 
     })
 }
@@ -690,6 +710,7 @@ fun prepareGroupData(groupData: LoginResponse.GetAllGroup.GroupData): Groups {
     groupObj.grp_name = groupData.name
     groupObj.grp_description = groupData.description
     groupObj.grp_icon = groupData.icon
+    groupObj.grp_created_by = groupData.createdBy
     groupObj.grp_total_user = groupData.totalUsers
     groupObj.grp_other_user_id = groupData.otherUserId
     groupObj.grp_updated_at = groupData.updatedAt
@@ -859,22 +880,25 @@ fun prepareBroadcastData(broadcasts: List<LoginResponse.Broadcast>): RealmList<B
     val broadcastList = RealmList<BroadcastTable>()
     broadcasts.let {
         for (broadcastObj in broadcasts) {
-            val broadcastTableData = BroadcastTable()
-            broadcastTableData.broadcast_id = broadcastObj.id
-            broadcastTableData.user_id = broadcastObj.userId
-            broadcastTableData.broad_name = broadcastObj.name
-            broadcastTableData.broad_icon = broadcastObj.icon
-            broadcastTableData.broad_total_user = broadcastObj.totalUsers
-            broadcastTableData.broad_other_userid = broadcastObj.otherUserId
-            broadcastTableData.created_at = broadcastObj.createdAt
-            broadcastTableData.updated_at = broadcastObj.updatedAt
-            broadcastTableData.login_user = broadcastObj.userId
-            broadcastTableData.chats = prepareBroadcastChatLabelData(broadcastObj.chat)
-            broadcastList.add(broadcastTableData)
-
+            broadcastList.add(prepareSingleBroadcastData(broadcastObj))
         }
     }
     return broadcastList
+}
+
+fun prepareSingleBroadcastData(broadcastObj: LoginResponse.Broadcast): BroadcastTable {
+    val broadcastTableData = BroadcastTable()
+    broadcastTableData.broadcast_id = broadcastObj.id
+    broadcastTableData.user_id = broadcastObj.userId
+    broadcastTableData.broad_name = broadcastObj.name
+    broadcastTableData.broad_icon = broadcastObj.icon
+    broadcastTableData.broad_total_user = broadcastObj.totalUsers
+    broadcastTableData.broad_other_userid = broadcastObj.otherUserId
+    broadcastTableData.created_at = broadcastObj.createdAt
+    broadcastTableData.updated_at = broadcastObj.updatedAt
+    //broadcastTableData.login_user = broadcastObj.userId
+    broadcastTableData.chats = prepareBroadcastChatLabelData(broadcastObj.chat)
+    return broadcastTableData
 }
 
 fun prepareBroadcastChatLabelData(broadCastChat: ChatLabel): RealmList<ChatList> {
