@@ -9,11 +9,11 @@ import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.task.newapp.utils.photoeditor.edit.PhotoEditor
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.task.newapp.R
+import com.task.newapp.utils.photoeditor.edit.PhotoEditor
 import java.util.*
 
 class EmojiBSFragment : BottomSheetDialogFragment() {

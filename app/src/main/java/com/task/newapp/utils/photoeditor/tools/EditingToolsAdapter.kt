@@ -20,7 +20,9 @@ internal class EditingToolsAdapter(
     private val mOnItemSelected: OnItemSelected,
     var editImageActivity: EditImageActivity
 ) : RecyclerView.Adapter<EditingToolsAdapter.ViewHolder>() {
+
     private val mToolList: MutableList<ToolModel> = ArrayList()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context)
             .inflate(R.layout.row_editing_tools, parent, false)

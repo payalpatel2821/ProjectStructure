@@ -2,17 +2,17 @@ package com.task.newapp.service
 
 import android.app.Activity
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.JobIntentService
 import androidx.core.app.NotificationCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.models.CommonResponse
@@ -31,6 +31,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -50,7 +51,8 @@ class FileUploadService : JobIntentService() {
     private lateinit var arrayListMedia: ArrayList<Post_Uri_Model>
     private val mCompositeDisposable = CompositeDisposable()
 
-    var onPostDoneClickListener: OnPostDoneClickListener? = null
+    var onPostDoneClickListenerService: OnPostDoneClickListenerService? = null
+    private var commaSeperatedIds: String = ""
 
     override fun onCreate() {
         super.onCreate()
@@ -62,7 +64,7 @@ class FileUploadService : JobIntentService() {
          * Error occurred in file uploading
          */
         val successIntent = Intent("com.wave.ACTION_CLEAR_NOTIFICATION")
-        successIntent.putExtra("notificationId", FileUploadService.NOTIFICATION_ID)
+        successIntent.putExtra("notificationId", NOTIFICATION_ID)
         sendBroadcast(successIntent)
         val resultPendingIntent: PendingIntent = PendingIntent.getActivity(
             this,
@@ -76,7 +78,7 @@ class FileUploadService : JobIntentService() {
         )
 
         // Notify notification
-        mNotificationHelper?.notify(FileUploadService.NOTIFICATION_RETRY_ID, mBuilder)
+        mNotificationHelper?.notify(NOTIFICATION_RETRY_ID, mBuilder)
     }
 
 //    private fun onErrors(Throwable throwable) {
@@ -142,6 +144,9 @@ class FileUploadService : JobIntentService() {
         progressIntent.putExtra("progress", progressVal)
 
         sendBroadcast(progressIntent)
+
+        //Add New for showing progress
+        sendBroadcast(Intent(Constants.INTENT_SERVICE_PROGRESS))
     }
 
     /**
@@ -204,12 +209,15 @@ class FileUploadService : JobIntentService() {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onHandleWork(intent: Intent) {
-        Log.d(TAG, "onHandleWork: ")
+        Log.d(TAG, intent.toString())
 
         // get file file here
         caption = intent.getStringExtra("caption").toString()
+        commaSeperatedIds = intent.getStringExtra("commaSeperatedIds").toString()
         switchTurnOff = intent.getStringExtra("switchTurnOff").toString()
-        arrayListMedia = intent.getSerializableExtra("mediaItemsArray") as ArrayList<Post_Uri_Model>
+
+        val type: Type = object : TypeToken<ArrayList<Post_Uri_Model>>() {}.type
+        arrayListMedia = Gson().fromJson(intent.getStringExtra("mediaItemsArray"), type)
 
         if (caption == null) {
             Log.e(TAG, "onHandleWork: Invalid file URI")
@@ -546,33 +554,38 @@ class FileUploadService : JobIntentService() {
             val latitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
             val longitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
             val location: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
+            val commaSeperatedIds: RequestBody = commaSeperatedIds.toRequestBody("text/plain".toMediaTypeOrNull())
 
             //openProgressDialog(activity)
 
             mCompositeDisposable.add(
                 ApiClient.create()
-                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, captionarray, typearray, thumbarray, imagearray)
+                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, commaSeperatedIds, captionarray, typearray, thumbarray, imagearray)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
                         override fun onNext(commonResponse: CommonResponse) {
-
+                            Log.v("onNext: ", commonResponse.toString())
 //                            if (commonResponse.success == 1) {
                             context.showToast(commonResponse.message)
 
                             onSuccess()
 
-                            //Close bottom sheet and refresh post list
+                            //Close bottom sheet andrefresh post list
 //                            dismiss()
-                            onPostDoneClickListener?.onPostClick()
+                            onPostDoneClickListenerService?.onPostClickService()
+
+                            sendBroadcast(Intent(Constants.INTENT_SERVICE_COMPLETE))
 
 //                            }
                         }
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
-                            hideProgressDialog()
                             onErrors()
+
+                            hideProgressDialog()
+                            sendBroadcast(Intent(Constants.INTENT_SERVICE_COMPLETE))
                         }
 
                         override fun onComplete() {
@@ -590,12 +603,12 @@ class FileUploadService : JobIntentService() {
      * interface for post done click
      *
      */
-    interface OnPostDoneClickListener {
-        fun onPostClick()
+    interface OnPostDoneClickListenerService {
+        fun onPostClickService()
     }
 
-    fun setListener(listener: OnPostDoneClickListener) {
-        onPostDoneClickListener = listener
+    fun setListener(listener: OnPostDoneClickListenerService) {
+        onPostDoneClickListenerService = listener
     }
 
 

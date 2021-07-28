@@ -15,8 +15,12 @@ class Constants {
         const val typeCode = "type"
         const val comment_text = "comment_text"
         const val post_id = "post_id"
+        const val comment_id = "comment_id"
+        const val is_comment_reply = "is_comment_reply"
         const val hastags = "hastags"
         const val offset = "offset"
+        const val flag = "flag"
+        const val term = "term"
         const val limit = "limit"
         const val latitude = "latitude"
         const val longitude = "longitude"
@@ -36,6 +40,7 @@ class Constants {
         const val user_id = "user_id"
         const val tag_follow = "tag_follow"
         const val tag_message = "tag_message"
+        const val post_comment = "post_comment"
         const val id = "id"
         const val title = "title"
         const val type = "type"
@@ -68,6 +73,8 @@ class Constants {
         const val is_custom_notification_enable = "is_custom_notification_enable"
         const val notification_tone_id = "notification_tone_id"
         const val vibrate_status = "vibrate_status"
+        const val INTENT_SERVICE_PROGRESS = "INTENT_SERVICE_PROGRESS"
+        const val INTENT_SERVICE_COMPLETE = "INTENT_SERVICE_COMPLETE"
 
 
         // bundle value

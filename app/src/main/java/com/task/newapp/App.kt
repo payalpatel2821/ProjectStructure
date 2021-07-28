@@ -105,5 +105,4 @@ class App : MultiDexApplication() {
         realm = Realm.getDefaultInstance()
     }
 
-
 }

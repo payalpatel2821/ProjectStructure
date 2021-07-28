@@ -109,7 +109,7 @@ class StickerBSFragment : BottomSheetDialogFragment() {
                 itemView.setOnClickListener {
                     if (mStickerListener != null) {
                         mStickerListener!!.onStickerClick(
-                            (stickerarray!![getLayoutPosition()] as BitmapDrawable).getBitmap()
+                            (stickerarray!![layoutPosition] as BitmapDrawable).getBitmap()
                         )
                     }
                     dismiss()

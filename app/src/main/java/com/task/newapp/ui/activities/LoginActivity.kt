@@ -126,7 +126,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         App.fastSave.saveInt(Constants.prefUserId, loginResponse.data.user.id)
         App.fastSave.saveString(Constants.prefUserName, loginResponse.data.user.firstName + " " + loginResponse.data.user.lastName)
         App.fastSave.saveBoolean(Constants.isLogin, true)
-        showLog("token",loginResponse.data.token.toString())
+        showLog("token", loginResponse.data.token.toString())
     }
 
     private fun callAPILogin() {
@@ -254,7 +254,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     /*
-    *//**
+    */
+    /**
      * Prepare friend request database object from the login response to store in FriendRequest table
      *
      * @param friendRequestList : the list of requests

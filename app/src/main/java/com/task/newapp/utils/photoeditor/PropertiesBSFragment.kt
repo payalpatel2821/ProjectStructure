@@ -14,6 +14,7 @@ import com.task.newapp.R
 
 class PropertiesBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChangeListener {
     private var mProperties: Properties? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -23,7 +24,7 @@ class PropertiesBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChang
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.e("erase", iserase.toString() + "::")
+        Log.e("erase", "$iserase::")
         return inflater.inflate(R.layout.fragment_bottom_properties_dialog, container, false)
     }
 
@@ -35,11 +36,11 @@ class PropertiesBSFragment : BottomSheetDialogFragment(), SeekBar.OnSeekBarChang
         val txtBrushSize: TextView = view.findViewById<TextView>(R.id.txtBrushSize)
         val txtOpacity: TextView = view.findViewById<TextView>(R.id.txtOpacity)
         if (iserase) {
-            rvColor.setVisibility(View.INVISIBLE)
-            sbOpacity.setVisibility(View.GONE)
-            sbBrushSize.setVisibility(View.VISIBLE)
-            txtBrushSize.setVisibility(View.VISIBLE)
-            txtOpacity.setVisibility(View.GONE)
+            rvColor.visibility = View.INVISIBLE
+            sbOpacity.visibility = View.GONE
+            sbBrushSize.visibility = View.VISIBLE
+            txtBrushSize.visibility = View.VISIBLE
+            txtOpacity.visibility = View.GONE
         } else {
             rvColor.setVisibility(View.VISIBLE)
             sbOpacity.setVisibility(View.VISIBLE)

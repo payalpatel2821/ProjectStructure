@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -31,7 +32,6 @@ import com.task.newapp.models.CommonResponse
 import com.task.newapp.models.post.Post_Uri_Model
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.PostPagerActivity
-import com.task.newapp.ui.activities.profile.FollowesFollowingListActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.compressor.SiliCompressor
 import com.vincent.videocompressor.VideoCompress
@@ -45,14 +45,14 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import java.io.Serializable
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, MediaPickerFragment.Callback {
+class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, MediaPickerFragment.Callback,
+    PostTagFriendListFragment.OnPostTagDoneClickListener {
 
     private lateinit var mediaItemsArray: ArrayList<Uri>
     private lateinit var binding: FragmentMomentzBinding
@@ -65,7 +65,8 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
     lateinit var clickType: MediaPickerFragment.PickerType
     private val mCompositeDisposable = CompositeDisposable()
     private lateinit var arrayListMedia: ArrayList<Post_Uri_Model>
-//    var onPostDoneClickListener: OnPostDoneClickListener? = null
+    lateinit var myBottomSheetTagFriendListFragment: PostTagFriendListFragment
+    private var commaSeperatedIds: String = ""
 
     fun newInstance(mediaItems: ArrayList<Uri>, selection: String): MomentsFragment {
         val f = MomentsFragment()
@@ -119,6 +120,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
         binding.txtAddPhoto.setOnClickListener(this)
         binding.txtAddVideo.setOnClickListener(this)
         binding.fabPost.setOnClickListener(this)
+        binding.llTagFriend.setOnClickListener(this)
 
         binding.rvPhotoVideo.setHasFixedSize(true)
         binding.rvPhotoVideo.isFocusable = false
@@ -222,13 +224,14 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
 
                 val mIntent = Intent(context, FileUploadService::class.java)
                 mIntent.putExtra("caption", binding.edtCaption.text.toString().trim())
-                mIntent.putExtra("mediaItemsArray", arrayListMedia)
+                mIntent.putExtra("commaSeperatedIds", commaSeperatedIds)
+                mIntent.putExtra("mediaItemsArray", Gson().toJson(arrayListMedia))
                 mIntent.putExtra("switchTurnOff", if (binding.switchTurnOff.isChecked) "1" else "0")
 
                 dismiss()
-
                 FileUploadService.enqueueWork(activity, mIntent)
             }
+            R.id.llTagFriend -> openTagFriendListBottomSheet()
         }
     }
 
@@ -314,6 +317,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
         MediaPickerFragment.newInstance(
             multiple = true,
             allowCamera = false,
+            allowGallery = true,
             pickerType = type,
             maxSelection = count,
             theme = R.style.ChiliPhotoPicker_Light,
@@ -666,12 +670,12 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
             val latitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
             val longitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
             val location: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
+            val user_tags: RequestBody = commaSeperatedIds.toRequestBody("text/plain".toMediaTypeOrNull())
 
             //openProgressDialog(activity)
-
             mCompositeDisposable.add(
                 ApiClient.create()
-                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, captionarray, typearray, thumbarray, imagearray)
+                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, user_tags, captionarray, typearray, thumbarray, imagearray)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
@@ -745,5 +749,28 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
                 }
             }
         }
+
+    private fun openTagFriendListBottomSheet() {
+        try {
+            myBottomSheetTagFriendListFragment = PostTagFriendListFragment().newInstance(commaSeperatedIds)
+            myBottomSheetTagFriendListFragment.setListener(this)
+            myBottomSheetTagFriendListFragment.show(childFragmentManager, myBottomSheetTagFriendListFragment.tag)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onPostTagDoneClick(commaSeperatedIds: String) {
+        if (commaSeperatedIds.isNotEmpty()) {
+            showLog("commaSeperatedIds", commaSeperatedIds)
+            this.commaSeperatedIds = commaSeperatedIds
+
+            //Show Count of tag friend list
+            binding.txtTagCount.text = commaSeperatedIds.split(",").size.toString()
+        } else {
+            this.commaSeperatedIds = ""
+            binding.txtTagCount.text = ""
+        }
+    }
 }
  

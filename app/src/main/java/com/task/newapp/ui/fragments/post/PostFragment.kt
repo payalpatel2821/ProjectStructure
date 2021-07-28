@@ -1,13 +1,17 @@
 package com.task.newapp.ui.fragments.post
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.OnTouchListener
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -26,13 +30,15 @@ import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.App.Companion.fastSave
 import com.task.newapp.R
-import com.task.newapp.adapter.post.Post_Comment_Adapter
-import com.task.newapp.adapter.post.Post_Frag_Adapter
+import com.task.newapp.adapter.post.PostCommentAdapter
+import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.User
 import com.task.newapp.models.post.*
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
+import com.task.newapp.models.post.ResponseGetAllPostComments.AllPostCommentData
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -40,12 +46,13 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import lv.chi.photopicker.MediaPickerFragment
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, MediaPickerFragment.Callback
-/*, MomentsFragment.OnPostDoneClickListener {*/, FileUploadService.OnPostDoneClickListener {
+class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, MediaPickerFragment.Callback,
+    ThoughtFragment.OnPostDoneClickListener, FileUploadService.OnPostDoneClickListenerService {
 
     companion object {
         lateinit var instance: PostFragment
@@ -54,6 +61,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     lateinit var myBottomSheetMoment: MomentsFragment
     lateinit var myBottomSheetThought: ThoughtFragment
 
+    private var onHideShowBottomSheet: OnHideShowBottomSheet? = null
+
     var selectionType = ""
     var isreplybox: Boolean = false
     private lateinit var binding: FragmentPostBinding
@@ -61,8 +70,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     private var isAPICallRunning = false
     var linearLayoutManager: LinearLayoutManager? = null
     private val mCompositeDisposable = CompositeDisposable()
-    lateinit var post_Frag_adapter: Post_Frag_Adapter
-    lateinit var post_comment_adapter: Post_Comment_Adapter
+    lateinit var post_Frag_adapter: PostFragAdapter
+    lateinit var postCommentAdapter: PostCommentAdapter
     lateinit var socket: Socket
 
     var isloading = false
@@ -72,6 +81,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     private var paginate: Paginate? = null
     private var paginateComment: Paginate? = null
     var post_id: Int = 0
+    var user_id: Int = 0
     private lateinit var sheetBehavior: BottomSheetBehavior<LinearLayout>
     private lateinit var allPostArrayList: ArrayList<All_Post_Data>
     fun getInstance(): PostFragment {
@@ -118,7 +128,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     private fun initView() {
         socket = App.getSocketInstance()
-       // initSocketListeners()
+        // initSocketListeners()
         binding.llMomentsPhotos.setOnClickListener(this)
         binding.llMomentsVideos.setOnClickListener(this)
         binding.llThoughts.setOnClickListener(this)
@@ -129,7 +139,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         binding.recPost.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
 
         binding.recPost.isFocusable = false
-        post_Frag_adapter = Post_Frag_Adapter(requireContext(), ArrayList())
+        post_Frag_adapter = PostFragAdapter(requireContext(), ArrayList())
         linearLayoutManager = LinearLayoutManager(activity)
         linearLayoutManager!!.isAutoMeasureEnabled = false
         binding.recPost.layoutManager = linearLayoutManager
@@ -139,10 +149,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             binding.swipeContainer.isRefreshing = true
             if (!isAPICallRunning) {
                 showLog("initView", "get_all_post")
-                get_all_post(0)
+                getAllPost(0)
             }
         }
-        get_all_post(0)
+        getAllPost(0)
 
 //        binding.swipeContainer.post {
 //            binding.swipeContainer.isRefreshing = true
@@ -159,13 +169,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         initPaging()
 
         setProfilePic()
+        registerReceiver()
     }
 
     private fun setProfilePic() {
         Glide.with(requireActivity()).load(fastSave.getString(Constants.profile_image, ""))
             .error(R.drawable.default_dp).into(binding.imgUser)
     }
-
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -187,12 +197,14 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             }
             R.id.ll_thoughts -> {
                 myBottomSheetThought = ThoughtFragment().newInstance(post_id.toString())
+                myBottomSheetThought.setListener(this)
                 myBottomSheetThought.show(childFragmentManager, myBottomSheetThought.tag)
             }
+
         }
     }
 
-    fun get_all_post(currentpos: Int) {
+    fun getAllPost(currentpos: Int) {
         isAPICallRunning = true
         if (activity != null) {
             try {
@@ -213,10 +225,17 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                                         if (responseGetAllPost.data.isNotEmpty()) {
 
-                                            if (binding.swipeContainer.isRefreshing) post_Frag_adapter.clear()
+                                            if (binding.swipeContainer.isRefreshing) {
+                                                allPostArrayList.clear()
+                                                allPostArrayList = ArrayList()
+                                            }
+                                            if (currentpos == 0) {
+                                                allPostArrayList.clear()
+                                                allPostArrayList = ArrayList()
+                                            }
 
-                                            allPostArrayList = ArrayList()
-                                            allPostArrayList = responseGetAllPost.data as ArrayList<All_Post_Data>
+//                                            allPostArrayList = responseGetAllPost.data as ArrayList<All_Post_Data>
+                                            allPostArrayList.addAll(responseGetAllPost.data as ArrayList<All_Post_Data>)
 
                                             post_Frag_adapter.setdata(allPostArrayList, currentpos == 0)
                                             isloading = false
@@ -231,15 +250,16 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                             hasLoadedAllItems = true
                                         }
 
-                                        post_Frag_adapter.onItemClick = { view, position ->
+                                        post_Frag_adapter.onItemClick = { view, position, comment ->
                                             if (post_Frag_adapter.getdata().isNotEmpty()) {
 
                                                 val allPostData = post_Frag_adapter.getdata()[position]
                                                 post_id = allPostData.id
+                                                user_id = allPostData.userId
 
                                                 when (view.id) {
                                                     R.id.imgLike -> {
-                                                       // initSocketListeners()
+                                                        // initSocketListeners()
 
                                                         val imgLike: ImageView = view as ImageView
 
@@ -306,22 +326,28 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                     R.id.txtPost -> {
 //                                                        val imgSave: ImageView = view as ImageView
 
-                                                        val itemView = binding.recPost.findViewHolderForAdapterPosition(position)!!.itemView;
-                                                        var edt_comment: EditText = itemView.findViewById(R.id.edt_comment) as EditText
+//                                                        val itemView = binding.recPost.findViewHolderForAdapterPosition(position)!!.itemView
+//                                                        var edt_comment: AppCompatEditText = itemView.findViewById(R.id.edt_comment) as EditText
 
-                                                        if (edt_comment.text.toString().isNotEmpty()) {
+//                                                        var comment = (binding.recPost.getChildAt(position) as AppCompatEditText).text.toString()
+
+//                                                        var comment = post_Frag_adapter.getCommentsList()[position]
+
+//                                                        if (edt_comment.text.toString().isNotEmpty()) {
+                                                        if (comment.isNotEmpty()) {
                                                             //Call API for add comment
-                                                            callAPIPostComment(commentText = edt_comment.text.toString(), postId = post_id.toString(), position)
+//                                                            callAPIPostComment(commentText = edt_comment.text.toString(), postId = post_id.toString(), position)
+                                                            callAPIPostComment(commentText = comment, postId = post_id.toString(), position)
                                                         }
                                                     }
 
-                                                    R.id.llComment -> expandCollapse(post_id)
+                                                    R.id.llComment -> expandCollapseCommentSheet(post_id)
 
                                                     R.id.more_iv -> showPostDialog()
                                                 }
 
                                                 //val contents: List<All_Post_contents?> = post_Frag_adapter.getdata()[position].contents
-                                                val contents: List<All_Post_Data.Content?> = post_Frag_adapter.getdata()[position].contents
+                                                // val contents: List<All_Post_Data.Content?> = post_Frag_adapter.getdata()[position].contents
 //                                                        val intent = Intent(context, Show_Post::class.java)
 //                                                        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
 //                                                        intent.putExtra("post_id", post_Frag_adapter.getdata()[position].getId())
@@ -385,15 +411,21 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                 e.printStackTrace()
                 binding.noPosts.visibility = View.VISIBLE
                 binding.noPosts.visibility = View.GONE
+
+                hideProgressDialog()
             }
         }
     }
 
-    private fun expandCollapse(post_id: Int) {
-        if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+    private fun expandCollapseCommentSheet(post_id: Int) {
+        if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            binding.layoutBottomSheet.root.visibility = View.GONE
             sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        else
+        } else {
+            binding.layoutBottomSheet.root.visibility = View.VISIBLE
             sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            onHideShowBottomSheet?.hideShowBottomSheet(View.GONE)
+        }
 
         //init paging
         if (paginateComment != null) {
@@ -404,13 +436,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             override fun onLoadMore() {
                 isloadingComment = true
 
-                val scrollPosition: Int = post_comment_adapter.dataList.size
+                val scrollPosition: Int = postCommentAdapter.allPostCommentDataList.size
                 if (scrollPosition > 0) {
                     showLog("loadmore", scrollPosition.toString())
                     val currentSize = scrollPosition - 1
 
                     if (currentSize > 0) {
-                        callAllPostComment(post_comment_adapter.dataList[currentSize].id, post_id.toString())
+                        callAllPostComment(postCommentAdapter.allPostCommentDataList[currentSize].id, post_id.toString())
                     }
                 }
             }
@@ -429,14 +461,16 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             .setLoadingListItemCreator(null)
             .build()
 
-        //get all post comment
+//        get all post comment
         callAllPostComment(0, postId = post_id.toString())
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mCompositeDisposable.clear()
-       // destroySocketListeners()
+        if (serviceBroadRequestReceiver != null && serviceBroadRequestReceiver.isOrderedBroadcast) {
+            activity?.unregisterReceiver(serviceBroadRequestReceiver)
+        }
     }
 
     override fun onLoadMore() {
@@ -449,7 +483,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                 val currentSize = scrollPosition - 1
 
                 if (currentSize > 0) {
-                    get_all_post(post_Frag_adapter.getdata()[currentSize].id)
+                    getAllPost(post_Frag_adapter.getdata()[currentSize].id)
                 }
             }
         }
@@ -540,7 +574,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                             if (commonResponse.success == 1) {
                                 Log.v("callAPIPostSave", "callAPIPostSave")
-                                post_Frag_adapter.notifyDataSetChanged()
+//                                post_Frag_adapter.notifyDataSetChanged()
                             }
                         }
 
@@ -565,7 +599,9 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         sheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-
+                    onHideShowBottomSheet?.hideShowBottomSheet(View.GONE)
+                } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    onHideShowBottomSheet?.hideShowBottomSheet(View.VISIBLE)
                 }
             }
 
@@ -578,24 +614,29 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
         //list
         var manager = GridLayoutManager(activity, 1, GridLayoutManager.VERTICAL, false)
-
-        post_comment_adapter = Post_Comment_Adapter(requireActivity(), 0, ArrayList(), 0)
+        postCommentAdapter = PostCommentAdapter(activity as AppCompatActivity, post_id, ArrayList(), 0)
 
         binding.layoutBottomSheet.recComments.setHasFixedSize(true)
         binding.layoutBottomSheet.recComments.layoutManager = manager
-        binding.layoutBottomSheet.recComments.adapter = post_comment_adapter
+        binding.layoutBottomSheet.recComments.adapter = postCommentAdapter
         binding.layoutBottomSheet.recComments.setOnTouchListener(OnTouchListener { v, event ->
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(v.windowToken, 0)
             false
         })
 
+        binding.layoutBottomSheet.txtPost.setOnClickListener {
+            if (binding.layoutBottomSheet.edtComment.text.toString().isNotEmpty()) {
+                callAPIAddPostComment(binding.layoutBottomSheet.edtComment.text.toString().trim())
+            }
+        }
+
     }
 
     private fun callAllPostComment(offset: Int, postId: String) {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.post_id to "632",  //postId,
+                Constants.post_id to postId,
                 Constants.offset to offset,
                 Constants.limit to resources.getString(R.string.get_comments).toInt()
             )
@@ -606,15 +647,25 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                     .allpostcomment(hashMap)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<ResponsePostCommentDetails>() {
-                        override fun onNext(responsePostCommentDetails: ResponsePostCommentDetails) {
-                            if (responsePostCommentDetails.success == 1) {
+                    .subscribeWith(object : DisposableObserver<ResponseGetAllPostComments>() {
+                        override fun onNext(responseGetAllPostComments: ResponseGetAllPostComments) {
+                            if (responseGetAllPostComments.success == 1) {
                                 Log.v("responsePostComment", "responsePostCommentDetails")
 
-                                if (responsePostCommentDetails.success == 1) {
+                                if (responseGetAllPostComments.success == 1) {
 
-                                    if (responsePostCommentDetails.data.isNotEmpty()) {
-                                        post_comment_adapter.setdata(responsePostCommentDetails.data as ArrayList<ResponsePostCommentDetails.Data>)
+                                    if (responseGetAllPostComments.data.isNotEmpty()) {
+
+                                        var post_by_me = 0
+                                        post_by_me = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
+                                            1
+                                        } else {
+                                            0
+                                        }
+
+                                        postCommentAdapter.setData(
+                                            responseGetAllPostComments.data as ArrayList<AllPostCommentData>, post_by_me
+                                        )
                                         isloading = false
                                         hasLoadedAllItems = false
                                     } else {
@@ -704,6 +755,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         MediaPickerFragment.newInstance(
             multiple = true,
             allowCamera = false,
+            allowGallery = false,
             pickerType = type,
             maxSelection = count,
             theme = R.style.ChiliPhotoPicker_Light,
@@ -722,20 +774,27 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     }
 
+    override fun onPostClickService() {
+        showLog("onPostClickService", "Refresh_Post_List")
+        //Refresh Post List
+        mCompositeDisposable?.clear()
+        getAllPost(0)
+    }
+
     override fun onPostClick() {
         showLog("onPostClick", "Refresh_Post_List")
         //Refresh Post List
         mCompositeDisposable?.clear()
-        get_all_post(0)
+        getAllPost(0)
     }
 
-  /*  private fun initSocketListeners() {
-        socket.on(Constants.post_like_response, onPostLikeResponse)
-    }
+    /*  private fun initSocketListeners() {
+          socket.on(Constants.post_like_response, onPostLikeResponse)
+      }
 
-    private fun destroySocketListeners() {
-        socket.off(Constants.post_like_response, onPostLikeResponse)
-    }*/
+      private fun destroySocketListeners() {
+          socket.off(Constants.post_like_response, onPostLikeResponse)
+      }*/
 /*
     private val onPostLikeResponse = Emitter.Listener { args ->
         val data = args[0] as String
@@ -756,5 +815,145 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     fun postLikeDislike() {
         Log.e("onPostLikeResponse", "postLikeDislike")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (serviceBroadRequestReceiver != null && serviceBroadRequestReceiver.isOrderedBroadcast) {
+            activity?.unregisterReceiver(serviceBroadRequestReceiver)
+        }
+    }
+
+    var isRegister = false
+
+    override fun onStop() {
+        super.onStop()
+        if (isRegister && serviceBroadRequestReceiver != null && serviceBroadRequestReceiver.isOrderedBroadcast) {
+            activity?.unregisterReceiver(serviceBroadRequestReceiver)
+            isRegister = false
+        }
+    }
+
+    private val serviceBroadRequestReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Constants.INTENT_SERVICE_PROGRESS) {
+                //Show post process
+                showLog("BroadcastReceiver", "INTENT_SERVICE_PROGRESS")
+
+                binding.progressLay.visibility = View.VISIBLE
+                binding.recPost.smoothScrollToPosition(0)
+
+            } else if (intent.action == Constants.INTENT_SERVICE_COMPLETE) {
+                //Complete post process
+                showLog("BroadcastReceiver", "INTENT_SERVICE_COMPLETE")
+
+                //Hide Progress
+                binding.progressLay.visibility = View.GONE
+                binding.recPost.smoothScrollToPosition(0)
+
+                //Refresh Post List
+                mCompositeDisposable?.clear()
+                getAllPost(0)
+            }
+        }
+    }
+
+    private fun registerReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(Constants.INTENT_SERVICE_PROGRESS)
+        filter.addAction(Constants.INTENT_SERVICE_COMPLETE)
+
+        isRegister = true
+        activity?.registerReceiver(serviceBroadRequestReceiver, filter)
+    }
+
+    interface OnHideShowBottomSheet {
+        fun hideShowBottomSheet(visibility: Int)
+    }
+
+    fun setOnHideShowBottomSheet(listener: OnHideShowBottomSheet) {
+        this.onHideShowBottomSheet = listener
+    }
+
+    private fun callAPIAddPostComment(commentText: String) {
+        try {
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.comment_id to 0,
+                Constants.is_comment_reply to 0,
+                Constants.type to "comment",
+                Constants.comment_text to commentText,
+                Constants.post_id to post_id
+            )
+
+            openProgressDialog(activity)
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .add_postcomment(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponseAddPostComment>() {
+                        override fun onNext(responseAddPostComment: ResponseAddPostComment) {
+
+                            if (responseAddPostComment.success == 1) {
+//                                activity?.showToast(responseAddPostComment.message)
+
+                                binding.layoutBottomSheet.edtComment.setText("")
+
+                                postCommentAdapter?.let {
+
+                                    responseAddPostComment?.data.run {
+                                        var postByMe = 0
+                                        postByMe = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
+                                            1
+                                        } else {
+                                            0
+                                        }
+
+                                        val c = Calendar.getInstance()
+                                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                                        val formattedDate = df.format(c.time)
+
+                                        val tempArrayList: ArrayList<AllPostCommentData> = ArrayList<AllPostCommentData>()
+                                        val prefUser = fastSave.getObject(Constants.prefUser, User::class.java)
+
+                                        val commentUser = AllPostCommentData.CommentUser(
+                                            id = prefUser.id,
+                                            profileImage = prefUser.profileImage,
+                                            firstName = prefUser.firstName,
+                                            lastName = prefUser.lastName
+                                        )
+
+                                        var postDataModel = AllPostCommentData(
+                                            id = this!!.id,
+                                            postId = this!!.post_id!!.toInt(),
+                                            commentText = comment_text.toString(),
+                                            user = commentUser,
+                                            updatedAt = formattedDate,
+                                        )
+
+                                        tempArrayList.add(postDataModel)
+                                        tempArrayList.addAll(postCommentAdapter.getData())
+
+                                        postCommentAdapter.setData(allPostCommentDataList = tempArrayList, post_by_me = postByMe)
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+        }
     }
 }

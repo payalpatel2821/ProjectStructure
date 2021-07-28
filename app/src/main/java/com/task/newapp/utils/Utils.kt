@@ -7,9 +7,6 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.graphics.*
 import android.content.*
 import android.database.Cursor
 import android.graphics.*
@@ -38,14 +35,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
-import com.avatarfirst.avatargenlib.AvatarGenerator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
+import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
@@ -318,6 +316,16 @@ fun enableOrDisableButton(context: Context, isEnable: Boolean, button: Button) {
     }
 }
 
+fun enableOrDisableButtonBgColor(context: Context, isEnable: Boolean, button: Button) {
+    if (isEnable) {
+        button.setBackgroundColor(ContextCompat.getColor(context, R.color.theme_color))
+        button.isEnabled = true
+    } else {
+        button.setBackgroundColor(ContextCompat.getColor(context, R.color.disableColor))
+        button.isEnabled = false
+    }
+}
+
 fun requestFocus(context: Context, view: View) {
     if (view.requestFocus()) {
         // open the soft keyboard
@@ -583,6 +591,15 @@ fun Toolbar.setNavigationIconColor(@ColorInt color: Int) = navigationIcon?.mutat
 }
 
 fun isImageFile(path: String?): Boolean {
+    Log.e("isImageFile: ", path.toString())
+
+    //Add New
+//    val realPathFromUri = SiliCompressor.getRealPathFromUri(App.appInstance!!.applicationContext, Uri.fromFile(File(path)))
+//    val realPathFromUri = getPathFromUri(App.appInstance!!.applicationContext,
+//        Uri.parse("content://com.android.providers.media.documents/document/image%3A741"))
+//        Uri.parse(path))
+//    Log.e("isImageFile:realPath", realPathFromUri.toString())
+
     val mimeType: String = URLConnection.guessContentTypeFromName(path)
     return mimeType != null && mimeType.startsWith("image")
 }
@@ -758,38 +775,6 @@ fun getDataColumn(
         cursor?.close()
     }
     return null
-}
-
-/**
- * @param uri The Uri to check.
- * @return Whether the Uri authority is ExternalStorageProvider.
- */
-fun isExternalStorageDocument(uri: Uri): Boolean {
-    return "com.android.externalstorage.documents" == uri.authority
-}
-
-/**
- * @param uri The Uri to check.
- * @return Whether the Uri authority is DownloadsProvider.
- */
-fun isDownloadsDocument(uri: Uri): Boolean {
-    return "com.android.providers.downloads.documents" == uri.authority
-}
-
-/**
- * @param uri The Uri to check.
- * @return Whether the Uri authority is MediaProvider.
- */
-fun isMediaDocument(uri: Uri): Boolean {
-    return "com.android.providers.media.documents" == uri.authority
-}
-
-/**
- * @param uri The Uri to check.
- * @return Whether the Uri authority is Google Photos.
- */
-fun isGooglePhotosUri(uri: Uri): Boolean {
-    return "com.google.android.apps.photos.content" == uri.authority
 }
 
 /**
@@ -1060,4 +1045,94 @@ fun calculateInSampleSize(context: Context, sourceUri: Uri?, requestSize: Int): 
         inSampleSize *= 2
     }
     return inSampleSize
+}
+
+fun getPathFromUri(context: Context, uri: Uri): String? {
+    val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+
+    // DocumentProvider
+    if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+        // ExternalStorageProvider
+        if (isExternalStorageDocument(uri)) {
+            val docId = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":").toTypedArray()
+            val type = split[0]
+            if ("primary".equals(type, ignoreCase = true)) {
+                return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
+            }
+
+            // TODO handle non-primary volumes
+        } else if (isDownloadsDocument(uri)) {
+            val id = DocumentsContract.getDocumentId(uri)
+            val contentUri = ContentUris.withAppendedId(
+                Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+            )
+            return getDataColumn(context, contentUri, null, null)
+        } else if (isMediaDocument(uri)) {
+            val docId = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":").toTypedArray()
+            val type = split[0]
+            var contentUri: Uri? = null
+            if ("image" == type) {
+                contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            } else if ("video" == type) {
+                contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            } else if ("audio" == type) {
+                contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+            }
+            val selection = "_id=?"
+            val selectionArgs = arrayOf(
+                split[1]
+            )
+            return getDataColumn(context, contentUri, selection, selectionArgs)
+        }
+    } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+
+        // Return the remote address
+        return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(context, uri, null, null)
+    } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+        return uri.path
+    }
+    return null
+}
+
+/**
+ * @param uri The Uri to check.
+ * @return Whether the Uri authority is ExternalStorageProvider.
+ */
+fun isExternalStorageDocument(uri: Uri): Boolean {
+    return "com.android.externalstorage.documents" == uri.authority
+}
+
+/**
+ * @param uri The Uri to check.
+ * @return Whether the Uri authority is DownloadsProvider.
+ */
+fun isDownloadsDocument(uri: Uri): Boolean {
+    return "com.android.providers.downloads.documents" == uri.authority
+}
+
+/**
+ * @param uri The Uri to check.
+ * @return Whether the Uri authority is MediaProvider.
+ */
+fun isMediaDocument(uri: Uri): Boolean {
+    return "com.android.providers.media.documents" == uri.authority
+}
+
+/**
+ * @param uri The Uri to check.
+ * @return Whether the Uri authority is Google Photos.
+ */
+fun isGooglePhotosUri(uri: Uri): Boolean {
+    return "com.google.android.apps.photos.content" == uri.authority
+}
+
+/**
+ * returns logged In user's Id from the preference else returns 0
+ *
+ * @return
+ */
+fun getCurrentUserId(): Int {
+    return App.fastSave.getInt(Constants.prefUserId, 0)
 }

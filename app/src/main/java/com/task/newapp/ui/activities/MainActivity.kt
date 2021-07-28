@@ -25,7 +25,7 @@ import com.task.newapp.utils.setBlurLayout
 import com.task.newapp.utils.showToast
 import com.task.newapp.utils.*
 
-class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener {
+class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
 
     lateinit var binding: ActivityMainBinding
 
@@ -140,8 +140,12 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     }
 
     private fun setCurrentFragment(fragment: Fragment) {
-
-        binding.activityMainAppbarlayout.visibility = if (fragment is PostFragment) View.GONE else View.VISIBLE
+        if (fragment is PostFragment) {
+            binding.activityMainAppbarlayout.visibility = View.GONE
+            postFragment.setOnHideShowBottomSheet(this)
+        } else {
+            binding.activityMainAppbarlayout.visibility = View.VISIBLE
+        }
 
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.activity_main_content, fragment)
@@ -206,12 +210,19 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 
     override fun onBackPressed() {
         if (binding.bottomBar.getActiveItem() == 1) {
-            if (postFragment.myBottomSheetMoment.isVisible) {
-                postFragment.myBottomSheetMoment.dismiss()
+
+            postFragment.myBottomSheetMoment?.let {
+                if (postFragment.myBottomSheetMoment.isVisible) {
+                    postFragment.myBottomSheetMoment.dismiss()
+                }
             }
-            if (postFragment.myBottomSheetThought.isVisible) {
-                postFragment.myBottomSheetThought.dismiss()
+
+            postFragment.myBottomSheetThought?.let {
+                if (postFragment.myBottomSheetThought.isVisible) {
+                    postFragment.myBottomSheetThought.dismiss()
+                }
             }
+
         } else {
             super.onBackPressed()
         }
@@ -227,6 +238,10 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         if (binding.bottomBar.getActiveItem() == 1) {
             postFragment.postLikeDislike()
         }
+    }
+
+    override fun hideShowBottomSheet(visibility: Int) {
+        binding.blurView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
     }
 
 

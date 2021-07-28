@@ -2,10 +2,8 @@ package com.task.newapp.utils.photoeditor.edit
 
 import android.graphics.Rect
 import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.widget.ImageView
 import android.widget.RelativeLayout
 
@@ -20,7 +18,7 @@ internal class MultiTouchListener(
     deleteView: View?, parentView: RelativeLayout,
     photoEditImageView: ImageView, private val mIsTextPinchZoomable: Boolean,
     onPhotoEditorListener: OnPhotoEditorListener?
-) : OnTouchListener {
+) : View.OnTouchListener {
     private val mGestureListener: GestureDetector
     private val isRotateEnabled = true
     private val isTranslateEnabled = true
@@ -77,9 +75,7 @@ internal class MultiTouchListener(
             MotionEvent.ACTION_UP -> {
                 mActivePointerId = INVALID_POINTER_ID
                 if (deleteView != null && isViewInBounds(deleteView, x, y)) {
-                    if (onMultiTouchListener != null) onMultiTouchListener!!.onRemoveViewListener(
-                        view
-                    )
+                    if (onMultiTouchListener != null) onMultiTouchListener!!.onRemoveViewListener(view)
                 } else if (!isViewInBounds(photoEditImageView, x, y)) {
                     view.animate().translationY(0f).translationY(0f)
                 }
@@ -89,8 +85,7 @@ internal class MultiTouchListener(
                 firePhotoEditorSDKListener(view, false)
             }
             MotionEvent.ACTION_POINTER_UP -> {
-                val pointerIndexPointerUp =
-                    action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
+                val pointerIndexPointerUp = action and MotionEvent.ACTION_POINTER_INDEX_MASK shr MotionEvent.ACTION_POINTER_INDEX_SHIFT
                 val pointerId = event.getPointerId(pointerIndexPointerUp)
                 if (pointerId == mActivePointerId) {
                     val newPointerIndex = if (pointerIndexPointerUp == 0) 1 else 0
@@ -106,9 +101,7 @@ internal class MultiTouchListener(
     private fun firePhotoEditorSDKListener(view: View, isStart: Boolean) {
         val viewTag = view.tag
         if (mOnPhotoEditorListener != null && viewTag != null && viewTag is ViewType) {
-            if (isStart) mOnPhotoEditorListener.onStartViewChangeListener(view.tag as ViewType) else mOnPhotoEditorListener.onStopViewChangeListener(
-                view.tag as ViewType
-            )
+            if (isStart) mOnPhotoEditorListener.onStartViewChangeListener(view.tag as ViewType) else mOnPhotoEditorListener.onStopViewChangeListener(view.tag as ViewType)
         }
     }
 
@@ -141,29 +134,24 @@ internal class MultiTouchListener(
         private var mPivotX = 0f
         private var mPivotY = 0f
         private val mPrevSpanVector = Vector2D()
-
         override fun onScaleBegin(view: View?, detector: ScaleGestureDetector?): Boolean {
-            return super.onScaleBegin(view, detector)
-            mPivotX = detector!!.mFocusX
-            mPivotY = detector.mFocusY
-            mPrevSpanVector.set(detector.mCurrSpanVector)
+            mPivotX = detector!!.getFocusX()
+            mPivotY = detector.getFocusY()
+            mPrevSpanVector.set(detector.getCurrentSpanVector())
             return mIsTextPinchZoomable
         }
 
         override fun onScale(view: View?, detector: ScaleGestureDetector?): Boolean {
             val info = TransformInfo()
-            info.deltaScale = if (isScaleEnabled) detector!!.mScaleFactor else 1.0f
-            info.deltaAngle = if (isRotateEnabled) Vector2D.getAngle(
-                mPrevSpanVector,
-                detector!!.mCurrSpanVector
-            ) else 0.0f
-            info.deltaX = if (isTranslateEnabled) detector!!.mFocusX - mPivotX else 0.0f
-            info.deltaY = if (isTranslateEnabled) detector!!.mFocusY - mPivotY else 0.0f
+            info.deltaScale = if (isScaleEnabled) detector!!.getScaleFactor() else 1.0f
+            info.deltaAngle = if (isRotateEnabled) Vector2D.getAngle(mPrevSpanVector, detector!!.getCurrentSpanVector()) else 0.0f
+            info.deltaX = if (isTranslateEnabled) detector!!.getFocusX() - mPivotX else 0.0f
+            info.deltaY = if (isTranslateEnabled) detector!!.getFocusY() - mPivotY else 0.0f
             info.pivotX = mPivotX
             info.pivotY = mPivotY
             info.minimumScale = minimumScale
             info.maximumScale = maximumScale
-            move(view!!, info)
+            move(view, info)
             return !mIsTextPinchZoomable
         }
     }
@@ -179,7 +167,7 @@ internal class MultiTouchListener(
         var maximumScale = 0f
     }
 
-    private inner class GestureListener : SimpleOnGestureListener() {
+    private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
         override fun onSingleTapUp(e: MotionEvent): Boolean {
             if (mOnGestureControl != null) {
                 mOnGestureControl!!.onClick()
@@ -207,10 +195,10 @@ internal class MultiTouchListener(
             return degrees
         }
 
-        private fun move(view: View, info: TransformInfo) {
+        private fun move(view: View?, info: TransformInfo) {
             computeRenderOffset(view, info.pivotX, info.pivotY)
             adjustTranslation(view, info.deltaX, info.deltaY)
-            var scale = view.scaleX * info.deltaScale
+            var scale = view!!.scaleX * info.deltaScale
             scale = Math.max(info.minimumScale, Math.min(info.maximumScale, scale))
             view.scaleX = scale
             view.scaleY = scale
@@ -218,15 +206,15 @@ internal class MultiTouchListener(
             view.rotation = rotation
         }
 
-        private fun adjustTranslation(view: View, deltaX: Float, deltaY: Float) {
+        private fun adjustTranslation(view: View?, deltaX: Float, deltaY: Float) {
             val deltaVector = floatArrayOf(deltaX, deltaY)
-            view.matrix.mapVectors(deltaVector)
+            view!!.matrix.mapVectors(deltaVector)
             view.translationX = view.translationX + deltaVector[0]
             view.translationY = view.translationY + deltaVector[1]
         }
 
-        private fun computeRenderOffset(view: View, pivotX: Float, pivotY: Float) {
-            if (view.pivotX == pivotX && view.pivotY == pivotY) {
+        private fun computeRenderOffset(view: View?, pivotX: Float, pivotY: Float) {
+            if (view!!.pivotX == pivotX && view.pivotY == pivotY) {
                 return
             }
             val prevPoint = floatArrayOf(0.0f, 0.0f)

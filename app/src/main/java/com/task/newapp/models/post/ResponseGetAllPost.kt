@@ -111,6 +111,8 @@ data class ResponseGetAllPost(
             val caption: String,
             @SerializedName("color")
             val color: String,
+            @SerializedName("font_color")
+            val fontColor: String?,
             @SerializedName("content")
             val content: String,
             @SerializedName("created_at")

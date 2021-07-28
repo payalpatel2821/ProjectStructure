@@ -21,11 +21,11 @@ import androidx.annotation.IntRange
 import androidx.annotation.RequiresPermission
 import androidx.annotation.UiThread
 import com.task.newapp.R
-import com.task.newapp.utils.photoeditor.edit.MultiTouchListener.OnGestureControl
 import com.task.newapp.utils.photoeditor.edit.PhotoEditor.Builder
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  *
@@ -40,12 +40,14 @@ import java.util.*
  */
 class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListener {
     private val mLayoutInflater: LayoutInflater
-    lateinit var redoViews: MutableList<View?>
+
+    @JvmField
+    var redoViews: MutableList<View?>
     private val context: Context
     private val parentView: PhotoEditorView?
-    private val imageView: ImageView
+    private val imageView: ImageView?
     private val deleteView: View?
-    private val brushDrawingView: BrushDrawingView?
+    private val brushDrawingView: BrushDrawingView
     private var mOnPhotoEditorListener: OnPhotoEditorListener? = null
     private val isTextPinchZoomable: Boolean
     private val mDefaultTextTypeface: Typeface?
@@ -61,26 +63,21 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
     //    public static ImageView imgClose;
     fun addImage(desiredImage: Bitmap?) {
         val imageRootView = getLayout(ViewType.IMAGE)
-        val imageView =
-            imageRootView!!.findViewById<ImageView>(R.id.imgPhotoEditorImage)
-        val frmBorder1: FrameLayout =
-            imageRootView.findViewById<FrameLayout>(R.id.frmBorder)
-        val imgClose1 =
-            imageRootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
-        val imgEdit =
-            imageRootView.findViewById<ImageView>(R.id.imgPhotoEditoredit)
+        val imageView = imageRootView!!.findViewById<ImageView>(R.id.imgPhotoEditorImage)
+        val frmBorder1 = imageRootView.findViewById<FrameLayout>(R.id.frmBorder)
+        val imgClose1 = imageRootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
+        val imgEdit = imageRootView.findViewById<ImageView>(R.id.imgPhotoEditoredit)
         imgEdit.visibility = View.GONE
         //        frmBorder=frmBorder1;
 //        imgClose=imgClose1;
         imageView.setImageBitmap(desiredImage)
         val multiTouchListener = multiTouchListener
-        multiTouchListener.setOnGestureControl(object : OnGestureControl {
+        multiTouchListener.setOnGestureControl(object : MultiTouchListener.OnGestureControl {
             override fun onClick() {
-                val isBackgroundVisible =
-                    frmBorder1.getTag() != null && frmBorder1.getTag() as Boolean
+                val isBackgroundVisible = frmBorder1.tag != null && frmBorder1.tag as Boolean
                 frmBorder1.setBackgroundResource(if (isBackgroundVisible) 0 else R.drawable.rounded_border_tv)
                 imgClose1.visibility = if (isBackgroundVisible) View.GONE else View.VISIBLE
-                frmBorder1.setTag(!isBackgroundVisible)
+                frmBorder1.tag = !isBackgroundVisible
             }
 
             override fun onLongClick() {}
@@ -130,44 +127,33 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
     fun addText(text: String?, styleBuilder: TextStyleBuilder?) {
         brushDrawingView!!.brushDrawingMode = false
         val textRootView = getLayout(ViewType.TEXT)
-        val textInputTv: TextView =
-            textRootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
-        val imgClose =
-            textRootView!!.findViewById<ImageView>(R.id.imgPhotoEditorClose)
-        val imgEdit =
-            textRootView.findViewById<ImageView>(R.id.imgPhotoEditoredit)
-        val frmBorder: FrameLayout =
-            textRootView.findViewById<FrameLayout>(R.id.frmBorder)
-        textInputTv.setText(text)
+        val textInputTv = textRootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
+        val imgClose = textRootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
+        val imgEdit = textRootView.findViewById<ImageView>(R.id.imgPhotoEditoredit)
+        val frmBorder = textRootView.findViewById<FrameLayout>(R.id.frmBorder)
+        textInputTv.text = text
         styleBuilder?.applyStyle(textInputTv)
         val multiTouchListener = multiTouchListener
-        multiTouchListener.setOnGestureControl(object : OnGestureControl {
+        multiTouchListener.setOnGestureControl(object : MultiTouchListener.OnGestureControl {
             override fun onClick() {
-                val isBackgroundVisible =
-                    frmBorder.getTag() != null && frmBorder.getTag() as Boolean
+                val isBackgroundVisible = frmBorder.tag != null && frmBorder.tag as Boolean
                 frmBorder.setBackgroundResource(if (isBackgroundVisible) 0 else R.drawable.rounded_border_tv)
                 imgClose.visibility = if (isBackgroundVisible) View.GONE else View.VISIBLE
                 imgEdit.visibility = if (isBackgroundVisible) View.GONE else View.VISIBLE
-                frmBorder.setTag(!isBackgroundVisible)
+                frmBorder.tag = !isBackgroundVisible
             }
 
             override fun onLongClick() {}
         })
         imgEdit.setOnClickListener {
-            val textInput: String = textInputTv.getText().toString()
-            val currentTextColor: Int = textInputTv.getCurrentTextColor()
+            val textInput = textInputTv.text.toString()
+            val currentTextColor = textInputTv.currentTextColor
             if (mOnPhotoEditorListener != null) {
-                mOnPhotoEditorListener!!.onEditTextChangeListener(
-                    textRootView,
-                    textInput,
-                    currentTextColor,
-                    textInputTv.getTypeface()
-                )
+                mOnPhotoEditorListener!!.onEditTextChangeListener(textRootView, textInput, currentTextColor, textInputTv.typeface)
             }
         }
         textRootView.setOnTouchListener(multiTouchListener)
-        textRootView.onFocusChangeListener =
-            View.OnFocusChangeListener { view, b -> if (!b) clearHelperBox() }
+        textRootView.onFocusChangeListener = View.OnFocusChangeListener { view, b -> if (!b) clearHelperBox() }
         addViewToParent(textRootView, ViewType.TEXT)
     }
 
@@ -207,10 +193,9 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
      * @param styleBuilder style to apply on [TextView]
      */
     fun editText(view: View, inputText: String?, styleBuilder: TextStyleBuilder?) {
-        val inputTextView: TextView =
-            view.findViewById<TextView>(R.id.tvPhotoEditorText)
+        val inputTextView = view.findViewById<TextView>(R.id.tvPhotoEditorText)
         if (inputTextView != null && addedViews.contains(view) && !TextUtils.isEmpty(inputText)) {
-            inputTextView.setText(inputText)
+            inputTextView.text = inputText
             styleBuilder?.applyStyle(inputTextView)
             parentView!!.updateViewLayout(view, view.layoutParams)
             val i = addedViews.indexOf(view)
@@ -238,25 +223,21 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
     fun addEmoji(emojiTypeface: Typeface?, emojiName: String?) {
         brushDrawingView!!.brushDrawingMode = false
         val emojiRootView = getLayout(ViewType.EMOJI)
-        val emojiTextView: TextView =
-            emojiRootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
-        val frmBorder: FrameLayout =
-            emojiRootView.findViewById<FrameLayout>(R.id.frmBorder)
-        val imgClose =
-            emojiRootView!!.findViewById<ImageView>(R.id.imgPhotoEditorClose)
+        val emojiTextView = emojiRootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
+        val frmBorder = emojiRootView.findViewById<FrameLayout>(R.id.frmBorder)
+        val imgClose = emojiRootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
         if (emojiTypeface != null) {
             emojiTextView.setTypeface(emojiTypeface)
         }
-        emojiTextView.setTextSize(56f)
-        emojiTextView.setText(emojiName)
+        emojiTextView.textSize = 56f
+        emojiTextView.text = emojiName
         val multiTouchListener = multiTouchListener
-        multiTouchListener.setOnGestureControl(object : OnGestureControl {
+        multiTouchListener.setOnGestureControl(object : MultiTouchListener.OnGestureControl {
             override fun onClick() {
-                val isBackgroundVisible =
-                    frmBorder.getTag() != null && frmBorder.getTag() as Boolean
+                val isBackgroundVisible = frmBorder.tag != null && frmBorder.tag as Boolean
                 frmBorder.setBackgroundResource(if (isBackgroundVisible) 0 else R.drawable.rounded_border_tv)
                 imgClose.visibility = if (isBackgroundVisible) View.GONE else View.VISIBLE
-                frmBorder.setTag(!isBackgroundVisible)
+                frmBorder.tag = !isBackgroundVisible
             }
 
             override fun onLongClick() {}
@@ -271,16 +252,13 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
      * @param rootView rootview of image,text and emoji
      */
     private fun addViewToParent(rootView: View?, viewType: ViewType) {
-        val params: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(
+        val params = RelativeLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
         params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
         parentView!!.addView(rootView, params)
-        addedViews.add(rootView)
-        if (mOnPhotoEditorListener != null) mOnPhotoEditorListener!!.onAddViewListener(
-            viewType,
-            addedViews.size
-        )
+        addedViews.add(rootView!!)
+        if (mOnPhotoEditorListener != null) mOnPhotoEditorListener!!.onAddViewListener(viewType, addedViews.size)
     }//multiTouchListener.setOnMultiTouchListener(this);
 
     /**
@@ -293,7 +271,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
             MultiTouchListener(
                 deleteView,
                 parentView!!,
-                imageView,
+                imageView!!,
                 isTextPinchZoomable,
                 mOnPhotoEditorListener
             )
@@ -308,35 +286,24 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
         var rootView: View? = null
         when (viewType) {
             ViewType.TEXT -> {
-                rootView = mLayoutInflater.inflate(
-                    R.layout.view_photo_editor_text,
-                    null
-                )
-                val txtText: TextView =
-                    rootView.findViewById<TextView>(R.id.tvPhotoEditorText)
+                rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_text, null)
+                val txtText = rootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
                 if (txtText != null && mDefaultTextTypeface != null) {
-                    txtText.setGravity(Gravity.CENTER)
+                    txtText.gravity = Gravity.CENTER
                     if (mDefaultEmojiTypeface != null) {
                         txtText.setTypeface(mDefaultTextTypeface)
                     }
                 }
             }
-            ViewType.IMAGE -> rootView = mLayoutInflater.inflate(
-                R.layout.view_photo_editor_image,
-                null
-            )
+            ViewType.IMAGE -> rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_image, null)
             ViewType.EMOJI -> {
-                rootView = mLayoutInflater.inflate(
-                    R.layout.view_photo_editor_text,
-                    null
-                )
-                val txtTextEmoji: TextView =
-                    rootView.findViewById<TextView>(R.id.tvPhotoEditorText)
+                rootView = mLayoutInflater.inflate(R.layout.view_photo_editor_text, null)
+                val txtTextEmoji = rootView!!.findViewById<TextView>(R.id.tvPhotoEditorText)
                 if (txtTextEmoji != null) {
                     if (mDefaultEmojiTypeface != null) {
                         txtTextEmoji.setTypeface(mDefaultEmojiTypeface)
                     }
-                    txtTextEmoji.setGravity(Gravity.CENTER)
+                    txtTextEmoji.gravity = Gravity.CENTER
                     txtTextEmoji.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                 }
             }
@@ -345,8 +312,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
             //We are setting tag as ViewType to identify what type of the view it is
             //when we remove the view from stack i.e onRemoveViewListener(ViewType viewType, int numberOfAddedViews);
             rootView.tag = viewType
-            val imgClose =
-                rootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
+            val imgClose = rootView.findViewById<ImageView>(R.id.imgPhotoEditorClose)
             val finalRootView: View = rootView
             imgClose?.setOnClickListener { viewUndo(finalRootView, viewType) }
         }
@@ -502,7 +468,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
             } else {
                 redoViews.removeAt(redoViews.size - 1)
                 parentView!!.addView(redoView)
-                addedViews.add(redoView)
+                addedViews.add(redoView!!)
             }
             val viewTag = redoView!!.tag
             if (mOnPhotoEditorListener != null && viewTag != null && viewTag is ViewType) {
@@ -539,18 +505,13 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
     fun clearHelperBox() {
         for (i in 0 until parentView!!.childCount) {
             val childAt = parentView.getChildAt(i)
-            val frmBorder: FrameLayout =
-                childAt.findViewById<FrameLayout>(R.id.frmBorder)
-            if (frmBorder != null) {
-                frmBorder.setBackgroundResource(0)
-            }
-            val imgClose =
-                childAt.findViewById<ImageView>(R.id.imgPhotoEditorClose)
+            val frmBorder = childAt.findViewById<FrameLayout>(R.id.frmBorder)
+            frmBorder?.setBackgroundResource(0)
+            val imgClose = childAt.findViewById<ImageView>(R.id.imgPhotoEditorClose)
             if (imgClose != null) {
                 imgClose.visibility = View.GONE
             }
-            val imgEdit =
-                childAt.findViewById<ImageView>(R.id.imgPhotoEditoredit)
+            val imgEdit = childAt.findViewById<ImageView>(R.id.imgPhotoEditoredit)
             if (imgEdit != null) {
                 imgEdit.visibility = View.GONE
             }
@@ -606,10 +567,34 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
         parentView!!.saveFilter(object : OnSaveBitmap {
             override fun onBitmapReady(saveBitmap: Bitmap?) {
                 object : AsyncTask<String?, String?, Exception?>() {
-                    protected override fun onPreExecute() {
+                    override fun onPreExecute() {
                         super.onPreExecute()
                         clearHelperBox()
                         parentView.isDrawingCacheEnabled = false
+                    }
+
+                    @SuppressLint("MissingPermission")
+                    override fun doInBackground(vararg strings: String?): Exception? {
+                        // Create a media file name
+                        val file = File(imagePath)
+                        return try {
+                            val out = FileOutputStream(file, false)
+                            if (parentView != null) {
+                                parentView.isDrawingCacheEnabled = true
+                                val drawingCache = if (saveSettings.isTransparencyEnabled) BitmapUtil.removeTransparency(parentView.drawingCache) else parentView.drawingCache
+                                drawingCache.compress(saveSettings.compressFormat, saveSettings.compressQuality, out)
+                            }
+                            out.flush()
+                            out.close()
+                            Log.d(TAG, "Filed Saved Successfully")
+                            null
+                        } catch (e: Exception) {
+//                            FirebaseCrashlytics.getInstance().setCustomKey("SaveFilter", e.message)
+//                            FirebaseCrashlytics.getInstance().recordException(e)
+                            e.printStackTrace()
+                            Log.d(TAG, "Failed to save File")
+                            e
+                        }
                     }
 
                     override fun onPostExecute(e: Exception?) {
@@ -623,33 +608,6 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
                         }
                     }
 
-                    override fun doInBackground(vararg params: String?): Exception? {
-                        // Create a media file name
-                        val file = File(imagePath)
-                        return try {
-                            val out = FileOutputStream(file, false)
-                            if (parentView != null) {
-                                parentView.isDrawingCacheEnabled = true
-                                val drawingCache: Bitmap =
-                                    if (saveSettings.isTransparencyEnabled) BitmapUtil.removeTransparency(
-                                        parentView.drawingCache
-                                    ) else parentView.drawingCache
-                                drawingCache.compress(
-                                    saveSettings.compressFormat,
-                                    saveSettings.compressQuality,
-                                    out
-                                )
-                            }
-                            out.flush()
-                            out.close()
-                            Log.d(TAG, "Filed Saved Successfully")
-                            null
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            Log.d(TAG, "Failed to save File")
-                            e
-                        }
-                    }
                 }.execute()
             }
 
@@ -684,21 +642,17 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
     ) {
         parentView!!.saveFilter(object : OnSaveBitmap {
             override fun onBitmapReady(saveBitmap: Bitmap?) {
-                object : AsyncTask<String?, Bitmap?, Bitmap?>() {
-
+                object : AsyncTask<String?, String?, Bitmap?>() {
                     override fun onPreExecute() {
                         super.onPreExecute()
                         clearHelperBox()
                         parentView.isDrawingCacheEnabled = false
                     }
 
-
-                    override fun doInBackground(vararg params: String?): Bitmap? {
+                    override fun doInBackground(vararg strings: String?): Bitmap? {
                         return if (parentView != null) {
                             parentView.isDrawingCacheEnabled = true
-                            if (saveSettings.isTransparencyEnabled) BitmapUtil.removeTransparency(
-                                parentView.drawingCache
-                            ) else parentView.drawingCache
+                            if (saveSettings.isTransparencyEnabled) BitmapUtil.removeTransparency(parentView.drawingCache) else parentView.drawingCache
                         } else {
                             null
                         }
@@ -743,7 +697,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
         if (redoViews.size > 0) {
             redoViews.removeAt(redoViews.size - 1)
         }
-        addedViews.add(brushDrawingView)
+        addedViews.add(brushDrawingView!!)
         if (mOnPhotoEditorListener != null) {
             mOnPhotoEditorListener!!.onAddViewListener(ViewType.BRUSH_DRAWING, addedViews.size)
         }
@@ -797,7 +751,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
      * Builder pattern to define [PhotoEditor] Instance
      */
     class Builder(val context: Context, val parentView: PhotoEditorView) {
-        val imageView: ImageView
+        val imageView: ImageView?
         var deleteView: View? = null
         val brushDrawingView: BrushDrawingView
         var textTypeface: Typeface? = null
@@ -858,23 +812,22 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
          * @param photoEditorView [PhotoEditorView]
          */
         init {
-            imageView = parentView.source!!
+            imageView = parentView.source
             brushDrawingView = parentView.brushDrawingView!!
         }
     }
 
     companion object {
         private const val TAG = "PhotoEditor"
-        lateinit var addedViews: MutableList<View?>
+
+        lateinit var addedViews: ArrayList<View>
         private fun convertEmoji(emoji: String): String {
-            val returnedEmoji: String
-            returnedEmoji = try {
+            return try {
                 val convertEmojiToInt = emoji.substring(2).toInt(16)
                 String(Character.toChars(convertEmojiToInt))
             } catch (e: NumberFormatException) {
-                ""
+                e.toString()
             }
-            return returnedEmoji
         }
 
         /**
@@ -885,8 +838,7 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
          */
         fun getEmojis(context: Context): ArrayList<String> {
             val convertedEmojiList = ArrayList<String>()
-            val emojiList =
-                context.resources.getStringArray(R.array.photo_editor_emoji)
+            val emojiList = context.resources.getStringArray(R.array.photo_editor_emoji)
             for (emojiUnicode in emojiList) {
                 convertedEmojiList.add(convertEmoji(emojiUnicode))
             }
@@ -903,9 +855,8 @@ class PhotoEditor private constructor(builder: Builder) : BrushViewChangeListene
         isTextPinchZoomable = builder.isTextPinchZoomable
         mDefaultTextTypeface = builder.textTypeface
         mDefaultEmojiTypeface = builder.emojiTypeface
-        mLayoutInflater =
-            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        brushDrawingView.setBrushViewChangeListener(this)
+        mLayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        brushDrawingView!!.setBrushViewChangeListener(this)
         addedViews = ArrayList()
         redoViews = ArrayList()
     }
