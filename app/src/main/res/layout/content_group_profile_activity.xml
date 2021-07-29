@@ -116,7 +116,7 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_7sdp"
                                     android:text="@string/photo_video_link_docs"
                                     android:textSize="@dimen/_14ssp" />
 
@@ -145,11 +145,12 @@
                                 android:drawableLeft="@drawable/ic_contact_detail_with_bg"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:onClick="onClick"
-                                android:padding="@dimen/_5sdp"
+                                android:padding="@dimen/_7sdp"
                                 android:text="@string/chat_search"
                                 android:textSize="@dimen/_14ssp" />
 
                             <View
+                                android:id="@+id/view_grp_setting"
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
@@ -162,11 +163,12 @@
                                 android:drawableLeft="@drawable/ic_secret_chat_with_bg"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:onClick="onClick"
-                                android:padding="@dimen/_5sdp"
+                                android:padding="@dimen/_7sdp"
                                 android:text="@string/group_setting"
                                 android:textSize="@dimen/_14ssp" />
 
                             <View
+                                android:id="@+id/view_custom_notification"
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
@@ -187,7 +189,7 @@
                                     android:layout_weight="1"
                                     android:drawableLeft="@drawable/ic_custom_notification_with_bg"
                                     android:drawablePadding="@dimen/_10sdp"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_7sdp"
                                     android:text="@string/custom_notification"
                                     android:textSize="@dimen/_14ssp" />
 
@@ -216,8 +218,7 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="@dimen/_20sdp"
-                            android:text="15 MEMBERS" />
+                            android:paddingLeft="@dimen/_20sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_search"
@@ -227,7 +228,8 @@
                             android:layout_alignParentRight="true"
                             android:paddingRight="@dimen/_20sdp"
                             android:text="SEARCH"
-                            android:textColor="@color/black" />
+                            android:textColor="@color/black"
+                            android:visibility="gone"/>
 
                     </RelativeLayout>
 

@@ -42,6 +42,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
 import com.task.newapp.utils.simplecropview.CropImageView
@@ -417,7 +418,7 @@ fun convertDurationStringToSeconds(duration: String): String {
  */
 @SuppressLint("CheckResult")
 fun ImageView.load(
-    url: String,
+    url: String?,
     isProfile: Boolean? = false,
     name: String? = null,
     color: String? = null,

@@ -229,6 +229,7 @@
     <string name="report_group">Report Group</string>
     <string name="delete_group">Delete Group</string>
     <string name="group_setting">Group Setting</string>
+    <string name="captain">CAPTAIN</string>
 
     <string-array name="photo_editor_emoji">
 

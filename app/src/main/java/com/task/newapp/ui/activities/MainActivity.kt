@@ -18,6 +18,7 @@ import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.registration.PostFragment
 import com.task.newapp.utils.*
@@ -185,6 +186,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                 disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
                 finish()
 
+            }
+            R.id.img_profile->{
+                launchActivity<MyProfileActivity> {  }
             }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
