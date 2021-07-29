@@ -83,6 +83,9 @@ fun filterUserByName(username: String): String {
     return userList
 }*/
 
+
+/**   ------------------------------------ INSERT BEGIN ---------------------------------------------------------------  */
+
 /**
  * Insert user object to the Users Table
  *
@@ -275,6 +278,10 @@ fun insertNotificationToneData(notificationTone: RealmList<NotificationTone>) {
     })
 }
 
+/**   ------------------------------------ INSERT END ---------------------------------------------------------------  */
+
+/**   ------------------------------------ READ BEGIN ---------------------------------------------------------------  */
+
 fun getUserByUserId(userID: Int): Users? {
     return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst()
 }
@@ -403,6 +410,9 @@ fun getAllFriends(status: String): List<FriendRequest> {
     return App.getRealmInstance().where(FriendRequest::class.java).limit(20).findAll().filter { it.status == status }
 }
 
+/**   ------------------------------------ READ END ---------------------------------------------------------------  */
+
+/**   ------------------------------------ UPDATE BEGIN ---------------------------------------------------------------  */
 
 fun updateChatUserData(id: Int, user: Users) {
 
@@ -489,6 +499,10 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
 
 }
 
+/**   ------------------------------------ UPDATE END ---------------------------------------------------------------  */
+
+/**   ------------------------------------ DELETE  BEGIN ---------------------------------------------------------------  */
+
 fun deleteHooks(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         //val query =
@@ -511,12 +525,22 @@ fun deleteArchive(key: String, id: Int) {
     })
 }
 
+fun deleteBroadcast(broadcastId: Int) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(BroadcastTable::class.java).equalTo(BroadcastTable::broadcast_id.name, broadcastId).findAll().deleteAllFromRealm()
+    })
+
+}
+
 fun clearDatabase() {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.deleteAll()
 
     })
 }
+
+/**   ------------------------------------ DELETE END ---------------------------------------------------------------  */
+
 
 fun prepareLoggedInUserData(user: User): Users {
     val users = Users()
@@ -697,6 +721,7 @@ fun prepareGroupUserData(groupUserWithSettings: List<LoginResponse.GetAllGroup.G
         groupUserObj.created_at = groupUserWithSetting.createdAt
         groupUserObj.updated_at = groupUserWithSetting.updatedAt
         groupUserSettingsList.add(groupUserObj)
+        insertUserData(prepareOtherUserData(groupUserWithSetting.user))
 
     }
     return groupUserSettingsList
@@ -813,7 +838,7 @@ fun prepareAllGroupDataForDB(getAllGroups: List<LoginResponse.GetAllGroup>): Arr
         groupObj.addUserInGp?.let {
             addUserChatList.add(prepareGroupLabelData(groupObj.addUserInGp))
         }
-        //chatList.add(chatsObj.chat_list)
+
         chats.add(chatsObj)
     }
     return arrayOf(groups, groupUser, chatList, addUserChatList, chats)

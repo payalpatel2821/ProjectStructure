@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.home.activities.TransactionSearchActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
 
     <item
-        android:id="@+id/action_secret_chat"
-        android:icon="@drawable/ic_video_call_chat"
+        android:id="@+id/action_voice_call"
+        android:icon="@drawable/ic_video_call"
         android:iconTint="@color/chat_icon_color"
         android:title="Call"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_emergency_alert"
+        android:id="@+id/action_video_call"
         android:icon="@drawable/ic_call_chat"
         android:iconTint="@color/chat_icon_color"
         android:title="Video"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+
+ <!--   <item
+        android:id="@+id/action_secret_chat"
+        android:icon="@drawable/ic_secret_chat"
+        android:iconTint="@color/black"
+        android:title="Secret Chat"
+        app:showAsAction="always" />-->
+
 </menu>

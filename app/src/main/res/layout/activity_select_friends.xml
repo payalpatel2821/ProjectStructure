@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bottomsheet_bg"
-        tools:context=".ui.activities.chat.broadcast.SelectFriendsActivity">
+        tools:context=".ui.activities.chat.SelectFriendsActivity">
 
         <include
             android:id="@+id/toolbar_layout"

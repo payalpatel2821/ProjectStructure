@@ -1,4 +1,4 @@
-package com.task.newapp.ui.activities.chat.broadcast
+package com.task.newapp.ui.activities.chat
 
 import android.app.Activity
 import android.content.Intent
@@ -21,6 +21,7 @@ import com.task.newapp.realmDB.getSingleUserDetails
 import com.task.newapp.realmDB.models.FriendRequest
 import com.task.newapp.realmDB.models.Users
 import com.task.newapp.ui.activities.BaseAppCompatActivity
+import com.task.newapp.ui.activities.chat.broadcast.CreateBroadcastActivity
 import com.task.newapp.ui.activities.chat.group.CreateGroupActivity
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.FriendRequestStatus

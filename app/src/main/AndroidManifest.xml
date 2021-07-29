@@ -28,7 +28,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
         <activity
-            android:name=".ui.activities.chat.broadcast.SelectFriendsActivity"
+            android:name=".ui.activities.chat.SelectFriendsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
         <activity

@@ -47,6 +47,7 @@ class Constants {
         const val archive_id = "archive_id"
         const val is_archive = "is_archive"
         const val receiver_id = "receiver_id"
+        const val broadcast_id = "broadcast_id"
         const val is_secret = "is_secret"
         const val MAX_IMAGE_COUNT_IF_VIDEO_SELECTED = 15
         const val MAX_IMAGE_COUNT = 30

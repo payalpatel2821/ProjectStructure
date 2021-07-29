@@ -26,6 +26,7 @@ import com.task.newapp.models.ResponseGetUnreadMessage
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.ui.activities.chat.ArchivedChatsListActivity
+import com.task.newapp.ui.activities.chat.OneToOneChatActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.MessageType
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -86,7 +87,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_archive -> {
-               resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
+                resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
             }
         }
     }
@@ -136,6 +137,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     override fun onQueryTextChange(newText: String?): Boolean {
         return false
     }
+
     private fun setAdapter() {
         prepareChatListAdapterModel(getAllChats())
         if (chats.isNotEmpty()) {
@@ -496,7 +498,11 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     override fun onItemClick(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-        requireActivity().showToast("Item Clicked $position")
+        if (chats[position].is_group)
+            requireActivity().showToast("Item Clicked $position")
+        else
+            requireActivity().launchActivity<OneToOneChatActivity> { }
+
     }
 
     private fun showHideEmptyView() {
@@ -737,43 +743,6 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     private fun callMuteAPI(chats: Chats) {
 
     }
-
-    /*private fun initSocketListeners() {
-        socket.on(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.on(Constants.userdisconnect, onUserDisconnect)
-
-    }
-
-    private fun destroySocketListeners() {
-        socket.off(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.off(Constants.userdisconnect, onUserDisconnect)
-
-    }
-
-    private val onIsOnlineResponse = Emitter.Listener { args ->
-        val data = args[0] as JSONObject
-        Log.println(Log.ASSERT, "onIsOnlineResponse--", Gson().toJson(data))
-        val status = data.getString("status").equals("online")
-        val userId = data.getInt(Constants.receiver_id)
-
-        requireActivity().runOnUiThread(java.lang.Runnable {
-            updateOnlineUser(userId, status)
-        })
-
-    }
-    private val onUserDisconnect = Emitter.Listener { args ->
-        val userId = args[0] as Int
-        Log.e("onUserDisconnect...", "$userId::")
-        requireActivity().runOnUiThread(Runnable {
-            val position = getChatPosition(chats, userId)
-            showLog("find position :::", position.toString())
-            if (position != -1) {
-                updateUserOnlineStatus(userId, false)
-                chatsAdapter.updateOnlineOfflineStatus(position, false)
-            }
-
-        })
-    }*/
 
     fun updateOnlineUser(userId: Int, status: Boolean) {
         val position = getChatPosition(chats, userId)

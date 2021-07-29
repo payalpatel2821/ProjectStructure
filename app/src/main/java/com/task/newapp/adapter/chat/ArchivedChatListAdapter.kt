@@ -93,7 +93,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
 
         fun setData(obj: Chats) {
             layoutBinding.txtChatTitle.text = obj.name
-            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
+            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddTHHmmsssss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
                     it.time
                 )

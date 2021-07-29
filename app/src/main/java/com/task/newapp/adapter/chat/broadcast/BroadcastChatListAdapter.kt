@@ -63,7 +63,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
 
     interface OnChatItemClickListener {
         fun onClearChatClick(position: Int, broadcastChat: BroadcastTable)
-        fun onDeleteBroadcastChatClick(position: Int, chats: BroadcastTable)
+        fun onDeleteBroadcastChatClick(position: Int, broadcastChat: BroadcastTable)
     }
 
     inner class ViewHolder(private val layoutBinding: ItemBroadcastListBinding, private val mAdapter: BroadcastChatListAdapter) : RecyclerView.ViewHolder(layoutBinding.root), View.OnClickListener {
@@ -73,6 +73,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
                     listData?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
                 }
                 R.id.txt_delete_broadcast -> {
+                    mItemManger.closeAllItems()
                     listData?.get(adapterPosition)?.let { listener.onDeleteBroadcastChatClick(adapterPosition, it) }
                 }
                 R.id.content_layout -> {
@@ -84,7 +85,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
 
         fun setData(obj: BroadcastTable) {
             layoutBinding.txtChatTitle.text = obj.broad_name
-            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.updated_at, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
+            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.updated_at, DateTimeUtils.DateFormats.yyyyMMddTHHmmsssss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
                     it.time
                 )

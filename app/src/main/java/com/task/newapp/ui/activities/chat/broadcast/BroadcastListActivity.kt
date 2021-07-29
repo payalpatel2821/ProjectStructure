@@ -14,15 +14,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.task.newapp.R
 import com.task.newapp.adapter.chat.broadcast.BroadcastChatListAdapter
+import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityBroadcastListBinding
+import com.task.newapp.models.CommonResponse
+import com.task.newapp.realmDB.deleteBroadcast
 import com.task.newapp.realmDB.getAllBroadcastChat
 import com.task.newapp.realmDB.models.BroadcastTable
-import com.task.newapp.utils.Constants
+import com.task.newapp.ui.activities.chat.SelectFriendsActivity
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
-import com.task.newapp.utils.DialogUtils
 import com.task.newapp.utils.DialogUtils.DialogCallbacks
-import com.task.newapp.utils.showToast
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, BroadcastChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
@@ -145,28 +150,111 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
     }
 
-    override fun onClearChatClick(position: Int, chats: BroadcastTable) {
-        showToast("onClearChatClick $position")
-    }
-
-    override fun onDeleteBroadcastChatClick(position: Int, chats: BroadcastTable) {
-        DialogUtils().showConfirmationYesNoDialog(this,"Delete Broadcast","Are you sure you want to delete this broadcast ? ",object :DialogCallbacks{
+    override fun onClearChatClick(position: Int, broadcastChat: BroadcastTable) {
+        DialogUtils().showConfirmationYesNoDialog(this, "Clear Broadcast Chat", "Are you sure you want to clear broadcast messages?", object : DialogCallbacks {
             override fun onPositiveButtonClick() {
-                callAPIDeleteBroadcast(chats)
+                callAPIClearBroadcastChat(broadcastChat)
             }
 
             override fun onNegativeButtonClick() {
-                TODO("Not yet implemented")
             }
 
             override fun onDefaultButtonClick(actionName: String) {
-                TODO("Not yet implemented")
             }
         })
-        showToast("onDeleteBroadcastChatClick $position")
+    }
+
+    override fun onDeleteBroadcastChatClick(position: Int, broadcastChat: BroadcastTable) {
+        DialogUtils().showConfirmationYesNoDialog(this, "Delete Broadcast", "Are you sure you want to delete this broadcast ? ", object : DialogCallbacks {
+            override fun onPositiveButtonClick() {
+                callAPIDeleteBroadcast(broadcastChat)
+            }
+
+            override fun onNegativeButtonClick() {
+            }
+
+            override fun onDefaultButtonClick(actionName: String) {
+            }
+        })
     }
 
     private fun callAPIDeleteBroadcast(broadcastTable: BroadcastTable) {
+        try {
+            if (!isNetworkConnected()) {
+                showToast(getString(R.string.no_internet))
+                return
+            }
+
+            openProgressDialog(this)
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .deleteBroadcast(broadcastTable.broadcast_id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<CommonResponse>() {
+                        override fun onNext(commonResponse: CommonResponse) {
+                            if (commonResponse.success == 1) {
+                                deleteBroadcast(broadcastTable.broadcast_id)
+                                setAdapter()
+                            }
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callAPIClearBroadcastChat(broadcastTable: BroadcastTable) {
+
+        try {
+            if (isNetworkConnected()) {
+                showToast(getString(R.string.no_internet))
+                return
+            }
+
+            openProgressDialog(this)
+
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.broadcast_id to broadcastTable.broadcast_id
+            )
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .deleteChat(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<CommonResponse>() {
+                        override fun onNext(commonResponse: CommonResponse) {
+                            if (commonResponse.success == 1) {
+                                showToast("Broadcast messages deleted successfully.")
+                            }
+
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 

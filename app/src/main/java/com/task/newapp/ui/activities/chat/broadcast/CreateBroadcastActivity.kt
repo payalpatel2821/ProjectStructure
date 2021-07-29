@@ -143,7 +143,7 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri = result.uri
 
-                imageUri = resultUri.toString()
+                imageUri = resultUri.path
                 binding.imgProfile.setColorFilter(0)
 //                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
 //                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
@@ -155,8 +155,8 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
 
 //                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
                 val filePath: String = SiliCompressor.with(this).compress(
-                    resultUri.toString(),
-                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 1
+                    imageUri,
+                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 0
                 )
                 Log.e("callAPI:resultPath", filePath)
 
@@ -181,7 +181,7 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
             .joinToString(separator = ",") { it.id.toString() })
         builder.addFormDataPart(Constants.name, binding.edtBroadcastName.text.toString().trim())
         if (imageUri != null) {
-            Log.e(TAG, imageUri!!)
+            Log.e(TAG, imageUri!!.toString())
 
             val file = File(imageUri.toString())
             if (file.exists()) {
