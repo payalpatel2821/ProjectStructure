@@ -48,7 +48,8 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_2sdp"
                             android:fontFamily="@font/bogleregular"
-                            android:singleLine="true"
+                            android:ellipsize="end"
+                            android:text=""
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12ssp" />
 
@@ -143,7 +144,7 @@
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:id="@+id/rl_first"
+                    android:id="@+id/rlMain"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_170sdp"
                     android:orientation="vertical">
@@ -171,21 +172,34 @@
                                 android:id="@+id/txtThought"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_above="@+id/txtMore"
                                 android:editable="false"
                                 android:gravity="center"
                                 android:text=""
                                 android:textSize="@dimen/_14ssp" />
 
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtMore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginTop="@dimen/_10sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="See more.."
+                                android:textSize="@dimen/_10ssp" />
+
                         </RelativeLayout>
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/txtMore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|right"
-                            android:padding="@dimen/_5sdp"
-                            android:text="See more.."
-                            android:textSize="@dimen/_10ssp" />
+                        <!--                        <androidx.appcompat.widget.AppCompatTextView-->
+                        <!--                            android:id="@+id/txtMore"-->
+                        <!--                            android:layout_width="wrap_content"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_gravity="bottom|right"-->
+                        <!--                            android:layout_marginTop="@dimen/_10sdp"-->
+                        <!--                            android:padding="@dimen/_8sdp"-->
+                        <!--                            android:text="See more.."-->
+                        <!--                            android:textSize="@dimen/_10ssp" />-->
 
                     </io.github.florent37.shapeofview.ShapeOfView>
 

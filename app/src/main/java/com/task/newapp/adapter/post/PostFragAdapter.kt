@@ -7,12 +7,14 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.StrictMode
+import android.text.Html
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -168,6 +170,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
 
     fun updateComment(data: ResponsePostComment.Data, position: Int) {
         this.all_post[position].latest_comment = data
+        this.all_post[position].commentsCount = data.totalComment
 //        notifyDataSetChanged()
         notifyItemChanged(position, "commentPayload")
     }
@@ -239,7 +242,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                     layoutBinding.edtComment.setText("")
 
                     when (all_post_data!!.type) {
-                        "thought" -> {
+                        "thought", "article" -> {
 
 //                            var layoutBinding: StatusHolder = (holderCommon as StatusHolder)
 
@@ -328,7 +331,42 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                             layoutBinding.nameTxt.text = all_post_data.page[0].name
                         }
                     } else {
-                        layoutBinding.nameTxt.text = all_post_data.user.firstName + " " + all_post_data.user.lastName
+                        var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
+
+                        //Check User Tag and add with name
+                        if (all_post_data.tagged.isEmpty()) {
+                            layoutBinding.nameTxt.text = fullName
+                        } else {
+                            val commaSeperatedTagsNames = all_post_data.tagged.joinToString { it ->
+                                "${
+                                    (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
+                                }"
+                            }
+
+//                            val styledText = "This is <font color='red'>simple</font>."
+                            val styledText = "$fullName <font color='#AAA1A1'> was with </font>$commaSeperatedTagsNames"
+
+                            layoutBinding.nameTxt.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
+
+
+//                            var wasWithText = Html.fromHtml(
+//                                "<font color=#cc0029>" + "<b>"
+//                                        + "Hiiiiiiiiii" + "</b>" + "<br />" + "<small>" + "description"
+//                                        + "</small>" + "<br />" + "<small>" + "DateAdded" + "</small>"
+//                            )
+//
+//                            layoutBinding.nameTxt.text = Html.fromHtml(
+//                                (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
+//                                    .plus(wasWithText).plus(commaSeperatedTagsNames)
+//                            )
+
+//                            layoutBinding.nameTxt.text = Html.fromHtml(
+//                                (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
+//                                    .plus(wasWithText).plus(commaSeperatedTagsNames)
+//                            )
+
+                            Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
+                        }
                     }
 
                     if (!all_post_data.title.isNullOrEmpty()) {
@@ -374,93 +412,91 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
             if (thoughtType == "text") {
                 //normal text thought
                 layoutBinding.txtMore.visibility = View.GONE
-
-                val backgroundType: String? = all_post_data.backgroundType   //pattern
-                val color: String? = all_post_data.color
-                val fontColor: String? = all_post_data.fontColor
-                val patternId: String = all_post_data.patternId
-                val alignment: String? = all_post_data.alignment
-                val fontStyle: String? = all_post_data.fontStyle
-                val isBold: Int? = all_post_data.isBold
-                val isItalic: Int? = all_post_data.isItalic
-                val isUnderline: Int? = all_post_data.isUnderline
-                val content: String? = all_post_data.content
-
-                if (backgroundType == "pattern") {
-                    layoutBinding.postImg.setImageBitmap(null)
-                    layoutBinding.postImg.setBackgroundColor(0)
-
-                    Glide.with(context).asBitmap()
-                        .load(patternId)
-                        .centerCrop()
-                        .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
-                        .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
-                        .error(R.drawable.gallery_post)
-                        .into(object : CustomTarget<Bitmap?>() {
-                            override fun onLoadCleared(placeholder: Drawable?) {
-                                layoutBinding.imgView.visibility = View.VISIBLE
-                            }
-
-                            override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap?>?) {
-                                try {
-                                    layoutBinding.imgDefault.visibility = View.GONE
-                                    layoutBinding.postImg.setImageBitmap(bitmap)
-
-                                    val pxl = bitmap.getPixel(500, 500)
-                                    layoutBinding.imgShadow.setColorFilter(pxl)
-                                } catch (ignore: Exception) {
-                                }
-                            }
-                        })
-                } else {
-                    layoutBinding.postImg.setBackgroundColor(0)
-                    layoutBinding.postImg.setImageBitmap(null)
-
-                    if (color!!.startsWith("#"))
-                        layoutBinding.postImg.setBackgroundColor(Color.parseColor(color))
-                    else
-                        layoutBinding.postImg.setBackgroundColor(context.resources.getColor(R.color.white))
-                }
-
-                if (fontColor?.startsWith("#") == true) {
-                    layoutBinding.txtThought.setTextColor(Color.parseColor(fontColor))
-                }
-
-                content?.let {
-                    layoutBinding.txtThought.setText(content.toString())
-                }
-
-                fontStyle?.let {
-                    layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
-                }
-
-                alignment?.let {
-                    when (it) {
-                        "center" -> layoutBinding.rlThought.gravity = Gravity.CENTER
-                        "left" -> layoutBinding.rlThought.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
-                        "right" -> layoutBinding.rlThought.gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
-                    }
-                }
-
-                isBold?.let {
-                    if (it == 0) {
-                        layoutBinding.txtThought.setTypeface(null, if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL)
-                    } else {
-                        layoutBinding.txtThought.setTypeface(null, if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD)
-                    }
-                }
-
-                isUnderline?.let {
-                    if (it == 0) {
-                        layoutBinding.txtThought.setUnderlineColor(Color.TRANSPARENT)
-                    } else {
-                        layoutBinding.txtThought.setUnderlineColor(Color.BLACK)
-                    }
-                }
-
             } else {
                 //Multiline text thought
                 layoutBinding.txtMore.visibility = View.VISIBLE
+            }
+            val backgroundType: String? = all_post_data.backgroundType   //pattern
+            val color: String? = all_post_data.color
+            val fontColor: String? = all_post_data.fontColor
+            val patternId: String = all_post_data.patternId
+            val alignment: String? = all_post_data.alignment
+            val fontStyle: String? = all_post_data.fontStyle
+            val isBold: Int? = all_post_data.isBold
+            val isItalic: Int? = all_post_data.isItalic
+            val isUnderline: Int? = all_post_data.isUnderline
+            val content: String? = all_post_data.content
+
+            if (backgroundType == "pattern") {
+                layoutBinding.postImg.setImageBitmap(null)
+                layoutBinding.postImg.setBackgroundColor(0)
+
+                Glide.with(context).asBitmap()
+                    .load(patternId)
+                    .centerCrop()
+                    .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
+                    .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
+                    .error(R.drawable.gallery_post)
+                    .into(object : CustomTarget<Bitmap?>() {
+                        override fun onLoadCleared(placeholder: Drawable?) {
+                            layoutBinding.imgView.visibility = View.VISIBLE
+                        }
+
+                        override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap?>?) {
+                            try {
+                                layoutBinding.imgDefault.visibility = View.GONE
+                                layoutBinding.postImg.setImageBitmap(bitmap)
+
+                                val pxl = bitmap.getPixel(500, 500)
+                                layoutBinding.imgShadow.setColorFilter(pxl)
+                            } catch (ignore: Exception) {
+                            }
+                        }
+                    })
+            } else {
+                layoutBinding.postImg.setBackgroundColor(0)
+                layoutBinding.postImg.setImageBitmap(null)
+
+                if (color!!.startsWith("#"))
+                    layoutBinding.postImg.setBackgroundColor(Color.parseColor(color))
+                else
+                    layoutBinding.postImg.setBackgroundColor(context.resources.getColor(R.color.white))
+            }
+
+            if (fontColor?.startsWith("#") == true) {
+                layoutBinding.txtThought.setTextColor(Color.parseColor(fontColor))
+            }
+
+            content?.let {
+                layoutBinding.txtThought.setText(content.toString())
+            }
+
+            fontStyle?.let {
+                layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
+            }
+
+            alignment?.let {
+                when (it) {
+                    "center" -> layoutBinding.rlThought.gravity = Gravity.CENTER
+                    "left" -> layoutBinding.rlThought.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
+                    "right" -> layoutBinding.rlThought.gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+                }
+            }
+
+            isBold?.let {
+                if (it == 0) {
+                    layoutBinding.txtThought.setTypeface(null, if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL)
+                } else {
+                    layoutBinding.txtThought.setTypeface(null, if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD)
+                }
+            }
+
+            isUnderline?.let {
+                if (it == 0) {
+                    layoutBinding.txtThought.setUnderlineColor(Color.TRANSPARENT)
+                } else {
+                    layoutBinding.txtThought.setUnderlineColor(Color.BLACK)
+                }
             }
         }
 
@@ -470,11 +506,12 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
             layoutBinding.imgSave.setOnClickListener(this)
             layoutBinding.llComment.setOnClickListener(this)
             layoutBinding.moreIv.setOnClickListener(this)
+            layoutBinding.rlMain.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
             when (v?.id) {
-                R.id.imgLike, R.id.imgSave, R.id.llComment, R.id.more_iv -> {
+                R.id.imgLike, R.id.imgSave, R.id.llComment, R.id.more_iv, R.id.rlMain -> {
                     if (onItemClick != null) {
                         onItemClick?.invoke(v, adapterPosition, "")
                     }

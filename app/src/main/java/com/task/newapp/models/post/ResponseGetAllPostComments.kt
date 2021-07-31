@@ -43,7 +43,7 @@ data class ResponseGetAllPostComments(
             @SerializedName("comment_id")
             val commentId: Int,
             @SerializedName("comment_text")
-            val commentText: String,
+            var commentText: String,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("id")
@@ -65,13 +65,13 @@ data class ResponseGetAllPostComments(
         ) {
             data class User(
                 @SerializedName("first_name")
-                val firstName: String,
+                val firstName: String?,
                 @SerializedName("flag")
                 val flag: String,
                 @SerializedName("id")
                 val id: Int,
                 @SerializedName("last_name")
-                val lastName: String,
+                val lastName: String?,
                 @SerializedName("profile_image")
                 val profileImage: String
             )
@@ -109,7 +109,7 @@ data class ResponseGetAllPostComments(
             @SerializedName("expired_at")
             val expiredAt: String = "",
             @SerializedName("first_name")
-            val firstName: String = "",
+            val firstName: String? = "",
             @SerializedName("flag")
             val flag: String = "",
             @SerializedName("forgot_token")
@@ -135,7 +135,7 @@ data class ResponseGetAllPostComments(
             @SerializedName("last_logout_time")
             val lastLogoutTime: Any? = null,
             @SerializedName("last_name")
-            val lastName: String = "",
+            val lastName: String? = "",
             @SerializedName("last_seen_time")
             val lastSeenTime: String = "",
             @SerializedName("latitude")

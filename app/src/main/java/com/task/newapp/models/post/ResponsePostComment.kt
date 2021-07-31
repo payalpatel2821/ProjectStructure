@@ -13,28 +13,28 @@ data class ResponsePostComment(
 ) {
     data class Data(
         @SerializedName("comment_id")
-        val commentId: String,
+        val commentId: String = "",
         @SerializedName("comment_text")
-        val commentText: String,
+        val commentText: String = "",
         @SerializedName("created_at")
-        val createdAt: String,
+        val createdAt: String = "",
         @SerializedName("first_name")
-        val firstName: String,
+        val firstName: String = "",
         @SerializedName("id")
-        val id: Int,
+        val id: Int = 0,
         @SerializedName("is_comment_reply")
-        val isCommentReply: Int,
+        val isCommentReply: Int = 0,
         @SerializedName("last_name")
-        val lastName: String,
+        val lastName: String = "",
         @SerializedName("post_id")
-        val postId: String,
+        val postId: String = "",
         @SerializedName("status")
-        val status: String,
+        val status: String = "",
         @SerializedName("total_comment")
-        val totalComment: Int,
+        val totalComment: Int = 0,
         @SerializedName("updated_at")
-        val updatedAt: String,
+        val updatedAt: String = "",
         @SerializedName("user_id")
-        val userId: Int
+        val userId: Int = 0
     )
 }

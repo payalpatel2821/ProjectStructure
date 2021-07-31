@@ -219,10 +219,10 @@ class FileUploadService : JobIntentService() {
         val type: Type = object : TypeToken<ArrayList<Post_Uri_Model>>() {}.type
         arrayListMedia = Gson().fromJson(intent.getStringExtra("mediaItemsArray"), type)
 
-        if (caption == null) {
-            Log.e(TAG, "onHandleWork: Invalid file URI")
-            return
-        }
+//        if (caption == null) {
+//            Log.e(TAG, "onHandleWork: Invalid file URI")
+//            return
+//        }
 
         uploadPost()
 

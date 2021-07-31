@@ -9,22 +9,18 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.gson.Gson
 import com.paginate.Paginate
 import com.task.newapp.App
@@ -35,10 +31,8 @@ import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
-import com.task.newapp.models.User
 import com.task.newapp.models.post.*
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
-import com.task.newapp.models.post.ResponseGetAllPostComments.AllPostCommentData
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,20 +40,20 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import lv.chi.photopicker.MediaPickerFragment
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, MediaPickerFragment.Callback,
-    ThoughtFragment.OnPostDoneClickListener, FileUploadService.OnPostDoneClickListenerService {
+    ThoughtFragment.OnPostDoneClickListener, FileUploadService.OnPostDoneClickListenerService, PostCommentListFragment.OnChangePostItem {
 
     companion object {
         lateinit var instance: PostFragment
     }
 
-    lateinit var myBottomSheetMoment: MomentsFragment
-    lateinit var myBottomSheetThought: ThoughtFragment
+    var myBottomSheetMoment: MomentsFragment? = null
+    var myBottomSheetThought: ThoughtFragment? = null
+    lateinit var myBottomSheetPostCommentListFragment: PostCommentListFragment
 
     private var onHideShowBottomSheet: OnHideShowBottomSheet? = null
 
@@ -111,7 +105,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         setHasOptionsMenu(true)
 
         initView()
-        initBottomSheet()
+//        initBottomSheet()
     }
 
     private fun initPaging() {
@@ -197,8 +191,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             }
             R.id.ll_thoughts -> {
                 myBottomSheetThought = ThoughtFragment().newInstance(post_id.toString())
-                myBottomSheetThought.setListener(this)
-                myBottomSheetThought.show(childFragmentManager, myBottomSheetThought.tag)
+                myBottomSheetThought!!.setListener(this)
+                myBottomSheetThought!!.show(childFragmentManager, myBottomSheetThought!!.tag)
             }
 
         }
@@ -341,9 +335,11 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         }
                                                     }
 
-                                                    R.id.llComment -> expandCollapseCommentSheet(post_id)
+                                                    R.id.llComment -> openCommentBottomSheet(position)
 
                                                     R.id.more_iv -> showPostDialog()
+
+                                                    R.id.rlMain -> showPostDetails()
                                                 }
 
                                                 //val contents: List<All_Post_contents?> = post_Frag_adapter.getdata()[position].contents
@@ -417,52 +413,56 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    private fun expandCollapseCommentSheet(post_id: Int) {
-        if (sheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-            binding.layoutBottomSheet.root.visibility = View.GONE
-            sheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        } else {
-            binding.layoutBottomSheet.root.visibility = View.VISIBLE
-            sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            onHideShowBottomSheet?.hideShowBottomSheet(View.GONE)
+    private fun openCommentBottomSheet(position: Int) {
+        try {
+            myBottomSheetPostCommentListFragment = PostCommentListFragment().newInstance(post_id, user_id, position)
+            myBottomSheetPostCommentListFragment.setListener(this)
+            myBottomSheetPostCommentListFragment.show(childFragmentManager, myBottomSheetPostCommentListFragment.tag)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        //init paging
-        if (paginateComment != null) {
-            paginateComment!!.unbind()
-        }
-
-        paginateComment = Paginate.with(binding.layoutBottomSheet.recComments, object : Paginate.Callbacks {
-            override fun onLoadMore() {
-                isloadingComment = true
-
-                val scrollPosition: Int = postCommentAdapter.allPostCommentDataList.size
-                if (scrollPosition > 0) {
-                    showLog("loadmore", scrollPosition.toString())
-                    val currentSize = scrollPosition - 1
-
-                    if (currentSize > 0) {
-                        callAllPostComment(postCommentAdapter.allPostCommentDataList[currentSize].id, post_id.toString())
-                    }
-                }
-            }
-
-            override fun isLoading(): Boolean {
-                return isloadingComment
-            }
-
-            override fun hasLoadedAllItems(): Boolean {
-                return hasLoadedAllItemsComment
-            }
-
-        })
-            .setLoadingTriggerThreshold(17)
-            .addLoadingListItem(false)
-            .setLoadingListItemCreator(null)
-            .build()
-
-//        get all post comment
-        callAllPostComment(0, postId = post_id.toString())
+//        expandCommentSheet()
+//        binding.layoutBottomSheet.edtComment.text = ""
+//
+//        postCommentAdapter = PostCommentAdapter(activity as AppCompatActivity, post_id, ArrayList(), 0)
+//        binding.layoutBottomSheet.recComments.adapter = postCommentAdapter
+//
+//        //init paging
+//        if (paginateComment != null) {
+//            paginateComment!!.unbind()
+//        }
+//
+//        paginateComment = Paginate.with(binding.layoutBottomSheet.recComments, object : Paginate.Callbacks {
+//            override fun onLoadMore() {
+//                isloadingComment = true
+//
+//                val scrollPosition: Int = postCommentAdapter.allPostCommentDataList.size
+//                if (scrollPosition > 0) {
+//                    showLog("loadmore", scrollPosition.toString())
+//                    val currentSize = scrollPosition - 1
+//
+//                    if (currentSize > 0) {
+//                        callAllPostComment(postCommentAdapter.allPostCommentDataList[currentSize].id, post_id.toString())
+//                    }
+//                }
+//            }
+//
+//            override fun isLoading(): Boolean {
+//                return isloadingComment
+//            }
+//
+//            override fun hasLoadedAllItems(): Boolean {
+//                return hasLoadedAllItemsComment
+//            }
+//
+//        })
+//            .setLoadingTriggerThreshold(17)
+//            .addLoadingListItem(false)
+//            .setLoadingListItemCreator(null)
+//            .build()
+//
+//        callAllPostComment(0, postId = post_id.toString())
     }
 
     override fun onDestroy() {
@@ -593,106 +593,123 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    private fun initBottomSheet() {
-        sheetBehavior = BottomSheetBehavior.from<LinearLayout>(binding.layoutBottomSheet.bottomSheet)
+//    private fun initBottomSheet() {
+//        sheetBehavior = BottomSheetBehavior.from<LinearLayout>(binding.layoutBottomSheet.bottomSheet)
+//
+//        sheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
+//            override fun onStateChanged(bottomSheet: View, newState: Int) {
+//                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+//                    onHideShowBottomSheet?.hideShowBottomSheet(View.GONE)
+//                } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+//                    onHideShowBottomSheet?.hideShowBottomSheet(View.VISIBLE)
+//                }
+//            }
+//
+//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+//                // React to dragging events
+//            }
+//        })
+//
+//        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+//
+//        //list
+//        var manager = GridLayoutManager(activity, 1, GridLayoutManager.VERTICAL, false)
+//        postCommentAdapter = PostCommentAdapter(activity as AppCompatActivity, post_id, ArrayList(), 0)
+//
+//        binding.layoutBottomSheet.recComments.setHasFixedSize(true)
+//        binding.layoutBottomSheet.recComments.layoutManager = manager
+//        binding.layoutBottomSheet.recComments.adapter = postCommentAdapter
+//        binding.layoutBottomSheet.recComments.setOnTouchListener(OnTouchListener { v, event ->
+//            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//            imm.hideSoftInputFromWindow(v.windowToken, 0)
+//            false
+//        })
+//
+//        binding.layoutBottomSheet.txtPost.setOnClickListener {
+//            if (binding.layoutBottomSheet.edtComment.text.toString().isNotEmpty()) {
+//                callAPIAddPostComment(binding.layoutBottomSheet.edtComment.text.toString().trim())
+//            }
+//        }
+//
+//    }
 
-        sheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                    onHideShowBottomSheet?.hideShowBottomSheet(View.GONE)
-                } else if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    onHideShowBottomSheet?.hideShowBottomSheet(View.VISIBLE)
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // React to dragging events
-            }
-        })
-
-        sheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-
-        //list
-        var manager = GridLayoutManager(activity, 1, GridLayoutManager.VERTICAL, false)
-        postCommentAdapter = PostCommentAdapter(activity as AppCompatActivity, post_id, ArrayList(), 0)
-
-        binding.layoutBottomSheet.recComments.setHasFixedSize(true)
-        binding.layoutBottomSheet.recComments.layoutManager = manager
-        binding.layoutBottomSheet.recComments.adapter = postCommentAdapter
-        binding.layoutBottomSheet.recComments.setOnTouchListener(OnTouchListener { v, event ->
-            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(v.windowToken, 0)
-            false
-        })
-
-        binding.layoutBottomSheet.txtPost.setOnClickListener {
-            if (binding.layoutBottomSheet.edtComment.text.toString().isNotEmpty()) {
-                callAPIAddPostComment(binding.layoutBottomSheet.edtComment.text.toString().trim())
-            }
-        }
-
-    }
-
-    private fun callAllPostComment(offset: Int, postId: String) {
-        try {
-            val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.post_id to postId,
-                Constants.offset to offset,
-                Constants.limit to resources.getString(R.string.get_comments).toInt()
-            )
-            //openProgressDialog(activity)
-
-            mCompositeDisposable.add(
-                ApiClient.create()
-                    .allpostcomment(hashMap)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<ResponseGetAllPostComments>() {
-                        override fun onNext(responseGetAllPostComments: ResponseGetAllPostComments) {
-                            if (responseGetAllPostComments.success == 1) {
-                                Log.v("responsePostComment", "responsePostCommentDetails")
-
-                                if (responseGetAllPostComments.success == 1) {
-
-                                    if (responseGetAllPostComments.data.isNotEmpty()) {
-
-                                        var post_by_me = 0
-                                        post_by_me = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
-                                            1
-                                        } else {
-                                            0
-                                        }
-
-                                        postCommentAdapter.setData(
-                                            responseGetAllPostComments.data as ArrayList<AllPostCommentData>, post_by_me
-                                        )
-                                        isloading = false
-                                        hasLoadedAllItems = false
-                                    } else {
-                                        isloading = true
-                                        hasLoadedAllItems = true
-                                    }
-
-                                } else {
-                                    hasLoadedAllItems = true
-                                }
-                            }
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.v("onError: ", e.toString())
-                            //hideProgressDialog()
-                        }
-
-                        override fun onComplete() {
-                            //hideProgressDialog()
-                        }
-                    })
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+//    private fun callAllPostComment(offset: Int, postId: String) {
+//        try {
+//            binding.layoutBottomSheet.recComments.visibility = View.VISIBLE
+//            binding.layoutBottomSheet.imgNoComments.visibility = View.GONE
+//
+//            val hashMap: HashMap<String, Any> = hashMapOf(
+//                Constants.post_id to postId,
+//                Constants.offset to offset,
+//                Constants.limit to resources.getString(R.string.get_comments).toInt()
+//            )
+//            openProgressDialog(activity)
+//
+//            mCompositeDisposable.add(
+//                ApiClient.create()
+//                    .allpostcomment(hashMap)
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribeWith(object : DisposableObserver<ResponseGetAllPostComments>() {
+//                        override fun onNext(responseGetAllPostComments: ResponseGetAllPostComments) {
+//                            if (responseGetAllPostComments.success == 1) {
+//                                Log.v("responsePostComment", "responsePostCommentDetails")
+//
+//                                if (responseGetAllPostComments.success == 1) {
+//
+//                                    if (responseGetAllPostComments.data.isNotEmpty()) {
+//
+//                                        binding.layoutBottomSheet.recComments.visibility = View.VISIBLE
+//                                        binding.layoutBottomSheet.imgNoComments.visibility = View.GONE
+//
+//                                        var postByMe = 0
+//                                        postByMe = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
+//                                            1
+//                                        } else {
+//                                            0
+//                                        }
+//
+////                                        postCommentAdapter.setData(
+////                                            responseGetAllPostComments.data as ArrayList<AllPostCommentData>, postByMe
+////                                        )
+//
+//                                        postCommentAdapter = PostCommentAdapter(
+//                                            activity as AppCompatActivity, post_id,
+//                                            responseGetAllPostComments.data as ArrayList<AllPostCommentData>, postByMe
+//                                        )
+//
+//                                        binding.layoutBottomSheet.recComments.adapter = postCommentAdapter
+//
+//                                        isloading = false
+//                                        hasLoadedAllItems = false
+//                                    } else {
+//                                        isloading = true
+//                                        hasLoadedAllItems = true
+//
+//                                        binding.layoutBottomSheet.recComments.visibility = View.GONE
+//                                        binding.layoutBottomSheet.imgNoComments.visibility = View.VISIBLE
+//                                    }
+//
+//                                } else {
+//                                    hasLoadedAllItems = true
+//                                }
+//                            }
+//                        }
+//
+//                        override fun onError(e: Throwable) {
+//                            Log.v("onError: ", e.toString())
+//                            hideProgressDialog()
+//                        }
+//
+//                        override fun onComplete() {
+//                            hideProgressDialog()
+//                        }
+//                    })
+//            )
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//    }
 
     private fun callAPIPostComment(commentText: String, postId: String, position: Int) {
         try {
@@ -769,7 +786,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         if (mediaItems.size > 0) {
             myBottomSheetMoment = MomentsFragment().newInstance(mediaItems, selectionType)
 //            myBottomSheetMoment.setListener(this)
-            myBottomSheetMoment.show(childFragmentManager, myBottomSheetMoment.tag)
+            myBottomSheetMoment!!.show(childFragmentManager, myBottomSheetMoment!!.tag)
         }
 
     }
@@ -875,85 +892,130 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         this.onHideShowBottomSheet = listener
     }
 
-    private fun callAPIAddPostComment(commentText: String) {
+//    private fun callAPIAddPostComment(commentText: String) {
+//        try {
+//            val hashMap: HashMap<String, Any> = hashMapOf(
+//                Constants.comment_id to 0,
+//                Constants.is_comment_reply to 0,
+//                Constants.type to "comment",
+//                Constants.comment_text to commentText,
+//                Constants.post_id to post_id
+//            )
+//
+//            openProgressDialog(activity)
+//
+//            mCompositeDisposable.add(
+//                ApiClient.create()
+//                    .add_postcomment(hashMap)
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribeWith(object : DisposableObserver<ResponseAddPostComment>() {
+//                        override fun onNext(responseAddPostComment: ResponseAddPostComment) {
+//
+//                            if (responseAddPostComment.success == 1) {
+////                                activity?.showToast(responseAddPostComment.message)
+//
+//                                binding.layoutBottomSheet.edtComment.setText("")
+//
+//                                postCommentAdapter?.let {
+//
+//                                    responseAddPostComment?.data.run {
+//                                        var postByMe = 0
+//                                        postByMe = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
+//                                            1
+//                                        } else {
+//                                            0
+//                                        }
+//
+//                                        val c = Calendar.getInstance()
+//                                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+//                                        val formattedDate = df.format(c.time)
+//
+//                                        val tempArrayList: ArrayList<AllPostCommentData> = ArrayList<AllPostCommentData>()
+//                                        val prefUser = fastSave.getObject(Constants.prefUser, User::class.java)
+//
+//                                        val commentUser = AllPostCommentData.CommentUser(
+//                                            id = prefUser.id,
+//                                            profileImage = prefUser.profileImage,
+//                                            firstName = prefUser.firstName,
+//                                            lastName = prefUser.lastName
+//                                        )
+//
+//                                        var postDataModel = AllPostCommentData(
+//                                            id = this!!.id,
+//                                            postId = this!!.post_id!!.toInt(),
+//                                            commentText = comment_text.toString(),
+//                                            user = commentUser,
+//                                            updatedAt = formattedDate,
+//                                        )
+//
+//                                        tempArrayList.add(postDataModel)
+//                                        tempArrayList.addAll(postCommentAdapter.getData())
+//
+//                                        postCommentAdapter.setData(allPostCommentDataList = tempArrayList, post_by_me = postByMe)
+//                                        binding.layoutBottomSheet.recComments.smoothScrollToPosition(0)
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//                        override fun onError(e: Throwable) {
+//                            Log.v("onError: ", e.toString())
+//                            hideProgressDialog()
+//                        }
+//
+//                        override fun onComplete() {
+//                            hideProgressDialog()
+//                        }
+//                    })
+//            )
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//            hideProgressDialog()
+//        }
+//    }
+
+
+//    fun isInitializedMoment(): Boolean {
+//        myBottomSheetMoment?.let {
+//            return this::myBottomSheetMoment.isInitialized
+//        }
+//        return false
+//    }
+//
+//    fun isInitializedThought(): Boolean {
+//        myBottomSheetThought?.let {
+//            return this::myBottomSheetThought.isInitialized
+//        }
+//        return false
+//    }
+
+    fun expandCommentSheet() {
+        if (this::myBottomSheetPostCommentListFragment.isInitialized)
+            myBottomSheetPostCommentListFragment.dismiss()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showLog("onResume", "PostFragment")
+    }
+
+    override fun onChangePostItem(lastComment: String, totalComments: Int, adapterPositionPost: Int) {
+        post_Frag_adapter?.let {
+
+            var dataComment = ResponsePostComment.Data(
+                commentText = lastComment,
+                totalComment = totalComments,
+            )
+            post_Frag_adapter.updateComment(dataComment, adapterPositionPost)
+        }
+    }
+
+    private fun showPostDetails() {
         try {
-            val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.comment_id to 0,
-                Constants.is_comment_reply to 0,
-                Constants.type to "comment",
-                Constants.comment_text to commentText,
-                Constants.post_id to post_id
-            )
 
-            openProgressDialog(activity)
-
-            mCompositeDisposable.add(
-                ApiClient.create()
-                    .add_postcomment(hashMap)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<ResponseAddPostComment>() {
-                        override fun onNext(responseAddPostComment: ResponseAddPostComment) {
-
-                            if (responseAddPostComment.success == 1) {
-//                                activity?.showToast(responseAddPostComment.message)
-
-                                binding.layoutBottomSheet.edtComment.setText("")
-
-                                postCommentAdapter?.let {
-
-                                    responseAddPostComment?.data.run {
-                                        var postByMe = 0
-                                        postByMe = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
-                                            1
-                                        } else {
-                                            0
-                                        }
-
-                                        val c = Calendar.getInstance()
-                                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                        val formattedDate = df.format(c.time)
-
-                                        val tempArrayList: ArrayList<AllPostCommentData> = ArrayList<AllPostCommentData>()
-                                        val prefUser = fastSave.getObject(Constants.prefUser, User::class.java)
-
-                                        val commentUser = AllPostCommentData.CommentUser(
-                                            id = prefUser.id,
-                                            profileImage = prefUser.profileImage,
-                                            firstName = prefUser.firstName,
-                                            lastName = prefUser.lastName
-                                        )
-
-                                        var postDataModel = AllPostCommentData(
-                                            id = this!!.id,
-                                            postId = this!!.post_id!!.toInt(),
-                                            commentText = comment_text.toString(),
-                                            user = commentUser,
-                                            updatedAt = formattedDate,
-                                        )
-
-                                        tempArrayList.add(postDataModel)
-                                        tempArrayList.addAll(postCommentAdapter.getData())
-
-                                        postCommentAdapter.setData(allPostCommentDataList = tempArrayList, post_by_me = postByMe)
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.v("onError: ", e.toString())
-                            hideProgressDialog()
-                        }
-
-                        override fun onComplete() {
-                            hideProgressDialog()
-                        }
-                    })
-            )
         } catch (e: Exception) {
             e.printStackTrace()
-            hideProgressDialog()
         }
     }
 }

@@ -17,38 +17,43 @@
             app:rightEdgeSwipeOffset="0dp">
 
             <LinearLayout
-                android:id="@+id/bottom_wraper"
+                android:id="@+id/bottom_wrapperReply"
                 android:layout_width="@dimen/_45sdp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/gray"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
-                <TextView
-                    android:id="@+id/Delete"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#ff0000"
+                <ImageView
+                    android:id="@+id/imgReplySwipe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/delete"
-                    android:textColor="#fff" />
+                    android:scaleX="-1"
+                    android:src="@drawable/ic_forward" />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/bottom_wrapper1"
+                android:id="@+id/bottom_wraperDelete"
                 android:layout_width="@dimen/_45sdp"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/red"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:weightSum="3">
 
-                <TextView
-                    android:id="@+id/reply"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#ff0000"
+                <ImageView
+                    android:id="@+id/imgDeleteSwipe"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="@string/reply"
-                    android:textColor="#fff" />
+                    android:src="@drawable/ic_delete" />
 
             </LinearLayout>
 
@@ -194,7 +199,7 @@
                     android:layout_marginBottom="5pt">
 
                     <TextView
-                        android:id="@+id/send"
+                        android:id="@+id/sendReply"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="@dimen/_6sdp"
@@ -278,7 +283,7 @@
 
             <!--        <com.task.newapp.utils.SeeMoreTextView-->
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/text"
+                android:id="@+id/textReply"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_10sdp"
@@ -292,16 +297,6 @@
                 tools:text="Thank You So much for Good Review ! I Hope You Very Like This Application." />
 
         </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5pt"
-            android:layout_marginStart="37pt"
-            android:layout_marginTop="5pt"
-            android:layout_marginEnd="3pt"
-            android:layout_marginBottom="5pt"
-            android:background="@color/gray"
-            android:visibility="gone" />
 
     </LinearLayout>
 

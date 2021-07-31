@@ -26,7 +26,7 @@ data class ResponseGetAllPost(
         @SerializedName("latest_comment")
         var latest_comment: ResponsePostComment.Data,
         @SerializedName("comments_count")
-        val commentsCount: Int,
+        var commentsCount: Int,
         @SerializedName("contents")
         val contents: List<Content>,
         @SerializedName("created_at")
@@ -100,7 +100,9 @@ data class ResponseGetAllPost(
         @SerializedName("view_count")
         val viewCount: String,
         @SerializedName("views")
-        val views: List<Any>
+        val views: List<Any>,
+        @SerializedName("tagged")
+        val tagged: List<Tagged>,
     ) {
         data class Content(
             @SerializedName("alignment")
@@ -149,6 +151,13 @@ data class ResponseGetAllPost(
             val width: Int
         )
 
+        data class Tagged(
+            @SerializedName("id") val id: Int,
+            @SerializedName("first_name") val first_name: String?,
+            @SerializedName("last_name") val last_name: String?,
+            @SerializedName("profile_image") val profile_image: String
+        )
+
         data class Latest_comment(
             @SerializedName("id") val id: Int,
             @SerializedName("post_id") val post_id: Int,
@@ -188,13 +197,13 @@ data class ResponseGetAllPost(
 
         data class User(
             @SerializedName("first_name")
-            val firstName: String,
+            val firstName: String?,
             @SerializedName("flag")
             val flag: String,
             @SerializedName("id")
             val id: Int,
             @SerializedName("last_name")
-            val lastName: String,
+            val lastName: String?,
             @SerializedName("profile_image")
             val profileImage: String
         )

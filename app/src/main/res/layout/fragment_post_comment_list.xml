@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_top"
+        android:backgroundTint="@color/white"
+        android:orientation="vertical"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white">
+
+            <View
+                android:id="@+id/viewaa"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:background="#CCCCCC" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/viewaa"
+                android:orientation="horizontal">
+
+                <!--            <com.facebook.shimmer.ShimmerFrameLayout-->
+                <!--                android:id="@+id/shimmerFrameLayout"-->
+                <!--                android:layout_width="match_parent"-->
+                <!--                android:layout_height="match_parent"-->
+                <!--                android:layout_gravity="center"-->
+                <!--                android:orientation="vertical"-->
+                <!--                android:visibility="visible"-->
+                <!--                tools:visibility="gone">-->
+
+                <!--                <LinearLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:orientation="vertical">-->
+
+                <!--                    <include layout="@layout/shimmer_bottom_sheet" />-->
+
+                <!--                </LinearLayout>-->
+
+                <!--            </com.facebook.shimmer.ShimmerFrameLayout>-->
+
+                <RelativeLayout
+                    android:id="@+id/main_bottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    tools:visibility="visible">
+
+                    <!--                <RelativeLayout-->
+                    <!--                    android:id="@+id/del_footer"-->
+                    <!--                    android:layout_width="match_parent"-->
+                    <!--                    android:layout_height="wrap_content"-->
+                    <!--                    android:layout_alignParentBottom="true"-->
+                    <!--                    android:background="@color/red"-->
+                    <!--                    android:padding="@dimen/_9sdp">-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_centerInParent="true"-->
+                    <!--                        android:drawableLeft="@drawable/per_delet"-->
+                    <!--                        android:drawablePadding="@dimen/_10sdp"-->
+                    <!--                        android:drawableTint="@color/white"-->
+                    <!--                        android:fontFamily="@font/bogleregular"-->
+                    <!--                        android:gravity="center"-->
+                    <!--                        android:text="Delete Post"-->
+                    <!--                        android:textColor="@color/white"-->
+                    <!--                        android:textSize="@dimen/_12ssp" />-->
+
+
+                    <!--                </RelativeLayout>-->
+
+                    <RelativeLayout
+                        android:id="@+id/scrollview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <RelativeLayout
+                            android:id="@+id/root_lay"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:visibility="gone">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginLeft="@dimen/_5sdp"
+                                        android:layout_marginRight="@dimen/_5sdp"
+                                        android:layout_toRightOf="@+id/image_layout">
+
+                                        <LinearLayout
+                                            android:id="@+id/discription_lay"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="match_parent"
+                                            android:gravity="center_vertical"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:id="@+id/username"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:fontFamily="@font/bogleregular"
+                                                android:singleLine="true"
+                                                android:text="sadsadsadsadsa"
+                                                android:textColor="@color/black"
+                                                android:textSize="@dimen/_12ssp" />
+
+                                            <TextView
+                                                android:id="@+id/followers"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginTop="@dimen/_1sdp"
+                                                android:fontFamily="@font/bogleregular"
+                                                android:singleLine="true"
+                                                android:text="0 Followers"
+                                                android:textColor="@color/gray"
+                                                android:textSize="@dimen/_9sdp" />
+
+                                        </LinearLayout>
+
+                                    </LinearLayout>
+
+                                    <RelativeLayout
+                                        android:id="@+id/image_layout"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true">
+
+                                        <de.hdodenhof.circleimageview.CircleImageView
+                                            android:id="@+id/img_view"
+                                            android:layout_width="@dimen/_50sdp"
+                                            android:layout_height="@dimen/_50sdp"
+                                            android:layout_centerInParent="true"
+                                            android:padding="@dimen/_5sdp"
+                                            android:src="@drawable/default_dp" />
+
+                                    </RelativeLayout>
+
+                                </RelativeLayout>
+
+                                <!--                            <TextView-->
+                                <!--                                android:id="@+id/discription"-->
+                                <!--                                android:layout_width="match_parent"-->
+                                <!--                                android:layout_height="wrap_content"-->
+                                <!--                                android:layout_margin="@dimen/_7sdp"-->
+                                <!--                                android:fontFamily="@font/bogleregular"-->
+                                <!--                                android:text=""-->
+                                <!--                                android:textColor="@color/black"-->
+                                <!--                                android:textSize="@dimen/_12ssp" />-->
+
+                                <com.task.newapp.utils.SeeMoreTextView
+                                    android:id="@+id/discription"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/_7sdp"
+                                    android:fontFamily="@font/bogleregular"
+                                    android:lineSpacingExtra="1pt"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/_12ssp"
+                                    android:visibility="gone" />
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="@dimen/_1sdp"
+                                    android:layout_marginLeft="@dimen/_6sdp"
+                                    android:layout_marginTop="@dimen/_4sdp"
+                                    android:layout_marginRight="@dimen/_6sdp"
+                                    android:layout_marginBottom="@dimen/_4sdp"
+                                    android:background="@color/gray"
+                                    android:visibility="gone" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/_4sdp"
+                                    android:padding="@dimen/_4sdp"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:id="@+id/comments"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_weight="0.45"
+                                        android:fontFamily="@font/bogleregular"
+                                        android:gravity="center_vertical"
+                                        android:text="0 Comments"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/_10ssp" />
+
+                                    <LinearLayout
+                                        android:id="@+id/llViewers"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="0.55"
+
+                                        android:orientation="horizontal">
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_gravity="center_vertical"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:fontFamily="@font/bogleregular"
+                                                android:text="Viewed By"
+                                                android:textColor="@color/gray"
+                                                android:textSize="@dimen/_9ssp" />
+
+                                            <TextView
+                                                android:id="@+id/people_watch"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:fontFamily="@font/bogleregular"
+                                                android:text="0 Peoples"
+                                                android:textColor="@color/black"
+                                                android:textSize="@dimen/_10ssp" />
+
+                                        </LinearLayout>
+
+                                        <androidx.recyclerview.widget.RecyclerView
+                                            android:id="@+id/rec_viewers"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="@dimen/_32sdp"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_marginLeft="@dimen/_5sdp"
+                                            android:clipToPadding="false"
+                                            android:nestedScrollingEnabled="false" />
+
+                                    </LinearLayout>
+
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="@dimen/_8sdp"
+                                    android:layout_marginBottom="@dimen/_5sdp"
+                                    android:fontFamily="@font/bogleregular"
+                                    android:singleLine="true"
+                                    android:text="Comments"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/_12ssp" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/rec_comments"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:nestedScrollingEnabled="false"
+                                    tools:listitem="@layout/post_comment_adpter" />
+
+                                <ImageView
+                                    android:id="@+id/img_no_comments"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/no_comment"
+                                    android:visibility="gone" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="bottom"
+                                    android:layout_marginTop="@dimen/_10sdp"
+                                    android:background="@color/white"
+                                    android:elevation="@dimen/_20sdp"
+                                    android:gravity="bottom"
+                                    android:orientation="horizontal"
+                                    android:padding="@dimen/_5sdp">
+
+                                    <RelativeLayout
+                                        android:id="@+id/layout_comment"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <com.vanniktech.emoji.EmojiEditText
+                                            android:id="@+id/edt_comment"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="@dimen/_30sdp"
+                                            android:layout_marginLeft="@dimen/_3sdp"
+                                            android:layout_marginRight="@dimen/_3sdp"
+                                            android:background="@color/white"
+                                            android:fontFamily="@font/bogleregular"
+                                            android:hint="Add a comment.."
+                                            android:inputType="textCapSentences|textMultiLine"
+                                            android:paddingLeft="@dimen/_15sdp"
+                                            android:paddingRight="@dimen/_15sdp"
+                                            android:textColor="@color/black"
+                                            android:textColorHint="@color/gray4"
+                                            android:textSize="@dimen/_12ssp" />
+
+                                        <!--                                    <ImageView-->
+                                        <!--                                        android:id="@+id/btn_emoji"-->
+                                        <!--                                        android:layout_width="@dimen/_32sdp"-->
+                                        <!--                                        android:layout_height="@dimen/_32sdp"-->
+                                        <!--                                        android:layout_alignParentRight="true"-->
+                                        <!--                                        android:layout_marginRight="@dimen/_8sdp"-->
+                                        <!--                                        android:padding="@dimen/_5sdp"-->
+                                        <!--                                        android:src="@drawable/edit_smiley"-->
+                                        <!--                                        app:layout_marginTopPercent="33%"-->
+                                        <!--                                        app:tint="@color/gray" />-->
+
+                                    </RelativeLayout>
+
+                                    <!--                                <ImageView-->
+                                    <!--                                    android:id="@+id/comment_send_iv"-->
+                                    <!--                                    android:layout_width="wrap_content"-->
+                                    <!--                                    android:layout_height="wrap_content"-->
+                                    <!--                                    android:src="@drawable/send_post" />-->
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtPost"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentRight="true"
+                                        android:layout_marginLeft="@dimen/_8sdp"
+                                        android:layout_marginRight="@dimen/_8sdp"
+                                        android:fontFamily="@font/bogleregular"
+                                        android:padding="@dimen/_5sdp"
+                                        android:text="Post"
+                                        android:textColor="@color/black"
+                                        android:textSize="@dimen/_12ssp" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</layout>

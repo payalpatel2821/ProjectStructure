@@ -24,7 +24,7 @@
     <string name="logout">Logout</string>
 
     <string name="message_upload_success">Uploading Success</string>
-    <string name="file_upload_successful">File has been uploaded successfully</string>
+    <string name="file_upload_successful">Post has been uploaded successfully</string>
     <string name="uploading">Uploading</string>
     <string name="in_progress">in progress</string>
     <string name="noti_channel_default">Default Channel</string>

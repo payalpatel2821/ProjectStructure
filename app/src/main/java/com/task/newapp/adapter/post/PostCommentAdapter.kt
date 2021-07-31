@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -16,8 +17,9 @@ import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.PostCommentAdpterBinding
-import com.task.newapp.models.post.*
-import com.task.newapp.models.post.ResponseGetAllPostComments.*
+import com.task.newapp.models.post.PostSocket
+import com.task.newapp.models.post.ResponseAddPostComment
+import com.task.newapp.models.post.ResponseGetAllPostComments.AllPostCommentData
 import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 import com.task.newapp.utils.swipelayout.SwipeLayout
@@ -28,37 +30,59 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class PostCommentAdapter(context: AppCompatActivity, post_id: Int, allPostCommentDataList: ArrayList<AllPostCommentData>, post_by_me: Int) :
+class PostCommentAdapter(
+    context: AppCompatActivity,
+    post_id: Int,
+    allPostCommentDataList: ArrayList<AllPostCommentData>,
+    post_by_me: Int
+) :
     RecyclerSwipeAdapter<PostCommentAdapter.ViewHolder>() {
 
     val VIEW_TYPE_ITEM = 0
     val VIEW_TYPE_LOADING = 1
     var context: AppCompatActivity = context
-    var allPostCommentDataList: ArrayList<AllPostCommentData>
+    var allPostCommentDataList: ArrayList<AllPostCommentData> = allPostCommentDataList
     var post_by_me: Int
     var comment_id = 0
     var post_id: Int
     private val isCaching = true
-    private var checkedPosition = -1
+    var checkedPosition = -1
     private val mCompositeDisposable = CompositeDisposable()
+    private var onCommentItemClickListener: OnCommentItemClickListener? = null
 
     init {
-        this.allPostCommentDataList = allPostCommentDataList
         this.post_by_me = post_by_me
         this.post_id = post_id
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostCommentAdapter.ViewHolder {
-        val layoutBinding: PostCommentAdpterBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.post_comment_adpter, parent, false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): PostCommentAdapter.ViewHolder {
+        val layoutBinding: PostCommentAdpterBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            R.layout.post_comment_adpter,
+            parent,
+            false
+        )
         return ViewHolder(layoutBinding, this)
     }
 
     fun setData(allPostCommentDataList: ArrayList<AllPostCommentData>, post_by_me: Int) {
-        this.allPostCommentDataList = allPostCommentDataList
+//        this.allPostCommentDataList = allPostCommentDataList
         this.post_by_me = post_by_me
-        notifyDataSetChanged()
+//        notifyDataSetChanged()
+
+        //-----------------Add New-----------------------
+        val diffCallback = CommentDiffCallback(this.allPostCommentDataList, allPostCommentDataList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.allPostCommentDataList.clear()
+        this.allPostCommentDataList.addAll(allPostCommentDataList)
+//        notifyDataSetChanged()
+
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun getData(): ArrayList<AllPostCommentData> = this.allPostCommentDataList
@@ -83,7 +107,14 @@ class PostCommentAdapter(context: AppCompatActivity, post_id: Int, allPostCommen
 //        }
     }
 
-    fun addreply(replytext: String, postid: Int, replytxt: TextView, position: Int, reply_box: RelativeLayout, editText: EditText) {
+    fun sendReply(
+        replytext: String,
+        postid: Int,
+        replytxt: TextView,
+        position: Int,
+        reply_box: RelativeLayout,
+        editText: EditText
+    ) {
 //        val dialog = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
 //        dialog.getProgressHelper().setBarColor(context.resources.getColor(R.color.colorPrimary))
         //        dialog.setTitleText("Fetching Data");
@@ -160,7 +191,10 @@ class PostCommentAdapter(context: AppCompatActivity, post_id: Int, allPostCommen
 
                             if (responseAddPostComment != null) {
                                 if (responseAddPostComment.success == 1) {
-                                    val postSocket = PostSocket(App.fastSave.getInt(Constants.prefUserId, 0), post_id)
+                                    val postSocket = PostSocket(
+                                        App.fastSave.getInt(Constants.prefUserId, 0),
+                                        post_id
+                                    )
                                     val json: String = Gson().toJson(postSocket)
 
                                     App.socket!!.emit(Constants.post_comment, json)
@@ -217,12 +251,196 @@ class PostCommentAdapter(context: AppCompatActivity, post_id: Int, allPostCommen
         }
     }
 
-    fun deletecomment(position: Int, reply: String) {
+    override fun getSwipeLayoutResourceId(position: Int): Int {
+        return R.id.swipeLayout
+    }
+
+//    private inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+//        var progressBar: ProgressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
+//    }
+
+    inner class ViewHolder(
+        private val layoutBinding: PostCommentAdpterBinding,
+        private val mAdapter: PostCommentAdapter
+    ) : RecyclerView.ViewHolder(layoutBinding.root), View.OnClickListener {
+
+        init {
+//            comment.setSeeMoreText("Show More", "Show Less")
+//            comment.setTextMaxLength(200)
+//            text.setSeeMoreText("Show More", "Show Less")
+//            text.setTextMaxLength(200)
+
+            layoutBinding.deleteReply.setOnClickListener(this)
+            layoutBinding.imgDeleteSwipe.setOnClickListener(this)
+            layoutBinding.sendReply.setOnClickListener(this)
+        }
+
+        fun populateItemRows(allPostCommentData: AllPostCommentData) {
+            val userName: String = (allPostCommentData.user!!.firstName
+                ?: "") + " " + (allPostCommentData.user!!.lastName ?: "")
+            layoutBinding.username.text = userName
+
+            val profileImg: String =
+                allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
+            Glide.with(context)
+                .load(profileImg)
+                .placeholder(R.drawable.default_dp)
+                .skipMemoryCache(!isCaching)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(layoutBinding.imgView)
+
+//        holder.comment.setContent(dataList!![position].commentText)
+            layoutBinding.comment.text = allPostCommentData.commentText
+            if (checkedPosition == -1) {
+
+//                Add New
+                layoutBinding.edittxt.setText("")
+
+                layoutBinding.replyBox.visibility = View.GONE
+                PostFragment.instance.isreplybox = false
+            } else {
+                if (checkedPosition == adapterPosition) {
+
+                    //Add New
+//                    layoutBinding.edittxt.setText("")
+
+                    layoutBinding.replyBox.visibility = View.VISIBLE
+                    PostFragment.instance.isreplybox = true
+                } else {
+
+                    //Add New
+                    layoutBinding.edittxt.setText("")
+
+                    layoutBinding.replyBox.visibility = View.GONE
+                    PostFragment.instance.isreplybox = false
+                }
+            }
+
+            val updatedAt = allPostCommentData.updatedAt.replace("T", " ").replace(".000000Z", "")
+
+            val c = Calendar.getInstance()
+            val df = SimpleDateFormat("yyyy-MM-dd")
+            val formattedDate = df.format(c.time)
+            val date: ArrayList<String> = updatedAt.split(" ") as ArrayList<String>
+            Log.println(Log.ASSERT, "formattedDate--", date[0])
+            val date_split = date[0].split("-").toTypedArray()
+            val time = date[1].split(":").toTypedArray()
+
+            val HHmmFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+            val hhmmampmFormat = SimpleDateFormat("hh:mm a", Locale.US)
+            val msg_time: String? = parseDate(updatedAt, HHmmFormat, hhmmampmFormat)
+            if (formattedDate == date[0]) {
+                layoutBinding.blockDate.text = msg_time
+            } else {
+                layoutBinding.blockDate.text =
+                    date_split[2] + "/" + date_split[1] + "/" + date_split[0]
+            }
+
+            if (allPostCommentData.commentReply == null) {
+                layoutBinding.showReplyBox.visibility = View.GONE
+//            holder.text.setContent("")
+                layoutBinding.textReply.text = ""
+            } else {
+                layoutBinding.showReplyBox.visibility = View.VISIBLE
+//            holder.text.setContent(data.commentReply?.commentText)
+                layoutBinding.textReply.text = allPostCommentData.commentReply?.commentText
+                layoutBinding.usernm.text = allPostCommentData.commentReply?.user!!.firstName
+                    ?: "" + " " + allPostCommentData.commentReply?.user!!.lastName ?: ""
+            }
+
+            if (post_by_me == 0) {
+                if (App.fastSave.getInt(Constants.prefUserId, 0) == allPostCommentData.user!!.id) {
+                    layoutBinding.swipeLayout.isSwipeEnabled = true
+                    layoutBinding.deleteReply.visibility = View.VISIBLE
+                } else {
+                    layoutBinding.swipeLayout.isSwipeEnabled = false
+                    layoutBinding.deleteReply.visibility = View.GONE
+                }
+            } else {
+                layoutBinding.deleteReply.visibility = View.VISIBLE
+                layoutBinding.swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
+
+                layoutBinding.swipeLayout.addDrag(
+                    SwipeLayout.DragEdge.Right,
+                    layoutBinding.swipeLayout.findViewById(R.id.bottom_wrapperReply)
+                )
+                layoutBinding.swipeLayout.addDrag(
+                    SwipeLayout.DragEdge.Left,
+                    layoutBinding.swipeLayout.findViewById(R.id.bottom_wraperDelete)
+                )
+
+//                layoutBinding.swipeLayout.isLeftSwipeEnabled = allPostCommentData.commentReply == null
+                layoutBinding.swipeLayout.surfaceView.setOnClickListener {
+                    comment_id = allPostCommentData.id
+                }
+                layoutBinding.imgReplySwipe.setOnClickListener {
+                    if (layoutBinding.replyBox.visibility == View.VISIBLE) {
+                        layoutBinding.replyBox.visibility = View.GONE
+                        PostFragment.instance.isreplybox = false
+                        layoutBinding.swipeLayout.close(true)
+                    } else {
+                        layoutBinding.replyBox.visibility = View.VISIBLE
+                        PostFragment.instance.isreplybox = true
+                        layoutBinding.swipeLayout.close(true)
+                        layoutBinding.edittxt.isFocusableInTouchMode = true
+                        layoutBinding.edittxt.requestFocus()
+                        if (checkedPosition != adapterPosition) {
+                            notifyItemChanged(checkedPosition)
+                            checkedPosition = adapterPosition
+                            //                            ((Show_Post) context).rec_comments.setFocusable(true);
+//                            ((Show_Post) context).rec_comments.focusableViewAvailable(v);
+                        }
+                    }
+                }
+                layoutBinding.edittxt.setOnTouchListener(object : View.OnTouchListener {
+                    override fun onTouch(v: View, event: MotionEvent): Boolean {
+                        if (layoutBinding.edittxt.hasFocus()) {
+                            v.parent.requestDisallowInterceptTouchEvent(true)
+                            when (event.action and MotionEvent.ACTION_MASK) {
+                                MotionEvent.ACTION_SCROLL -> {
+                                    v.parent.requestDisallowInterceptTouchEvent(false)
+                                    return true
+                                }
+                            }
+                        }
+                        return false
+                    }
+                })
+                layoutBinding.cancel.setOnClickListener {
+                    layoutBinding.replyBox.visibility = View.GONE
+                    PostFragment.instance.isreplybox = false
+                    layoutBinding.edittxt.setText("")
+                }
+//                layoutBinding.sendReply.setOnClickListener {
+//                    sendReply(
+//                        layoutBinding.edittxt.text.toString().trim(),
+//                        allPostCommentData.postId,
+//                        layoutBinding.textReply,
+//                        adapterPosition,
+//                        layoutBinding.replyBox,
+//                        layoutBinding.edittxt
+//                    )
+//                }
+            }
+//            layoutBinding.deleteReply.setOnClickListener {
+//                layoutBinding.swipeLayout.close(true)
+//                onCommentItemClickListener!!.onDeleteCommentReplyClick(adapterPosition)
+//            }
+
+//            layoutBinding.imgDeleteSwipe.setOnClickListener {
+//                layoutBinding.swipeLayout.close(true)
+//                onCommentItemClickListener!!.onDeleteCommentClick(adapterPosition)
+//            }
+            mItemManger.bind(layoutBinding.root, adapterPosition)
+        }
+
+        fun deleteComment(position: Int, reply: String) {
 //        val dialog = SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE)
 //        dialog.getProgressHelper().setBarColor(context.getResources().getColor(R.color.colorPrimary))
-//        //        dialog.setTitleText("Fetching Data");
+            //        dialog.setTitleText("Fetching Data");
 //        dialog.setCancelable(false)
 //        dialog.show()
+
 //        val call1: Call<Get_Post_Comment_Response> = apiInterface.commentdelete(comment_id, App.prefs.getString(AppConstants.login_token, ""))
 //        call1.enqueue(object : Callback<Get_Post_Comment_Response> {
 //            override fun onResponse(call: Call<Get_Post_Comment_Response>, response: Response<Get_Post_Comment_Response>) {
@@ -264,218 +482,128 @@ class PostCommentAdapter(context: AppCompatActivity, post_id: Int, allPostCommen
 //                dialog.dismiss()
 //            }
 //        })
-    }
 
-    override fun getSwipeLayoutResourceId(position: Int): Int {
-        return R.id.swipeLayout
-    }
-
-//    private inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//        var progressBar: ProgressBar = itemView.findViewById<ProgressBar>(R.id.progressBar)
-//    }
-
-    inner class ViewHolder(private val layoutBinding: PostCommentAdpterBinding, private val mAdapter: PostCommentAdapter) : RecyclerView.ViewHolder(layoutBinding.root) {
-
-        init {
-//            comment.setSeeMoreText("Show More", "Show Less")
-//            comment.setTextMaxLength(200)
-//            text.setSeeMoreText("Show More", "Show Less")
-//            text.setTextMaxLength(200)
+            //-----------------------------------------------------------------------------------------------
+//            try {
+//                openProgressDialog(context)
+//
+//                val hashMap: HashMap<String, Any> = hashMapOf(
+//                    Constants.id to comment_id
+//                )
+//
+//                mCompositeDisposable.add(
+//                    ApiClient.create()
+//                        .commentdelete(hashMap)
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(AndroidSchedulers.mainThread())
+//                        .subscribeWith(object : DisposableObserver<ResponseGetPostComment>() {
+//                            override fun onNext(responseGetPostComment: ResponseGetPostComment) {
+//                                Log.v("onNext: ", responseGetPostComment.toString())
+//
+//                                if (responseGetPostComment.success == 1) {
+//                                    if (reply == "reply") {
+////                                    val view: View = Show_Post.getInstance().manager.findViewByPosition(position)
+////                                    if (view != null) {
+//                                        allPostCommentDataList!![position].commentReply = null
+//                                        notifyItemChanged(position)
+////                                    }
+//                                    } else {
+//                                        //Normal Delete
+//                                        allPostCommentDataList!!.removeAt(position)
+////                                    comments.setText(responseGetPostComment.data.toString() + " Comments")
+//                                        notifyItemRemoved(position)
+//                                        notifyItemRangeChanged(position, allPostCommentDataList!!.size)
+//                                    }
+//
+//                                    val postSocket = PostSocket(getCurrentUserId(), post_id)
+//                                    val json: String = Gson().toJson(postSocket)
+//                                    App.socket!!.emit(Constants.post_comment, json)
+//                                }
+//                            }
+//
+//                            override fun onError(e: Throwable) {
+//                                Log.v("onError: ", e.toString())
+//                                hideProgressDialog()
+//                            }
+//
+//                            override fun onComplete() {
+//                                hideProgressDialog()
+//                            }
+//                        })
+//                )
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                hideProgressDialog()
+//            }
         }
 
-        fun populateItemRows(allPostCommentData: AllPostCommentData) {
-            val userName: String = allPostCommentData.user!!.firstName + " " + allPostCommentData.user!!.lastName
-            layoutBinding.username.text = userName
+        override fun onClick(v: View) {
+            when (v.id) {
+                R.id.imgDeleteSwipe -> {
+                    layoutBinding.swipeLayout.close(true)
+                    onCommentItemClickListener!!.onDeleteCommentClick(adapterPosition)
+                }
+                R.id.delete_reply -> {
+                    layoutBinding.swipeLayout.close(true)
+                    onCommentItemClickListener!!.onDeleteCommentReplyClick(adapterPosition)
+                }
+                R.id.sendReply -> {
+                    comment_id = allPostCommentDataList[adapterPosition].id
 
-            val profile_img: String = allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
-            Glide.with(context)
-                .load(profile_img)
-                .placeholder(R.drawable.default_dp)
-                .skipMemoryCache(!isCaching)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(layoutBinding.imgView)
-
-//        holder.comment.setContent(dataList!![position].commentText)
-            layoutBinding.comment.text = allPostCommentDataList!![position].commentText
-            if (checkedPosition == -1) {
-                layoutBinding.replyBox.visibility = View.GONE
-                PostFragment.instance.isreplybox = false
-            } else {
-                if (checkedPosition == adapterPosition) {
-                    layoutBinding.replyBox.visibility = View.VISIBLE
-                    PostFragment.instance.isreplybox = true
-                } else {
-                    layoutBinding.replyBox.visibility = View.GONE
-                    PostFragment.instance.isreplybox = false
+                    onCommentItemClickListener!!.onCommentReplyClick(
+                        adapterPosition,
+                        comment_id,
+                        layoutBinding.edittxt.text.toString().trim()
+                    )
                 }
             }
-
-            val updatedAt = allPostCommentData.updatedAt.replace("T", " ").replace(".000000Z", "")
-
-            val c = Calendar.getInstance()
-            val df = SimpleDateFormat("yyyy-MM-dd")
-            val formattedDate = df.format(c.time)
-            val date: ArrayList<String> = updatedAt.split(" ") as ArrayList<String>
-            Log.println(Log.ASSERT, "formattedDate--", date[0])
-            val date_split = date[0].split("-").toTypedArray()
-            val time = date[1].split(":").toTypedArray()
-
-            val HHmmFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-            val hhmmampmFormat = SimpleDateFormat("hh:mm a", Locale.US)
-            val msg_time: String? = parseDate(updatedAt, HHmmFormat, hhmmampmFormat)
-            if (formattedDate == date[0]) {
-                layoutBinding.blockDate.text = msg_time
-            } else {
-                layoutBinding.blockDate.text = date_split[2] + "/" + date_split[1] + "/" + date_split[0]
-            }
-
-            if (allPostCommentDataList!![position].commentReply == null) {
-                layoutBinding.showReplyBox.visibility = View.GONE
-//            holder.text.setContent("")
-                layoutBinding.text.text = ""
-            } else {
-                layoutBinding.showReplyBox.visibility = View.VISIBLE
-//            holder.text.setContent(data.commentReply?.commentText)
-                layoutBinding.text.text = allPostCommentData.commentReply?.commentText
-                layoutBinding.usernm.text = allPostCommentData.commentReply?.user!!.firstName + " " + allPostCommentData.commentReply?.user!!.lastName
-            }
-
-            if (post_by_me == 0) {
-                if (App.fastSave.getInt(Constants.prefUserId, 0) == allPostCommentData.user!!.id) {
-                    layoutBinding.swipeLayout.isSwipeEnabled = true
-                    layoutBinding.deleteReply.visibility = View.VISIBLE
-                } else {
-                    layoutBinding.swipeLayout.isSwipeEnabled = false
-                    layoutBinding.deleteReply.visibility = View.GONE
-                }
-            } else {
-                layoutBinding.deleteReply.visibility = View.VISIBLE
-                layoutBinding.swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
-                layoutBinding.swipeLayout.addDrag(SwipeLayout.DragEdge.Left, layoutBinding.swipeLayout.findViewById(R.id.bottom_wrapper1))
-                layoutBinding.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, layoutBinding.swipeLayout.findViewById(R.id.bottom_wraper))
-                layoutBinding.swipeLayout.isLeftSwipeEnabled = allPostCommentData.commentReply == null
-                layoutBinding.swipeLayout.surfaceView.setOnClickListener {
-                    comment_id = allPostCommentData.id
-                }
-                layoutBinding.reply.setOnClickListener {
-                    if (layoutBinding.replyBox.visibility == View.VISIBLE) {
-                        layoutBinding.replyBox.visibility = View.GONE
-                        PostFragment.instance.isreplybox = false
-                        layoutBinding.swipeLayout.close(true)
-                    } else {
-                        layoutBinding.replyBox.visibility = View.VISIBLE
-                        PostFragment.instance.isreplybox = true
-                        layoutBinding.swipeLayout.close(true)
-                        layoutBinding.edittxt.isFocusableInTouchMode = true
-                        layoutBinding.edittxt.requestFocus()
-                        if (checkedPosition != adapterPosition) {
-                            notifyItemChanged(checkedPosition)
-                            checkedPosition = adapterPosition
-                            //                            ((Show_Post) context).rec_comments.setFocusable(true);
-//                            ((Show_Post) context).rec_comments.focusableViewAvailable(v);
-                        }
-                    }
-                }
-                layoutBinding.edittxt.setOnTouchListener(object : View.OnTouchListener {
-                    override fun onTouch(v: View, event: MotionEvent): Boolean {
-                        if (layoutBinding.edittxt.hasFocus()) {
-                            v.parent.requestDisallowInterceptTouchEvent(true)
-                            when (event.action and MotionEvent.ACTION_MASK) {
-                                MotionEvent.ACTION_SCROLL -> {
-                                    v.parent.requestDisallowInterceptTouchEvent(false)
-                                    return true
-                                }
-                            }
-                        }
-                        return false
-                    }
-                })
-                layoutBinding.cancel.setOnClickListener {
-                    layoutBinding.replyBox.visibility = View.GONE
-                    PostFragment.instance.isreplybox = false
-                    layoutBinding.edittxt.setText("")
-                }
-                layoutBinding.send.setOnClickListener {
-                    comment_id = allPostCommentData.id
-                    addreply(layoutBinding.edittxt.text.toString().trim(), allPostCommentData.postId, layoutBinding.text, adapterPosition, layoutBinding.replyBox, layoutBinding.edittxt)
-                }
-            }
-            layoutBinding.deleteReply.setOnClickListener {
-                layoutBinding.swipeLayout.close(true)
-//            SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-//                .setContentText("Do you want to delete this reply ?")
-//                .setConfirmText("Confirm")
-//                .setCancelButtonBackgroundColor(context.getResources().getColor(R.color.colorPrimary))
-//                .setConfirmButtonBackgroundColor(context.getResources().getColor(R.color.colorPrimary))
-//                .setConfirmClickListener(object : OnSweetClickListener() {
-//                    fun onClick(sDialog: SweetAlertDialog) {
-//                        sDialog.dismissWithAnimation()
-//                        if (isNetworkConnected(context)) {
-//                            if (position < dataList!!.size) {
-//                                comment_id = dataList!![position].getComment_reply().getId()
-//                                deletecomment(position, "reply")
-//                            }
-//                        } else {
-//                            Toast.makeText(context, R.string.check_connection, Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                })
-//                .setCancelButton("Cancel", object : OnSweetClickListener() {
-//                    fun onClick(sDialog: SweetAlertDialog) {
-//                        sDialog.dismissWithAnimation()
-//                    }
-//                })
-//                .show()
-
-                //Set Dialog
-                DialogUtils().showConfirmationDialog(context, "", context.resources.getString(R.string.delete_replay), object : DialogUtils.DialogCallbacks {
-                    override fun onPositiveButtonClick() {
-                        if (context.isNetworkConnected()) {
-                            if (adapterPosition < allPostCommentDataList!!.size) {
-                                comment_id = allPostCommentData.commentReply!!.id
-                                deletecomment(adapterPosition, "reply")
-                            }
-                        } else {
-                            Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onNegativeButtonClick() {
-
-                    }
-
-                    override fun onDefaultButtonClick(actionName: String) {
-                    }
-
-                })
-
-            }
-            layoutBinding.Delete.setOnClickListener(View.OnClickListener {
-                layoutBinding.swipeLayout.close(true)
-                DialogUtils().showConfirmationDialog(context, "", context.resources.getString(R.string.delete_comment), object : DialogUtils.DialogCallbacks {
-                    override fun onPositiveButtonClick() {
-                        if (context.isNetworkConnected()) {
-                            if (adapterPosition < allPostCommentDataList!!.size) {
-                                comment_id = allPostCommentData.id
-                                deletecomment(adapterPosition, "main")
-                            }
-                        } else {
-                            Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onNegativeButtonClick() {
-
-                    }
-
-                    override fun onDefaultButtonClick(actionName: String) {
-                    }
-
-                })
-            })
-            mItemManger.bind(layoutBinding.root, adapterPosition)
         }
     }
 
     override fun getItemCount(): Int = allPostCommentDataList.size
+
+    //-----------------------------------Click Interface-----------------------------------------
+
+    fun setOnItemClickListener(onItemClickListener: OnCommentItemClickListener?) {
+        this.onCommentItemClickListener = onItemClickListener
+    }
+
+    interface OnCommentItemClickListener {
+        fun onDeleteCommentClick(position: Int)
+        fun onDeleteCommentReplyClick(position: Int)
+        fun onCommentReplyClick(position: Int, commentId: Int, replyText: String)
+    }
+
+    //-----------------------------------DiffUtil Class-----------------------------------------
+    class CommentDiffCallback(
+        oldCommentList: List<AllPostCommentData>,
+        newCommentList: List<AllPostCommentData>
+    ) : DiffUtil.Callback() {
+        private val mOldCommentList: List<AllPostCommentData> = oldCommentList
+        private val mNewCommentList: List<AllPostCommentData> = newCommentList
+        override fun getOldListSize(): Int {
+            return mOldCommentList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return mNewCommentList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mOldCommentList[oldItemPosition].id === mNewCommentList[newItemPosition].id
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldPostData: AllPostCommentData = mOldCommentList[oldItemPosition]
+            val newPostData: AllPostCommentData = mNewCommentList[newItemPosition]
+
+            return oldPostData == newPostData
+        }
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            // Implement method if you're going to use ItemAnimator
+            return super.getChangePayload(oldItemPosition, newItemPosition)
+        }
+
+    }
 }

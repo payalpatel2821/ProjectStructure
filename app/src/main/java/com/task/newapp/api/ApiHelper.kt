@@ -148,4 +148,7 @@ interface ApiHelper {
 
     @POST(add_postcomment)
     fun add_postcomment(@Body hashMap: HashMap<String, Any>): Observable<ResponseAddPostComment>
+
+    @POST(commentdelete)
+    fun commentdelete(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetPostComment>
 }

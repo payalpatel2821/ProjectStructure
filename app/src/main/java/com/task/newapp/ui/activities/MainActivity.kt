@@ -210,19 +210,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 
     override fun onBackPressed() {
         if (binding.bottomBar.getActiveItem() == 1) {
-
-            postFragment.myBottomSheetMoment?.let {
-                if (postFragment.myBottomSheetMoment.isVisible) {
-                    postFragment.myBottomSheetMoment.dismiss()
-                }
-            }
-
-            postFragment.myBottomSheetThought?.let {
-                if (postFragment.myBottomSheetThought.isVisible) {
-                    postFragment.myBottomSheetThought.dismiss()
-                }
-            }
-
+            closeMomentSheet()
+            closeThoughtSheet()
+            postFragment.expandCommentSheet()
         } else {
             super.onBackPressed()
         }
@@ -244,5 +234,23 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         binding.blurView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
     }
 
+    private fun closeMomentSheet() {
+//        if (postFragment.isInitializedMoment()) {
+        postFragment.myBottomSheetMoment?.let {
+            if (postFragment.myBottomSheetMoment!!.isVisible) {
+                postFragment.myBottomSheetMoment!!.dismiss()
+            }
+        }
+//        }
+    }
 
+    private fun closeThoughtSheet() {
+//        if (postFragment.isInitializedThought()) {
+        postFragment.myBottomSheetThought?.let {
+            if (postFragment.myBottomSheetThought!!.isVisible) {
+                postFragment.myBottomSheetThought!!.dismiss()
+            }
+//            }
+        }
+    }
 }
