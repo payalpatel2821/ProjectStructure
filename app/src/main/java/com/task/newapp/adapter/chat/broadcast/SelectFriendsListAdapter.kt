@@ -68,25 +68,9 @@ class SelectFriendsListAdapter(private val mActivity: Activity) : RecyclerView.A
         notifyDataSetChanged()
     }
 
-    fun setSelectedName() {
-        try {
-            val commaSeperatedNames = listData.filter(SelectFriendWrapperModel::isChecked)
-                .joinToString(separator = ", ") { if (it.isChecked) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
-
-            val commaSeperatedIds = listData.filter(SelectFriendWrapperModel::isChecked)
-                .joinToString(separator = ",") { if (it.isChecked) it.id.toString() else "" }
-
-            //onItemClick?.invoke(commaSeperatedNames, commaSeperatedIds)
-
-            showLog("commaSeparatedString", "$commaSeperatedNames---$commaSeperatedIds")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     fun updateCheckUncheck(isChecked: Boolean, position: Int) {
         this.filteredListData[position].isChecked = isChecked
-        notifyItemChanged(position, "savePayload")
+        notifyItemChanged(position, "updateCheckUncheck")
     }
 
     inner class ViewHolder(private val layoutBinding: ItemSelectFriendBinding, private val mAdapter: SelectFriendsListAdapter) : RecyclerView.ViewHolder(layoutBinding.root), View.OnClickListener {
@@ -125,7 +109,7 @@ class SelectFriendsListAdapter(private val mActivity: Activity) : RecyclerView.A
                 showLog("PAYLOAD :", Gson().toJson(listPayload))
                 for (payload in listPayload) {
                     when (payload) {
-                        "savePayload" -> {
+                        "updateCheckUncheck" -> {
                             layoutBinding.imgCheck.isSelected = obj.isChecked
                         }
                     }

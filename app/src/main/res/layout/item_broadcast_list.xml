@@ -25,7 +25,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:background="@color/clear_chat"
+                    android:background="@color/clear_broadcast_chat"
                     android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -33,7 +33,7 @@
                         style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_delete_chat"
+                        android:drawableTop="@drawable/ic_clear_chat"
                         android:gravity="center"
                         android:minWidth="@dimen/_60sdp"
                         android:padding="@dimen/_10sdp"
@@ -44,7 +44,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:background="@color/archive_chat"
+                    android:background="@color/delete_broadcast_chat"
                     android:gravity="center">
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -52,7 +52,7 @@
                         style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableTop="@drawable/ic_broadcast"
+                        android:drawableTop="@drawable/ic_delete_chat"
                         android:gravity="center"
                         android:minWidth="@dimen/_60sdp"
                         android:padding="@dimen/_10sdp"

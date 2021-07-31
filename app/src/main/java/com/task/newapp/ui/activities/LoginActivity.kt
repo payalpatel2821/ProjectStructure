@@ -124,9 +124,9 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         App.fastSave.saveString(Constants.prefToken, loginResponse.data.token)
         App.fastSave.saveObject(Constants.prefUser, loginResponse.data.user)
         App.fastSave.saveInt(Constants.prefUserId, loginResponse.data.user.id)
-        App.fastSave.saveString(Constants.prefUserName, loginResponse.data.user.firstName + " " + loginResponse.data.user.lastName)
+        App.fastSave.saveString(Constants.prefUserName, loginResponse.data.user.uName)
         App.fastSave.saveBoolean(Constants.isLogin, true)
-        showLog("token",loginResponse.data.token.toString())
+        showLog("token", loginResponse.data.token.toString())
     }
 
     private fun callAPILogin() {

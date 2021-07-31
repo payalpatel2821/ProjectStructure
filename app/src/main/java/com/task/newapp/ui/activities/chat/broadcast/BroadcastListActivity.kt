@@ -39,7 +39,6 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 setAdapter()
-
             }
         }
 
@@ -52,8 +51,8 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
     private fun initView() {
         binding.toolbarLayout.txtTitle.text = getString(R.string.title_broadcast_list)
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
-        initSearchView()
         setAdapter()
+        initSearchView()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -98,28 +97,24 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-//        issearch = true
-//        searchtxt = query
-        Log.e("search", "search text change")
-//        if (!isAPICallRunning) initData(searchtxt, 0, "main")
-//        search = false
-//        initScrollListener()
+        chatsAdapter.filter.filter(query);
         return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        chatsAdapter.filter.filter(newText);
         return false
     }
 
     private fun setAdapter() {
         prepareChatListAdapterModel(getAllBroadcastChat())
         if (broadcastChatList.isNotEmpty()) {
-            //if (chatsAdapter == null) {
-            chatsAdapter = BroadcastChatListAdapter(this, this)
-            chatsAdapter.setOnItemClickListener(this)
-            binding.rvBroadcastChat.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            binding.rvBroadcastChat.adapter = chatsAdapter
-            //  }
+            if (!this::chatsAdapter.isInitialized) {
+                chatsAdapter = BroadcastChatListAdapter(this, this)
+                chatsAdapter.setOnItemClickListener(this)
+                binding.rvBroadcastChat.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+                binding.rvBroadcastChat.adapter = chatsAdapter
+            }
             chatsAdapter.doRefresh(broadcastChatList)
         }
 
@@ -148,6 +143,9 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        launchActivity<CreateBroadcastActivity> {
+            putExtra(Constants.bundle_selected_friends, broadcastChatList[position].broad_other_userid)
+        }
     }
 
     override fun onClearChatClick(position: Int, broadcastChat: BroadcastTable) {

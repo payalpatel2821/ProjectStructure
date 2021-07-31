@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.R.string
 import com.task.newapp.adapter.chat.ChatListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentChatBinding
@@ -44,6 +45,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     private lateinit var binding: FragmentChatBinding
     private lateinit var chats: ArrayList<Chats>
     private lateinit var chatsAdapter: ChatListAdapter
+    private var archiveCount: Int = 0
 
     //private lateinit var socket: Socket
     private val mCompositeDisposable = CompositeDisposable()
@@ -97,13 +99,11 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     private fun initView() {
-        //socket = App.getSocketInstance()
-        //initSocketListeners()
         initListeners()
         initSearchView()
         setAdapter()
         callGetUnreadMessageAPI()
-        binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
+
     }
 
     private fun initSearchView() {
@@ -149,7 +149,8 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             //  }
             chatsAdapter.doRefresh(chats)
         }
-
+        //show/hide archive count label
+        showHideArchiveCountLabel()
         showHideEmptyView()
     }
 
@@ -480,20 +481,20 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     override fun onHookChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Hook $position")
+        //requireActivity().showToast("Hook $position")
         if (!chats.is_hook && getHookCount() == 3) {
-            requireActivity().showToast("You cannot hook more than 3 chats")
+            requireActivity().showToast(getString(string.error_msg_hook_chat))
         } else
             callHookChatAPI(chats)
     }
 
     override fun onClearChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Clear $position")
+        //requireActivity().showToast("Clear $position")
         callClearChatAPI(chats)
     }
 
     override fun onArchiveChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Archive $position")
+        //requireActivity().showToast("Archive $position")
         callArchiveChatAPI(chats)
     }
 
@@ -501,7 +502,9 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         if (chats[position].is_group)
             requireActivity().showToast("Item Clicked $position")
         else
-            requireActivity().launchActivity<OneToOneChatActivity> { }
+            requireActivity().launchActivity<OneToOneChatActivity> {
+                putExtra(Constants.bundle_opponent_id, chats[position].id)
+            }
 
     }
 
@@ -516,6 +519,15 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             binding.rvChats.visibility = VISIBLE
             binding.divider.visibility = VISIBLE
             binding.searchLayout.llSearch.visibility = VISIBLE
+        }
+    }
+
+    private fun showHideArchiveCountLabel() {
+        if (archiveCount == 0) {
+            binding.txtArchiveChat.visibility = GONE
+        } else {
+            binding.txtArchiveChat.visibility = VISIBLE
+            binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
         }
     }
 
@@ -693,9 +705,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         }
     }
 
-    private fun callBlockUserAPI(chats: Chats) {
-
-    }
+    private fun callBlockUserAPI(chats: Chats) {}
 
     private fun callClearChatAPI(chats: Chats) {
         try {
@@ -740,9 +750,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         }
     }
 
-    private fun callMuteAPI(chats: Chats) {
-
-    }
+    private fun callMuteAPI(chats: Chats) {}
 
     fun updateOnlineUser(userId: Int, status: Boolean) {
         val position = getChatPosition(chats, userId)

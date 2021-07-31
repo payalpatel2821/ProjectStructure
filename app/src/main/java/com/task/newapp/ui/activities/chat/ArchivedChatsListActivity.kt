@@ -47,8 +47,8 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
     private fun initView() {
         binding.toolbarLayout.txtTitle.text = getString(R.string.title_archived_list)
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
-        initSearchView()
         setAdapter()
+        initSearchView()
 
     }
 
@@ -75,16 +75,12 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
 
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-//        issearch = true
-//        searchtxt = query
-        Log.e("search", "search text change")
-//        if (!isAPICallRunning) initData(searchtxt, 0, "main")
-//        search = false
-//        initScrollListener()
+        chatsAdapter.filter.filter(query);
         return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
+        chatsAdapter.filter.filter(newText);
         return false
     }
 
@@ -127,7 +123,6 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
     }
 
     override fun onUnarchiveChatClick(position: Int, chats: Chats) {
-        showToast("Archive $position")
         callUnarchiveChatAPI(chats)
     }
 

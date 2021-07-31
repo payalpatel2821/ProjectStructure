@@ -8,15 +8,25 @@ import com.irozon.alertview.interfaces.AlertActionListener
  */
 class AlertAction {
     var title: String
+    var icon: Int = 0
     var style: AlertActionStyle
     var action: ((AlertAction) -> Unit)?
     var actionListener: AlertActionListener?
     var isChecked: Boolean = false
 
+    constructor(title: String, icon: Int, style: AlertActionStyle, action: (AlertAction) -> Unit) {
+        this.title = title
+        this.style = style
+        this.action = action
+        this.icon = icon
+        this.actionListener = null
+    }
+
     constructor(title: String, style: AlertActionStyle, action: (AlertAction) -> Unit) {
         this.title = title
         this.style = style
         this.action = action
+
         this.actionListener = null
     }
 

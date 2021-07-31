@@ -84,6 +84,7 @@ class Constants {
         const val bundle_vibration = "Vibration"
         const val bundle_selected_friends = "selected_friends"
         const val bundle_navigate_from = "navigate_from"
+        const val bundle_opponent_id = "opponent_id"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information

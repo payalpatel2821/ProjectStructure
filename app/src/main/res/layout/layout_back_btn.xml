@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_back"
@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/ic_back"
         android:drawablePadding="@dimen/_5sdp"
+        android:drawableTint="@color/black"
         android:text="@string/back" />
 
 

@@ -17,8 +17,8 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
-import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
+import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
@@ -38,10 +38,18 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         onSocketEventsListener = this
+
+        initView()
+    }
+
+    private fun initView() {
         setSupportActionBar(binding.activityMainToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        binding.imgProfile.load(url = getCurrentUserProfilePicture(), isProfile = true, name = getCurrentUserFullName(), color = getCurrentUserProfileColor())
         setupNavigationDrawer()
         setupBottomNavigationBar()
+
     }
 
     private fun setupNavigationDrawer() {
@@ -210,6 +218,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
+                launchActivity<MyProfileActivity> { }
+            }
+            R.id.img_profile -> {
                 launchActivity<MyProfileActivity> { }
             }
         }

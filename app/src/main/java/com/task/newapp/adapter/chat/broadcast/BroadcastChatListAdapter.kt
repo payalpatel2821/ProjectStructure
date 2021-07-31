@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView.*
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -17,16 +19,18 @@ import com.task.newapp.utils.showLog
 import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 
 
-class BroadcastChatListAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerSwipeAdapter<BroadcastChatListAdapter.ViewHolder>() {
+class BroadcastChatListAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerSwipeAdapter<BroadcastChatListAdapter.ViewHolder>(), Filterable {
     private val TAG = javaClass.simpleName
     private var onItemClickListener: OnItemClickListener? = null
-    private var listData: List<BroadcastTable>? = null
+    private var listData: ArrayList<BroadcastTable> = ArrayList()
+    private var filteredListData: ArrayList<BroadcastTable> = ArrayList()
 
-    fun doRefresh(list_data: List<BroadcastTable>?) {
-        this.listData = list_data
+
+    fun doRefresh(data: List<BroadcastTable>) {
+        listData.addAll(data)
+        filteredListData.addAll(data)
         notifyDataSetChanged()
     }
-
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener?) {
         this.onItemClickListener = onItemClickListener
@@ -42,18 +46,18 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = listData!![position]
+        val item = filteredListData[position]
         holder.populateItemRows(item, position, null)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payload: List<Any>) {
-        val item = listData!![position]
+        val item = filteredListData[position]
         holder.populateItemRows(item, position, payload)
     }
 
 
     override fun getItemCount(): Int {
-        return listData!!.size
+        return filteredListData.size
     }
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -70,11 +74,11 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
         override fun onClick(v: View) {
             when (v.id) {
                 R.id.txt_clear_chat -> {
-                    listData?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
+                    filteredListData[adapterPosition].let { listener.onClearChatClick(adapterPosition, it) }
                 }
                 R.id.txt_delete_broadcast -> {
                     mItemManger.closeAllItems()
-                    listData?.get(adapterPosition)?.let { listener.onDeleteBroadcastChatClick(adapterPosition, it) }
+                    filteredListData[adapterPosition].let { listener.onDeleteBroadcastChatClick(adapterPosition, it) }
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)
@@ -122,4 +126,37 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
 
         }
     }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                filteredListData = if (charString.isEmpty()) {
+                    listData
+                } else {
+                    val filteredList: MutableList<BroadcastTable> = ArrayList()
+                    for (row in listData) {
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        val broadcastName = row.broad_name
+                        showLog(TAG, "broadcastName : $broadcastName")
+                        if (broadcastName?.lowercase()?.contains(charString.lowercase()) == true) {
+                            filteredList.add(row)
+                        }
+                    }
+                    filteredList as ArrayList<BroadcastTable>
+                }
+                val filterResults = FilterResults()
+                filterResults.values = filteredListData
+                return filterResults
+            }
+
+            override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+                filteredListData = filterResults.values as ArrayList<BroadcastTable>
+                notifyDataSetChanged()
+            }
+        }
+    }
+
 }

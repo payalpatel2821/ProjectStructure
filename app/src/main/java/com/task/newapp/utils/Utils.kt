@@ -44,6 +44,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.models.User
 import com.task.newapp.realmDB.getUserByUserId
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.utils.simplecropview.CropImageView
@@ -443,7 +444,7 @@ fun ImageView.load(
     isProfile: Boolean? = false,
     name: String? = null,
     color: String? = null,
-    previousUrl: String? = null,
+    previousUrl: String? = "",
     round: Boolean = false,
     cornersRadius: Int = 0,
     crop: Boolean = false
@@ -1100,6 +1101,19 @@ fun isIncoming(chatMessage: ChatList): Boolean {
  */
 fun getCurrentUserId(): Int {
     return App.fastSave.getInt(Constants.prefUserId, 0)
+}
+
+fun getCurrentUserProfilePicture(): String {
+    return App.fastSave.getObject(Constants.prefUser, User::class.java).profileImage
+}
+
+fun getCurrentUserProfileColor(): String {
+    return App.fastSave.getObject(Constants.prefUser, User::class.java).profileColor
+}
+
+fun getCurrentUserFullName(): String {
+    return App.fastSave.getString(Constants.prefUserName, "")
+
 }
 
 @Throws(IOException::class)

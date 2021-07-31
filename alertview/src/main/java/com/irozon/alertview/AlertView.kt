@@ -2,6 +2,7 @@ package com.irozon.alertview
 
 import androidx.appcompat.app.AppCompatActivity
 import com.irozon.alertview.enums.AlertStyle
+import com.irozon.alertview.enums.AlertStyle.*
 import com.irozon.alertview.enums.AlertTheme
 import com.irozon.alertview.fragments.BottomSheetFragment
 import com.irozon.alertview.fragments.DialogFragment
@@ -43,22 +44,27 @@ class AlertView(
      */
     fun show(activity: AppCompatActivity) {
         when (style) {
-            AlertStyle.BOTTOM_SHEET -> {
+            BOTTOM_SHEET -> {
                 val bottomSheet = BottomSheetFragment(title, message, actions, theme)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
-            AlertStyle.IOS -> {
+            IOS -> {
                 val bottomSheet = IosSheetFragment(title, message, actions, theme, cancelButtonText)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
-            AlertStyle.IOS_RADIO -> {
+            IOS_RADIO -> {
                 val bottomSheet = IosRadioSheetFragment(title, message, actions, theme, cancelButtonText)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
-            AlertStyle.DIALOG -> {
+            IOS_ICON -> {
+                val bottomSheet = IosSheetFragment(title, withIcons = true, message, actions, theme, cancelButtonText)
+                bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
+            }
+            DIALOG -> {
                 val bottomSheet = DialogFragment(title, message, actions, theme)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
+
         }
     }
 

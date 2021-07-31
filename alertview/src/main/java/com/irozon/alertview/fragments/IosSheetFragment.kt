@@ -25,6 +25,17 @@ class IosSheetFragment(
     private val title: String, private val message: String, private val actions: ArrayList<AlertAction>,
     private val theme: AlertTheme, private val cancelButtonText: String
 ) : BottomSheetDialogFragment() {
+    private var withIcons: Boolean? = false
+
+    constructor(title: String, withIcons: Boolean? = false, message: String, actions: ArrayList<AlertAction>, theme: AlertTheme, cancelButtonText: String) : this(
+        title,
+        message,
+        actions,
+        theme,
+        cancelButtonText
+    ) {
+        this.withIcons = withIcons
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +72,10 @@ class IosSheetFragment(
         view?.tvCancel?.setOnClickListener { dismiss() }
 
         // Inflate action views
-        inflateActionsView(view?.actionsLayout, actions)
+        if (withIcons == true)
+            inflateActionsViewWithIcons(view?.actionsLayout, actions)
+        else
+            inflateActionsView(view?.actionsLayout, actions)
     }
 
     /**
@@ -113,4 +127,56 @@ class IosSheetFragment(
             actionsLayout?.addView(view)
         }
     }
+
+    /**
+     * Inflate action views with icons
+     */
+    private fun inflateActionsViewWithIcons(actionsLayout: LinearLayout?, actions: ArrayList<AlertAction>) {
+        for (action in actions) {
+
+            // Inflate action view according to theme selected
+            var view: View? = null
+            if (theme == AlertTheme.LIGHT)
+                view = LayoutInflater.from(context).inflate(R.layout.action_layout_with_icons_light, null)
+            else if (theme == AlertTheme.DARK)
+                view = LayoutInflater.from(context).inflate(R.layout.action_layout_with_icons_dark, null)
+
+            view?.tvAction?.text = action.title
+            view?.tvAction?.setCompoundDrawablesWithIntrinsicBounds(action.icon, 0, 0, 0)
+
+            // Click listener for action.
+            view?.tvAction?.setOnClickListener {
+                dismiss()
+
+                // For Kotlin
+                action.action?.invoke(action)
+
+                // For Java
+                action.actionListener?.onActionClick(action)
+            }
+
+            // Action text color according to AlertActionStyle
+            if (context != null) {
+                when (action.style) {
+                    AlertActionStyle.POSITIVE -> {
+                        view?.tvAction?.setTextColor(ContextCompat.getColor(requireContext(), R.color.green))
+                    }
+                    AlertActionStyle.NEGATIVE -> {
+                        view?.tvAction?.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                    }
+                    AlertActionStyle.DEFAULT -> {
+                        if (theme == AlertTheme.LIGHT)
+                            view?.tvAction?.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                        else if (theme == AlertTheme.DARK)
+                            view?.tvAction?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    }
+
+                }
+            }
+
+            // Add view to layout
+            actionsLayout?.addView(view)
+        }
+    }
+
 }

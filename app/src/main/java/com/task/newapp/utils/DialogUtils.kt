@@ -5,7 +5,6 @@ import android.view.View
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,7 +56,7 @@ class DialogUtils {
         notificationAdp.selectSingleItem(setPosition - 1)
         notificationAdp.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
             notificationAdp.selectSingleItem(position)
-            listener.onItemClick(position,notificationTunes.get(position).notificationTone.notification_url)
+            listener.onItemClick(position, notificationTunes.get(position).notificationTone.notification_url)
         })
         txtDone.setOnClickListener(View.OnClickListener {
             doneClick.onDefaultButtonClick(notificationAdp.getCheckedItem().toString())
@@ -87,6 +86,18 @@ class DialogUtils {
         })
     }
 
+    fun showChatAttachmentIOSDialog(activity: AppCompatActivity, title: String = "", message: String = "", listener: DialogCallbacks) {
+        val alert = AlertView(title, message, AlertStyle.IOS_ICON)
+        alert.show(activity)
+
+        ChatAttachmentActionsName.values().forEach { actionNames: ChatAttachmentActionsName ->
+            alert.addAction(AlertAction(actionNames.value, actionNames.resouceId, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(actionNames.value)
+            })
+        }
+
+    }
+
     fun showVibrationStatusDialog(activity: AppCompatActivity, checkedOption: String, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS_RADIO)
         alert.show(activity)
@@ -98,7 +109,7 @@ class DialogUtils {
         }
     }
 
-    fun showReportDialog(activity: AppCompatActivity){
+    fun showReportDialog(activity: AppCompatActivity) {
         val dialog = Dialog(activity)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_report_user)
@@ -147,5 +158,26 @@ class DialogUtils {
         SHORT("Short"),
         LONG("Long")
     }
+
+    enum class ChatAttachmentActionsName(val value: String, val resouceId: Int) {
+        CAMERA("Camera", R.drawable.ic_camera),
+        PHOTOS("Photos", R.drawable.ic_photo),
+        DOCUMENTS("Documents", R.drawable.ic_document),
+        CONTACTS("Contacts", R.drawable.ic_contact),
+        LOCATION("Location", R.drawable.ic_location_chat);
+
+        companion object {
+            fun getObjectFromName(name: String): ChatAttachmentActionsName? {
+                ChatAttachmentActionsName.values().forEach {
+                    if (it.value == name) {
+                        return it
+
+                    }
+                }
+                return null
+            }
+        }
+    }
+
 
 }

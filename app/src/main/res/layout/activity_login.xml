@@ -7,16 +7,15 @@
         android:id="@+id/scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         android:background="@color/white"
+        android:fillViewport="true"
         android:scrollbars="none"
         tools:context=".ui.activities.LoginActivity">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            >
+            android:fitsSystemWindows="true">
 
 
             <LinearLayout
@@ -55,12 +54,12 @@
                     android:gravity="center"
                     android:theme="@style/EditTextThemeOverlay"
                     app:endIconDrawable="@drawable/ic_user"
-                    app:errorTextAppearance="@style/ErrorTextAppearance"
-                    app:hintTextAppearance="@style/HintTextAppearance"
-                    app:helperTextTextAppearance="@style/HelperTextAppearance"
                     app:endIconMode="custom"
                     app:endIconTint="@color/black"
-                    app:errorEnabled="true">
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance">
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtUsername"
@@ -81,10 +80,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:theme="@style/EditTextThemeOverlay"
-                    app:errorTextAppearance="@style/ErrorTextAppearance"
-                    app:hintTextAppearance="@style/HintTextAppearance"
-                    app:helperTextTextAppearance="@style/HelperTextAppearance"
                     app:errorEnabled="true"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance"
                     app:passwordToggleDrawable="@drawable/selector_show_hide_password"
                     app:passwordToggleEnabled="true"
                     app:passwordToggleTint="@color/black">
@@ -103,7 +102,7 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -114,6 +113,8 @@
                         android:id="@+id/chkRemember"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
                         android:buttonTint="@color/theme_color"
                         android:checked="false"
                         android:text="Remember me" />
@@ -121,16 +122,19 @@
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt_forgot_password"
                         style="@style/styleTextViewSmall"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:gravity="end|center_vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="end"
                         android:onClick="onClick"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_10sdp"
                         android:text="@string/forgot_password"
                         android:textColor="@color/gray"
                         android:textSize="@dimen/_10ssp" />
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_login"
@@ -150,10 +154,10 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:gravity="center"
                     android:onClick="onClick"
+                    android:padding="@dimen/_5sdp"
                     android:text="@string/register"
                     android:textColor="@color/theme_color"
-                    android:textSize="@dimen/_12ssp"
-                    android:padding="@dimen/_5sdp"/>
+                    android:textSize="@dimen/_12ssp" />
 
             </LinearLayout>
         </RelativeLayout>

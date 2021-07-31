@@ -7,5 +7,6 @@ enum class AlertStyle {
     BOTTOM_SHEET,
     DIALOG,
     IOS,
+    IOS_ICON,
     IOS_RADIO
 }

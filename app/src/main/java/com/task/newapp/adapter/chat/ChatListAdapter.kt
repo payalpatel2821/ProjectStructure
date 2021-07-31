@@ -21,10 +21,10 @@ import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 class ChatListAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerSwipeAdapter<ChatListAdapter.ViewHolder>() {
     private val TAG = javaClass.simpleName
     private var onItemClickListener: OnItemClickListener? = null
-    private var list_data: List<Chats>? = null
+    private var listData: List<Chats>? = null
 
     fun doRefresh(list_data: List<Chats>?) {
-        this.list_data = list_data
+        this.listData = list_data
         notifyDataSetChanged()
     }
 
@@ -33,7 +33,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
     }
 
     fun addUnarchivedChat() {
-        notifyItemInserted(list_data!!.size - 1)
+        notifyItemInserted(listData!!.size - 1)
     }
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener?) {
@@ -50,20 +50,19 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list_data!![position]
-        /*holder.setData(item)*/
+        val item = listData!![position]
         holder.populateItemRows(item, position, null)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payload: List<Any>) {
-        val item = list_data!![position]
+        val item = listData!![position]
         /*holder.setData(item)*/
         holder.populateItemRows(item, position, payload)
     }
 
 
     override fun getItemCount(): Int {
-        return list_data!!.size
+        return listData!!.size
     }
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -81,16 +80,16 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
         override fun onClick(v: View) {
             when (v.id) {
                 R.id.txt_block -> {
-                    list_data?.get(adapterPosition)?.let { listener.onBlockChatClick(adapterPosition, it) }
+                    listData?.get(adapterPosition)?.let { listener.onBlockChatClick(adapterPosition, it) }
                 }
                 R.id.txt_hook_unhook -> {
-                    list_data?.get(adapterPosition)?.let { listener.onHookChatClick(adapterPosition, it) }
+                    listData?.get(adapterPosition)?.let { listener.onHookChatClick(adapterPosition, it) }
                 }
                 R.id.txt_clear_chat -> {
-                    list_data?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
+                    listData?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
                 }
                 R.id.txt_archive -> {
-                    list_data?.get(adapterPosition)?.let { listener.onArchiveChatClick(adapterPosition, it) }
+                    listData?.get(adapterPosition)?.let { listener.onArchiveChatClick(adapterPosition, it) }
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)

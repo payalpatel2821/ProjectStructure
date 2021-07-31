@@ -17,9 +17,8 @@ import com.task.newapp.adapter.post.SelectedFriendsListAdapter
 import com.task.newapp.databinding.ActivitySelectFriendsBinding
 import com.task.newapp.models.chat.SelectFriendWrapperModel
 import com.task.newapp.realmDB.getAllFriends
-import com.task.newapp.realmDB.getSingleUserDetails
 import com.task.newapp.realmDB.models.FriendRequest
-import com.task.newapp.realmDB.models.Users
+import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
 import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.ui.activities.chat.broadcast.CreateBroadcastActivity
 import com.task.newapp.ui.activities.chat.group.CreateGroupActivity
@@ -28,7 +27,6 @@ import com.task.newapp.utils.Constants.Companion.FriendRequestStatus
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation.*
 import com.task.newapp.utils.enableOrDisableButtonBgColor
-import com.task.newapp.utils.getCurrentUserId
 import io.reactivex.disposables.CompositeDisposable
 
 class SelectFriendsActivity : BaseAppCompatActivity(), SearchView.OnQueryTextListener, OnClickListener {
@@ -181,27 +179,12 @@ class SelectFriendsActivity : BaseAppCompatActivity(), SearchView.OnQueryTextLis
     private fun prepareAllFriendListAdapterModel(friendRequest: List<FriendRequest>) {
         if (allFriendsList.isNotEmpty())
             allFriendsList.clear()
-        friendRequest.forEach {
-            getSingleUserDetails(if (it.user_id == getCurrentUserId()) it.friend_id else it.user_id)?.let { users: Users ->
-                val searchUser = SelectFriendWrapperModel(
-                    users.receiver_id,
-                    users.first_name ?: "",
-                    users.last_name ?: "",
-                    users.user_name ?: "",
-                    users.profile_image ?: "",
-                    users.profile_color ?: "",
-                    isChecked = false,
-                    isEdit = true
-                )
-                allFriendsList.add(searchUser)
-            }
-            if (allFriendsList.isNotEmpty()) {
-                allFriendsList.sortBy { obj: SelectFriendWrapperModel ->
-                    obj.firstName.lowercase()
-                }
+        allFriendsList = prepareSelectFriendWrapperModelList(friendRequest)
+        if (allFriendsList.isNotEmpty()) {
+            allFriendsList.sortBy { obj: SelectFriendWrapperModel ->
+                obj.firstName.lowercase()
             }
         }
-
     }
 
 
@@ -223,11 +206,19 @@ class SelectFriendsActivity : BaseAppCompatActivity(), SearchView.OnQueryTextLis
             R.id.btn_next -> {
                 when (navigatedFrom) {
                     FROM_CREATE_GROUP -> {
-                        resultLauncher.launch(Intent(this, CreateGroupActivity::class.java).putExtra(Constants.bundle_selected_friends, selectedFriendsList))
+                        resultLauncher.launch(
+                            Intent(this, CreateGroupActivity::class.java).putExtra(
+                                Constants.bundle_selected_friends,
+                                selectedFriendsList.joinToString(separator = ",") { it.id.toString() })
+                        )
                         //launchActivity<CreateGroupActivity> { putExtra(Constants.bundle_selected_friends, selectedFriendsList) }
                     }
                     FROM_CREATE_BROADCAST -> {
-                        resultLauncher.launch(Intent(this, CreateBroadcastActivity::class.java).putExtra(Constants.bundle_selected_friends, selectedFriendsList))
+                        resultLauncher.launch(
+                            Intent(this, CreateBroadcastActivity::class.java).putExtra(
+                                Constants.bundle_selected_friends,
+                                selectedFriendsList.joinToString(separator = ",") { it.id.toString() })
+                        )
                         // launchActivity<CreateBroadcastActivity> { putExtra(Constants.bundle_selected_friends, selectedFriendsList) }
                     }
                     FROM_EDIT_GROUP -> TODO()

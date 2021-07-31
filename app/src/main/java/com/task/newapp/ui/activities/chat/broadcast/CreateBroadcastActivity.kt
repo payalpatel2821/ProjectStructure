@@ -23,7 +23,10 @@ import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityCreateBroadcastBinding
 import com.task.newapp.models.chat.CreateBroadcastResponse
 import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.realmDB.getSelectedFriends
 import com.task.newapp.realmDB.insertSingleBroadcastData
+import com.task.newapp.realmDB.models.FriendRequest
+import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
 import com.task.newapp.realmDB.prepareSingleBroadcastData
 import com.task.newapp.utils.*
 import com.task.newapp.utils.compressor.SiliCompressor
@@ -44,6 +47,7 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
     private val TAG = javaClass.simpleName
     lateinit var binding: ActivityCreateBroadcastBinding
     private val mCompositeDisposable = CompositeDisposable()
+    private var selectedFriendsIds: String = ""
     private var selectedFriendsList: ArrayList<SelectFriendWrapperModel> = ArrayList()
     private var selectedFriendsListAdapter: SelectedFriendsListAdapter? = null
     private var imageUri: String? = null
@@ -66,7 +70,7 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
     private fun initView() {
         binding.toolbarLayout.txtTitle.text = getString(R.string.title_new_broadcast)
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
-        selectedFriendsList = intent.getSerializableExtra(Constants.bundle_selected_friends) as ArrayList<SelectFriendWrapperModel>
+        selectedFriendsIds = intent.getStringExtra(Constants.bundle_selected_friends) ?: ""
         setSelectedFriendsAdapter()
     }
 
@@ -78,6 +82,7 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
     }
 
     private fun setSelectedFriendsAdapter() {
+        prepareAllFriendListAdapterModel(getSelectedFriends(selectedFriendsIds.split(",").map { it.toInt() }.toList()))
         if (selectedFriendsList.isNotEmpty()) {
             if (selectedFriendsListAdapter == null) {
                 selectedFriendsListAdapter = SelectedFriendsListAdapter(this)
@@ -86,6 +91,17 @@ class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPicke
                 binding.rvSelectedFriends.adapter = selectedFriendsListAdapter
             }
             selectedFriendsListAdapter?.doRefresh(selectedFriendsList)
+        }
+    }
+
+    private fun prepareAllFriendListAdapterModel(friendRequest: List<FriendRequest>) {
+        if (selectedFriendsList.isNotEmpty())
+            selectedFriendsList.clear()
+        selectedFriendsList = prepareSelectFriendWrapperModelList(friendRequest)
+        if (selectedFriendsList.isNotEmpty()) {
+            selectedFriendsList.sortBy { obj: SelectFriendWrapperModel ->
+                obj.firstName.lowercase()
+            }
         }
     }
 
