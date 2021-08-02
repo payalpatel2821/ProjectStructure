@@ -27,7 +27,11 @@
                 android:onClick="onClick"
                 android:padding="@dimen/_17sdp"
                 android:src="@drawable/ic_back"
+<<<<<<< Updated upstream
                 />
+=======
+                app:tint="@color/white" />
+>>>>>>> Stashed changes
 
             <include
                 android:id="@+id/layout_content_myprofile"

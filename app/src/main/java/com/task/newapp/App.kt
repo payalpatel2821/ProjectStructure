@@ -41,6 +41,7 @@ class App : MultiDexApplication() {
         @JvmStatic
         fun getRealmInstance(): Realm {
             return realm as Realm
+
         }
 
         @JvmStatic
@@ -98,6 +99,4 @@ class App : MultiDexApplication() {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
     }
-
-
 }

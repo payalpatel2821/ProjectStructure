@@ -7,8 +7,12 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
+<<<<<<< Updated upstream
         versionCode 1
         versionName "1.0"
+=======
+
+>>>>>>> Stashed changes
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

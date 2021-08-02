@@ -7,8 +7,11 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
+<<<<<<< Updated upstream
 import android.content.*
 import android.graphics.*
+=======
+>>>>>>> Stashed changes
 import android.content.*
 import android.database.Cursor
 import android.graphics.*
@@ -1114,7 +1117,10 @@ fun getBytes(inputStream: InputStream): ByteArray? {
     }
     return byteBuff.toByteArray()
 }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 /**
  * returns logged In user's Id from the preference else returns 0
  *
