@@ -89,8 +89,6 @@ class Constants {
         const val make_admin_id = "make_admin_id"
         const val remove_admin_id = "remove_admin_id"
         const val remove_user = "remove_user"
-        const val flag = "flag"
-        const val term = "term"
         const val users = "users"
         const val name = "name"
         const val icon = "icon"

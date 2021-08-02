@@ -522,11 +522,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     private fun showHideArchiveCountLabel() {
+        archiveCount = getArchivedChatCount()
         if (archiveCount == 0) {
-            binding.txtArchiveChat.visibility = GONE
+            binding.txtArchive.visibility = GONE
         } else {
-            binding.txtArchiveChat.visibility = VISIBLE
-            binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
+            binding.txtArchive.visibility = VISIBLE
+            binding.txtArchive.text = resources.getString(string.archive_count, archiveCount)
         }
     }
 

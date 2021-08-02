@@ -82,7 +82,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)
-
+                    closeAllItems() //close if any swipe layout is open
                 }
             }
         }

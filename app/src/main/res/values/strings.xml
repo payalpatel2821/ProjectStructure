@@ -223,7 +223,6 @@
     <string name="new_password">New Password</string>
     <string name="confirm_delete_msg">Do you wan\'t to delete this account?</string>
     <string name="group_search">Group Search</string>
-    <string name="add_members">Add members</string>
     <string name="exit_group">Exit Group</string>
     <string name="report_group">Report Group</string>
     <string name="delete_group">Delete Group</string>

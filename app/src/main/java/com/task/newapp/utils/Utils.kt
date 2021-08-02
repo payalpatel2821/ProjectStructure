@@ -44,12 +44,10 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.task.newapp.App
-import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.models.User
 import com.task.newapp.realmDB.getUserByUserId
 import com.task.newapp.realmDB.models.ChatList
-import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
@@ -1164,15 +1162,6 @@ fun isGooglePhotosUri(uri: Uri): Boolean {
     return "com.google.android.apps.photos.content" == uri.authority
 }
 
-/**
- * returns logged In user's Id from the preference else returns 0
- *
- * @return
- */
-fun getCurrentUserId(): Int {
-    return App.fastSave.getInt(Constants.prefUserId, 0)
-}
-
 fun openPicker(supportFragmentManager: FragmentManager) {
     MediaPickerFragment.newInstance(
         multiple = false,
@@ -1189,17 +1178,7 @@ fun Activity.requestFocus(view: View) {
     }
 }
 
-@Throws(IOException::class)
-fun getBytes(inputStream: InputStream): ByteArray? {
-    val byteBuff = ByteArrayOutputStream()
-    val buffSize = 1024
-    val buff = ByteArray(buffSize)
-    var len = 0
-    while (inputStream.read(buff).also { len = it } != -1) {
-        byteBuff.write(buff, 0, len)
-    }
-    return byteBuff.toByteArray()
-}
+
 
 
 /**
