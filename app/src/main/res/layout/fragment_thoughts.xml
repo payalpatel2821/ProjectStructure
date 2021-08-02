@@ -32,7 +32,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:padding="@dimen/_2sdp"
-                    android:src="@drawable/ic_back" />
+                    android:src="@drawable/ic_back"
+                    android:tint="@color/black"/>
 
                 <TextView
                     android:layout_width="match_parent"

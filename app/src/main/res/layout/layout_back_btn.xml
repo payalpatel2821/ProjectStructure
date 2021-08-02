@@ -9,7 +9,9 @@
         style="@style/styleTextViewNormal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="onClick"
         android:drawableLeft="@drawable/ic_back"
+        android:drawableTint="@color/black"
         android:drawablePadding="@dimen/_5sdp"
         android:text="@string/back" />
 

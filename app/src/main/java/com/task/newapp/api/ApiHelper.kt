@@ -1,5 +1,6 @@
 package com.task.newapp.api
 
+//import okhttp3.RequestBody
 import com.task.newapp.models.*
 import com.task.newapp.models.post.*
 import io.reactivex.Observable
@@ -151,4 +152,36 @@ interface ApiHelper {
 
     @POST(commentdelete)
     fun commentdelete(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetPostComment>
+    @POST(update_profile_pic)
+    fun changeProfilePic(@Body data: RequestBody): Observable<ResponseFollowUnfollow>
+
+    @POST(update_profile_detail)
+    fun updateProfile(@Body data: RequestBody): Observable<ResponseMyProfile>
+
+    @POST(change_password)
+    fun changePassword(@Body data: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(change_email)
+    fun changeEmailId(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(check_verify_email)
+    fun verifyEmailCode(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @POST(delete_account)
+    fun deleteAccount(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @GET(exit_group)
+    fun exitGroup(@Path("id") group_id: Int): Observable<ResponseExitReportGroup>
+
+    @GET(delete_group)
+    fun deleteGroup(@Path("id") group_id: Int): Observable<CommonResponse>
+
+    @GET(report_group)
+    fun reportGroup(@Path("id") group_id: Int): Observable<ResponseExitReportGroup>
+
+    @POST(add_remove_admin)
+    fun makeOrRemoveAdmin(@Body hashMap: HashMap<String, Any>): Observable<ResponseAddRemoveAdmin>
+
+    @POST(add_participates)
+    fun addOrRemoveUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseAddRemoveAdmin>
 }

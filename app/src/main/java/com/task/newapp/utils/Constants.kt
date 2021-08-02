@@ -75,12 +75,25 @@ class Constants {
         const val vibrate_status = "vibrate_status"
         const val INTENT_SERVICE_PROGRESS = "INTENT_SERVICE_PROGRESS"
         const val INTENT_SERVICE_COMPLETE = "INTENT_SERVICE_COMPLETE"
+        const val report_reason = "report_reason"
+        const val about = "about"
+        const val date_of_birth = "date_of_birth"
+        const val anniversary = "anniversary"
+        const val current = "current"
+        const val is_set = "is_set"
+        const val delete_reason = "delete_reason"
+        const val group_id = "group_id"
+        const val make_admin_id = "make_admin_id"
+        const val remove_admin_id = "remove_admin_id"
+        const val remove_user = "remove_user"
 
 
         // bundle value
-        const val bundle_custom_noti = "Custom_notification"
-        const val bundle_noti_tone = "Notification_Tune"
+        const val bundle_custom_notification = "Custom_notification"
+        const val bundle_notification_tone = "Notification_Tune"
         const val bundle_vibration = "Vibration"
+        const val bundle_email = "email"
+
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information

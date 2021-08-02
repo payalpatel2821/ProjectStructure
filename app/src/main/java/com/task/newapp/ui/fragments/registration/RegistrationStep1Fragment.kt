@@ -31,7 +31,6 @@ import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.showLog
 import com.theartofdev.edmodo.cropper.CropImage
 import lv.chi.photopicker.MediaPickerFragment
-import java.io.File
 
 
 class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View.OnClickListener {
@@ -151,28 +150,13 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 val resultUri = result.uri
-
                 imageUri = resultUri
                 binding.ivProfile.setColorFilter(0)
-//                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
-//                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
+                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
+                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
                 binding.ivEditImg.setImageResource(R.drawable.ic_close)
                 binding.txtDpName.visibility = GONE
                 Log.e("callAPIRegister:result", resultUri.path.toString())
-
-
-                //------------------------Add New------------------------
-
-//                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
-                val filePath: String = SiliCompressor.with(activity).compress(
-                    resultUri.toString(),
-                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg")
-                )
-                Log.e("callAPI:resultPath", filePath)
-
-                Glide.with(requireActivity()).load(filePath).into(binding.ivProfile)
-                FastSave.getInstance().saveString(Constants.profile_image, filePath)
-
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error

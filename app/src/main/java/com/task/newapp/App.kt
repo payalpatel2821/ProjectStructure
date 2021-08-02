@@ -9,13 +9,8 @@ import android.os.StrictMode.VmPolicy
 import androidx.multidex.MultiDexApplication
 import com.appizona.yehiahd.fastsave.FastSave
 import com.github.nkzawa.socketio.client.Socket
-import com.google.gson.Gson
-import com.task.newapp.models.SendUserDetailSocket
-import com.task.newapp.models.User
-import com.task.newapp.utils.Constants
 import com.task.newapp.utils.GlideImageLoader
 import com.task.newapp.utils.joinSocket
-import com.task.newapp.utils.showLog
 import com.vanniktech.emoji.EmojiManager
 import com.vanniktech.emoji.ios.IosEmojiProvider
 import io.realm.Realm
@@ -104,5 +99,6 @@ class App : MultiDexApplication() {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
     }
+
 
 }

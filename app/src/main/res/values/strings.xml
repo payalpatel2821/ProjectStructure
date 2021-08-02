@@ -163,6 +163,9 @@
     <string name="conform_report">Do you want to report this user?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="email_id">Email ID</string>
+    <string name="enter_new_password">Enter new password</string>
+    <string name="please_enter_minimum_password">Enter minimum 6 characters password.</string>
 
 
     <string name="error_msg_cannot_select_more_media_items">You cannot select more than 30 media items</string>
@@ -213,6 +216,25 @@
     <string name="popular_pages_limit">20</string>
     <string name="enter_text">Enter Text</string>
     <string name="exit_without_save">The edited image is not saved. Do you want to exit?</string>
+    <string name="enter_reason">Enter reason</string>
+    <string name="change_password">Change Password</string>
+    <string name="annivarsary_date">Annivarsary Date</string>
+    <string name="save">Save</string>
+    <string name="change_email_id">Change Email ID</string>
+    <string name="confirm">Confirm</string>
+    <string name="old_password">Old Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_delete_msg">Do you wan\'t to delete this account?</string>
+    <string name="group_search">Group Search</string>
+    <string name="add_members">Add members</string>
+    <string name="exit_group">Exit Group</string>
+    <string name="report_group">Report Group</string>
+    <string name="delete_group">Delete Group</string>
+    <string name="group_setting">Group Setting</string>
+    <string name="captain">CAPTAIN</string>
+    <string name="confirm_exit_grp_msg">Do you wan\'t to exit this group?</string>
+    <string name="confirm_delete_grp_msg">Do you wan\'t to delete this group?</string>
+    <string name="confirm_report_grp_msg">Do you wan\'t to report this group?</string>
 
     <string-array name="photo_editor_emoji">
 

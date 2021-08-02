@@ -16,13 +16,11 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
+import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
-import com.task.newapp.ui.fragments.post.PostFragment
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.launchActivity
-import com.task.newapp.utils.setBlurLayout
-import com.task.newapp.utils.showToast
+import com.task.newapp.ui.fragments.registration.PostFragment
 import com.task.newapp.utils.*
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
@@ -32,7 +30,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     val chatsFragment = ChatsFragment()
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
-    private var mainMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,15 +148,11 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             replace(R.id.activity_main_content, fragment)
             commit()
         }
-    }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
-
-        mainMenu = menu
-
         return true
     }
 
@@ -201,9 +194,12 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                 finish()
 
             }
+            R.id.img_profile->{
+                launchActivity<MyProfileActivity> {  }
+            }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
-                launchActivity<MyProfileActivity> { }
+                launchActivity<GroupProfileActivity> { }
             }
         }
     }

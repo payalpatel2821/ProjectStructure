@@ -78,8 +78,8 @@ public class SiliCompressor {
      * @param destination The destination directory where the compressed image will be stored.
      * @return filepath  The path of the compressed image file
      */
-    public String compress(String uriString, File destination) {
-        return compressImage(uriString, destination);
+    public String compress(String uriString, File destination, int isRegistration) {
+        return compressImage(uriString, destination, isRegistration);
     }
 
     protected static String getAuthorities(@NonNull Context context) {
@@ -111,7 +111,7 @@ public class SiliCompressor {
      */
     public String compress(String uriString, File destination, boolean deleteSourceImage) {
 
-        String compressedImagePath = compressImage(uriString, destination);
+        String compressedImagePath = compressImage(uriString, destination,0);
 
         if (deleteSourceImage) {
             boolean isdeleted = deleteImageFile(uriString);
@@ -132,7 +132,7 @@ public class SiliCompressor {
      */
     public Bitmap getCompressBitmap(String imageUri, boolean deleteSourceImage) throws IOException {
 
-        String compressedImageUriString = compressImage(imageUri, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DESTINATION));
+        String compressedImageUriString = compressImage(imageUri, new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DESTINATION),0);
         Bitmap bitmap = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), Uri.parse(compressedImageUriString));
@@ -272,10 +272,14 @@ public class SiliCompressor {
      * @param destDirectory destination directory where the compressed image will be stored.
      * @return The path of the compressed image file
      */
-    private String compressImage(String uriString, File destDirectory) {
+    private String compressImage(String uriString, File destDirectory, int isRegistration) {
         try {
-//            Uri imageUri = Uri.parse(uriString);
-            Uri imageUri = Uri.fromFile(new File(uriString));
+            Uri imageUri;
+            if (isRegistration == 1) {
+                imageUri = Uri.parse(uriString);
+            } else {
+                imageUri = Uri.fromFile(new File(uriString));
+            }
             Bitmap scaledBitmap = null;
 
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -369,10 +373,8 @@ public class SiliCompressor {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
 //                String fileName = "temp_profile.jpg"; //new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".jpg";
-
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-                String fileName = "temp_profile_" + timeStamp + ".jpg";
-
+                String fileName = "tempprofile" + timeStamp + ".jpg";
                 ContentValues values = new ContentValues();
                 values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
@@ -457,7 +459,7 @@ public class SiliCompressor {
                 // Compress the new file
                 Uri copyImageUri = FileProvider.getUriForFile(mContext, getAuthorities(mContext), image);
 
-                String compressedImagePath = compressImage(copyImageUri.toString(), new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DESTINATION));
+                String compressedImagePath = compressImage(copyImageUri.toString(), new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), IMAGE_DESTINATION),0);
 
                 // Delete the file created from the drawable Id
                 if (image.exists()) {
