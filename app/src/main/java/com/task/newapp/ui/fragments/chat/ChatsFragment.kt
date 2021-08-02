@@ -72,7 +72,6 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()

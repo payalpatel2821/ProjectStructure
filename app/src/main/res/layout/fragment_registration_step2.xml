@@ -34,13 +34,13 @@
                     android:layout_marginTop="@dimen/_25sdp"
                     android:orientation="vertical">
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         style="@style/styleTextViewLarge"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Validate yourself" />
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -95,7 +95,7 @@
                         android:checkedButton="@+id/rb_mobile"
                         android:orientation="horizontal">
 
-                        <RadioButton
+                        <androidx.appcompat.widget.AppCompatRadioButton
                             android:id="@id/rb_mobile"
                             style="@style/RadioButton"
                             android:layout_width="@dimen/_60sdp"
@@ -108,7 +108,7 @@
                             android:text="Mobile"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                        <RadioButton
+                        <androidx.appcompat.widget.AppCompatRadioButton
                             android:id="@+id/rb_email"
                             style="@style/RadioButton"
                             android:layout_width="@dimen/_60sdp"
@@ -232,7 +232,7 @@
                     android:background="@drawable/rect_rounded_gray"
                     android:orientation="vertical">
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -266,7 +266,7 @@
                         android:gravity="center"
                         android:orientation="horizontal">
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtTimer"
                             style="@style/styleTextViewNormal"
                             android:layout_width="@dimen/_40sdp"
@@ -276,7 +276,7 @@
                             android:textColor="@color/black"
                             android:textSize="@dimen/_10ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_resend"
                             style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"

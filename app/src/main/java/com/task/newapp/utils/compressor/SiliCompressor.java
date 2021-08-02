@@ -372,7 +372,9 @@ public class SiliCompressor {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-                String fileName = "temp_profile.jpg"; //new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".jpg";
+//                String fileName = "temp_profile.jpg"; //new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".jpg";
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+                String fileName = "tempprofile" + timeStamp + ".jpg";
                 ContentValues values = new ContentValues();
                 values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
@@ -381,6 +383,7 @@ public class SiliCompressor {
 
                 Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
                 Uri resultUri = mContext.getContentResolver().insert(collection, values);
+                Log.e("resultUri", resultUri.toString());
 
                 OutputStream out = mContext.getContentResolver().openOutputStream(resultUri);
 
@@ -403,7 +406,12 @@ public class SiliCompressor {
                     file.mkdirs();
                 }
 
-                String filename = new File(file.getAbsolutePath(), "temp_profile.jpg").getAbsolutePath();
+//                String filename = new File(file.getAbsolutePath(), "temp_profile.jpg").getAbsolutePath();
+
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+                String fileName = "temp_profile_" + timeStamp + ".jpg";
+
+                String filename = new File(file.getAbsolutePath(), fileName).getAbsolutePath();
 
                 FileOutputStream out = new FileOutputStream(filename);
 

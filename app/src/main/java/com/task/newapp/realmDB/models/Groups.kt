@@ -1,4 +1,3 @@
-// Please note : @LinkingObjects and default values are not represented in the schema and thus will not be part of the generated models
 package com.task.newapp.realmDB.models
 
 import io.realm.RealmObject
@@ -38,4 +37,3 @@ open class Groups : RealmObject() {
     var grp_send_msg: String? = null
 
 }
-

@@ -22,5 +22,11 @@
     <dimen name="button_height">48dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing">16dp</dimen>
+    <dimen name="fragment_horizontal_margin">16dp</dimen>
+    <dimen name="item_transform_image_length">48dp</dimen>
+    <dimen name="reflow_text_block_max_percent">1</dimen>
+    <dimen name="reflow_text_block_horizontal_gap">8dp</dimen>
+    <dimen name="reflow_text_title_size">22sp</dimen>
+    <dimen name="reflow_text_description_size">13sp</dimen>
 
 </resources>

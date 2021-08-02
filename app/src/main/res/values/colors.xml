@@ -23,9 +23,13 @@
     <color name="color_overlay">#78ffffff</color>
     <color name="bottomsheet_bg">#F0F0F0</color>
     <color name="green">#0CAE2F</color>
+    <color name="green1">#90CE63</color>
     <color name="yellow">#ED9A07</color>
+    <color name="yellow1">#FEC85B</color>
     <color name="gray5">#E6E6E6</color>
     <color name="disableColor">#B2C5CC</color>
+    <color name="blue">#74D0FF</color>
+    <color name="pink">#FF5C91</color>
 
     <!--Chat module-->
     <color name="chat_input_bg_color">#EEF1F6</color>
@@ -56,6 +60,7 @@
     <color name="orange_color_picker">#FF861F</color>
     <color name="red_color_picker">#ED0A3F</color>
     <color name="red_orange_color_picker">#FF3F34</color>
+    <color name="red">#FF5B5B</color>
     <color name="sky_blue_color_picker">#76D7EA</color>
     <color name="violet_color_picker">#8359A3</color>
     <color name="yellow_color_picker">#FBE870</color>

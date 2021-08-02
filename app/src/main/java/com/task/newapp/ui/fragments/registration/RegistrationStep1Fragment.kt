@@ -129,6 +129,7 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
         MediaPickerFragment.newInstance(
             multiple = false,
             allowCamera = true,
+            allowGallery = true,
             pickerType = MediaPickerFragment.PickerType.PHOTO,
             maxSelection = 1,
             theme = R.style.ChiliPhotoPicker_Light,
@@ -142,11 +143,10 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
             val result = CropImage.getActivityResult(data)
             if (resultCode == RESULT_OK) {
                 val resultUri = result.uri
-
                 imageUri = resultUri
                 binding.ivProfile.setColorFilter(0)
-//                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
-//                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
+                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
+                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
                 binding.ivEditImg.setImageResource(R.drawable.ic_close)
                 binding.txtDpName.visibility = GONE
                 Log.e("callAPIRegister:result", resultUri.path.toString())

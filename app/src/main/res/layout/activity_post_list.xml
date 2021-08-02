@@ -21,7 +21,8 @@
                 android:layout_height="@dimen/_40sdp"
                 android:onClick="onClick"
                 android:padding="@dimen/_13sdp"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"
+                android:tint="@color/black"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_title"

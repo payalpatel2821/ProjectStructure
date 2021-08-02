@@ -87,10 +87,10 @@ class MediaPickerFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View =
         LayoutInflater.from(contextWrapper).inflate(
-                R.layout.fragment_media_picker,
-                container,
-                false
-            )
+            R.layout.fragment_media_picker,
+            container,
+            false
+        )
             .apply {
                 contextWrapper.theme.resolveAttribute(
                     R.attr.pickerCornerRadius,
@@ -112,13 +112,24 @@ class MediaPickerFragment : DialogFragment() {
                 }
 
                 camera_container.isVisible = getAllowCamera(requireArguments())
-                gallery_container.setOnClickListener {
-                    when (pickerType) {
-                        PickerType.VIDEO -> pickVideoGallery()
-                        PickerType.PHOTO -> pickPhotoGallery()
-                        PickerType.ANY -> pickAnyGallery()
+//                gallery_container.isVisible = getAllowGallery(requireArguments())
+
+                gallery_container.isClickable = getAllowGallery(requireArguments())
+
+                if (getAllowGallery(requireArguments())) {
+                    gallery_container.setOnClickListener {
+                        when (pickerType) {
+                            PickerType.VIDEO -> pickVideoGallery()
+                            PickerType.PHOTO -> pickPhotoGallery()
+                            PickerType.ANY -> pickAnyGallery()
+                        }
+                    }
+                } else {
+                    gallery_container.setOnClickListener {
+
                     }
                 }
+
                 camera_container.setOnClickListener { pickMediaCamera() }
                 findViewById<TextView>(R.id.grant).setOnClickListener { grantPermissions() }
 
@@ -357,6 +368,7 @@ class MediaPickerFragment : DialogFragment() {
                 dismiss()
             }
         }
+
         override fun onSlide(bottomSheet: View, slideOffset: Float) {
             if (!needTransformation) return
             val calculatedSpacing = calculateSpacing(slideOffset)
@@ -458,6 +470,7 @@ class MediaPickerFragment : DialogFragment() {
     companion object {
         private const val KEY_MULTIPLE = "KEY_MULTIPLE"
         private const val KEY_ALLOW_CAMERA = "KEY_ALLOW_CAMERA"
+        private const val KEY_ALLOW_GALLERY = "KEY_ALLOW_GALLERY"
         private const val KEY_THEME = "KEY_THEME"
         private const val KEY_MAX_SELECTION = "KEY_MAX_SELECTION"
         private const val KEY_PICKER_MODE = "KEY_PICKER_MODE"
@@ -465,6 +478,7 @@ class MediaPickerFragment : DialogFragment() {
         fun newInstance(
             multiple: Boolean = false,
             allowCamera: Boolean = false,
+            allowGallery: Boolean = false,
             maxSelection: Int = SELECTION_UNDEFINED,
             pickerType: PickerType = PickerType.PHOTO,
             @StyleRes theme: Int = R.style.ChiliPhotoPicker_Light
@@ -472,6 +486,7 @@ class MediaPickerFragment : DialogFragment() {
             arguments = bundleOf(
                 KEY_MULTIPLE to multiple,
                 KEY_ALLOW_CAMERA to allowCamera,
+                KEY_ALLOW_GALLERY to allowGallery,
                 KEY_MAX_SELECTION to maxSelection,
                 KEY_THEME to theme,
                 KEY_PICKER_MODE to pickerType
@@ -480,6 +495,7 @@ class MediaPickerFragment : DialogFragment() {
 
         private fun getTheme(args: Bundle) = args.getInt(KEY_THEME)
         private fun getAllowCamera(args: Bundle) = args.getBoolean(KEY_ALLOW_CAMERA)
+        private fun getAllowGallery(args: Bundle) = args.getBoolean(KEY_ALLOW_GALLERY)
         private fun getAllowMultiple(args: Bundle) = args.getBoolean(KEY_MULTIPLE)
         private fun getMaxSelection(args: Bundle) = args.getInt(KEY_MAX_SELECTION)
         private fun getPickerMode(args: Bundle) =

@@ -407,6 +407,18 @@ fun getAllNotificationTune(): List<NotificationTone> {
     return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
 }
 
+fun getGroupDetail(grpID: Int): Chats {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().first { it.id == grpID }
+}
+
+fun getMyGroupSetting(grpID: Int, userID: Int): GroupUser? {
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID).and().equalTo(GroupUser::user_id.name, userID).findFirst()
+}
+
+fun getGroupCreatedUserName(userID: Int): String? {
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst().let { it!!.first_name + " " + it!!.last_name }
+}
+
 fun getAllFriends(status: String): List<FriendRequest> {
     return App.getRealmInstance().where(FriendRequest::class.java).limit(20).findAll().filter { it.status == status }
 }

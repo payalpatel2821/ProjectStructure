@@ -14,7 +14,6 @@ import com.task.newapp.adapter.post.PostPagerAdapter
 import com.task.newapp.databinding.ActivityPostPagerBinding
 import com.task.newapp.models.post.Post_Uri_Model
 import com.task.newapp.utils.showLog
-import java.io.File
 import java.lang.reflect.Type
 
 
@@ -108,9 +107,10 @@ class PostPagerActivity : AppCompatActivity() {
 //        flag_pos = position
 //        flag_type = type
 //        val outputFile: File = FileUtils.genEditFile()
-        var intent: Intent = Intent(this, EditImageActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        intent.putExtra("filepath", path)
-        startActivityForResult(intent, ACTION_REQUEST_EDITIMAGE)
+
+//        var intent: Intent = Intent(this, EditImageActivity::class.java)
+//        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+//        intent.putExtra("filepath", path)
+//        startActivityForResult(intent, ACTION_REQUEST_EDITIMAGE)
     }
 }

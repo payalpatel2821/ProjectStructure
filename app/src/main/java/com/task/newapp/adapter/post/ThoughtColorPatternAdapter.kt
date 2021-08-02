@@ -10,14 +10,24 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.task.newapp.R
+import com.task.newapp.models.ResponsePostList
+import com.task.newapp.models.post.ResponsePattern
+import java.util.ArrayList
 
-class ThoughtColorPatternAdapter(context: Activity, colorList: IntArray, colorFontList: IntArray, drawableList: TypedArray, type: Int) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ThoughtColorPatternAdapter(
+    context: Activity,
+    colorList: IntArray,
+    colorFontList: IntArray,
+    arrayListPattern: ArrayList<ResponsePattern.Data>,
+    type: Int
+
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var context: Context = context as Context
     var colorList: IntArray = colorList as IntArray
     var colorFontList: IntArray = colorFontList as IntArray
-    var drawableList: TypedArray = drawableList as TypedArray
+    var arrayListPattern: ArrayList<ResponsePattern.Data> = arrayListPattern as ArrayList<ResponsePattern.Data>
     var type: Int = type as Int
-    var onItemClick: ((Int, Int, Int) -> Unit)? = null
+    var onItemClick: ((Int?, ResponsePattern.Data?, Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_thought, parent, false)
@@ -39,15 +49,14 @@ class ThoughtColorPatternAdapter(context: Activity, colorList: IntArray, colorFo
                 holder.imgColorPattern.setBackgroundColor(color)
 
                 holder.itemView.setOnClickListener {
-                    onItemClick?.invoke(color, position, 0)
+                    onItemClick?.invoke(color, null, 0)
                 }
             }
             1 -> {
-                val pattern: Int = drawableList.getResourceId(position, 0)
-                Glide.with(context).load(pattern).into(holder.imgColorPattern)
+                Glide.with(context).load(arrayListPattern[position].name).into(holder.imgColorPattern)
 
                 holder.itemView.setOnClickListener {
-                    onItemClick?.invoke(pattern, position, 1)
+                    onItemClick?.invoke(null, arrayListPattern[position], 1)
                 }
             }
             2 -> {
@@ -55,13 +64,13 @@ class ThoughtColorPatternAdapter(context: Activity, colorList: IntArray, colorFo
                 holder.imgColorPattern.setBackgroundColor(color)
 
                 holder.itemView.setOnClickListener {
-                    onItemClick?.invoke(color, position, 2)
+                    onItemClick?.invoke(color, null, 2)
                 }
             }
         }
     }
 
-    override fun getItemCount(): Int = if (type == 0) colorList.size else if (type == 1) drawableList.length() else colorFontList.size
+    override fun getItemCount(): Int = if (type == 0) colorList.size else if (type == 1) arrayListPattern.size else colorFontList.size
 
     private inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //        var progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
@@ -71,5 +80,13 @@ class ThoughtColorPatternAdapter(context: Activity, colorList: IntArray, colorFo
         var imgColorPattern: ImageView = itemView.findViewById(R.id.imgColorPattern)
     }
 
+    fun setData(data: ArrayList<ResponsePattern.Data>) {
+        arrayListPattern.addAll(data)
+        notifyDataSetChanged()
+    }
+
+    fun getData(): Int {
+        return arrayListPattern.size
+    }
 
 }

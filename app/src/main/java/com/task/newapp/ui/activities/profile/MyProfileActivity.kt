@@ -1,6 +1,5 @@
 package com.task.newapp.ui.activities.profile
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -15,7 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityMyProfileBinding
-import com.task.newapp.databinding.ContentMyprofileActivityBinding
+import com.task.newapp.databinding.ContentMyProfileActivityBinding
 import com.task.newapp.models.ResponseMyProfile
 import com.task.newapp.models.ResponseUserSetting
 import com.task.newapp.realmDB.getMyGroup
@@ -47,6 +46,7 @@ class MyProfileActivity : AppCompatActivity() {
             }
         }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_my_profile)
@@ -57,7 +57,7 @@ class MyProfileActivity : AppCompatActivity() {
     }
 
     private fun setData(data: ResponseMyProfile.MyProfileData) {
-        val contentMyProfile: ContentMyprofileActivityBinding = binding.layoutContentMyprofile
+        val contentMyProfile: ContentMyProfileActivityBinding = binding.layoutContentMyprofile
         Glide.with(this).asBitmap().load(data.profile_image).into(binding.ivProfile)
         contentMyProfile.txtFollowingCount.text = data.following
         contentMyProfile.txtFollowerCount.text = data.followers
@@ -260,7 +260,9 @@ class MyProfileActivity : AppCompatActivity() {
                 }
             }
             R.id.iv_edit_profile -> {
-                launchActivity<EditProfileActivity> { }
+//                launchActivity<EditProfileActivity> { }
+                val intent = Intent(this, EditProfileActivity::class.java)
+                resultLauncher.launch(intent)
             }
             R.id.iv_back -> {
                 onBackPressed()
@@ -293,7 +295,7 @@ class MyProfileActivity : AppCompatActivity() {
                 launchActivity<PageListActivity> {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra(Constants.user_id, 0)
-                    putExtra(Constants.type,  resources.getString(R.string.my_pages))
+                    putExtra(Constants.type, resources.getString(R.string.my_pages))
 //                    putExtra(Constants.title, PostNavigation.FROM_POST.title)
                 }
             }
@@ -307,7 +309,7 @@ class MyProfileActivity : AppCompatActivity() {
             R.id.rl_grps -> {
                 launchActivity<GroupListActivity> {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    putExtra(Constants.type,"My")
+                    putExtra(Constants.type, "My")
                 }
             }
         }

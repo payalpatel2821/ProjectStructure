@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.paginate.Paginate
 import com.task.newapp.R
-import com.task.newapp.adapter.post.PostListAdapter
+import com.task.newapp.adapter.profile.PostListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityPostListBinding
 import com.task.newapp.models.ResponsePostList

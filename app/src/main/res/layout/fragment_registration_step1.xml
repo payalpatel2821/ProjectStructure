@@ -47,8 +47,7 @@
                 android:layout_width="@dimen/_100sdp"
                 android:layout_height="@dimen/_100sdp"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="@dimen/_30sdp"
-                android:onClick="onClick">
+                android:layout_margin="@dimen/_30sdp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_profile"
@@ -56,9 +55,9 @@
                     android:layout_height="@dimen/_100sdp"
                     android:layout_centerInParent="true"
                     android:background="@drawable/btn_rounded_bg"
-                    android:src="@drawable/ic_user"/>
+                    android:src="@drawable/ic_user_with_padding"/>
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_dp_name"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_100sdp"
@@ -77,6 +76,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="center"
                     android:layout_margin="@dimen/_5sdp"
+                    android:onClick="onClick"
                     android:background="@drawable/btn_edit_rounded_bg"
                     android:gravity="center"
                     android:src="@drawable/ic_edit"

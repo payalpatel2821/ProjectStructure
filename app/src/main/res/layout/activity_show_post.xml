@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/rootlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".ui.activities.post.ShowPostActivity">
+
+        <com.task.newapp.utils.exoplayer.ExoPlayerRecyclerView
+            android:id="@+id/exoPlayerRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:dividerHeight="8dp"
+            android:fadeScrollbars="false"
+            android:scrollIndicators="none"
+            android:scrollbars="none" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:adjustViewBounds="true"
+            android:src="@drawable/shadow"
+            android:visibility="visible" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/show_list"
+            android:layout_width="match_parent"
+            android:layout_height="22pt"
+            android:layout_alignParentBottom="true"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="0pt">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/bogleregular"
+                android:gravity="center"
+                android:paddingLeft="10pt"
+                android:text="Comments"
+                android:textColor="@color/red"
+                android:textSize="7pt"
+                android:visibility="gone" />
+
+            <View
+                android:id="@+id/viewaa"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_1sdp"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:background="#CCCCCC" />
+
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10pt"
+            android:src="@drawable/ic_back"
+            android:visibility="gone"
+            app:tint="@color/white" />
+
+    </RelativeLayout>
+
+</layout>
