@@ -167,4 +167,10 @@ dependencies {
     //parceler
     implementation 'org.parceler:parceler-api:1.1.12'
     kapt 'org.parceler:parceler:1.1.12'
+
+//    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+    implementation "androidx.exifinterface:exifinterface:1.3.0"
+
+    //coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
 }

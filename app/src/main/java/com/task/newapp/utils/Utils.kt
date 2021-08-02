@@ -8,6 +8,8 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
+import android.graphics.*
+import android.content.*
 import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -371,7 +373,12 @@ fun flipAnimation(view: View) {
     oa1.start()
 }
 
-fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
+fun getGroupLabelText(
+    userId: Int,
+    event: String,
+    isCurrentUser: Boolean,
+    messageText: String
+): String {
     val user = getUserByUserId(userId)
     val message = ""
     if (user != null) {
@@ -477,7 +484,11 @@ fun ImageView.load(
     }.into(this)
 }
 
-fun parseDate(inputDateString: String?, inputDateFormat: SimpleDateFormat, outputDateFormat: SimpleDateFormat): String? {
+fun parseDate(
+    inputDateString: String?,
+    inputDateFormat: SimpleDateFormat,
+    outputDateFormat: SimpleDateFormat
+): String? {
     var date: Date? = null
     var outputDateString: String? = null
     try {
@@ -542,7 +553,10 @@ var filter: InputFilter? = InputFilter { source, start, end, dest, dstart, dend 
  * android:textColorHighlight="@color/window_background" (background color while clicks)
  * in the TextView where you will use this.
  */
-fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: () -> Unit): SpannableString {
+fun SpannableString.withClickableSpan(
+    clickablePart: String,
+    onClickListener: () -> Unit
+): SpannableString {
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) = onClickListener.invoke()
         override fun updateDrawState(ds: TextPaint) {
@@ -619,7 +633,10 @@ fun checkCompressfolder(): String? {
 
 fun storeImage(image: Bitmap, pictureFile: File?): Boolean {
     if (pictureFile == null) {
-        Log.d("storeImage", "Error creating media file, check storage permissions: ") // e.getMessage());
+        Log.d(
+            "storeImage",
+            "Error creating media file, check storage permissions: "
+        ) // e.getMessage());
         return false
     }
     try {
@@ -689,7 +706,10 @@ fun getFileFromUri(
             filePath = if (RawDocumentsHelper.isRawDocId(id)) {
                 RawDocumentsHelper.getAbsoluteFilePath(id)
             } else {
-                val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://downloads/public_downloads"),
+                    java.lang.Long.valueOf(id)
+                )
                 getDataColumn(context, contentUri, null, null)
             }
         } else if (isMediaDocument(uri)) {
@@ -747,7 +767,9 @@ fun getDataColumn(
     try {
         cursor = context?.contentResolver?.query(uri!!, projection, selection, selectionArgs, null)
         if (cursor != null && cursor.moveToFirst()) {
-            val columnIndex = if (uri.toString().startsWith("content://com.google.android.gallery3d")) cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME) else cursor.getColumnIndex(
+            val columnIndex = if (uri.toString()
+                    .startsWith("content://com.google.android.gallery3d")
+            ) cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME) else cursor.getColumnIndex(
                 MediaStore.MediaColumns.DATA
             )
             if (columnIndex != -1) {
@@ -906,7 +928,10 @@ fun copyExifInfo(
         }
         saveExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, outputWidth.toString())
         saveExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, outputHeight.toString())
-        saveExif.setAttribute(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED.toString())
+        saveExif.setAttribute(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_UNDEFINED.toString()
+        )
         saveExif.saveAttributes()
     } catch (e: IOException) {
         e.printStackTrace()
@@ -1089,6 +1114,7 @@ fun getBytes(inputStream: InputStream): ByteArray? {
     }
     return byteBuff.toByteArray()
 }
+
 /**
  * returns logged In user's Id from the preference else returns 0
  *
