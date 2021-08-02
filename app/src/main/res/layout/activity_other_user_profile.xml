@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".ui.activities.profile.OtherUserProfileActivity">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="@dimen/_50sdp"
+                android:layout_height="@dimen/_50sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_17sdp"
+                android:src="@drawable/ic_back"
+<<<<<<< Updated upstream:app/src/main/res/layout/activity_other_user_profile.xml
+                />
+=======
+                app:tint="@color/white" />
+>>>>>>> Stashed changes:app/src/main/res/layout/activity_other_user.xml
+
+            <include
+                android:id="@+id/layout_content_otherprofile"
+                layout="@layout/content_other_profile_activity" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </RelativeLayout>
+</layout>

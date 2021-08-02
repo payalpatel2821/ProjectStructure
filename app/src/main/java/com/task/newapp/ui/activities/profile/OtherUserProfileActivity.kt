@@ -23,7 +23,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
-import com.task.newapp.databinding.ActivityOtherUserBinding
+import com.task.newapp.databinding.ActivityOtherUserProfileBinding
 import com.task.newapp.models.ResponseBlockReportUser
 import com.task.newapp.models.ResponseFollowUnfollow
 import com.task.newapp.models.ResponseFriendSetting
@@ -42,7 +42,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
 
     private lateinit var profileData: ResponseMyProfile.MyProfileData
     private var User_ID: Int = 0
-    lateinit var binding: ActivityOtherUserBinding
+    lateinit var binding: ActivityOtherUserProfileBinding
     private val mCompositeDisposable = CompositeDisposable()
     private var isfollow = false
     private var change: Int = 0
@@ -50,7 +50,6 @@ class OtherUserProfileActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-
                 change = data!!.getIntExtra("change", 0)
                 if (change == 1) {
                     callAPIGetOtherProfile()
@@ -62,17 +61,17 @@ class OtherUserProfileActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
 
-                val isCustomNotification = data!!.getIntExtra(Constants.bundle_custom_noti, 0)
-                val notiToneId = data!!.getIntExtra(Constants.bundle_noti_tone, 0)
+                val isCustomNotification = data!!.getIntExtra(Constants.bundle_custom_notification, 0)
+                val notiToneId = data!!.getIntExtra(Constants.bundle_notification_tone, 0)
                 val vibrate = data!!.getStringExtra(Constants.bundle_vibration)
-                setOnOffText(isCustomNotification,notiToneId, vibrate!!)
+                setOnOffText(isCustomNotification, notiToneId, vibrate!!)
 
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_other_user)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_other_user_profile)
         initView()
     }
 
@@ -93,7 +92,11 @@ class OtherUserProfileActivity : AppCompatActivity() {
         val contentOtherProfile = binding.layoutContentOtherprofile
         binding.ivProfile.load(data.profile_image, true)
         isfollow = data.is_follow
-        manageIsMuteOrNot(data.friendsetting.muteNotification)
+
+        data.friendsetting?.let{
+            manageIsMuteOrNot(it.muteNotification)
+            setOnOffText(it.isCustomNotificationEnable, it.notificationToneId, it.vibrateStatus)
+        }
         contentOtherProfile.txtPostCount.text = data.count_post.toString()
         contentOtherProfile.txtFollowerCount.text = data.followers.toString()
         contentOtherProfile.txtFollowingCount.text = data.following.toString()
@@ -102,7 +105,6 @@ class OtherUserProfileActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         contentOtherProfile.txtLastseen.text = DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(data.last_seen_time, formatter))
         contentOtherProfile.txtStatus.text = data.status
-        setOnOffText(data.friendsetting.isCustomNotificationEnable, data.friendsetting.notificationToneId, data.friendsetting.vibrateStatus)
         contentOtherProfile.txtPostsCount.text = data.count_post.toString()
         contentOtherProfile.txtGrpcommonCount.text = getCommonGroup(User_ID).size.toString()
         contentOtherProfile.txtPagescommonCount.text = data.count_common_pages.toString()
@@ -278,8 +280,8 @@ class OtherUserProfileActivity : AppCompatActivity() {
             }
             R.id.ll_custom_notification -> {
                 val intent = Intent(this, CustomNotificationActivity::class.java)
-                intent.putExtra(Constants.bundle_custom_noti, profileData.friendsetting.isCustomNotificationEnable)
-                intent.putExtra(Constants.bundle_noti_tone, profileData.friendsetting.notificationToneId)
+                intent.putExtra(Constants.bundle_custom_notification, profileData.friendsetting.isCustomNotificationEnable)
+                intent.putExtra(Constants.bundle_notification_tone, profileData.friendsetting.notificationToneId)
                 intent.putExtra(Constants.bundle_vibration, profileData.friendsetting.vibrateStatus)
                 intent.putExtra(Constants.user_id, User_ID)
                 resultLauncher1.launch(intent)
@@ -325,9 +327,9 @@ class OtherUserProfileActivity : AppCompatActivity() {
     }
 
     private fun setOnOffText(isCustomNotification: Int, notiToneId: Int, vibrate: String) {
-        profileData.friendsetting.isCustomNotificationEnable=isCustomNotification
-        profileData.friendsetting.notificationToneId=notiToneId
-        profileData.friendsetting.vibrateStatus=vibrate
+        profileData.friendsetting.isCustomNotificationEnable = isCustomNotification
+        profileData.friendsetting.notificationToneId = notiToneId
+        profileData.friendsetting.vibrateStatus = vibrate
         if (isCustomNotification == 1) {
             binding.layoutContentOtherprofile.txtCustomNotificationStatus.text = resources.getString(R.string.on)
         } else {
@@ -485,6 +487,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
 
     }
 
+
     private fun callAPIBlockReportUser(isBlock: String) {
         val message: String = when (isBlock) {
             "block" -> {
@@ -494,74 +497,141 @@ class OtherUserProfileActivity : AppCompatActivity() {
                 applicationContext.resources.getString(R.string.unblock_confirm_msg)
             }
             else -> {
-                ""
+                applicationContext.resources.getString(R.string.conform_report)
             }
         }
 
-        DialogUtils().showConfirmationYesNoDialog(this, "", message, object : DialogUtils.DialogCallbacks {
-            override fun onPositiveButtonClick() {
-                if (!isNetworkConnected()) {
-                    showToast(getString(R.string.no_internet))
-                    return
-                }
-                try {
-                    openProgressDialog(this@OtherUserProfileActivity)
+        if (isBlock == "block" || isBlock == "unblock") {
+            DialogUtils().showConfirmationYesNoDialog(this, "", message, object : DialogUtils.DialogCallbacks {
+                override fun onPositiveButtonClick() {
+                    if (!isNetworkConnected()) {
+                        showToast(getString(R.string.no_internet))
+                        return
+                    }
+                    try {
+                        openProgressDialog(this@OtherUserProfileActivity)
 
-                    val hashMap: HashMap<String, Any> = hashMapOf(
-                        Constants.id to User_ID,
-                        Constants.type to isBlock,
-                    )
+                        val hashMap: HashMap<String, Any> = hashMapOf(
+                            Constants.id to User_ID,
+                            Constants.type to isBlock,
+                        )
 
-                    mCompositeDisposable.add(
-                        ApiClient.create()
-                            .setBlockUnblockReportSetting(hashMap)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(object : DisposableObserver<ResponseBlockReportUser>() {
-                                @RequiresApi(Build.VERSION_CODES.O)
-                                override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
-                                    Log.v("onNext: ", blockreportuserresponse.toString())
-                                    showToast(blockreportuserresponse.message)
+                        mCompositeDisposable.add(
+                            ApiClient.create()
+                                .setBlockUnblockReportSetting(hashMap)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(object : DisposableObserver<ResponseBlockReportUser>() {
+                                    @RequiresApi(Build.VERSION_CODES.O)
+                                    override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
+                                        Log.v("onNext: ", blockreportuserresponse.toString())
+                                        showToast(blockreportuserresponse.message)
 
-                                    if (blockreportuserresponse.success == 1) {
-                                        if (isBlock == "block" || isBlock == "unblock") {
-                                            if (profileData.is_block == 1) {
-                                                profileData.is_block = 0
-                                                manageBlockUnblockText(0)
+                                        if (blockreportuserresponse.success == 1) {
+                                            if (isBlock == "block" || isBlock == "unblock") {
+                                                if (profileData.is_block == 1) {
+                                                    profileData.is_block = 0
+                                                    manageBlockUnblockText(0)
+                                                } else {
+                                                    profileData.is_block = 1
+                                                    manageBlockUnblockText(1)
+                                                }
                                             } else {
-                                                profileData.is_block = 1
-                                                manageBlockUnblockText(1)
+                                                onBackPressed()
                                             }
-                                        } else {
-                                            onBackPressed()
                                         }
                                     }
-                                }
 
-                                override fun onError(e: Throwable) {
-                                    Log.v("onError: ", e.toString())
-                                    hideProgressDialog()
-                                }
+                                    override fun onError(e: Throwable) {
+                                        Log.v("onError: ", e.toString())
+                                        hideProgressDialog()
+                                    }
 
-                                override fun onComplete() {
-                                    hideProgressDialog()
-                                }
-                            })
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                                    override fun onComplete() {
+                                        hideProgressDialog()
+                                    }
+                                })
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
-            }
 
-            override fun onNegativeButtonClick() {
+                override fun onNegativeButtonClick() {
 
-            }
+                }
 
-            override fun onDefaultButtonClick(actionName: String) {
-            }
+                override fun onDefaultButtonClick(actionName: String) {
+                }
 
-        })
+            })
+        } else {
+            DialogUtils().showReportDialog(this, message, object : DialogUtils.DialogCallbacks {
+                override fun onPositiveButtonClick() {
 
+                }
+
+                override fun onNegativeButtonClick() {
+
+                }
+
+                override fun onDefaultButtonClick(actionName: String) {
+                    if (!isNetworkConnected()) {
+                        showToast(getString(R.string.no_internet))
+                        return
+                    }
+                    try {
+                        openProgressDialog(this@OtherUserProfileActivity)
+
+                        val hashMap: HashMap<String, Any> = hashMapOf(
+                            Constants.id to User_ID,
+                            Constants.type to isBlock,
+                            Constants.report_reason to actionName
+                        )
+
+                        mCompositeDisposable.add(
+                            ApiClient.create()
+                                .setBlockUnblockReportSetting(hashMap)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeWith(object : DisposableObserver<ResponseBlockReportUser>() {
+                                    @RequiresApi(Build.VERSION_CODES.O)
+                                    override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
+                                        Log.v("onNext: ", blockreportuserresponse.toString())
+                                        showToast(blockreportuserresponse.message)
+
+                                        if (blockreportuserresponse.success == 1) {
+                                            if (isBlock == "block" || isBlock == "unblock") {
+                                                if (profileData.is_block == 1) {
+                                                    profileData.is_block = 0
+                                                    manageBlockUnblockText(0)
+                                                } else {
+                                                    profileData.is_block = 1
+                                                    manageBlockUnblockText(1)
+                                                }
+                                            } else {
+                                                onBackPressed()
+                                            }
+                                        }
+                                    }
+
+                                    override fun onError(e: Throwable) {
+                                        Log.v("onError: ", e.toString())
+                                        hideProgressDialog()
+                                    }
+
+                                    override fun onComplete() {
+                                        hideProgressDialog()
+                                    }
+                                })
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+            })
+        }
 
     }
 

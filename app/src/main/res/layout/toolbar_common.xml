@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,7 +16,6 @@
             android:id="@+id/activity_main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_marginEnd="?android:attr/actionBarSize"
             android:elevation="0dp"
             android:theme="@style/ToolbarIconTintStyle"
             android:weightSum="1"
@@ -26,18 +25,37 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
             <!--  app:contentInsetStart="0dp"-->
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txt_title"
-                style="@style/styleTextViewNormal"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Title" />
+                android:layout_height="wrap_content">
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_title"
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    tools:text="Title" />
 
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt_save"
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/save"
+                    android:textSize="@dimen/_12ssp"
+                    android:padding="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:textColor="@color/black"
+                    android:visibility="invisible"/>
+            </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
+
 
     </com.google.android.material.appbar.AppBarLayout>
 </layout>

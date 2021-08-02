@@ -47,8 +47,8 @@ class CustomNotificationActivity : AppCompatActivity() {
 
     private fun setData() {
         mp = MediaPlayer()
-        isCustomNotification = intent.getIntExtra(Constants.bundle_custom_noti, 0)
-        notificationTune = intent.getIntExtra(Constants.bundle_noti_tone, 0)
+        isCustomNotification = intent.getIntExtra(Constants.bundle_custom_notification, 0)
+        notificationTune = intent.getIntExtra(Constants.bundle_notification_tone, 0)
         vibrateStatus = intent.getStringExtra(Constants.bundle_vibration)!!
         User_ID = intent.getIntExtra(Constants.user_id, 0)
         binding.switchCustomNotification.isChecked = isCustomNotification == 1
@@ -328,8 +328,8 @@ class CustomNotificationActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val intent = Intent()
-        intent.putExtra(Constants.bundle_custom_noti, isCustomNotification)
-        intent.putExtra(Constants.bundle_noti_tone, notificationTune)
+        intent.putExtra(Constants.bundle_custom_notification, isCustomNotification)
+        intent.putExtra(Constants.bundle_notification_tone, notificationTune)
         intent.putExtra(Constants.bundle_vibration, vibrateStatus)
         setResult(RESULT_OK, intent)
         finish()

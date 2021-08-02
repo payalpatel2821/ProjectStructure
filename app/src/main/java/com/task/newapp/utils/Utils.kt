@@ -7,9 +7,11 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
+<<<<<<< Updated upstream
+import android.content.*
 import android.graphics.*
+=======
+>>>>>>> Stashed changes
 import android.content.*
 import android.database.Cursor
 import android.graphics.*
@@ -24,7 +26,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -32,23 +34,26 @@ import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
-import com.avatarfirst.avatargenlib.AvatarGenerator
+import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserByUserId
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
+import lv.chi.photopicker.MediaPickerFragment
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -371,7 +376,12 @@ fun flipAnimation(view: View) {
     oa1.start()
 }
 
-fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
+fun getGroupLabelText(
+    userId: Int,
+    event: String,
+    isCurrentUser: Boolean,
+    messageText: String
+): String {
     val user = getUserByUserId(userId)
     val message = ""
     if (user != null) {
@@ -418,7 +428,7 @@ fun convertDurationStringToSeconds(duration: String): String {
  */
 @SuppressLint("CheckResult")
 fun ImageView.load(
-    url: String,
+    url: String?,
     isProfile: Boolean? = false,
     name: String? = null,
     color: String? = null,
@@ -477,7 +487,11 @@ fun ImageView.load(
     }.into(this)
 }
 
-fun parseDate(inputDateString: String?, inputDateFormat: SimpleDateFormat, outputDateFormat: SimpleDateFormat): String? {
+fun parseDate(
+    inputDateString: String?,
+    inputDateFormat: SimpleDateFormat,
+    outputDateFormat: SimpleDateFormat
+): String? {
     var date: Date? = null
     var outputDateString: String? = null
     try {
@@ -542,7 +556,10 @@ var filter: InputFilter? = InputFilter { source, start, end, dest, dstart, dend 
  * android:textColorHighlight="@color/window_background" (background color while clicks)
  * in the TextView where you will use this.
  */
-fun SpannableString.withClickableSpan(clickablePart: String, onClickListener: () -> Unit): SpannableString {
+fun SpannableString.withClickableSpan(
+    clickablePart: String,
+    onClickListener: () -> Unit
+): SpannableString {
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) = onClickListener.invoke()
         override fun updateDrawState(ds: TextPaint) {
@@ -619,7 +636,10 @@ fun checkCompressfolder(): String? {
 
 fun storeImage(image: Bitmap, pictureFile: File?): Boolean {
     if (pictureFile == null) {
-        Log.d("storeImage", "Error creating media file, check storage permissions: ") // e.getMessage());
+        Log.d(
+            "storeImage",
+            "Error creating media file, check storage permissions: "
+        ) // e.getMessage());
         return false
     }
     try {
@@ -689,7 +709,10 @@ fun getFileFromUri(
             filePath = if (RawDocumentsHelper.isRawDocId(id)) {
                 RawDocumentsHelper.getAbsoluteFilePath(id)
             } else {
-                val contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+                val contentUri = ContentUris.withAppendedId(
+                    Uri.parse("content://downloads/public_downloads"),
+                    java.lang.Long.valueOf(id)
+                )
                 getDataColumn(context, contentUri, null, null)
             }
         } else if (isMediaDocument(uri)) {
@@ -747,7 +770,9 @@ fun getDataColumn(
     try {
         cursor = context?.contentResolver?.query(uri!!, projection, selection, selectionArgs, null)
         if (cursor != null && cursor.moveToFirst()) {
-            val columnIndex = if (uri.toString().startsWith("content://com.google.android.gallery3d")) cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME) else cursor.getColumnIndex(
+            val columnIndex = if (uri.toString()
+                    .startsWith("content://com.google.android.gallery3d")
+            ) cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME) else cursor.getColumnIndex(
                 MediaStore.MediaColumns.DATA
             )
             if (columnIndex != -1) {
@@ -906,7 +931,10 @@ fun copyExifInfo(
         }
         saveExif.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, outputWidth.toString())
         saveExif.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, outputHeight.toString())
-        saveExif.setAttribute(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED.toString())
+        saveExif.setAttribute(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_UNDEFINED.toString()
+        )
         saveExif.saveAttributes()
     } catch (e: IOException) {
         e.printStackTrace()
@@ -1060,4 +1088,44 @@ fun calculateInSampleSize(context: Context, sourceUri: Uri?, requestSize: Int): 
         inSampleSize *= 2
     }
     return inSampleSize
+}
+
+fun openPicker(supportFragmentManager: FragmentManager) {
+    MediaPickerFragment.newInstance(
+        multiple = false,
+        allowCamera = true,
+        pickerType = MediaPickerFragment.PickerType.PHOTO,
+        maxSelection = 1,
+        theme = R.style.ChiliPhotoPicker_Light,
+    ).show(supportFragmentManager, "picker")
+}
+
+fun Activity.requestFocus(view: View) {
+    if (view.requestFocus()) {
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+    }
+}
+
+@Throws(IOException::class)
+fun getBytes(inputStream: InputStream): ByteArray? {
+    val byteBuff = ByteArrayOutputStream()
+    val buffSize = 1024
+    val buff = ByteArray(buffSize)
+    var len = 0
+    while (inputStream.read(buff).also { len = it } != -1) {
+        byteBuff.write(buff, 0, len)
+    }
+    return byteBuff.toByteArray()
+}
+<<<<<<< Updated upstream
+
+=======
+>>>>>>> Stashed changes
+/**
+ * returns logged In user's Id from the preference else returns 0
+ *
+ * @return
+ */
+fun getCurrentUserId(): Int {
+    return App.fastSave.getInt(Constants.prefUserId, 0)
 }
