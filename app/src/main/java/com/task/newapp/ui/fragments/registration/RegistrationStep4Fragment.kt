@@ -205,7 +205,7 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                             if (responseRegister.success == 1) {
                                 App.fastSave.saveString(Constants.prefToken, responseRegister.data.token)
                                 App.fastSave.saveObject(Constants.prefUser, responseRegister.data.user)
-                                App.fastSave.saveString(Constants.prefUserName, responseRegister.data.user.firstName + " " + responseRegister.data.user.lastName)
+                                App.fastSave.saveString(Constants.prefUserName, responseRegister.data.user.uName)
                                 App.fastSave.saveInt(Constants.prefUserId, responseRegister.data.user.id)
                                 App.fastSave.saveBoolean(Constants.isLogin, true)
 
@@ -236,17 +236,7 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
         mCompositeDisposable.clear()
     }
 
-    @Throws(IOException::class)
-    fun getBytes(inputStream: InputStream): ByteArray? {
-        val byteBuff = ByteArrayOutputStream()
-        val buffSize = 1024
-        val buff = ByteArray(buffSize)
-        var len = 0
-        while (inputStream.read(buff).also { len = it } != -1) {
-            byteBuff.write(buff, 0, len)
-        }
-        return byteBuff.toByteArray()
-    }
+
 
     private fun callVerifyUsername() {
         try {

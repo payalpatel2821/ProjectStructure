@@ -25,11 +25,28 @@
         android:theme="@style/Theme.NewApp"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.activities.post.ShowPostActivity"
-            android:exported="true" />
+            android:name=".ui.activities.chat.group.CreateGroupActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.chat.SelectFriendsActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.chat.broadcast.CreateBroadcastActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.chat.broadcast.BroadcastListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
         <activity
             android:name=".ui.activities.chat.OneToOneChatActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBar" />
+        <activity
+            android:name=".ui.activities.post.ShowPostActivity"
+            android:exported="true" />
         <activity
             android:name=".ui.activities.post.PostPagerActivity"
             android:label="Post View"

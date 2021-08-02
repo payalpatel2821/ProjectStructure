@@ -417,7 +417,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
                         @RequiresApi(Build.VERSION_CODES.O)
                         override fun onNext(loginResponse: ResponseMyProfile) {
                             Log.v("onNext: ", loginResponse.toString())
-                            showToast(loginResponse.message)
+                           // showToast(loginResponse.message)
 
                             if (loginResponse.success == 1) {
                                 profileData = loginResponse.data

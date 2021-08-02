@@ -1,6 +1,7 @@
 package com.task.newapp.utils
 
 import com.task.newapp.R
+import java.io.Serializable
 
 class Constants {
 
@@ -51,10 +52,12 @@ class Constants {
         const val archive_id = "archive_id"
         const val is_archive = "is_archive"
         const val receiver_id = "receiver_id"
+        const val broadcast_id = "broadcast_id"
         const val is_secret = "is_secret"
         const val MAX_IMAGE_COUNT_IF_VIDEO_SELECTED = 15
         const val MAX_IMAGE_COUNT = 30
         const val MAX_VIDEO_COUNT = 5
+        const val PAGE_SIZE = 20
         const val data = "data"
         const val SIZE_DEFAULT = 2048
         const val SIZE_LIMIT = 4096
@@ -86,6 +89,9 @@ class Constants {
         const val make_admin_id = "make_admin_id"
         const val remove_admin_id = "remove_admin_id"
         const val remove_user = "remove_user"
+        const val users = "users"
+        const val name = "name"
+        const val icon = "icon"
 
 
         // bundle value
@@ -94,6 +100,9 @@ class Constants {
         const val bundle_vibration = "Vibration"
         const val bundle_email = "email"
 
+        const val bundle_selected_friends = "selected_friends"
+        const val bundle_navigate_from = "navigate_from"
+        const val bundle_opponent_id = "opponent_id"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information
@@ -174,6 +183,19 @@ class Constants {
             FROM_POST("post", R.string.my_post),
             FROM_TAGGED_POST("tag_post", R.string.tagged_posts),
             FROM_SAVED_POST("save_post", R.string.saved_posts)
+        }
+
+        enum class SelectFriendsNavigation(val fromname: String, val title: Int) : Serializable {
+            FROM_CREATE_GROUP("create_group", R.string.create_group),
+            FROM_CREATE_BROADCAST("create_broadcast", R.string.create_broadcast),
+            FROM_EDIT_GROUP("edit_group", R.string.create_group),
+            FROM_EDIT_BROADCAST("edit_broadcast", R.string.create_broadcast)
+        }
+
+        enum class FriendRequestStatus(val status: String) {
+            ACCEPT("Accept"),
+            REJECT("Reject"),
+            UNFRIEND("Unfriend")
         }
 
         //-----------------Pref--------------------

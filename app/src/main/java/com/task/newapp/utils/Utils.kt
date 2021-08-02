@@ -7,10 +7,8 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.graphics.*
 import android.content.*
+import android.content.res.ColorStateList
 import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -44,10 +42,12 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.models.User
 import com.task.newapp.realmDB.getUserByUserId
-import com.task.newapp.utils.compressor.SiliCompressor
+import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
@@ -331,6 +331,17 @@ fun enableOrDisableButtonBgColor(context: Context, isEnable: Boolean, button: Bu
     }
 }
 
+fun enableOrDisableButtonBgColor(context: Activity, isEnable: Boolean, button: FloatingActionButton) {
+    if (isEnable) {
+
+        button.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.theme_color))
+        button.isEnabled = true
+    } else {
+        button.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.disableColor))
+        button.isEnabled = false
+    }
+}
+
 fun requestFocus(context: Context, view: View) {
     if (view.requestFocus()) {
         // open the soft keyboard
@@ -384,12 +395,7 @@ fun flipAnimation(view: View) {
     oa1.start()
 }
 
-fun getGroupLabelText(
-    userId: Int,
-    event: String,
-    isCurrentUser: Boolean,
-    messageText: String
-): String {
+fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
     val user = getUserByUserId(userId)
     val message = ""
     if (user != null) {
@@ -440,7 +446,7 @@ fun ImageView.load(
     isProfile: Boolean? = false,
     name: String? = null,
     color: String? = null,
-    previousUrl: String? = null,
+    previousUrl: String? = "",
     round: Boolean = false,
     cornersRadius: Int = 0,
     crop: Boolean = false
@@ -1156,15 +1162,6 @@ fun isGooglePhotosUri(uri: Uri): Boolean {
     return "com.google.android.apps.photos.content" == uri.authority
 }
 
-/**
- * returns logged In user's Id from the preference else returns 0
- *
- * @return
- */
-fun getCurrentUserId(): Int {
-    return App.fastSave.getInt(Constants.prefUserId, 0)
-}
-
 fun openPicker(supportFragmentManager: FragmentManager) {
     MediaPickerFragment.newInstance(
         multiple = false,
@@ -1179,6 +1176,41 @@ fun Activity.requestFocus(view: View) {
     if (view.requestFocus()) {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
     }
+}
+
+
+
+
+/**
+ * check and return true if chat message is in-coming else return false for outgoing message
+ *
+ * @param chatMessage
+ * @return
+ */
+fun isIncoming(chatMessage: ChatList): Boolean {
+    return chatMessage.sender_id != App.fastSave.getInt(Constants.prefUserId, 0)
+
+}
+
+/**
+ * returns logged In user's Id from the preference else returns 0
+ * @return
+ */
+fun getCurrentUserId(): Int {
+    return App.fastSave.getInt(Constants.prefUserId, 0)
+}
+
+fun getCurrentUserProfilePicture(): String {
+    return App.fastSave.getObject(Constants.prefUser, User::class.java).profileImage
+}
+
+fun getCurrentUserProfileColor(): String {
+    return App.fastSave.getObject(Constants.prefUser, User::class.java).profileColor
+}
+
+fun getCurrentUserFullName(): String {
+    return App.fastSave.getString(Constants.prefUserName, "")
+
 }
 
 @Throws(IOException::class)

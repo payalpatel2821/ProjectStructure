@@ -2,10 +2,12 @@ package com.task.newapp.realmDB
 
 import com.task.newapp.App
 import com.task.newapp.models.*
+import com.task.newapp.models.chat.SelectFriendWrapperModel
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.realmDB.models.ChatContacts
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.findIndex
+import com.task.newapp.utils.getCurrentUserId
 import com.task.newapp.utils.getGroupLabelText
 import io.realm.Realm
 import io.realm.RealmList
@@ -309,11 +311,11 @@ fun getAllChats(): List<Chats> {
 }
 
 fun getAllArchivedChat(): List<Chats> {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().sort(Chats::current_time.name, Sort.DESCENDING)
+    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().sort(Chats::current_time.name, Sort.DESCENDING))
 }
 
 fun getAllBroadcastChat(): List<BroadcastTable> {
-    return App.getRealmInstance().where(BroadcastTable::class.java).findAll().sort(BroadcastTable::updated_at.name, Sort.DESCENDING)
+    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(BroadcastTable::class.java).findAll().sort(BroadcastTable::updated_at.name, Sort.DESCENDING))
 }
 
 fun getGroupsFromGroupId(groupId: List<Int>): List<Groups> {
@@ -350,7 +352,6 @@ fun getSingleChatListItem(chatId: Int): ChatList? {
 
 fun getSingleUserChat(id: Int): Chats? {
     return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
-
 }
 
 fun getHookCount(): Int {
@@ -406,21 +407,29 @@ fun getAllNotificationTune(): List<NotificationTone> {
     return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
 }
 
-fun getAllFriends(status: String): List<FriendRequest> {
-    return App.getRealmInstance().where(FriendRequest::class.java).limit(20).findAll().filter { it.status == status }
-}
-
 fun getGroupDetail(grpID: Int): Chats {
     return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().first { it.id == grpID }
 }
 
-fun getMyGroupSetting(grpID: Int,userID: Int): GroupUser? {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID ).and().equalTo(GroupUser::user_id.name, userID).findFirst()
+fun getMyGroupSetting(grpID: Int, userID: Int): GroupUser? {
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID).and().equalTo(GroupUser::user_id.name, userID).findFirst()
 }
 
 fun getGroupCreatedUserName(userID: Int): String? {
     return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst().let { it!!.first_name + " " + it!!.last_name }
 }
+
+fun getAllFriends(status: String): List<FriendRequest> {
+    return App.getRealmInstance().where(FriendRequest::class.java).limit(20).findAll().filter { it.status == status }
+}
+
+fun getSelectedFriends(ids: List<Int>): List<FriendRequest> {
+    return App.getRealmInstance().where(FriendRequest::class.java)
+        .`in`(FriendRequest::friend_id.name, ids.toTypedArray())
+        .or()
+        .`in`(FriendRequest::user_id.name, ids.toTypedArray()).findAll()
+}
+
 /**   ------------------------------------ READ END ---------------------------------------------------------------  */
 
 /**   ------------------------------------ UPDATE BEGIN ---------------------------------------------------------------  */
@@ -516,7 +525,6 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
 
 fun deleteHooks(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        //val query =
         realm.where(UserHook::class.java).`in`(UserHook::id.name, ids.toTypedArray()).not().findAll().deleteAllFromRealm()
 
     })
@@ -849,7 +857,7 @@ fun prepareAllGroupDataForDB(getAllGroups: List<LoginResponse.GetAllGroup>): Arr
         groupObj.addUserInGp?.let {
             addUserChatList.add(prepareGroupLabelData(groupObj.addUserInGp))
         }
-        //chatList.add(chatsObj.chat_list)
+
         chats.add(chatsObj)
     }
     return arrayOf(groups, groupUser, chatList, addUserChatList, chats)
@@ -1083,6 +1091,27 @@ fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification
         }
     }
     return notificationToneList
+}
+
+fun prepareSelectFriendWrapperModelList(friendRequest: List<FriendRequest>): ArrayList<SelectFriendWrapperModel> {
+    val allFriendsList: ArrayList<SelectFriendWrapperModel> = ArrayList()
+    friendRequest.forEach {
+        getSingleUserDetails(if (it.user_id == getCurrentUserId()) it.friend_id else it.user_id)?.let { users: Users ->
+            val searchUser = SelectFriendWrapperModel(
+                users.receiver_id,
+                users.first_name ?: "",
+                users.last_name ?: "",
+                users.user_name ?: "",
+                users.profile_image ?: "",
+                users.profile_color ?: "",
+                isChecked = false,
+                isEdit = true
+            )
+            allFriendsList.add(searchUser)
+        }
+
+    }
+    return allFriendsList
 }
 
 interface OnRealmTransactionResult {

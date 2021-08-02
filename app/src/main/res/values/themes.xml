@@ -25,13 +25,13 @@
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
-    <style name="ToolbarIconTintStyle" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+    <style name="ToolbarIconTintStyle" parent="ThemeOverlay.AppCompat.Light">
 
         <!-- This attributes is used by navigation icon and overflow icon -->
         <item name="tint">@color/chat_icon_color</item>
         <item name="iconTint">@color/chat_icon_color</item>
         <item name="android:gravity">center_vertical</item>
-
+        <item name="titleEnabled">false</item>
 
     </style>
     <!-- Styles -->

@@ -37,7 +37,7 @@
                     android:weightSum="1"
                     app:menu="@menu/main_menu"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-                    app:contentInsetStart="0dp"
+                    <!--app:contentInsetStart="0dp"-->
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/img_profile"

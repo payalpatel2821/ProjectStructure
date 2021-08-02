@@ -95,6 +95,18 @@ class DialogUtils {
         })
     }
 
+    fun showChatAttachmentIOSDialog(activity: AppCompatActivity, title: String = "", message: String = "", listener: DialogCallbacks) {
+        val alert = AlertView(title, message, AlertStyle.IOS_ICON)
+        alert.show(activity)
+
+        ChatAttachmentActionsName.values().forEach { actionNames: ChatAttachmentActionsName ->
+            alert.addAction(AlertAction(actionNames.value, actionNames.resouceId, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(actionNames.value)
+            })
+        }
+
+    }
+
     fun showVibrationStatusDialog(activity: AppCompatActivity, checkedOption: String, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS_RADIO)
         alert.show(activity)
@@ -331,5 +343,26 @@ class DialogUtils {
         SHORT("Short"),
         LONG("Long")
     }
+
+    enum class ChatAttachmentActionsName(val value: String, val resouceId: Int) {
+        CAMERA("Camera", R.drawable.ic_camera),
+        PHOTOS("Photos", R.drawable.ic_photo),
+        DOCUMENTS("Documents", R.drawable.ic_document),
+        CONTACTS("Contacts", R.drawable.ic_contact),
+        LOCATION("Location", R.drawable.ic_location_chat);
+
+        companion object {
+            fun getObjectFromName(name: String): ChatAttachmentActionsName? {
+                ChatAttachmentActionsName.values().forEach {
+                    if (it.value == name) {
+                        return it
+
+                    }
+                }
+                return null
+            }
+        }
+    }
+
 
 }

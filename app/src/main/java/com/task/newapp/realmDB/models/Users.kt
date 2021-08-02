@@ -9,6 +9,7 @@ open class Users : RealmObject() {
         const val PROPERTY_receiver_id = "receiver_id"
         const val PROPERTY_first_name = "first_name"
         const val PROPERTY_last_name = "last_name"
+        const val PROPERTY_user_name = "user_name"
         const val PROPERTY_profile_image = "profile_image"
         const val PROPERTY_profile_color = "profile_color"
     }
@@ -18,6 +19,7 @@ open class Users : RealmObject() {
     var receiver_id: Int = 0
     var first_name: String? = null
     var last_name: String? = null
+    var user_name: String? = null
     var profile_image: String? = null
     var profile_color: String? = null
 }

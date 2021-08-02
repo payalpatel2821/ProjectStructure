@@ -106,6 +106,7 @@
     <string name="pages_in_common">Pages in common</string>
     <string name="friends_in_common">Friends in common</string>
     <string name="block">Block</string>
+    <string name="block_underline"><u>Block</u></string>
     <string name="unblock">Unblock</string>
     <string name="report">Report</string>
     <string name="my_friends">My Friends</string>
@@ -139,7 +140,7 @@
     <string name="copylink">Copy Link</string>
     <string name="turnonpost">Turn on Post Notification</string>
     <string name="welcome_to_how_no_post_yet">Welcome to HOW.\n You haven\'t seen any post Yet.</string>
-    <string name="get_al_post">20</string>
+    <string name="get_all_post">20</string>
     <string name="get_comments">10</string>
     <string name="delete">Delete</string>
     <string name="reply">Reply</string>
@@ -151,6 +152,10 @@
     <string name="username">Username</string>
     <string name="archive_count">archive (%d)</string>
     <string name="title_archived_list">Archived List</string>
+    <string name="title_broadcast_list">Broadcast List</string>
+    <string name="title_new_broadcast">New Broadcast</string>
+    <string name="title_new_group">New Group</string>
+    <string name="title_select_friends">Select Friends</string>
     <string name="notification_tune">Notification Tune</string>
     <string name="vibration">Vibration</string>
     <string name="on">On</string>
@@ -166,6 +171,22 @@
     <string name="email_id">Email ID</string>
     <string name="enter_new_password">Enter new password</string>
     <string name="please_enter_minimum_password">Enter minimum 6 characters password.</string>
+    <string name="empty_broadcast_text"><![CDATA[You should use broadcast list to message\n
+        multiple people at once\n\n
+        Only your friends will receive your\n
+        broadcast messages.]]></string>
+    <string name="create_broadcast">Create Broadcast</string>
+    <string name="new_broadcast_hint_text"><![CDATA[Provide a broadcast subject and\noptional broadcast icon]]></string>
+    <string name="new_group_hint_text"><![CDATA[Provide a group subject and\noptional group icon]]></string>
+    <string name="msg_friend_request_receiver"><![CDATA[The sender is not in your friend list.\nDo you wish to continue this conversation?]]></string>
+    <string name="broadcast_name">Broadcast name</string>
+    <string name="add_members">Add Members</string>
+    <string name="you_have_not_made_any_friends_yet">You have not made any friends yet</string>
+    <string name="create_group">Create Group</string>
+    <string name="group_name">Group name</string>
+    <string name="ignore">Ignore</string>
+    <string name="accept">Accept</string>
+    <string name="msg_friend_request_resend">You can only resend a request after every 24 hours.</string>
 
 
     <string name="error_msg_cannot_select_more_media_items">You cannot select more than 30 media items</string>
@@ -175,30 +196,6 @@
     <string name="error_upload_failed">Uploading failed</string>
     <string name="message_upload_failed">File is not uploaded. Please TRY AGAIN</string>
 
-    <array name="colorArrayThoughts">
-        <item>@color/white</item>
-        <item>@color/red</item>
-        <item>@color/theme_color</item>
-    </array>
-
-    <integer-array name="colorFontArrayThoughts">
-        <item>@color/black</item>
-        <item>@color/red</item>
-        <item>@color/theme_color</item>
-    </integer-array>
-
-    <integer-array name="patternArrayThoughts">
-        <item>@drawable/default_dp</item>
-        <item>@drawable/default_dp</item>
-        <item>@drawable/default_dp</item>
-    </integer-array>
-
-    <string-array name="fontArrayThoughts">
-        <item>boglebold.otf</item>
-        <item>bogleregular.otf</item>
-        <item>boglebold.otf</item>
-        <item>bogleregular.otf</item>
-    </string-array>
 
     <!--    photo editor-->
     <string name="label_brush">Brush</string>
@@ -226,7 +223,6 @@
     <string name="new_password">New Password</string>
     <string name="confirm_delete_msg">Do you wan\'t to delete this account?</string>
     <string name="group_search">Group Search</string>
-    <string name="add_members">Add members</string>
     <string name="exit_group">Exit Group</string>
     <string name="report_group">Report Group</string>
     <string name="delete_group">Delete Group</string>
@@ -235,413 +231,6 @@
     <string name="confirm_exit_grp_msg">Do you wan\'t to exit this group?</string>
     <string name="confirm_delete_grp_msg">Do you wan\'t to delete this group?</string>
     <string name="confirm_report_grp_msg">Do you wan\'t to report this group?</string>
-
-    <string-array name="photo_editor_emoji">
-
-        <!-- Smiles -->
-        <item>u+1f604</item>
-        <item>u+1f603</item>
-        <item>u+1f600</item>
-        <item>u+1f60a</item>
-        <item>u+263a</item>
-        <item>u+1f609</item>
-        <item>u+1f60d</item>
-        <item>u+1f618</item>
-        <item>u+1f61a</item>
-        <item>u+1f617</item>
-        <item>u+1f619</item>
-        <item>u+1f61c</item>
-        <item>u+1f61d</item>
-        <item>u+1f61b</item>
-        <item>u+1f633</item>
-        <item>u+1f601</item>
-        <item>u+1f614</item>
-        <item>u+1f60c</item>
-        <item>u+1f612</item>
-        <item>u+1f61e</item>
-        <item>u+1f623</item>
-        <item>u+1f622</item>
-        <item>u+1f602</item>
-        <item>u+1f62d</item>
-        <item>u+1f62a</item>
-        <item>u+1f625</item>
-        <item>u+1f630</item>
-        <item>u+1f605</item>
-        <item>u+1f613</item>
-        <item>u+1f629</item>
-        <item>u+1f62b</item>
-        <item>u+1f628</item>
-        <item>u+1f631</item>
-        <item>u+1f620</item>
-        <item>u+1f621</item>
-        <item>u+1f624</item>
-
-        <!--People -->
-        <item>u+1f616</item>
-        <item>u+1f606</item>
-        <item>u+1f60b</item>
-        <item>u+1f637</item>
-        <item>u+1f60e</item>
-        <item>u+1f634</item>
-        <item>u+1f635</item>
-        <item>u+1f632</item>
-        <item>u+1f61f</item>
-        <item>u+1f626</item>
-        <item>u+1f627</item>
-        <item>u+1f608</item>
-        <item>u+1f47f</item>
-        <item>u+1f62e</item>
-        <item>u+1f62c</item>
-        <item>u+1f610</item>
-        <item>u+1f615</item>
-        <item>u+1f62f</item>
-        <item>u+1f636</item>
-        <item>u+1f607</item>
-        <item>u+1f60f</item>
-        <item>u+1f611</item>
-        <item>u+1f472</item>
-        <item>u+1f473</item>
-        <item>u+1f46e</item>
-        <item>u+1f477</item>
-        <item>u+1f482</item>
-        <item>u+1f476</item>
-        <item>u+1f466</item>
-        <item>u+1f467</item>
-        <item>u+1f468</item>
-        <item>u+1f469</item>
-        <item>u+1f474</item>
-        <item>u+1f475</item>
-        <item>u+1f471</item>
-        <item>u+1f47c</item>
-        <item>u+1f478</item>
-        <item>u+1f63a</item>
-        <item>u+1f638</item>
-        <item>u+1f63b</item>
-        <item>u+1f63d</item>
-        <item>u+1f63c</item>
-        <item>u+1f640</item>
-        <item>u+1f63f</item>
-        <item>u+1f639</item>
-        <item>u+1f63e</item>
-        <item>u+1f479</item>
-        <item>u+1f47a</item>
-        <item>u+1f648</item>
-        <item>u+1f649</item>
-        <item>u+1f64a</item>
-        <item>u+1f480</item>
-        <item>u+1f47d</item>
-        <item>u+1f4a9</item>
-        <item>u+1f525</item>
-        <item>u+2728</item>
-        <item>u+1f31f</item>
-        <item>u+1f4ab</item>
-        <item>u+1f4a5</item>
-        <item>u+1f4a2</item>
-        <item>u+1f4a6</item>
-        <item>u+1f4a7</item>
-        <item>u+1f4a4</item>
-        <item>u+1f4a8</item>
-        <item>u+1f442</item>
-        <item>u+1f440</item>
-        <item>u+1f443</item>
-        <item>u+1f445</item>
-        <item>u+1f444</item>
-        <item>u+1f44d</item>
-        <item>u+1f44e</item>
-        <item>u+1f44c</item>
-        <item>u+1f44a</item>
-        <item>u+270a</item>
-        <item>u+270c</item>
-        <item>u+1f44b</item>
-        <item>u+270b</item>
-        <item>u+1f450</item>
-        <item>u+1f446</item>
-        <item>u+1f447</item>
-        <item>u+1f449</item>
-        <item>u+1f448</item>
-        <item>u+1f64c</item>
-        <item>u+1f64f</item>
-        <item>u+261d</item>
-        <item>u+1f44f</item>
-        <item>u+1f4aa</item>
-        <item>u+1f6b6</item>
-        <item>u+1f3c3</item>
-        <item>u+1f483</item>
-        <item>u+1f46b</item>
-        <item>u+1f46a</item>
-        <item>u+1f46c</item>
-        <item>u+1f46d</item>
-        <item>u+1f48f</item>
-        <item>u+1f491</item>
-        <item>u+1f46f</item>
-        <item>u+1f646</item>
-        <item>u+1f645</item>
-        <item>u+1f481</item>
-        <item>u+1f64b</item>
-        <item>u+1f486</item>
-        <item>u+1f487</item>
-        <item>u+1f485</item>
-        <item>u+1f470</item>
-        <item>u+1f64e</item>
-        <item>u+1f64d</item>
-        <item>u+1f647</item>
-        <item>u+1f3a9</item>
-        <item>u+1f451</item>
-        <item>u+1f452</item>
-        <item>u+1f45f</item>
-        <item>u+1f45e</item>
-        <item>u+1f461</item>
-        <item>u+1f460</item>
-        <item>u+1f462</item>
-        <item>u+1f455</item>
-        <item>u+1f454</item>
-        <item>u+1f45a</item>
-        <item>u+1f457</item>
-        <item>u+1f3bd</item>
-        <item>u+1f456</item>
-        <item>u+1f458</item>
-        <item>u+1f459</item>
-        <item>u+1f4bc</item>
-        <item>u+1f45c</item>
-        <item>u+1f45d</item>
-        <item>u+1f45b</item>
-        <item>u+1f453</item>
-        <item>u+1f380</item>
-        <item>u+1f302</item>
-        <item>u+1f484</item>
-        <item>u+1f49b</item>
-        <item>u+1f499</item>
-        <item>u+1f49c</item>
-        <item>u+1f49a</item>
-        <item>u+2764</item>
-        <item>u+1f494</item>
-        <item>u+1f497</item>
-        <item>u+1f493</item>
-        <item>u+1f495</item>
-        <item>u+1f496</item>
-        <item>u+1f49e</item>
-        <item>u+1f498</item>
-        <item>u+1f48c</item>
-        <item>u+1f48b</item>
-        <item>u+1f48d</item>
-        <item>u+1f48e</item>
-        <item>u+1f464</item>
-        <item>u+1f465</item>
-        <item>u+1f4ac</item>
-        <item>u+1f463</item>
-        <item>u+1f4ad</item>
-
-        <!--  Nature-->
-        <item>u+1f436</item>
-        <item>u+1f43a</item>
-        <item>u+1f431</item>
-        <item>u+1f42d</item>
-        <item>u+1f439</item>
-        <item>u+1f430</item>
-        <item>u+1f438</item>
-        <item>u+1f42f</item>
-        <item>u+1f428</item>
-        <item>u+1f43b</item>
-        <item>u+1f437</item>
-        <item>u+1f43d</item>
-        <item>u+1f42e</item>
-        <item>u+1f417</item>
-        <item>u+1f435</item>
-        <item>u+1f412</item>
-        <item>u+1f434</item>
-        <item>u+1f411</item>
-        <item>u+1f418</item>
-        <item>u+1f43c</item>
-        <item>u+1f427</item>
-        <item>u+1f426</item>
-        <item>u+1f424</item>
-        <item>u+1f425</item>
-        <item>u+1f423</item>
-        <item>u+1f414</item>
-        <item>u+1f40d</item>
-        <item>u+1f422</item>
-        <item>u+1f41b</item>
-        <item>u+1f41d</item>
-        <item>u+1f41c</item>
-        <item>u+1f41e</item>
-        <item>u+1f40c</item>
-        <item>u+1f419</item>
-        <item>u+1f41a</item>
-        <item>u+1f420</item>
-        <item>u+1f41f</item>
-        <item>u+1f42c</item>
-        <item>u+1f433</item>
-        <item>u+1f40b</item>
-        <item>u+1f404</item>
-        <item>u+1f40f</item>
-        <item>u+1f400</item>
-        <item>u+1f403</item>
-        <item>u+1f405</item>
-        <item>u+1f407</item>
-        <item>u+1f409</item>
-        <item>u+1f40e</item>
-        <item>u+1f410</item>
-        <item>u+1f413</item>
-        <item>u+1f415</item>
-        <item>u+1f416</item>
-        <item>u+1f401</item>
-        <item>u+1f402</item>
-        <item>u+1f432</item>
-        <item>u+1f421</item>
-        <item>u+1f40a</item>
-        <item>u+1f42b</item>
-        <item>u+1f42a</item>
-        <item>u+1f406</item>
-        <item>u+1f408</item>
-        <item>u+1f429</item>
-        <item>u+1f43e</item>
-        <item>u+1f490</item>
-        <item>u+1f338</item>
-        <item>u+1f337</item>
-        <item>u+1f340</item>
-        <item>u+1f339</item>
-        <item>u+1f33b</item>
-        <item>u+1f33a</item>
-        <item>u+1f341</item>
-        <item>u+1f343</item>
-        <item>u+1f342</item>
-        <item>u+1f33f</item>
-        <item>u+1f33e</item>
-        <item>u+1f344</item>
-        <item>u+1f335</item>
-        <item>u+1f334</item>
-        <item>u+1f332</item>
-        <item>u+1f333</item>
-        <item>u+1f330</item>
-        <item>u+1f331</item>
-        <item>u+1f33c</item>
-        <item>u+1f310</item>
-        <item>u+1f31e</item>
-        <item>u+1f31d</item>
-        <item>u+1f31a</item>
-        <item>u+1f311</item>
-        <item>u+1f312</item>
-        <item>u+1f313</item>
-        <item>u+1f314</item>
-        <item>u+1f315</item>
-        <item>u+1f316</item>
-        <item>u+1f317</item>
-        <item>u+1f318</item>
-        <item>u+1f31c</item>
-        <item>u+1f31b</item>
-        <item>u+1f319</item>
-        <item>u+1f30d</item>
-        <item>u+1f30e</item>
-        <item>u+1f30f</item>
-        <item>u+1f30b</item>
-        <item>u+1f30c</item>
-        <item>u+1f320</item>
-        <item>u+2b50</item>
-        <item>u+2600</item>
-        <item>u+26c5</item>
-        <item>u+2601</item>
-        <item>u+26a1</item>
-        <item>u+2614</item>
-        <item>u+2744</item>
-        <item>u+26c4</item>
-        <item>u+1f300</item>
-        <item>u+1f301</item>
-        <item>u+1f308</item>
-        <item>u+1f30a</item>
-
-        <!--Places-->
-        <item>u+1f3e0</item>
-        <item>u+1f3e1</item>
-        <item>u+1f3eb</item>
-        <item>u+1f3e2</item>
-        <item>u+1f3e3</item>
-        <item>u+1f3e5</item>
-        <item>u+1f3e6</item>
-        <item>u+1f3ea</item>
-        <item>u+1f3e9</item>
-        <item>u+1f3e8</item>
-        <item>u+1f492</item>
-        <item>u+26ea</item>
-        <item>u+1f3ec</item>
-        <item>u+1f3e4</item>
-        <item>u+1f307</item>
-        <item>u+1f306</item>
-        <item>u+1f3ef</item>
-        <item>u+1f3f0</item>
-        <item>u+26fa</item>
-        <item>u+1f3ed</item>
-        <item>u+1f5fc</item>
-        <item>u+1f5fe</item>
-        <item>u+1f5fb</item>
-        <item>u+1f304</item>
-        <item>u+1f305</item>
-        <item>u+1f303</item>
-        <item>u+1f5fd</item>
-        <item>u+1f309</item>
-        <item>u+1f3a0</item>
-        <item>u+1f3a1</item>
-        <item>u+26f2</item>
-        <item>u+1f3a2</item>
-        <item>u+1f6a2</item>
-        <item>u+26f5</item>
-        <item>u+1f6a4</item>
-        <item>u+1f6a3</item>
-        <item>u+2693</item>
-        <item>u+1f680</item>
-        <item>u+2708</item>
-        <item>u+1f4ba</item>
-        <item>u+1f681</item>
-        <item>u+1f682</item>
-        <item>u+1f68a</item>
-        <item>u+1f689</item>
-        <item>u+1f69e</item>
-        <item>u+1f686</item>
-        <item>u+1f684</item>
-        <item>u+1f685</item>
-        <item>u+1f688</item>
-        <item>u+1f687</item>
-        <item>u+1f69d</item>
-        <item>u+1f68b</item>
-        <item>u+1f683</item>
-        <item>u+1f68e</item>
-        <item>u+1f68c</item>
-        <item>u+1f68d</item>
-        <item>u+1f699</item>
-        <item>u+1f698</item>
-        <item>u+1f697</item>
-        <item>u+1f695</item>
-        <item>u+1f696</item>
-        <item>u+1f69b</item>
-        <item>u+1f69a</item>
-        <item>u+1f6a8</item>
-        <item>u+1f693</item>
-        <item>u+1f694</item>
-        <item>u+1f692</item>
-        <item>u+1f691</item>
-        <item>u+1f690</item>
-        <item>u+1f6b2</item>
-        <item>u+1f6a1</item>
-        <item>u+1f69f</item>
-        <item>u+1f6a0</item>
-        <item>u+1f69c</item>
-        <item>u+1f488</item>
-        <item>u+1f68f</item>
-        <item>u+1f3ab</item>
-        <item>u+1f6a6</item>
-        <item>u+1f6a5</item>
-        <item>u+26a0</item>
-        <item>u+1f6a7</item>
-        <item>u+1f530</item>
-        <item>u+26fd</item>
-        <item>u+1f3ee</item>
-        <item>u+1f3b0</item>
-        <item>u+2668</item>
-        <item>u+1f5ff</item>
-        <item>u+1f3aa</item>
-        <item>u+1f3ad</item>
-        <item>u+1f4cd</item>
-        <item>u+1f6a9</item>
-    </string-array>
     <string name="title_activity_response">ResponseActivity</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
@@ -655,5 +244,5 @@
 
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book"</string>
-
+    <string name="error_msg_hook_chat">You cannot hook more than 3 chats</string>
 </resources>

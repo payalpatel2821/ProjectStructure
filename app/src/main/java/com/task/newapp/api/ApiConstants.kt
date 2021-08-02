@@ -44,4 +44,6 @@ const val report_group = "/api_v1/report-group-user/{id}"
 const val add_remove_admin = "/api_v1/add-remove-admin"
 const val add_participates = "/api_v1/add-participates"
 
+const val create_broadcast = "api_v1/broadcast"
+const val delete_broadcast = "/api_v1/broadcast/{id}";
 

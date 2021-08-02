@@ -187,7 +187,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                     val hashMap: HashMap<String, Any> = hashMapOf(
                         Constants.flag to "tag_post",
                         Constants.term to searchText,
-                        Constants.limit to requireActivity().getString(R.string.get_al_post),
+                        Constants.limit to requireActivity().getString(R.string.get_all_post),
                         Constants.offset to currentSize.toString()
                     )
 

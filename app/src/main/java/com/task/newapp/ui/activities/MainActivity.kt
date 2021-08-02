@@ -3,6 +3,7 @@ package com.task.newapp.ui.activities
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -17,10 +18,13 @@ import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.ui.activities.profile.GroupProfileActivity
+import com.task.newapp.ui.activities.chat.SelectFriendsActivity
+import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
 
@@ -30,12 +34,23 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         onSocketEventsListener = this
+
+        initView()
+    }
+
+    private fun initView() {
+        setSupportActionBar(binding.activityMainToolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        binding.imgProfile.load(url = getCurrentUserProfilePicture(), isProfile = true, name = getCurrentUserFullName(), color = getCurrentUserProfileColor())
         setupNavigationDrawer()
         setupBottomNavigationBar()
+
     }
 
     private fun setupNavigationDrawer() {
@@ -133,6 +148,18 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             binding.drawerLayout.openDrawer(GravityCompat.END)
             binding.drawerLayout.openDrawer(GravityCompat.END)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_broadcast_list ->
+                launchActivity<BroadcastListActivity> { }
+
+            R.id.action_create_group -> launchActivity<SelectFriendsActivity> {
+                putExtra(Constants.bundle_navigate_from, SelectFriendsNavigation.FROM_CREATE_GROUP)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setCurrentFragment(fragment: Fragment) {

@@ -17,8 +17,6 @@
     <color name="gray2">#858585</color> <!--chat text color-->
     <color name="gray3">#A0A0A0</color> <!--chat time text color-->
     <color name="gray4">#666666</color> <!--overflow menu icon color-->
-    <color name="chat_icon_color">#353e54</color>
-    <color name="chat_icon_disable_color">#bcbfc6</color>
     <color name="darkgray">#8F8383</color>
     <color name="white_opacity">#D9FFFFFF</color>
     <color name="ripple_Color">#0099CC</color>
@@ -29,17 +27,31 @@
     <color name="yellow">#ED9A07</color>
     <color name="yellow1">#FEC85B</color>
     <color name="gray5">#E6E6E6</color>
+    <color name="disableColor">#B2C5CC</color>
+    <color name="blue">#74D0FF</color>
+    <color name="pink">#FF5C91</color>
+
+    <!--Chat module-->
+    <color name="chat_input_bg_color">#EEF1F6</color>
     <color name="archive_chat">#FF8080</color>
     <color name="block_chat">#9FA6EC</color>
     <color name="clear_chat">#ECC99F</color>
     <color name="delete_chat">#B22225</color>
     <color name="hook_chat">#ECA89F</color>
+    <color name="delete_broadcast_chat">#B22225</color>
+    <color name="clear_broadcast_chat">#ECC99F</color>
     <color name="change_color">#ededed</color>
     <color name="graybg">#F7F7F7</color>
-    <color name="chat_input_bg_color">#EEF1F6</color>
-    <color name="blue">#74D0FF</color>
-    <color name="pink">#FF5C91</color>
-
+    <color name="chat_left_bg_color">#ECECEC</color>
+    <color name="chat_right_bg_color">#F3E4E1</color>
+    <color name="broadcast_icon_bg_color">#E3EDEF</color>
+    <color name="profile_pic_placeholder_bg_color">#393939</color>
+    <color name="red_ignore_color">#E52324</color>
+    <color name="green_accept_color">#35DD47</color>
+    <color name="friend_request_msg_gray_color">#5B5B5B</color>
+    <color name="resend_request_btn_color">#353A5D</color>
+    <color name="chat_icon_color">#353e54</color>
+    <color name="chat_icon_disable_color">#bcbfc6</color>
 
     <!--photo editor-->
     <color name="blue_color_picker">#0066FF</color>
@@ -60,8 +72,6 @@
     <color name="overlay">#AA1C1C1C</color>
     <color name="divider">#333333</color>
     <color name="textColorPrimary">#FFFFFB</color>
-    <color name="disableColor">#B2C5CC</color>
-
 
 
 </resources>

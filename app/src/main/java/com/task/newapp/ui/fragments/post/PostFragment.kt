@@ -207,7 +207,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                 mCompositeDisposable.add(
                     ApiClient.create()
-                        .get_all_posts(resources.getString(R.string.get_al_post).toInt(), currentpos)
+                        .get_all_posts(resources.getString(R.string.get_all_post).toInt(), currentpos)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(object : DisposableObserver<ResponseGetAllPost>() {

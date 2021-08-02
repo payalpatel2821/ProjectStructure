@@ -223,7 +223,7 @@
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:drawableTint="@color/black"
-                                            android:drawableStart="@drawable/ic_private_account"
+                                            android:drawableStart="@drawable/ic_privacy_setting"
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"

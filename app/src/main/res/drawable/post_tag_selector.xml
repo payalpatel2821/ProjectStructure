@@ -5,7 +5,7 @@
     <!--    <item android:drawable="@drawable/selected_img" android:state_selected="true" />-->
 
     <item android:drawable="@drawable/ic_check_round" android:state_enabled="false" />
-    <item android:drawable="@drawable/ic_uncheck_round" android:state_selected="false" />
+    <item android:drawable="@drawable/ic_unchecked_round" android:state_selected="false" />
     <item android:drawable="@drawable/ic_check_round" android:state_selected="true" />
 
 </selector>

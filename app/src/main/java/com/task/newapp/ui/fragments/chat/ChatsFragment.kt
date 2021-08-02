@@ -11,11 +11,13 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.R.string
 import com.task.newapp.adapter.chat.ChatListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentChatBinding
@@ -25,6 +27,7 @@ import com.task.newapp.models.ResponseGetUnreadMessage
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.ui.activities.chat.ArchivedChatsListActivity
+import com.task.newapp.ui.activities.chat.OneToOneChatActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.MessageType
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,11 +40,12 @@ import kotlin.collections.ArrayList
 import com.task.newapp.realmDB.insertChatContent as insertChatContent1
 
 
-class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener {
+class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
 
     private lateinit var binding: FragmentChatBinding
     private lateinit var chats: ArrayList<Chats>
     private lateinit var chatsAdapter: ChatListAdapter
+    private var archiveCount: Int = 0
 
     //private lateinit var socket: Socket
     private val mCompositeDisposable = CompositeDisposable()
@@ -84,19 +88,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_archive -> {
-                /*registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                    if (result.resultCode == Activity.RESULT_OK) {
-                        val data: Intent? = result.data
-
-                        val change = data!!.getIntExtra("change", 0)
-                        if (change == 1) {
-                            chatsAdapter.addUnarchivedChat()
-                        }
-                    }
-*//*
-                    requireActivity().launchActivity<ArchivedChatActivity> {
-                    }*//*
-                }*/resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
+                resultLauncher.launch(Intent(requireActivity(), ArchivedChatsListActivity::class.java))
             }
         }
     }
@@ -106,12 +98,43 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     private fun initView() {
-        //socket = App.getSocketInstance()
-        //initSocketListeners()
         initListeners()
+        initSearchView()
         setAdapter()
         callGetUnreadMessageAPI()
-        binding.txtArchive.text = resources.getString(R.string.archive_count, getArchivedChatCount())
+
+    }
+
+    private fun initSearchView() {
+        binding.searchLayout.searchView.setOnQueryTextListener(this)
+        binding.searchLayout.searchView.onActionViewExpanded()
+        binding.searchLayout.searchView.clearFocus()
+
+        binding.searchLayout.searchView.setOnCloseListener {
+//            issearch = false
+//            if (!isAPICallRunning) initData("", 0, "main")
+            false
+        }
+        binding.searchLayout.searchView.findViewById<View>(R.id.search_close_btn)
+            .setOnClickListener(View.OnClickListener {
+                Log.d("called", "this is called.")
+                binding.searchLayout.searchView.isActivated = true
+                binding.searchLayout.searchView.setQuery("", false)
+                binding.searchLayout.searchView.isIconified = true
+                binding.searchLayout.searchView.onActionViewExpanded()
+                binding.searchLayout.searchView.clearFocus()
+                binding.searchLayout.searchView.findViewById<View>(R.id.search_button).performClick()
+            })
+    }
+
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        Log.e("search", "search text change")
+        return false
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        return false
     }
 
     private fun setAdapter() {
@@ -125,7 +148,8 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             //  }
             chatsAdapter.doRefresh(chats)
         }
-
+        //show/hide archive count label
+        showHideArchiveCountLabel()
         showHideEmptyView()
     }
 
@@ -456,25 +480,31 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     override fun onHookChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Hook $position")
+        //requireActivity().showToast("Hook $position")
         if (!chats.is_hook && getHookCount() == 3) {
-            requireActivity().showToast("You cannot hook more than 3 chats")
+            requireActivity().showToast(getString(string.error_msg_hook_chat))
         } else
             callHookChatAPI(chats)
     }
 
     override fun onClearChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Clear $position")
+        //requireActivity().showToast("Clear $position")
         callClearChatAPI(chats)
     }
 
     override fun onArchiveChatClick(position: Int, chats: Chats) {
-        requireActivity().showToast("Archive $position")
+        //requireActivity().showToast("Archive $position")
         callArchiveChatAPI(chats)
     }
 
     override fun onItemClick(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-        requireActivity().showToast("Item Clicked $position")
+        if (chats[position].is_group)
+            requireActivity().showToast("Item Clicked $position")
+        else
+            requireActivity().launchActivity<OneToOneChatActivity> {
+                putExtra(Constants.bundle_opponent_id, chats[position].id)
+            }
+
     }
 
     private fun showHideEmptyView() {
@@ -482,12 +512,22 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             binding.llEmptyChat.visibility = VISIBLE
             binding.rvChats.visibility = GONE
             binding.divider.visibility = GONE
-            binding.searchView.visibility = GONE
+            binding.searchLayout.llSearch.visibility = GONE
         } else {
             binding.llEmptyChat.visibility = GONE
             binding.rvChats.visibility = VISIBLE
             binding.divider.visibility = VISIBLE
-            binding.searchView.visibility = VISIBLE
+            binding.searchLayout.llSearch.visibility = VISIBLE
+        }
+    }
+
+    private fun showHideArchiveCountLabel() {
+        archiveCount = getArchivedChatCount()
+        if (archiveCount == 0) {
+            binding.txtArchive.visibility = GONE
+        } else {
+            binding.txtArchive.visibility = VISIBLE
+            binding.txtArchive.text = resources.getString(string.archive_count, archiveCount)
         }
     }
 
@@ -665,9 +705,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         }
     }
 
-    private fun callBlockUserAPI(chats: Chats) {
-
-    }
+    private fun callBlockUserAPI(chats: Chats) {}
 
     private fun callClearChatAPI(chats: Chats) {
         try {
@@ -712,46 +750,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         }
     }
 
-    private fun callMuteAPI(chats: Chats) {
-
-    }
-
-    /*private fun initSocketListeners() {
-        socket.on(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.on(Constants.userdisconnect, onUserDisconnect)
-
-    }
-
-    private fun destroySocketListeners() {
-        socket.off(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.off(Constants.userdisconnect, onUserDisconnect)
-
-    }
-
-    private val onIsOnlineResponse = Emitter.Listener { args ->
-        val data = args[0] as JSONObject
-        Log.println(Log.ASSERT, "onIsOnlineResponse--", Gson().toJson(data))
-        val status = data.getString("status").equals("online")
-        val userId = data.getInt(Constants.receiver_id)
-
-        requireActivity().runOnUiThread(java.lang.Runnable {
-            updateOnlineUser(userId, status)
-        })
-
-    }
-    private val onUserDisconnect = Emitter.Listener { args ->
-        val userId = args[0] as Int
-        Log.e("onUserDisconnect...", "$userId::")
-        requireActivity().runOnUiThread(Runnable {
-            val position = getChatPosition(chats, userId)
-            showLog("find position :::", position.toString())
-            if (position != -1) {
-                updateUserOnlineStatus(userId, false)
-                chatsAdapter.updateOnlineOfflineStatus(position, false)
-            }
-
-        })
-    }*/
+    private fun callMuteAPI(chats: Chats) {}
 
     fun updateOnlineUser(userId: Int, status: Boolean) {
         val position = getChatPosition(chats, userId)

@@ -31,29 +31,134 @@
                 android:clipToPadding="false"
                 android:paddingBottom="@dimen/_80sdp"
                 tools:itemCount="2"
-                tools:listitem="@layout/item_archive_chat" />
+                tools:listitem="@layout/item_chat_text_right" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <LinearLayout
+                android:id="@+id/ll_friend_request_receiver_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/chat_input_rounded_rectangle"
-                android:backgroundTint="@color/chat_input_bg_color"
-                android:minHeight="@dimen/_45sdp"
-                android:orientation="horizontal"
-                android:padding="@dimen/_5sdp">
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/rounded_corner_gray_bg_friend_request"
+                android:gravity="center|bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <androidx.appcompat.widget.AppCompatEditText
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@color/transparent" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/msg_friend_request_receiver"
+                    android:textAlignment="center"
+                    android:textColor="@color/friend_request_msg_gray_color"
+                    android:textSize="@dimen/_10ssp" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10ssp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_ignore"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:background="@drawable/rect_rounded_bg_white"
+                        android:minWidth="@dimen/_100sdp"
+                        android:minHeight="@dimen/_30sdp"
+                        android:text="@string/ignore"
+                        android:textAllCaps="false"
+                        android:textColor="@color/red_ignore_color"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold"
+                        android:theme="@style/styleTextViewNormal" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btn_accept"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:background="@drawable/rect_rounded_bg_white"
+                        android:minWidth="@dimen/_100sdp"
+                        android:minHeight="@dimen/_30sdp"
+                        android:text="@string/accept"
+                        android:textAllCaps="false"
+                        android:textColor="@color/green_accept_color"
+                        android:textSize="@dimen/_12ssp"
+                        android:textStyle="bold"
+                        android:theme="@style/styleTextViewNormal" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/txt_block"
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:minHeight="@dimen/_20sdp"
+                    android:text="@string/block_underline"
+                    android:textAllCaps="false"
+                    android:textSize="@dimen/_10ssp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_friend_request_sender_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/rounded_corner_gray_bg_friend_request"
+                android:gravity="center|bottom"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Give it another try!"
+                    android:textAlignment="center"
+                    android:textColor="@color/friend_request_msg_gray_color"
+                    android:textSize="@dimen/_10ssp"
+                    android:textStyle="bold" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_resend_request"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/rect_rounded_bg_white"
+                    android:minWidth="@dimen/_100sdp"
+                    android:minHeight="@dimen/_30sdp"
+                    android:paddingStart="@dimen/_30sdp"
+                    android:paddingEnd="@dimen/_30sdp"
+                    android:text="Resend Request"
+                    android:textAllCaps="false"
+                    android:textColor="@color/resend_request_btn_color"
+                    android:textSize="@dimen/_12ssp"
+                    android:textStyle="bold"
+                    android:theme="@style/styleTextViewNormal" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:text="@string/msg_friend_request_resend"
+                    android:textAlignment="center"
+                    android:textColor="@color/friend_request_msg_gray_color"
+                    android:textSize="@dimen/_10ssp" />
+
+            </LinearLayout>
+
+            <include layout="@layout/layout_text_message_input" />
 
         </LinearLayout>
 

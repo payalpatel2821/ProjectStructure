@@ -2,6 +2,7 @@ package com.task.newapp.api
 
 //import okhttp3.RequestBody
 import com.task.newapp.models.*
+import com.task.newapp.models.chat.CreateBroadcastResponse
 import com.task.newapp.models.post.*
 import io.reactivex.Observable
 import okhttp3.MultipartBody
@@ -152,6 +153,7 @@ interface ApiHelper {
 
     @POST(commentdelete)
     fun commentdelete(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetPostComment>
+
     @POST(update_profile_pic)
     fun changeProfilePic(@Body data: RequestBody): Observable<ResponseFollowUnfollow>
 
@@ -184,4 +186,13 @@ interface ApiHelper {
 
     @POST(add_participates)
     fun addOrRemoveUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseAddRemoveAdmin>
+
+    @POST(create_broadcast)
+    fun createBroadcast(@Body data: RequestBody): Observable<CreateBroadcastResponse>
+
+    //    @GET(create_broadcast)
+    //    Call<Get_Broadcast> get_Broadcast(@Header("Authorization") String token);
+    @DELETE(delete_broadcast)
+    fun deleteBroadcast(@Path("id") broadcast_id: Int): Observable<CommonResponse>
+
 }
