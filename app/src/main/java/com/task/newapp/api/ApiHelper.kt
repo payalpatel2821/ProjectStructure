@@ -2,10 +2,7 @@ package com.task.newapp.api
 
 //import okhttp3.RequestBody
 import com.task.newapp.models.*
-import com.task.newapp.models.post.ResponseGetAllPost
-import com.task.newapp.models.post.ResponseGetPostLikeUnlike
-import com.task.newapp.models.post.ResponsePostComment
-import com.task.newapp.models.post.ResponsePostCommentDetails
+import com.task.newapp.models.post.*
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -62,7 +59,7 @@ interface ApiHelper {
     fun postSaveUnsave(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
 
     @POST(allpostcomment)
-    fun allpostcomment(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostCommentDetails>
+    fun allpostcomment(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetAllPostComments>
 
     @POST(post_comment)
     fun post_comment(@Body hashMap: HashMap<String, Any>): Observable<ResponsePostComment>
@@ -98,6 +95,7 @@ interface ApiHelper {
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
         @Part("location") location: RequestBody,
+        @Part("user_tags") user_tags: RequestBody,
         @Part captionarray: List<MultipartBody.Part>,
         @Part typearray: List<MultipartBody.Part>,
         @Part thumbarray: List<MultipartBody.Part>,
@@ -105,10 +103,30 @@ interface ApiHelper {
     ): Observable<CommonResponse>
 
 
-    @Multipart
     @POST(add_post)
     fun addPostThought(
-        @Part("turn_off_comment") turn_off_comment: MultipartBody.Part
+//        @Part("turn_off_comment") turn_off_comment: RequestBody,
+//        @Part("hastags") hastags: RequestBody,
+//        @Part("title") title: RequestBody,
+//        @Part("type") type: RequestBody,
+//        @Part("latitude") latitude: RequestBody,
+//        @Part("longitude") longitude: RequestBody,
+//        @Part("location") location: RequestBody,
+//        @Part("user_tags") user_tags: RequestBody,
+
+//        @Part thought_type: MultipartBody.Part,
+//        @Part background_type: MultipartBody.Part,
+//        @Part color: MultipartBody.Part,
+//        @Part pattern_id: MultipartBody.Part,
+//        @Part alignment: MultipartBody.Part,
+//        @Part is_bold: MultipartBody.Part,
+//        @Part is_italic: MultipartBody.Part,
+//        @Part is_underline: MultipartBody.Part,
+//        @Part font_color: MultipartBody.Part,
+//        @Part content: MultipartBody.Part
+
+        @Body data: RequestBody
+
     ): Observable<CommonResponse>
 
     @POST(set_profile_group_page_friend_post)
@@ -123,6 +141,17 @@ interface ApiHelper {
     @POST(get_notification_tone)
     fun getNotificationTune(@Body hashMap: HashMap<String, Any>): Observable<ResponseNotification>
 
+    @POST(post_pattern)
+    fun post_pattern(@Body hashMap: HashMap<String, Any>): Observable<ResponsePattern>
+
+    @POST(search_contacts)
+    fun search_contacts(@Body hashMap: HashMap<String, Any>): Observable<ResponseFriendsList>
+
+    @POST(add_postcomment)
+    fun add_postcomment(@Body hashMap: HashMap<String, Any>): Observable<ResponseAddPostComment>
+
+    @POST(commentdelete)
+    fun commentdelete(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetPostComment>
     @POST(update_profile_pic)
     fun changeProfilePic(@Body data: RequestBody): Observable<ResponseFollowUnfollow>
 

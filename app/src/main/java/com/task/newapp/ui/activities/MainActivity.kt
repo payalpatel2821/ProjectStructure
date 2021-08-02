@@ -18,12 +18,11 @@ import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
-import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
-import com.task.newapp.ui.fragments.registration.PostFragment
+import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 
-class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener {
+class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
 
     lateinit var binding: ActivityMainBinding
 
@@ -136,11 +135,19 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         }
     }
 
-    private fun setCurrentFragment(fragment: Fragment) =
+    private fun setCurrentFragment(fragment: Fragment) {
+        if (fragment is PostFragment) {
+            binding.activityMainAppbarlayout.visibility = View.GONE
+            postFragment.setOnHideShowBottomSheet(this)
+        } else {
+            binding.activityMainAppbarlayout.visibility = View.VISIBLE
+        }
+
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.activity_main_content, fragment)
             commit()
         }
+    }
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -187,8 +194,8 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                 finish()
 
             }
-            R.id.img_profile->{
-                launchActivity<MyProfileActivity> {  }
+            R.id.img_profile -> {
+                launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
 //                launchActivity<OtherUserProfileActivity> {  }
@@ -199,12 +206,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 
     override fun onBackPressed() {
         if (binding.bottomBar.getActiveItem() == 1) {
-            if (postFragment.myBottomSheetMoment.isVisible) {
-                postFragment.myBottomSheetMoment.dismiss()
-            }
-            if (postFragment.myBottomSheetThought.isVisible) {
-                postFragment.myBottomSheetThought.dismiss()
-            }
+            closeMomentSheet()
+            closeThoughtSheet()
+            postFragment.expandCommentSheet()
         } else {
             super.onBackPressed()
         }
@@ -222,5 +226,27 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         }
     }
 
+    override fun hideShowBottomSheet(visibility: Int) {
+        binding.blurView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+    }
 
+    private fun closeMomentSheet() {
+//        if (postFragment.isInitializedMoment()) {
+        postFragment.myBottomSheetMoment?.let {
+            if (postFragment.myBottomSheetMoment!!.isVisible) {
+                postFragment.myBottomSheetMoment!!.dismiss()
+            }
+        }
+//        }
+    }
+
+    private fun closeThoughtSheet() {
+//        if (postFragment.isInitializedThought()) {
+        postFragment.myBottomSheetThought?.let {
+            if (postFragment.myBottomSheetThought!!.isVisible) {
+                postFragment.myBottomSheetThought!!.dismiss()
+            }
+//            }
+        }
+    }
 }

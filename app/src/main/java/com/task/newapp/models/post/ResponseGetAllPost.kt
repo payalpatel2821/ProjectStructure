@@ -26,9 +26,9 @@ data class ResponseGetAllPost(
         @SerializedName("latest_comment")
         var latest_comment: ResponsePostComment.Data,
         @SerializedName("comments_count")
-        val commentsCount: Int,
+        var commentsCount: Int,
         @SerializedName("contents")
-        val contents: List<Content>,
+        val postContents: List<PostContent>,
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("description")
@@ -100,43 +100,47 @@ data class ResponseGetAllPost(
         @SerializedName("view_count")
         val viewCount: String,
         @SerializedName("views")
-        val views: List<Any>
+        val views: List<Any>,
+        @SerializedName("tagged")
+        val tagged: List<Tagged>,
     ) {
-        data class Content(
+        data class PostContent(
             @SerializedName("alignment")
-            val alignment: Any,
+            val alignment: String,
             @SerializedName("background_type")
-            val backgroundType: Any,
+            val backgroundType: String,
             @SerializedName("caption")
             val caption: String,
             @SerializedName("color")
-            val color: Any,
+            val color: String,
+            @SerializedName("font_color")
+            val fontColor: String?,
             @SerializedName("content")
             val content: String,
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("font_style")
-            val fontStyle: Any,
+            val fontStyle: String = "0",
             @SerializedName("height")
             val height: Int,
             @SerializedName("id")
             val id: Int,
             @SerializedName("is_bold")
-            val isBold: Any,
+            val isBold: Int,
             @SerializedName("is_italic")
-            val isItalic: Any,
+            val isItalic: Int,
             @SerializedName("is_underline")
-            val isUnderline: Any,
+            val isUnderline: Int,
             @SerializedName("likes")
             val likes: Int,
             @SerializedName("pattern_id")
-            val patternId: Any,
+            val patternId: String,
             @SerializedName("post_id")
             val postId: Int,
             @SerializedName("size")
             val size: Any,
             @SerializedName("thought_type")
-            val thoughtType: Any,
+            val thoughtType: String,
             @SerializedName("thumb")
             val thumb: String,
             @SerializedName("type")
@@ -145,6 +149,13 @@ data class ResponseGetAllPost(
             val updatedAt: String,
             @SerializedName("width")
             val width: Int
+        )
+
+        data class Tagged(
+            @SerializedName("id") val id: Int,
+            @SerializedName("first_name") val first_name: String?,
+            @SerializedName("last_name") val last_name: String?,
+            @SerializedName("profile_image") val profile_image: String
         )
 
         data class Latest_comment(
@@ -186,13 +197,13 @@ data class ResponseGetAllPost(
 
         data class User(
             @SerializedName("first_name")
-            val firstName: String,
+            val firstName: String?,
             @SerializedName("flag")
             val flag: String,
             @SerializedName("id")
             val id: Int,
             @SerializedName("last_name")
-            val lastName: String,
+            val lastName: String?,
             @SerializedName("profile_image")
             val profileImage: String
         )

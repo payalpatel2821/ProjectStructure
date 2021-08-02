@@ -1,311 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+<layout>
 
-    <com.task.newapp.utils.swipelayout.SwipeLayout
-        android:id="@+id/swipe"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:leftEdgeSwipeOffset="0dp"
-        app:rightEdgeSwipeOffset="0dp">
+        android:layout_marginVertical="@dimen/_5sdp"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/bottom_wraper"
-            android:layout_width="30pt"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="3">
-
-            <TextView
-                android:id="@+id/Delete"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#ff0000"
-                android:gravity="center"
-                android:text="@string/delete"
-                android:textColor="#fff" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_wrapper1"
-            android:layout_width="30pt"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="3">
-
-            <TextView
-                android:id="@+id/reply"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#ff0000"
-                android:gravity="center"
-                android:text="@string/reply"
-                android:textColor="#fff" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <com.task.newapp.utils.swipelayout.SwipeLayout
+            android:id="@+id/swipeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical">
+            app:leftEdgeSwipeOffset="0dp"
+            app:rightEdgeSwipeOffset="0dp">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/bottom_wrapperReply"
+                android:layout_width="@dimen/_45sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/gray"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-
-                <RelativeLayout
-                    android:id="@+id/image_layout"
+                <ImageView
+                    android:id="@+id/imgReplySwipe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:scaleX="-1"
+                    android:src="@drawable/ic_forward" />
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/img_view"
-                        android:layout_width="25pt"
-                        android:layout_height="25pt"
-                        android:padding="3pt"
-                        android:src="@drawable/default_dp" />
+            </LinearLayout>
 
-                </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/bottom_wraperDelete"
+                android:layout_width="@dimen/_45sdp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/red"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/imgDeleteSwipe"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="3pt"
-                    android:layout_marginTop="3pt"
-                    android:layout_marginEnd="5pt"
-                    android:layout_toEndOf="@+id/image_layout"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:src="@drawable/ic_delete" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:id="@+id/image_layout"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp">
 
-                        <TextView
-                            android:id="@+id/username"
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/img_view"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="5pt"
-                            android:layout_toStartOf="@+id/lin"
-                            android:fontFamily="@font/bogleregular"
-                            android:singleLine="true"
-                            android:text="@string/username"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_12ssp" />
-
-                        <LinearLayout
-                            android:id="@+id/lin"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/block_date"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:fontFamily="@font/bogleregular"
-                                android:gravity="center"
-                                android:paddingLeft="5pt"
-                                android:paddingTop="2pt"
-                                android:paddingRight="5pt"
-                                android:paddingBottom="2pt"
-                                android:textColor="@color/gray"
-                                android:textSize="@dimen/_10ssp"
-                                tools:text="31 May, 2020" />
-
-                        </LinearLayout>
+                            android:layout_height="match_parent"
+                            android:padding="@dimen/_2sdp"
+                            android:src="@drawable/default_dp" />
 
                     </RelativeLayout>
 
-                    <com.task.newapp.utils.SeeMoreTextView
-                        android:id="@+id/comment"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/_7sdp"
-                        android:layout_marginTop="1pt"
-                        android:fontFamily="@font/bogleregular"
-                        android:lineSpacingExtra="1pt"
-                        android:textColor="@color/gray"
-                        android:textSize="@dimen/_11ssp"
-                        tools:text="Great! You should start modelling. That’s a perfect gentlemen pic." />
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginTop="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_6sdp"
+                        android:layout_toEndOf="@+id/image_layout"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical">
 
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                </LinearLayout>
-            </RelativeLayout>
-        </LinearLayout>
+                            <TextView
+                                android:id="@+id/username"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="@dimen/_6sdp"
+                                android:layout_toStartOf="@+id/lin"
+                                android:fontFamily="@font/bogleregular"
+                                android:singleLine="true"
+                                android:text="@string/username"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_12ssp" />
 
-    </com.task.newapp.utils.swipelayout.SwipeLayout>
+                            <LinearLayout
+                                android:id="@+id/lin"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/reply_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5pt"
-        android:background="@drawable/pop_bg"
-        android:visibility="gone">
+                                <TextView
+                                    android:id="@+id/block_date"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:fontFamily="@font/bogleregular"
+                                    android:gravity="center"
+                                    android:paddingHorizontal="@dimen/_5sdp"
+                                    android:paddingVertical="@dimen/_2sdp"
+                                    android:textColor="@color/gray"
+                                    android:textSize="@dimen/_10ssp"
+                                    tools:text="31 May, 2020" />
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
+
+                        <!--                    <com.task.newapp.utils.SeeMoreTextView-->
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/comment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="@dimen/_2sdp"
+                            android:fontFamily="@font/bogleregular"
+                            android:lineSpacingExtra="1pt"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_11ssp"
+                            tools:text="Great! You should start modelling. That’s a perfect gentlemen pic." />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </com.task.newapp.utils.swipelayout.SwipeLayout>
 
         <RelativeLayout
+            android:id="@+id/reply_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3pt"
-            android:layout_marginTop="6pt"
-            android:layout_marginRight="3pt"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@drawable/bg_rectangle"
-            android:backgroundTint="@color/white">
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/pop_bg"
+            android:visibility="visible">
 
-            <EditText
-                android:id="@+id/edittxt"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="@string/enter_your_comment"
-                android:maxLines="8"
-                android:minLines="4"
-                android:overScrollMode="always"
-                android:paddingLeft="5pt"
-                android:paddingRight="5pt"
-                android:scrollbarStyle="insideInset"
-                android:scrollbars="vertical"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginVertical="@dimen/_7sdp"
+                android:background="@drawable/bg_rectangle"
+                android:backgroundTint="@color/white">
+
+                <EditText
+                    android:id="@+id/edittxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:fontFamily="@font/bogleregular"
+                    android:hint="@string/enter_your_comment"
+                    android:maxLines="8"
+                    android:minLines="4"
+                    android:overScrollMode="always"
+                    android:paddingHorizontal="@dimen/_6sdp"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbars="vertical"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11ssp" />
+
+                <LinearLayout
+                    android:id="@+id/ll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/edittxt"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginTop="5pt"
+                    android:layout_marginEnd="5pt"
+                    android:layout_marginBottom="5pt">
+
+                    <TextView
+                        android:id="@+id/sendReply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_6sdp"
+                        android:background="@drawable/bg_rectangle"
+                        android:backgroundTint="@color/theme_color"
+                        android:fontFamily="@font/bogleregular"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/_8sdp"
+                        android:paddingVertical="@dimen/_5sdp"
+                        android:text="@string/send"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_11ssp" />
+
+                    <TextView
+                        android:id="@+id/cancel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_rectangle"
+                        android:fontFamily="@font/bogleregular"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/_7sdp"
+                        android:paddingVertical="@dimen/_5sdp"
+                        android:text="@string/cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_11ssp" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/show_reply_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/pop_bg"
+            android:padding="@dimen/_5sdp"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/usernm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:layout_toStartOf="@+id/delete_reply"
+                android:fontFamily="@font/bogleregular"
+                android:text="@string/you"
+                android:textAllCaps="true"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_11ssp" />
 
-            <LinearLayout
-                android:id="@+id/ll"
+            <TextView
+                android:id="@+id/delete_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/edittxt"
                 android:layout_alignParentEnd="true"
-                android:layout_gravity="bottom|end"
-                android:layout_marginTop="5pt"
-                android:layout_marginEnd="5pt"
-                android:layout_marginBottom="5pt">
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_toStartOf="@+id/edit_reply"
+                android:fontFamily="@font/bogleregular"
+                android:text="@string/delete"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_9ssp" />
 
-                <TextView
-                    android:id="@+id/send"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5pt"
-                    android:background="@drawable/bg_rectangle"
-                    android:backgroundTint="@color/red"
-                    android:fontFamily="@font/bogleregular"
-                    android:gravity="center"
-                    android:paddingLeft="7pt"
-                    android:paddingTop="3pt"
-                    android:paddingRight="7pt"
-                    android:paddingBottom="3pt"
-                    android:text="@string/send"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_11ssp" />
+            <TextView
+                android:id="@+id/edit_reply"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:fontFamily="@font/bogleregular"
+                android:text="@string/edit"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_9ssp"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/cancel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_rectangle"
-                    android:fontFamily="@font/bogleregular"
-                    android:gravity="center"
-                    android:paddingLeft="7pt"
-                    android:paddingTop="3pt"
-                    android:paddingRight="7pt"
-                    android:paddingBottom="3pt"
-                    android:text="@string/cancel"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11ssp" />
-            </LinearLayout>
+            <!--        <com.task.newapp.utils.SeeMoreTextView-->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/textReply"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_35sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:fontFamily="@font/bogleregular"
+                android:lineSpacingExtra="@dimen/_1sdp"
+                android:padding="@dimen/_8sdp"
+                android:textColor="@color/gray"
+                android:textSize="@dimen/_11ssp"
+                tools:text="Thank You So much for Good Review ! I Hope You Very Like This Application." />
+
         </RelativeLayout>
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/show_reply_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
-        android:background="@drawable/pop_bg"
-        android:padding="@dimen/_5sdp"
-        android:visibility="visible">
+    </LinearLayout>
 
-        <TextView
-            android:id="@+id/usernm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10pt"
-            android:layout_marginTop="14.5dp"
-            android:layout_marginRight="10pt"
-            android:layout_marginBottom="5pt"
-            android:layout_toStartOf="@+id/delete_reply"
-            android:fontFamily="@font/bogleregular"
-            android:text="@string/you"
-            android:textAllCaps="true"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_11ssp" />
-
-        <TextView
-            android:id="@+id/delete_reply"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="14.5dp"
-            android:layout_marginEnd="10pt"
-            android:layout_marginBottom="5pt"
-            android:layout_toStartOf="@+id/edit_reply"
-            android:fontFamily="@font/bogleregular"
-            android:text="@string/delete"
-            android:textColor="@color/red"
-            android:textSize="@dimen/_9ssp" />
-
-        <TextView
-            android:id="@+id/edit_reply"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="14.5dp"
-            android:layout_marginEnd="10pt"
-            android:layout_marginBottom="5pt"
-            android:fontFamily="@font/bogleregular"
-            android:text="@string/edit"
-            android:textColor="@color/red"
-            android:textSize="5pt"
-            android:visibility="gone" />
-
-        <com.task.newapp.utils.SeeMoreTextView
-            android:id="@+id/text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10pt"
-            android:layout_marginTop="35dp"
-            android:layout_marginRight="10pt"
-            android:layout_marginBottom="5pt"
-            android:fontFamily="@font/bogleregular"
-            android:lineSpacingExtra="1pt"
-            android:padding="8dp"
-            android:textColor="@color/gray"
-            android:textSize="@dimen/_11ssp"
-            tools:text="Thank You So much for Good Review ! I Hope You Very Like This Application." />
-
-    </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5pt"
-        android:layout_marginStart="37pt"
-        android:layout_marginTop="5pt"
-        android:layout_marginEnd="3pt"
-        android:layout_marginBottom="5pt"
-        android:background="@color/gray" />
-
-</LinearLayout>
+</layout>

@@ -136,6 +136,7 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
         MediaPickerFragment.newInstance(
             multiple = false,
             allowCamera = true,
+            allowGallery = true,
             pickerType = MediaPickerFragment.PickerType.PHOTO,
             maxSelection = 1,
             theme = R.style.ChiliPhotoPicker_Light,

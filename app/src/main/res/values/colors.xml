@@ -60,6 +60,7 @@
     <color name="overlay">#AA1C1C1C</color>
     <color name="divider">#333333</color>
     <color name="textColorPrimary">#FFFFFB</color>
+    <color name="disableColor">#B2C5CC</color>
 
 
 

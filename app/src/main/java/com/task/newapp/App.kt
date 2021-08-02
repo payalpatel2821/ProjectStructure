@@ -41,7 +41,6 @@ class App : MultiDexApplication() {
         @JvmStatic
         fun getRealmInstance(): Realm {
             return realm as Realm
-
         }
 
         @JvmStatic
@@ -52,6 +51,7 @@ class App : MultiDexApplication() {
         fun setFont(context: Context, str: String?): Typeface? {
             return Typeface.createFromAsset(context.assets, str)
         }
+
     }
 
     val TAG = App::class.java.simpleName
@@ -99,4 +99,6 @@ class App : MultiDexApplication() {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
     }
+
+
 }
