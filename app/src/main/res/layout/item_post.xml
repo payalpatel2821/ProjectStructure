@@ -240,7 +240,7 @@
                     android:id="@+id/rl_second"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/rl_first"
+                    android:layout_below="@+id/rlMain"
                     android:layout_gravity="center"
                     android:gravity="center">
 
@@ -382,7 +382,7 @@
                     android:id="@+id/imgShadow"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_50sdp"
-                    android:layout_below="@+id/rl_first"
+                    android:layout_below="@+id/rlMain"
                     android:scaleType="centerCrop"
                     android:src="@drawable/shadowpostitem"
                     app:tint="@color/black" />

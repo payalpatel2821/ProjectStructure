@@ -1,4 +1,4 @@
-package com.task.newapp.adapter
+package com.task.newapp.adapter.post
 
 import android.app.Activity
 import android.content.Context

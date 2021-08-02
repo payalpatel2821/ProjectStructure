@@ -24,7 +24,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.support.annotation.ColorInt
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -37,7 +36,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
@@ -604,10 +602,10 @@ fun findIndex(arr: List<Int>, item: Int): Int? {
 fun String.firstCap() = this.replaceFirstChar { it.uppercase() }
 
 
-fun Toolbar.setNavigationIconColor(@ColorInt color: Int) = navigationIcon?.mutate()?.let {
-    it.setTint(color)
-    this.navigationIcon = it
-}
+//fun Toolbar.setNavigationIconColor(@ColorInt color: Int) = navigationIcon?.mutate()?.let {
+//    it.setTint(color)
+//    this.navigationIcon = it
+//}
 
 fun isImageFile(path: String?): Boolean {
     Log.e("isImageFile: ", path.toString())
@@ -1193,12 +1191,4 @@ fun getBytes(inputStream: InputStream): ByteArray? {
         byteBuff.write(buff, 0, len)
     }
     return byteBuff.toByteArray()
-}
-/**
- * returns logged In user's Id from the preference else returns 0
- *
- * @return
- */
-fun getCurrentUserId(): Int {
-    return App.fastSave.getInt(Constants.prefUserId, 0)
 }

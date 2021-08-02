@@ -34,6 +34,7 @@ import com.task.newapp.models.CommonResponse
 import com.task.newapp.models.post.*
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
 import com.task.newapp.service.FileUploadService
+import com.task.newapp.ui.activities.post.ShowPostActivity
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -95,7 +96,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         )
         act = activity
         instance = this
-
+        allPostArrayList = ArrayList<All_Post_Data>()
         return binding.root
     }
 
@@ -122,7 +123,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     private fun initView() {
         socket = App.getSocketInstance()
-       // initSocketListeners()
+        // initSocketListeners()
         binding.llMomentsPhotos.setOnClickListener(this)
         binding.llMomentsVideos.setOnClickListener(this)
         binding.llThoughts.setOnClickListener(this)
@@ -186,14 +187,15 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //                ft.replace(R.id.your_placeholder, fragmentDemo)
 //                ft.commit()
 
-                myBottomSheetMoment = MomentsFragment().newInstance(post_id.toString())
-                myBottomSheetMoment.show(childFragmentManager, myBottomSheetMoment.tag)
+                selectionType = MediaPickerFragment.PickerType.VIDEO.name
+                openPicker(MediaPickerFragment.PickerType.VIDEO, Constants.MAX_VIDEO_COUNT)
             }
             R.id.ll_thoughts -> {
                 myBottomSheetThought = ThoughtFragment().newInstance(post_id.toString())
                 myBottomSheetThought!!.setListener(this)
                 myBottomSheetThought!!.show(childFragmentManager, myBottomSheetThought!!.tag)
             }
+
         }
     }
 
@@ -1012,7 +1014,9 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     private fun showPostDetails() {
         try {
-
+            requireActivity().launchActivity<ShowPostActivity> {
+                putExtra("postId", post_id)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

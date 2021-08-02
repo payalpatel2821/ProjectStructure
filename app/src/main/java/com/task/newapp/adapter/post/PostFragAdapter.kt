@@ -237,7 +237,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
 //                var layoutBinding: StatusHolder = (holderCommon as StatusHolder)
 
                 layoutBinding.postImg.visibility = View.VISIBLE
-                if (all_post_data?.contents!!.isNotEmpty()) {
+                if (all_post_data?.postContents!!.isNotEmpty()) {
 
                     layoutBinding.edtComment.setText("")
 
@@ -250,7 +250,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                             layoutBinding.rlThought.visibility = View.VISIBLE
                             layoutBinding.txtLocation.visibility = View.GONE
 
-                            setThought(all_post_data?.contents!![0].thoughtType, all_post_data?.contents!![0])
+                            setThought(all_post_data?.postContents!![0].thoughtType, all_post_data?.postContents!![0])
 
                         }
                         "location" -> {
@@ -272,7 +272,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                             layoutBinding.rlThought.visibility = View.GONE
 
                             Glide.with(context).asBitmap()
-                                .load(all_post_data!!.contents[0].thumb)
+                                .load(all_post_data!!.postContents[0].thumb)
                                 //                .thumbnail(0.25f)
                                 .centerCrop()
                                 .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
@@ -389,7 +389,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
 
                     layoutBinding.imgPlaypause.visibility = View.VISIBLE
 
-                    if (all_post_data!!.contents[0].type == "video")
+                    if (all_post_data!!.postContents[0].type == "video")
                         layoutBinding.imgPlaypause.visibility = View.VISIBLE
                     else
                         layoutBinding.imgPlaypause.visibility = View.INVISIBLE
@@ -397,7 +397,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
 
                     layoutBinding.root.post { layoutBinding.root.requestLayout() }
 
-                    if (all_post_data!!.contents.size > 1) {
+                    if (all_post_data!!.postContents.size > 1) {
                         layoutBinding.imgMulti.visibility = View.VISIBLE
                     } else {
                         layoutBinding.imgMulti.visibility = View.INVISIBLE
@@ -408,7 +408,7 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
             }
         }
 
-        fun setThought(thoughtType: String, all_post_data: All_Post_Data.Content) {
+        fun setThought(thoughtType: String, all_post_data: All_Post_Data.PostContent) {
             if (thoughtType == "text") {
                 //normal text thought
                 layoutBinding.txtMore.visibility = View.GONE
@@ -471,8 +471,11 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                 layoutBinding.txtThought.setText(content.toString())
             }
 
+
+            Log.e("setThought: ", fontStyle.toString())
             fontStyle?.let {
-                layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
+//                Log.e("setThought:After Let ", Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()]).toString())
+//                layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
             }
 
             alignment?.let {

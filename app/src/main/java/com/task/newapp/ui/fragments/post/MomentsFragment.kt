@@ -17,7 +17,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
@@ -433,8 +432,8 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, Media
                             //Compress and Stored in .temp folder
                             val filePath: String = SiliCompressor.with(getActivity()).compress(
                                 postUriModel.file_path,
-                                storedThumbPath
-                            )
+                                storedThumbPath,
+                                0)
                             thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
                             //thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))
 //                            }

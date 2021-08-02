@@ -28,7 +28,7 @@ data class ResponseGetAllPost(
         @SerializedName("comments_count")
         var commentsCount: Int,
         @SerializedName("contents")
-        val contents: List<Content>,
+        val postContents: List<PostContent>,
         @SerializedName("created_at")
         val createdAt: String,
         @SerializedName("description")
@@ -104,7 +104,7 @@ data class ResponseGetAllPost(
         @SerializedName("tagged")
         val tagged: List<Tagged>,
     ) {
-        data class Content(
+        data class PostContent(
             @SerializedName("alignment")
             val alignment: String,
             @SerializedName("background_type")
@@ -120,7 +120,7 @@ data class ResponseGetAllPost(
             @SerializedName("created_at")
             val createdAt: String,
             @SerializedName("font_style")
-            val fontStyle: String,
+            val fontStyle: String = "0",
             @SerializedName("height")
             val height: Int,
             @SerializedName("id")
