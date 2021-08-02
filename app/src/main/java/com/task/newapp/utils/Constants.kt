@@ -75,6 +75,10 @@ class Constants {
         const val current = "current"
         const val is_set = "is_set"
         const val delete_reason = "delete_reason"
+        const val group_id = "group_id"
+        const val make_admin_id = "make_admin_id"
+        const val remove_admin_id = "remove_admin_id"
+        const val remove_user = "remove_user"
 
 
         // bundle value

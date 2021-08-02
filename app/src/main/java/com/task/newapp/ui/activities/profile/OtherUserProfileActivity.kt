@@ -92,7 +92,11 @@ class OtherUserProfileActivity : AppCompatActivity() {
         val contentOtherProfile = binding.layoutContentOtherprofile
         binding.ivProfile.load(data.profile_image, true)
         isfollow = data.is_follow
-        manageIsMuteOrNot(data.friendsetting.muteNotification)
+
+        data.friendsetting?.let{
+            manageIsMuteOrNot(it.muteNotification)
+            setOnOffText(it.isCustomNotificationEnable, it.notificationToneId, it.vibrateStatus)
+        }
         contentOtherProfile.txtPostCount.text = data.count_post.toString()
         contentOtherProfile.txtFollowerCount.text = data.followers.toString()
         contentOtherProfile.txtFollowingCount.text = data.following.toString()
@@ -101,7 +105,6 @@ class OtherUserProfileActivity : AppCompatActivity() {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         contentOtherProfile.txtLastseen.text = DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(data.last_seen_time, formatter))
         contentOtherProfile.txtStatus.text = data.status
-        setOnOffText(data.friendsetting.isCustomNotificationEnable, data.friendsetting.notificationToneId, data.friendsetting.vibrateStatus)
         contentOtherProfile.txtPostsCount.text = data.count_post.toString()
         contentOtherProfile.txtGrpcommonCount.text = getCommonGroup(User_ID).size.toString()
         contentOtherProfile.txtPagescommonCount.text = data.count_common_pages.toString()

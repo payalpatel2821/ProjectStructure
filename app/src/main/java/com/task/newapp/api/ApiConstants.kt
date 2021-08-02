@@ -34,6 +34,11 @@ const val change_password = "/api_v1/change-password"
 const val change_email = "/api_v1/update-email-request"
 const val check_verify_email = "/api_v1/check-email-request"
 const val delete_account = "/api_v1/request-delete-account"
+const val exit_group = "/api_v1/exit-group/{id}"
+const val delete_group = "/api_v1/delete-group/{id}"
+const val report_group = "/api_v1/report-group-user/{id}"
+const val add_remove_admin = "/api_v1/add-remove-admin"
+const val add_participates = "/api_v1/add-participates"
 
 
 

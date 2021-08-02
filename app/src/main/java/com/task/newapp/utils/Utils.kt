@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -1074,7 +1074,7 @@ fun openPicker(supportFragmentManager: FragmentManager) {
 
 fun Activity.requestFocus(view: View) {
     if (view.requestFocus()) {
-       window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
     }
 }
 

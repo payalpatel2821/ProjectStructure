@@ -28,7 +28,7 @@
                 android:onClick="onClick"
                 android:padding="@dimen/_17sdp"
                 android:src="@drawable/ic_back"
-                app:tint="@color/white" />
+                />
 
             <include
                 android:id="@+id/layout_content_otherprofile"

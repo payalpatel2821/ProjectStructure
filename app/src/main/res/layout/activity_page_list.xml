@@ -79,7 +79,8 @@
                 android:gravity="center_vertical"
                 android:onClick="onClick"
                 android:padding="@dimen/_13sdp"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"
+                android:tint="@color/black"/>
 
         </RelativeLayout>
 

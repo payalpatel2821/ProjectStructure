@@ -23,7 +23,6 @@
 
             <ImageView
                 android:id="@+id/iv_back"
-                app:tint="@color/white"
                 android:layout_width="@dimen/_50sdp"
                 android:layout_height="@dimen/_50sdp"
                 android:onClick="onClick"

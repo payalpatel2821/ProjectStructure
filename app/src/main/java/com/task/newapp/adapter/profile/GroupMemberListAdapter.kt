@@ -5,6 +5,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +21,15 @@ class GroupMemberListAdapter(
     RecyclerView.Adapter<GroupMemberListAdapter.ViewHolder>() {
 
     private var limit: Int = 0
+    private var isAdmin: Int = 0
+    private var onItemClickListener: AdapterView.OnItemClickListener? = null
+
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtUserName: TextView = view.findViewById(R.id.txt_user_name)
         val ivUserProfile: ImageView = view.findViewById(R.id.iv_user_profile)
         val btnCaptain: TextView = view.findViewById(R.id.btn_captain)
+
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
@@ -49,19 +54,28 @@ class GroupMemberListAdapter(
             viewHolder.btnCaptain.visibility = GONE
         }
 
+        viewHolder.itemView.setOnClickListener { if (onItemClickListener != null) onItemClickListener!!.onItemClick(null, viewHolder.itemView, viewHolder.adapterPosition, viewHolder.itemId) }
+
     }
 
-    fun setData(data: ArrayList<GroupUser>, limit: Int) {
+    fun setData(data: ArrayList<GroupUser>, limit: Int/*, isAdmin: Int*/) {
         this.dataSet.addAll(data)
         this.limit = limit
+//        this.isAdmin = isAdmin
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
         return if (dataSet.size > limit) {
             limit
-        }else{
+        } else {
             5
         }
     }
+
+    fun setOnItemClickListener(onItemClickListener: AdapterView.OnItemClickListener?) {
+        this.onItemClickListener = onItemClickListener
+    }
+
+
 }

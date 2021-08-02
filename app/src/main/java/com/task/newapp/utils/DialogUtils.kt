@@ -25,8 +25,6 @@ import com.task.newapp.models.NotificationToneWrapper
 import com.task.newapp.realmDB.getAllNotificationTune
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.forEach
-import kotlin.collections.hashMapOf
 
 
 class DialogUtils {
@@ -144,8 +142,8 @@ class DialogUtils {
             if (edtEmail.text.toString().trim().isNullOrBlank()) {
                 inputEmail.error = activity.resources.getString(R.string.enter_email_address)
                 return@setOnClickListener
-            }else if (!isValidEmail(edtEmail.text.toString().trim())){
-                 inputEmail.error = activity.resources.getString(R.string.enter_valid_address)
+            } else if (!isValidEmail(edtEmail.text.toString().trim())) {
+                inputEmail.error = activity.resources.getString(R.string.enter_valid_address)
                 return@setOnClickListener
             }
             listener.onDefaultButtonClick(edtEmail.text.toString())
@@ -250,6 +248,43 @@ class DialogUtils {
         dialog.show()
     }
 
+    fun showMemberClickIOSDialogIfAdmin(activity: AppCompatActivity, title: String, message: String, is_admin: Int, listener: DialogCallbacks) {
+        val alert = AlertView(title, message, AlertStyle.IOS)
+        alert.show(activity)
+
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
+            listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
+        })
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value, AlertActionStyle.DEFAULT) {
+            listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value)
+        })
+        if (is_admin == 0) {
+            alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.MAKE_GROUP_CAPTAIN.value, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.MAKE_GROUP_CAPTAIN.value)
+            })
+        } else {
+            alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.DISMISS_AS_CAPTAIN.value, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.DISMISS_AS_CAPTAIN.value)
+            })
+        }
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.REMOVE_FROM_GROUP.value, AlertActionStyle.DEFAULT) {
+            listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.REMOVE_FROM_GROUP.value)
+        })
+    }
+
+    fun showMemberClickIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
+        val alert = AlertView(title, message, AlertStyle.IOS)
+        alert.show(activity)
+
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
+            listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
+        })
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value, AlertActionStyle.DEFAULT) {
+            listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value)
+        })
+
+    }
+
     interface DialogCallbacks {
         fun onPositiveButtonClick()
         fun onNegativeButtonClick()
@@ -280,6 +315,14 @@ class DialogUtils {
         TURNONPOST("Turn on Post Notification"),
         MUTE("Mute"),
         UNFOLLOW("Unfollow")
+    }
+
+    enum class MemberClickIfAdminDialogActionName(val value: String) {
+        VIEW_PROFILE("View Profile"),
+        SEND_MESSAGE("Send Message"),
+        MAKE_GROUP_CAPTAIN("Make group captain"),
+        DISMISS_AS_CAPTAIN("Dismiss group captain"),
+        REMOVE_FROM_GROUP("Remove from group")
     }
 
     enum class VibrationDialogActionName(val value: String) {
