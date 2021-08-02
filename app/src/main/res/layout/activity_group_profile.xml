@@ -23,10 +23,7 @@
 
             <ImageView
                 android:id="@+id/iv_back"
-<<<<<<< Updated upstream
-=======
                 app:tint="@color/white"
->>>>>>> Stashed changes
                 android:layout_width="@dimen/_50sdp"
                 android:layout_height="@dimen/_50sdp"
                 android:onClick="onClick"

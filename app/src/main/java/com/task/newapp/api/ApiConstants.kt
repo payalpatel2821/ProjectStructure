@@ -39,9 +39,5 @@ const val delete_group = "/api_v1/delete-group/{id}"
 const val report_group = "/api_v1/report-group-user/{id}"
 const val add_remove_admin = "/api_v1/add-remove-admin"
 const val add_participates = "/api_v1/add-participates"
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
 
