@@ -7,11 +7,6 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
-<<<<<<< Updated upstream
-import android.content.*
-import android.graphics.*
-=======
->>>>>>> Stashed changes
 import android.content.*
 import android.database.Cursor
 import android.graphics.*
@@ -26,7 +21,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import androidx.annotation.ColorInt
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -39,6 +33,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
@@ -1117,10 +1112,6 @@ fun getBytes(inputStream: InputStream): ByteArray? {
     }
     return byteBuff.toByteArray()
 }
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
 /**
  * returns logged In user's Id from the preference else returns 0
  *
