@@ -34,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="22pt"
             android:layout_alignParentBottom="true"
+            android:visibility="gone"
             app:cardBackgroundColor="@android:color/transparent"
             app:cardElevation="0pt">
 

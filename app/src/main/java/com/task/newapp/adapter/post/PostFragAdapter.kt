@@ -31,7 +31,7 @@ import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.utils.setUnderlineColor
 
 
-class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>() {
+class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>() {
     private val VIEW_TYPE_LOCATION = 2
 
     //    private val VIEW_TYPE_THOUGHT = 1
@@ -471,11 +471,10 @@ class PostFragAdapter(var context: Context, all_post: List<All_Post_Data>) : Rec
                 layoutBinding.txtThought.setText(content.toString())
             }
 
-
             Log.e("setThought: ", fontStyle.toString())
             fontStyle?.let {
-//                Log.e("setThought:After Let ", Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()]).toString())
-//                layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
+                Log.e("setThought:After Let ", fontStyle.toString())
+                layoutBinding.txtThought.typeface = Typeface.createFromAsset(context.assets, fontArrayThoughts[fontStyle.toInt()])
             }
 
             alignment?.let {

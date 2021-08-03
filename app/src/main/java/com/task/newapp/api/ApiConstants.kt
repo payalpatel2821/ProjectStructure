@@ -45,5 +45,6 @@ const val add_remove_admin = "/api_v1/add-remove-admin"
 const val add_participates = "/api_v1/add-participates"
 
 const val create_broadcast = "api_v1/broadcast"
-const val delete_broadcast = "/api_v1/broadcast/{id}";
+const val delete_broadcast = "/api_v1/broadcast/{id}"
+const val get_post_detail = "/api_v1/post-details/{id}"
 

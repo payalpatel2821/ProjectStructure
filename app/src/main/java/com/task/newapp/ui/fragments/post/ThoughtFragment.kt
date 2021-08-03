@@ -293,7 +293,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
         if (countFont == fontArrayThoughts.size) countFont = 0
 
         Log.e("countFont: ", countFont.toString())
-        binding.edtThought.typeface = Typeface.createFromAsset(fragmentActivity.assets, fontArrayThoughts[countFont])
+        binding.edtThought.typeface = Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont])
 
 //        binding.edtThought.setTypeface(null, if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL)
     }
