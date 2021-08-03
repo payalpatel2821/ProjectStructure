@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.task.newapp.R
+import com.task.newapp.databinding.ItemChatDateLabelBinding
 import com.task.newapp.databinding.ItemChatTextLeftBinding
 import com.task.newapp.databinding.ItemChatTextRightBinding
 import com.task.newapp.realmDB.models.ChatList
@@ -25,6 +26,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
             field = value
             notifyDataSetChanged()
         }
+
     enum class ChatItemViewType(val layoutResourceId: Int) {
         TYPE_TEXT_LEFT(R.layout.item_chat_text_left),
         TYPE_TEXT_RIGHT(R.layout.item_chat_text_right),
@@ -135,8 +137,8 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 RecyclerViewHolder.TextViewHolderRight(layoutBinding)
             }
             ChatItemViewType.TYPE_DATE_LABEL -> {
-                val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                val layoutBinding: ItemChatDateLabelBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_date_label, parent, false)
+                RecyclerViewHolder.DateViewHolder(layoutBinding)
             }
             ChatItemViewType.TYPE_TYPING_INDICATOR -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
@@ -154,6 +156,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         val item = messages[position]
         holder.bind(item, null)
     }
+
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int, payload: List<Any>) {
         val item = messages[position]
         holder.bind(item, payload)
@@ -323,6 +326,13 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
             override fun bind(chats: ChatList, listPayload: List<Any>?) {
                 binding.txtMessage.text = chats.message_text
             }
+        }
+
+        class DateViewHolder(private val binding: ItemChatDateLabelBinding) : RecyclerViewHolder(binding) {
+            override fun bind(chats: ChatList, listPayload: List<Any>?) {
+
+            }
+
         }
 
     }

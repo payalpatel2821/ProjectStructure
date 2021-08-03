@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ll_search"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/rect_rounded_search_bg"
-    android:orientation="horizontal">
-
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ll_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:autofillHints="@string/search"
-        android:background="@null"
-        android:theme="@style/styleImageGrayTint"
-        app:queryBackground="@android:color/transparent"
-        app:defaultQueryHint="@string/search"
-        app:queryHint="@string/search"
-        app:searchIcon="@drawable/ic_search" />
+        android:background="@drawable/rect_rounded_search_bg"
+        android:orientation="horizontal">
 
-  <!--  <androidx.appcompat.widget.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:iconifiedByDefault="false"
-        android:layoutDirection="ltr"
-        app:queryBackground="@android:color/transparent"
-        app:queryHint="Search"
-        app:searchIcon="@drawable/ic_search"
-        app:showAsAction="always" />-->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/search"
+            android:background="@null"
+            android:theme="@style/styleImageGrayTint"
+            app:defaultQueryHint="@string/search"
+            app:queryBackground="@android:color/transparent"
+            app:queryHint="@string/search"
+            app:searchIcon="@drawable/ic_search" />
 
-</LinearLayout>
+        <!--  <androidx.appcompat.widget.SearchView
+              android:id="@+id/search_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@null"
+              android:iconifiedByDefault="false"
+              android:layoutDirection="ltr"
+              app:queryBackground="@android:color/transparent"
+              app:queryHint="Search"
+              app:searchIcon="@drawable/ic_search"
+              app:showAsAction="always" />-->
+
+    </LinearLayout>
+</layout>

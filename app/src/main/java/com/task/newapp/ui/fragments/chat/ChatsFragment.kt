@@ -499,7 +499,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
     override fun onItemClick(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
         if (chats[position].is_group)
-            requireActivity().showToast("Item Clicked $position")
+            requireActivity().showToast("Coming Soon...")
         else
             requireActivity().launchActivity<OneToOneChatActivity> {
                 putExtra(Constants.bundle_opponent_id, chats[position].id)

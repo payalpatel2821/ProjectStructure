@@ -115,6 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:contentDescription="Add"
+            android:onClick="onClick"
             android:src="@drawable/ic_next_arrow"
             app:backgroundTint="@color/theme_color"
             app:fabSize="normal"

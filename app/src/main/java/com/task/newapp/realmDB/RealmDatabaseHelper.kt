@@ -407,6 +407,10 @@ fun getAllNotificationTune(): List<NotificationTone> {
     return App.getRealmInstance().where(NotificationTone::class.java).findAll().toList()
 }
 
+fun getSelectedNotificationTuneName(friendId: Int): String {
+    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()?.sound ?: ""
+}
+
 fun getGroupDetail(grpID: Int): Chats {
     return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().first { it.id == grpID }
 }
@@ -428,6 +432,10 @@ fun getSelectedFriends(ids: List<Int>): List<FriendRequest> {
         .`in`(FriendRequest::friend_id.name, ids.toTypedArray())
         .or()
         .`in`(FriendRequest::user_id.name, ids.toTypedArray()).findAll()
+}
+
+fun getSingleFriendSetting(friendId: Int): FriendSettings? {
+    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()
 }
 
 /**   ------------------------------------ READ END ---------------------------------------------------------------  */
@@ -514,6 +522,17 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
         if (data != null) {
             data.is_set = isSet
             realm.copyToRealm(data)
+        }
+    })
+
+}
+
+fun updateFriendSettings(friendId: Int, friendSettings: FriendSettings) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        var data = realm.where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()
+        if (data != null) {
+            data = friendSettings
+            realm.copyToRealmOrUpdate(data)
         }
     })
 
@@ -1014,28 +1033,76 @@ fun prepareFriendSettingsDataForDB(friendSettings: List<FriendSetting>): RealmLi
     val friendSettingList: RealmList<FriendSettings> = RealmList()
     friendSettings.let {
         for (objUserSetting in friendSettings) {
-            val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
+            /*  val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
 
-            if (usersObj != null) {
-                val friendSettingObj = FriendSettings()
-                friendSettingObj.id = objUserSetting.id
-                friendSettingObj.user_id = objUserSetting.userId
-                friendSettingObj.friend_id = objUserSetting.friendId
-                friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
-                friendSettingObj.mute_notification = objUserSetting.muteNotification
-                friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
-                friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
-                friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
-                friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
-                friendSettingObj.call_ringtone = objUserSetting.callRigtone
-                friendSettingObj.call_vibrate = objUserSetting.callVibrate
-                friendSettingObj.sound = objUserSetting.sound
-                friendSettingObj.user = usersObj
-                friendSettingList.add(friendSettingObj)
-            }
+              if (usersObj != null) {
+                  val friendSettingObj = FriendSettings()
+                  friendSettingObj.id = objUserSetting.id
+                  friendSettingObj.user_id = objUserSetting.userId
+                  friendSettingObj.friend_id = objUserSetting.friendId
+                  friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
+                  friendSettingObj.mute_notification = objUserSetting.muteNotification
+                  friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
+                  friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
+                  friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
+                  friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
+                  friendSettingObj.call_ringtone = objUserSetting.callRigtone
+                  friendSettingObj.call_vibrate = objUserSetting.callVibrate
+                  friendSettingObj.sound = objUserSetting.sound
+                  friendSettingObj.user = usersObj
+                  friendSettingList.add(friendSettingObj)
+              }*/
+            friendSettingList.add(prepareSingleFriendSettingData(objUserSetting))
         }
     }
     return friendSettingList
+}
+
+
+fun prepareSingleFriendSettingData(objUserSetting: FriendSetting): FriendSettings? {
+    val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
+
+    if (usersObj != null) {
+        val friendSettingObj = FriendSettings()
+        friendSettingObj.id = objUserSetting.id
+        friendSettingObj.user_id = objUserSetting.userId
+        friendSettingObj.friend_id = objUserSetting.friendId
+        friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
+        friendSettingObj.mute_notification = objUserSetting.muteNotification
+        friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
+        friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
+        friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
+        friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
+        friendSettingObj.call_ringtone = objUserSetting.callRigtone
+        friendSettingObj.call_vibrate = objUserSetting.callVibrate
+        friendSettingObj.sound = objUserSetting.sound
+        friendSettingObj.user = usersObj
+        return friendSettingObj
+    }
+    return null
+}
+
+fun prepareSingleFriendSettingData(objUserSetting: ResponseFriendSetting.Data): FriendSettings? {
+    val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
+
+    if (usersObj != null) {
+        val friendSettingObj = FriendSettings()
+        friendSettingObj.id = objUserSetting.id
+        friendSettingObj.user_id = objUserSetting.userId
+        friendSettingObj.friend_id = objUserSetting.friendId
+        friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
+        friendSettingObj.mute_notification = objUserSetting.muteNotification
+        friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
+        friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
+        friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
+        friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
+        friendSettingObj.call_ringtone = objUserSetting.callRigtone
+        friendSettingObj.call_vibrate = objUserSetting.callVibrate
+        friendSettingObj.sound = objUserSetting.sound
+        friendSettingObj.user = usersObj
+        return friendSettingObj
+    }
+    return null
 }
 
 /**
