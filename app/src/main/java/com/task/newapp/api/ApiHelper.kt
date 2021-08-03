@@ -195,4 +195,6 @@ interface ApiHelper {
     @DELETE(delete_broadcast)
     fun deleteBroadcast(@Path("id") broadcast_id: Int): Observable<CommonResponse>
 
+    @GET(get_post_detail)
+    fun get_post_detail(@Path("id") post_id: Int): Observable<ResponseGetAllPost>
 }

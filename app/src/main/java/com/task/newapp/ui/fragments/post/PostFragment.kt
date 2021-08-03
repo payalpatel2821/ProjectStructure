@@ -65,7 +65,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     private var isAPICallRunning = false
     var linearLayoutManager: LinearLayoutManager? = null
     private val mCompositeDisposable = CompositeDisposable()
-    lateinit var post_Frag_adapter: PostFragAdapter
+    lateinit var postFragAdapter: PostFragAdapter
     lateinit var postCommentAdapter: PostCommentAdapter
     lateinit var socket: Socket
 
@@ -123,7 +123,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     private fun initView() {
         socket = App.getSocketInstance()
-        // initSocketListeners()
+//        initSocketListeners()
         binding.llMomentsPhotos.setOnClickListener(this)
         binding.llMomentsVideos.setOnClickListener(this)
         binding.llThoughts.setOnClickListener(this)
@@ -134,11 +134,11 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         binding.recPost.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
 
         binding.recPost.isFocusable = false
-        post_Frag_adapter = PostFragAdapter(requireContext(), ArrayList())
+        postFragAdapter = PostFragAdapter(requireActivity(), ArrayList())
         linearLayoutManager = LinearLayoutManager(activity)
         linearLayoutManager!!.isAutoMeasureEnabled = false
         binding.recPost.layoutManager = linearLayoutManager
-        binding.recPost.adapter = post_Frag_adapter
+        binding.recPost.adapter = postFragAdapter
 
         binding.swipeContainer.setOnRefreshListener {
             binding.swipeContainer.isRefreshing = true
@@ -232,7 +232,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //                                            allPostArrayList = responseGetAllPost.data as ArrayList<All_Post_Data>
                                             allPostArrayList.addAll(responseGetAllPost.data as ArrayList<All_Post_Data>)
 
-                                            post_Frag_adapter.setdata(allPostArrayList, currentpos == 0)
+                                            postFragAdapter.setdata(allPostArrayList, currentpos == 0)
                                             isloading = false
                                             hasLoadedAllItems = false
 
@@ -245,10 +245,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                             hasLoadedAllItems = true
                                         }
 
-                                        post_Frag_adapter.onItemClick = { view, position, comment ->
-                                            if (post_Frag_adapter.getdata().isNotEmpty()) {
+                                        postFragAdapter.onItemClick = { view, position, comment ->
+                                            if (postFragAdapter.getdata().isNotEmpty()) {
 
-                                                val allPostData = post_Frag_adapter.getdata()[position]
+                                                val allPostData = postFragAdapter.getdata()[position]
                                                 post_id = allPostData.id
                                                 user_id = allPostData.userId
 
@@ -272,7 +272,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                                 if (allPostData.likesCount >= 0) {
                                                                     val count = allPostData.likesCount + 1
 
-                                                                    post_Frag_adapter.updateLikesCount(count, position, 1)
+                                                                    postFragAdapter.updateLikesCount(count, position, 1)
                                                                 }
                                                             }
                                                             1 -> {
@@ -282,7 +282,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                                 if (allPostData.likesCount > 0) {
                                                                     val count = allPostData.likesCount - 1
 
-                                                                    post_Frag_adapter.updateLikesCount(count, position, 0)
+                                                                    postFragAdapter.updateLikesCount(count, position, 0)
                                                                 }
                                                             }
                                                         }
@@ -304,13 +304,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                                 saveType = "save"
                                                                 imgSave.setImageResource(R.drawable.ic_save)
 
-                                                                post_Frag_adapter.updateSave(1, position)
+                                                                postFragAdapter.updateSave(1, position)
                                                             }
                                                             1 -> {
                                                                 saveType = "unsave"
                                                                 imgSave.setImageResource(R.drawable.ic_nonsave)
 
-                                                                post_Frag_adapter.updateSave(0, position)
+                                                                postFragAdapter.updateSave(0, position)
                                                             }
                                                         }
 
@@ -340,7 +340,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                                                     R.id.more_iv -> showPostDialog()
 
-                                                    R.id.rlMain -> showPostDetails()
+                                                    R.id.rlMain -> showPostDetails(position)
                                                 }
 
                                                 //val contents: List<All_Post_contents?> = post_Frag_adapter.getdata()[position].contents
@@ -371,7 +371,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                                     binding.swipeContainer.isRefreshing = false
 
-                                    if (post_Frag_adapter.getdata().size != 0) {
+                                    if (postFragAdapter.getdata().size != 0) {
                                         binding.noPosts.visibility = View.GONE
                                         binding.recPost.visibility = View.VISIBLE
                                     } else {
@@ -478,13 +478,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         isloading = true
 
         if (!isAPICallRunning) {
-            val scrollPosition: Int = post_Frag_adapter.getdata().size
+            val scrollPosition: Int = postFragAdapter.getdata().size
             if (scrollPosition > 0) {
                 showLog("loadmore_comment", scrollPosition.toString())
                 val currentSize = scrollPosition - 1
 
                 if (currentSize > 0) {
-                    getAllPost(post_Frag_adapter.getdata()[currentSize].id)
+                    getAllPost(postFragAdapter.getdata()[currentSize].id)
                 }
             }
         }
@@ -730,7 +730,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                         override fun onNext(responsePostComment: ResponsePostComment) {
                             if (responsePostComment.success == 1) {
                                 Log.v("callAPIPostComment", "callAPIPostComment")
-                                post_Frag_adapter.updateComment(responsePostComment.data, position)
+                                postFragAdapter.updateComment(responsePostComment.data, position)
                             }
                         }
 
@@ -1002,20 +1002,38 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     }
 
     override fun onChangePostItem(lastComment: String, totalComments: Int, adapterPositionPost: Int) {
-        post_Frag_adapter?.let {
+        postFragAdapter?.let {
 
             var dataComment = ResponsePostComment.Data(
                 commentText = lastComment,
                 totalComment = totalComments,
             )
-            post_Frag_adapter.updateComment(dataComment, adapterPositionPost)
+            postFragAdapter.updateComment(dataComment, adapterPositionPost)
         }
     }
 
-    private fun showPostDetails() {
+    private fun showPostDetails(position: Int) {
         try {
-            requireActivity().launchActivity<ShowPostActivity> {
-                putExtra("postId", post_id)
+            if (postFragAdapter.getdata()[position].postContents[0].type == "thought") {
+                //Show Thought
+
+
+            } else {
+                //Show Photo and Video
+
+                requireActivity().launchActivity<ShowPostActivity> {
+                    putExtra("postId", post_id)
+                    putExtra("position", position)
+
+                    var postByMe = 0
+                    postByMe = if (fastSave.getInt(Constants.prefUserId, 0) == user_id) {
+                        1
+                    } else {
+                        0
+                    }
+                    putExtra("postByMe", postByMe)
+                    putExtra("content", Gson().toJson(postFragAdapter.getdata()[position].postContents))
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()

@@ -379,7 +379,7 @@ public class ExoPlayerRecyclerView extends RecyclerView {
                 context, Util.getUserAgent(context, AppName));
         String mediaUrl = mediaObjects.get(targetPosition).getContent();
 
-        add_history(mediaObjects.get(targetPosition).getType(), mediaObjects.get(targetPosition).getId(), targetPosition);
+//        add_history(mediaObjects.get(targetPosition).getType(), mediaObjects.get(targetPosition).getId(), targetPosition);
 
         if (mediaUrl != null) {
             MediaSource videoSource = new ExtractorMediaSource.Factory(dataSourceFactory)

@@ -44,19 +44,19 @@ public class PlayerViewHolder extends RecyclerView.ViewHolder {
     public PlayerViewHolder(@NonNull View itemView) {
         super(itemView);
         parent = itemView;
-//        mediaContainer = itemView.findViewById(R.id.mediaContainer);
-//        mediaCoverImage = itemView.findViewById(R.id.ivMediaCoverImage);
-//        progressBar = itemView.findViewById(R.id.progressBar);
-//        volumeControl = itemView.findViewById(R.id.ivVolumeControl);
-//        content_type = itemView.findViewById(R.id.content_type);
-//        img_default = itemView.findViewById(R.id.img_default);
-//        loader_txt = itemView.findViewById(R.id.loader_txt);
+        mediaContainer = itemView.findViewById(R.id.mediaContainer);
+        mediaCoverImage = itemView.findViewById(R.id.ivMediaCoverImage);
+        progressBar = itemView.findViewById(R.id.progressBar);
+        volumeControl = itemView.findViewById(R.id.ivVolumeControl);
+        content_type = itemView.findViewById(R.id.content_type);
+        img_default = itemView.findViewById(R.id.img_default);
+        loader_txt = itemView.findViewById(R.id.loader_txt);
 //        loader_txt.setTypeface(App.setFont(App.getAppInstance(), "bebaskai.otf"));
-////        img_default.setImageAssetsFolder("images/");
-////        img_default.setAnimation("loader1.json");
-////        img_default.loop(true);
-////        img_default.playAnimation();
-//        zoomHelper = new ZoomHelper();
+//        img_default.setImageAssetsFolder("images/");
+//        img_default.setAnimation("loader1.json");
+//        img_default.loop(true);
+//        img_default.playAnimation();
+        zoomHelper = new ZoomHelper();
     }
 
     void onBind(final Context context, ResponseGetAllPost.All_Post_Data.PostContent mediaObject, RequestManager requestManager) {
@@ -117,7 +117,7 @@ public class PlayerViewHolder extends RecyclerView.ViewHolder {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-//                    ((ShowPostActivity) context).mRecyclerView.playVideo(false);
+                     ((ShowPostActivity) context).playVideo(false);
                 }
             });
         }
