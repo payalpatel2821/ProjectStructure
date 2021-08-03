@@ -19,6 +19,9 @@ import com.task.newapp.R
 import com.task.newapp.adapter.post.SelectedFriendsListAdapter
 import com.task.newapp.databinding.ActivityCreateGroupBinding
 import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.realmDB.getSelectedFriends
+import com.task.newapp.realmDB.models.FriendRequest
+import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.enableOrDisableButtonBgColor
@@ -32,6 +35,7 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
 
     lateinit var binding: ActivityCreateGroupBinding
     private val mCompositeDisposable = CompositeDisposable()
+    private var selectedFriendsIds: String = ""
     private var selectedFriendsList: ArrayList<SelectFriendWrapperModel> = ArrayList()
     private var selectedFriendsListAdapter: SelectedFriendsListAdapter? = null
     private var imageUri: String? = null
@@ -54,7 +58,7 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
     private fun initView() {
         binding.toolbarLayout.txtTitle.text = getString(R.string.title_new_group)
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
-        selectedFriendsList = intent.getSerializableExtra(Constants.bundle_selected_friends) as ArrayList<SelectFriendWrapperModel>
+        selectedFriendsIds = intent.getStringExtra(Constants.bundle_selected_friends) ?: ""
         setSelectedFriendsAdapter()
     }
 
@@ -66,6 +70,7 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
     }
 
     private fun setSelectedFriendsAdapter() {
+        prepareAllFriendListAdapterModel(getSelectedFriends(selectedFriendsIds.split(",").map { it.toInt() }.toList()))
         if (selectedFriendsList.isNotEmpty()) {
             if (selectedFriendsListAdapter == null) {
                 selectedFriendsListAdapter = SelectedFriendsListAdapter(this)
@@ -74,6 +79,17 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
                 binding.rvSelectedFriends.adapter = selectedFriendsListAdapter
             }
             selectedFriendsListAdapter?.doRefresh(selectedFriendsList)
+        }
+    }
+
+    private fun prepareAllFriendListAdapterModel(friendRequest: List<FriendRequest>) {
+        if (selectedFriendsList.isNotEmpty())
+            selectedFriendsList.clear()
+        selectedFriendsList = prepareSelectFriendWrapperModelList(friendRequest)
+        if (selectedFriendsList.isNotEmpty()) {
+            selectedFriendsList.sortBy { obj: SelectFriendWrapperModel ->
+                obj.firstName.lowercase()
+            }
         }
     }
 
@@ -104,6 +120,10 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
                 } else {
                     openPicker()
                 }
+            R.id.btn_create_group -> {
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
 
         }
     }
@@ -124,7 +144,7 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
             if (resultCode == Activity.RESULT_OK) {
                 val resultUri = result.uri
 
-                imageUri = resultUri.toString()
+                imageUri = resultUri.path
                 binding.imgProfile.setColorFilter(0)
 //                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
 //                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
@@ -136,13 +156,12 @@ class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFra
 
 //                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
                 val filePath: String = SiliCompressor.with(this).compress(
-                    resultUri.toString(),
-                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 1
+                    imageUri,
+                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 0
                 )
                 Log.e("callAPI:resultPath", filePath)
 
                 Glide.with(this).load(filePath).into(binding.imgProfile)
-                FastSave.getInstance().saveString(Constants.profile_image, filePath)
 
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {

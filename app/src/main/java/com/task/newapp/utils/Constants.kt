@@ -210,13 +210,16 @@ class Constants {
         //----------------------Socket-------------------------
 
         //On events
+        const val userjoinedthechat = "userjoinedthechat"
         const val isonlineresponse = "isonlineresponse"
         const val userdisconnect = "userdisconnect"
+        const val join_response = "join_response"
+        const val is_online_response = "is_online_response"
+        const val disconnect_response = "disconnect_response"
         const val post_delete_response = "post_delete_response"
         const val story_broadcast = "story_broadcast"
         const val story_delete_response = "story_delete_response"
         const val post_like_response = "post_like_response"
-        const val userjoinedthechat = "userjoinedthechat"
         const val newMessage = "newMessage"
 
         // emit events
@@ -224,6 +227,7 @@ class Constants {
         const val isonline = "isonline"
         const val disconnect = "disconnect"
         const val post_like = "post_like"
+        const val is_online = "is_online"
 
     }
 }

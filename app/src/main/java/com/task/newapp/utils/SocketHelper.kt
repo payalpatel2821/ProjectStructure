@@ -54,5 +54,5 @@ fun getUserStatusEmitEvent(user_id: Int, receiver_id: Int) {
     val sendUserDetailSocket = SendUserDetailSocket(user_id, receiver_id)
     val isOnlineValue = Gson().toJson(sendUserDetailSocket)
     showLog(Constants.socket_tag, "updateUserStatusEmitEvent :$isOnlineValue")
-    App.getSocketInstance().emit(Constants.isonline, isOnlineValue)
+    App.getSocketInstance().emit(Constants.is_online, isOnlineValue)
 }

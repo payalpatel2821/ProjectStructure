@@ -81,17 +81,17 @@ abstract class BaseAppCompatActivity : AppCompatActivity() {
     }
 
     private fun initSocketListeners() {
-        socket.on(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.on(Constants.userdisconnect, onUserDisconnect)
+        socket.on(Constants.is_online_response, onIsOnlineResponse)
+        socket.on(Constants.disconnect_response, onDisconnectResponse)
         socket.on(Constants.post_like_response, onPostLikeResponse)
-        socket.on(Constants.userjoinedthechat, onUserJoinedTheChat)
+        socket.on(Constants.join_response, onJoinResponse)
     }
 
     private fun destroySocketListeners() {
-        socket.off(Constants.isonlineresponse, onIsOnlineResponse)
-        socket.off(Constants.userdisconnect, onUserDisconnect)
+        socket.off(Constants.is_online_response, onIsOnlineResponse)
+        socket.off(Constants.disconnect_response, onDisconnectResponse)
         socket.off(Constants.post_like_response, onPostLikeResponse)
-        socket.off(Constants.userjoinedthechat, onUserJoinedTheChat)
+        socket.off(Constants.join_response, onJoinResponse)
     }
 
 
@@ -108,7 +108,7 @@ abstract class BaseAppCompatActivity : AppCompatActivity() {
 
     }
 
-    private val onUserDisconnect = Emitter.Listener { args ->
+    private val onDisconnectResponse = Emitter.Listener { args ->
         val data = args[0] as JSONObject
         showLog(Constants.socket_tag, "onUserDisconnect..." + Gson().toJson(data))
         val status = data.getString(Constants.status).equals(Constants.online)
@@ -137,7 +137,7 @@ abstract class BaseAppCompatActivity : AppCompatActivity() {
         }
     }
 
-    private val onUserJoinedTheChat = Emitter.Listener { args ->
+    private val onJoinResponse = Emitter.Listener { args ->
         runOnUiThread {
             val data = args[0] as String
             showLog(Constants.socket_tag, "onUserJoinedTheChat $data")

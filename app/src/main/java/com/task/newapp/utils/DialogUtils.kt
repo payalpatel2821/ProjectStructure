@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -51,7 +52,7 @@ class DialogUtils {
         })
     }
 
-    fun showNotificationDialog(activity: AppCompatActivity, setPosition: Int, listener: ListDialogItemClickCallback, doneClick: DialogCallbacks) {
+    fun showNotificationDialog(activity: AppCompatActivity, setPosition: Int, textView: AppCompatTextView, listener: ListDialogItemClickCallback, doneClick: DialogCallbacks) {
         val notificationTunes: ArrayList<NotificationToneWrapper> = ArrayList()
         getAllNotificationTune().forEach {
             notificationTunes.add(NotificationToneWrapper(it))
@@ -68,6 +69,7 @@ class DialogUtils {
             listener.onItemClick(position, notificationTunes.get(position).notificationTone.notification_url)
         })
         txtDone.setOnClickListener(View.OnClickListener {
+            textView.text = notificationTunes.get(notificationAdp.getCheckedItem()).notificationTone.display_name
             doneClick.onDefaultButtonClick(notificationAdp.getCheckedItem().toString())
             dialog.dismiss()
         })
@@ -341,7 +343,19 @@ class DialogUtils {
         OFF("Off"),
         DEFAULT("Default"),
         SHORT("Short"),
-        LONG("Long")
+        LONG("Long");
+
+        companion object {
+            fun getObjectFromName(name: String): VibrationDialogActionName {
+                VibrationDialogActionName.values().forEach {
+                    if (it.value == name) {
+                        return it
+
+                    }
+                }
+                return DEFAULT
+            }
+        }
     }
 
     enum class ChatAttachmentActionsName(val value: String, val resouceId: Int) {

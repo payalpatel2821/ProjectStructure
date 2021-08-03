@@ -17,9 +17,9 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
-import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
+import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
@@ -158,6 +158,8 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             R.id.action_create_group -> launchActivity<SelectFriendsActivity> {
                 putExtra(Constants.bundle_navigate_from, SelectFriendsNavigation.FROM_CREATE_GROUP)
             }
+
+            R.id.action_secret_chat, R.id.action_emergency_alert -> showToast("Coming soon...")
         }
         return super.onOptionsItemSelected(item)
     }
