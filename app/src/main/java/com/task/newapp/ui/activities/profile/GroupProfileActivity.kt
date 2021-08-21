@@ -74,11 +74,13 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
     }
 
     private fun initView() {
-        grpID=intent.getIntExtra(Constants.group_id,0)
+        grpID = intent.getIntExtra(Constants.group_id, 0)
         getGroupDetailFromID()
         setBottomSheet()
         setData()
         setMemberList()
+
+        binding.ivBack.setOnClickListener { finish() }
     }
 
     private fun getCurrentUserGroupSetting(): GroupUser? {
@@ -214,31 +216,31 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
 
     private fun setMemberList() {
 
-            groupMemberList = grpDetail.group_user_with_settings?.let {
-                it.filter { it.status == "Active" }.sortedByDescending { it.is_admin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
-            }
+        groupMemberList = grpDetail.group_user_with_settings?.let {
+            it.filter { it.status == "Active" }.sortedByDescending { it.is_admin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
+        }
 
-            currentUser = groupMemberList.first { it.user_id == getCurrentUserId() }
-            val index: Int = groupMemberList.indexOf(currentUser)
-            groupMemberList.removeAt(index)
-            groupMemberList.add(0, currentUser)
+        currentUser = groupMemberList.first { it.user_id == getCurrentUserId() }
+        val index: Int = groupMemberList.indexOf(currentUser)
+        groupMemberList.removeAt(index)
+        groupMemberList.add(0, currentUser)
 
-            groupMemberAdapter = GroupMemberListAdapter(ArrayList())
-            val layoutManager = LinearLayoutManager(this)
-            contentGrpProfile.rvMemberList.layoutManager = layoutManager
-            contentGrpProfile.rvMemberList.adapter = groupMemberAdapter
-            groupMemberAdapter.setData(groupMemberList, 5/*, currentUser.is_admin*/)
+        groupMemberAdapter = GroupMemberListAdapter(ArrayList())
+        val layoutManager = LinearLayoutManager(this)
+        contentGrpProfile.rvMemberList.layoutManager = layoutManager
+        contentGrpProfile.rvMemberList.adapter = groupMemberAdapter
+        groupMemberAdapter.setData(groupMemberList, 5/*, currentUser.is_admin*/)
 
-            if (groupMemberList.size > 5) {
-                contentGrpProfile.txtLoadMore.visibility = VISIBLE
-            } else {
-                contentGrpProfile.txtLoadMore.visibility = GONE
-            }
+        if (groupMemberList.size > 5) {
+            contentGrpProfile.txtLoadMore.visibility = VISIBLE
+        } else {
+            contentGrpProfile.txtLoadMore.visibility = GONE
+        }
 
-            contentGrpProfile.txtTotalMember.text = groupMemberList.size.toString() + " MEMBERS"
-            contentGrpProfile.txtLoadMore.text = (groupMemberList.size - 5).toString() + " more"
+        contentGrpProfile.txtTotalMember.text = groupMemberList.size.toString() + " MEMBERS"
+        contentGrpProfile.txtLoadMore.text = (groupMemberList.size - 5).toString() + " more"
 
-            groupMemberAdapter.setOnItemClickListener(this)
+        groupMemberAdapter.setOnItemClickListener(this)
 
     }
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/_5sdp"
@@ -12,9 +12,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_8sdp"
+            android:layout_marginHorizontal="@dimen/_10sdp"
             android:layout_marginVertical="@dimen/_5sdp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -25,7 +26,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginBottom="@dimen/_5sdp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -47,8 +47,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_2sdp"
-                            android:fontFamily="@font/bogleregular"
                             android:ellipsize="end"
+                            android:fontFamily="@font/bogleregular"
                             android:text=""
                             android:textColor="@color/black"
                             android:textSize="@dimen/_12ssp" />
@@ -119,7 +119,8 @@
                         android:fontFamily="@font/bogleregular"
                         android:singleLine="true"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
+                        android:textSize="@dimen/_10ssp"
+                        android:visibility="gone" />
 
                     <!--                <androidx.appcompat.widget.AppCompatTextView-->
                     <!--                    android:id="@+id/txtTime"-->
@@ -140,41 +141,88 @@
                 android:id="@+id/mainlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_3sdp"
                 android:orientation="vertical">
 
                 <RelativeLayout
                     android:id="@+id/rlMain"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_170sdp"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
+                    <!--android:background="@drawable/rect_bg_post_shadow"-->
 
                     <io.github.florent37.shapeofview.ShapeOfView
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
                         app:shape_clip_drawable="@drawable/rect_bg_post">
 
                         <ImageView
                             android:id="@+id/post_img"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="@dimen/_170sdp"
                             android:layout_gravity="center"
                             android:scaleType="centerCrop" />
+
+                        <FrameLayout
+                            android:id="@+id/fl_media_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/white"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:id="@+id/img_multi"
+                                android:layout_width="10pt"
+                                android:layout_height="10pt"
+                                android:layout_margin="5pt"
+                                android:elevation="10pt"
+                                android:src="@drawable/ic_multiple"
+                                android:visibility="gone" />
+
+                            <com.allattentionhere.autoplayvideos.AAH_CustomRecyclerView
+                                android:id="@+id/recyclerView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center" />
+
+                        </FrameLayout>
+
+                        <!--                            <com.task.newapp.utils.dotindicator.DotsIndicator-->
+                        <!--                                android:id="@+id/dots_indicator"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_alignParentBottom="true"-->
+                        <!--                                android:layout_centerHorizontal="true"-->
+                        <!--                                android:layout_marginStart="@dimen/_10sdp"-->
+                        <!--                                android:layout_marginTop="@dimen/_10sdp"-->
+                        <!--                                android:layout_marginEnd="@dimen/_10sdp"-->
+                        <!--                                android:layout_marginBottom="@dimen/_10sdp"-->
+                        <!--                                android:visibility="gone"-->
+                        <!--                                app:dotsColor="#D2FFFFFF"-->
+                        <!--                                app:dotsCornerRadius="8dp"-->
+                        <!--                                app:dotsSize="@dimen/_5sdp"-->
+                        <!--                                app:dotsSpacing="@dimen/_3sdp"-->
+                        <!--                                app:dotsWidthFactor="2.5"-->
+                        <!--                                app:progressMode="false"-->
+                        <!--                                app:selectedDotColor="@color/theme_color" />-->
 
                         <RelativeLayout
                             android:id="@+id/rlThought"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:gravity="center"
-                            android:visibility="gone">
+                            android:padding="@dimen/_5sdp"
+                            android:visibility="visible">
 
                             <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/txtThought"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_above="@+id/txtMore"
+                                android:layout_marginHorizontal="@dimen/_5sdp"
+                                android:background="@null"
                                 android:editable="false"
-                                android:gravity="center"
+                                android:ellipsize="end"
                                 android:text=""
                                 android:textSize="@dimen/_14ssp" />
 
@@ -184,8 +232,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:layout_alignParentBottom="true"
-                                android:layout_marginTop="@dimen/_10sdp"
-                                android:padding="@dimen/_5sdp"
+                                android:layout_gravity="right|bottom"
+                                android:paddingTop="@dimen/_15sdp"
                                 android:text="See more.."
                                 android:textSize="@dimen/_10ssp" />
 
@@ -202,15 +250,6 @@
                         <!--                            android:textSize="@dimen/_10ssp" />-->
 
                     </io.github.florent37.shapeofview.ShapeOfView>
-
-                    <ImageView
-                        android:id="@+id/img_multi"
-                        android:layout_width="10pt"
-                        android:layout_height="10pt"
-                        android:layout_margin="5pt"
-                        android:elevation="10pt"
-                        android:src="@drawable/ic_multiple"
-                        android:visibility="gone" />
 
                     <ImageView
                         android:id="@+id/img_playpause"
@@ -346,7 +385,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/txtComment"
-                    android:layout_marginHorizontal="@dimen/_5sdp"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     android:background="@drawable/add_comment_bg">
@@ -385,11 +423,17 @@
                     android:layout_below="@+id/rlMain"
                     android:scaleType="centerCrop"
                     android:src="@drawable/shadowpostitem"
+                    android:visibility="gone"
                     app:tint="@color/black" />
 
             </RelativeLayout>
 
         </LinearLayout>
+
+        <!--        <com.hoanganhtuan95ptit.autoplayvideorecyclerview.AutoPlayVideoRecyclerView-->
+        <!--            android:id="@+id/recyclerView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="@dimen/_170sdp" />-->
 
     </LinearLayout>
 </layout>

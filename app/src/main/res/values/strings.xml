@@ -266,4 +266,5 @@
     <string name="title_activity_contact">ContactActivity</string>
     <string name="tab_text_1">My Contact</string>
     <string name="tab_text_2">Explore</string>
+    <string name="delete_post_item">Are you want to delete it ?</string>
 </resources>

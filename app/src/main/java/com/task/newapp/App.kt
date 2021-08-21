@@ -6,10 +6,19 @@ import android.net.TrafficStats
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
+import androidx.camera.camera2.Camera2Config
+import androidx.camera.core.CameraXConfig
 import androidx.multidex.MultiDexApplication
 import com.appizona.yehiahd.fastsave.FastSave
+import com.danikula.videocache.HttpProxyCacheServer
 import com.github.nkzawa.socketio.client.Socket
+import com.luck.picture.lib.app.IApp
+import com.luck.picture.lib.app.PictureAppMaster
+import com.luck.picture.lib.crash.PictureSelectorCrashUtils
+import com.luck.picture.lib.crash.PictureSelectorCrashUtils.CrashAppListener
+import com.luck.picture.lib.engine.PictureSelectorEngine
 import com.task.newapp.utils.GlideImageLoader
+import com.task.newapp.utils.instapicker.PictureSelectorEngineImp
 import com.task.newapp.utils.joinSocket
 import com.vanniktech.emoji.EmojiManager
 import com.vanniktech.emoji.ios.IosEmojiProvider
@@ -18,7 +27,7 @@ import io.realm.RealmConfiguration
 import lv.chi.photopicker.ChiliPhotoPicker
 
 
-class App : MultiDexApplication() {
+class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
 
     companion object {
 
@@ -52,6 +61,17 @@ class App : MultiDexApplication() {
             return Typeface.createFromAsset(context.assets, str)
         }
 
+        @JvmStatic
+        fun getProxy(context: Context): HttpProxyCacheServer? {
+            val app = context.applicationContext as App
+            return if (app.proxy == null) newProxy().also { app.proxy = it } else app.proxy
+        }
+
+        private fun newProxy(): HttpProxyCacheServer {
+            return HttpProxyCacheServer.Builder(appInstance?.appContext)
+                .maxCacheSize((1024 * 1024).toLong())
+                .build()
+        }
     }
 
     val TAG = App::class.java.simpleName
@@ -75,8 +95,18 @@ class App : MultiDexApplication() {
         )
         joinSocket()
         setupStrictMode()
-    }
 
+        //Add New
+        /** PictureSelector日志管理配制开始 **/
+        // PictureSelector 绑定监听用户获取全局上下文或其他...
+        /** PictureSelector日志管理配制开始  */
+        // PictureSelector 绑定监听用户获取全局上下文或其他...
+        PictureAppMaster.getInstance().app = this
+        // PictureSelector Crash日志监听
+        // PictureSelector Crash日志监听
+        PictureSelectorCrashUtils.init { t: Thread?, e: Throwable? -> }
+        /** PictureSelector日志管理配制结束 **/
+    }
 
 
     private fun setupStrictMode() {
@@ -99,6 +129,20 @@ class App : MultiDexApplication() {
         Realm.setDefaultConfiguration(config)
         realm = Realm.getDefaultInstance()
     }
+
+    override fun getAppContext(): Context? {
+        return this
+    }
+
+    override fun getPictureSelectorEngine(): PictureSelectorEngine? {
+        return PictureSelectorEngineImp()
+    }
+
+    override fun getCameraXConfig(): CameraXConfig {
+        return Camera2Config.defaultConfig()
+    }
+
+    private var proxy: HttpProxyCacheServer? = null
 
 
 }

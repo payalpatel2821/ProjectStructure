@@ -18,6 +18,8 @@
             android:background="@android:color/black"
             android:dividerHeight="8dp"
             android:fadeScrollbars="false"
+
+
             android:scrollIndicators="none"
             android:scrollbars="none" />
 

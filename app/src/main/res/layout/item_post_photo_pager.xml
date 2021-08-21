@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?><!--<layout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto">-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <!--    <io.github.florent37.shapeofview.ShapeOfView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:shape_clip_drawable="@drawable/rect_bg_post">-->
+
+    <RelativeLayout
+        android:id="@+id/rlMainPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/ivInfo"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:scaleType="centerCrop" />-->
+
+        <com.jsibbold.zoomage.ZoomageView
+            android:id="@+id/ivInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            app:zoomage_animateOnReset="true"
+            app:zoomage_autoCenter="true"
+            app:zoomage_autoResetMode="ALWAYS"
+            app:zoomage_doubleTapToZoom="true"
+            app:zoomage_maxScale="8"
+            android:scaleType="centerCrop"
+            app:zoomage_minScale="0"
+            app:zoomage_restrictBounds="false"
+            app:zoomage_translatable="true"
+            app:zoomage_zoomable="true" />
+        <!--        android:scaleType="centerCrop"-->
+
+    </RelativeLayout>
+
+    <!--    </io.github.florent37.shapeofview.ShapeOfView>-->
+
+    <ImageView
+        android:id="@+id/imgShadow"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_alignParentBottom="true"
+        android:rotation="180"
+        android:scaleType="centerCrop"
+        android:src="@drawable/shadowpostitem"
+        app:tint="@color/black" />
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:orientation="vertical">-->
+
+    <!--        <RelativeLayout-->
+    <!--            android:id="@+id/mainlay"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical">-->
+
+    <!--            <RelativeLayout-->
+    <!--                android:id="@+id/rlMain"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="@dimen/_170sdp"-->
+    <!--                android:orientation="vertical">-->
+    <!--                &lt;!&ndash;                    android:background="@drawable/rect_bg_post_shadow"&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                    <io.github.florent37.shapeofview.ShapeOfView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_height="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        app:shape_clip_drawable="@drawable/rect_bg_post">&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                <ImageView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:id="@+id/post_img"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_height="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_gravity="center"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:scaleType="centerCrop" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;Add New&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    <FrameLayout&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:id="@+id/flVideo"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_height="match_parent">&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                        <com.allattentionhere.autoplayvideos.AAH_VideoImage&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_height="match_parent" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                        <ImageView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:id="@+id/img_playback"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_gravity="left|bottom"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_margin="8dp"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:src="@drawable/pause"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:visibility="gone" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                        <ImageView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:id="@+id/img_vol"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_width="wrap_content"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_height="wrap_content"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_gravity="right|bottom"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:layout_margin="8dp"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:src="@drawable/ic_unmute"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                            android:visibility="gone" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                    </FrameLayout>&ndash;&gt;-->
+
+    <!--                <ImageView-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="@dimen/_70sdp"-->
+    <!--                    android:layout_alignParentBottom="true"-->
+    <!--                    android:scaleType="centerCrop"-->
+    <!--                    android:src="@drawable/shadow" />-->
+
+
+    <!--                &lt;!&ndash;                    </io.github.florent37.shapeofview.ShapeOfView>&ndash;&gt;-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_multi"-->
+    <!--                    android:layout_width="@dimen/_15sdp"-->
+    <!--                    android:layout_height="@dimen/_15ssp"-->
+    <!--                    android:layout_margin="@dimen/_5sdp"-->
+    <!--                    android:elevation="@dimen/_10sdp"-->
+    <!--                    android:src="@drawable/ic_multiple"-->
+    <!--                    android:visibility="gone" />-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_playpause"-->
+    <!--                    android:layout_width="@dimen/_25sdp"-->
+    <!--                    android:layout_height="@dimen/_25sdp"-->
+    <!--                    android:layout_centerInParent="true"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_margin="@dimen/_5sdp"-->
+    <!--                    android:elevation="@dimen/_10sdp"-->
+    <!--                    android:src="@drawable/play"-->
+    <!--                    android:visibility="gone" />-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_default"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_centerInParent="true"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_margin="5pt"-->
+    <!--                    android:elevation="10pt"-->
+    <!--                    android:src="@drawable/gallery_post"-->
+    <!--                    android:visibility="gone" />-->
+
+    <!--            </RelativeLayout>-->
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/imgShadow"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="@dimen/_50sdp"-->
+    <!--        android:layout_below="@+id/rlMain"-->
+    <!--        android:scaleType="centerCrop"-->
+    <!--        android:src="@drawable/shadowpostitem"-->
+    <!--        android:visibility="gone"-->
+    <!--        app:tint="@color/black" />-->
+
+    <!--        </RelativeLayout>-->
+
+    <!--    </LinearLayout>-->
+
+
+</RelativeLayout><!--    </layout>-->

@@ -9,8 +9,4 @@
 
     <solid android:color="@color/black" />
 
-<!--    <size-->
-<!--        android:width="@dimen/_450sdp"-->
-<!--        android:height="@dimen/_120sdp" />-->
-
 </shape>

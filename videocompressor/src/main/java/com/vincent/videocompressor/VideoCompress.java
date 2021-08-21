@@ -24,7 +24,7 @@ public class VideoCompress {
     }
 
     public static VideoCompressTask compressVideoLow(String srcPath, String destPath, CompressListener listener) {
-        VideoCompressTask task =  new VideoCompressTask(listener, VideoController.COMPRESS_QUALITY_LOW);
+        VideoCompressTask task = new VideoCompressTask(listener, VideoController.COMPRESS_QUALITY_LOW);
         task.execute(srcPath, destPath);
         return task;
     }
@@ -79,8 +79,11 @@ public class VideoCompress {
 
     public interface CompressListener {
         void onStart();
+
         void onSuccess();
+
         void onFail();
+
         void onProgress(float percent);
     }
 }

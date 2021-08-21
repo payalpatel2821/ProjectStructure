@@ -7,10 +7,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.squareup.picasso.Picasso
 import com.task.newapp.R
 import com.task.newapp.realmDB.getUserNameFromId
 import com.task.newapp.realmDB.models.Chats
-import com.task.newapp.utils.load
 
 class GroupListAdapter(
     private val dataSet: ArrayList<Chats>,
@@ -35,6 +38,8 @@ class GroupListAdapter(
         return ViewHolder(view)
     }
 
+    private val isCaching = true
+
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.btnFollowUnfollow.visibility = GONE
         viewHolder.txtUserName.text = dataSet[position].name
@@ -44,7 +49,18 @@ class GroupListAdapter(
             it.user_id
         }
         viewHolder.txtAccid.text = getUserNameFromId(userId)
-        viewHolder.ivUserProfile.load(dataSet[position].group_data?.grp_icon ?: "", false)
+
+//        viewHolder.ivUserProfile.load(dataSet[position].group_data?.grp_icon ?: "", false)
+
+        Glide.with(viewHolder.itemView.context)
+            .load(dataSet[position].group_data?.grp_icon)
+//            .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
+//            .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
+            .placeholder(R.drawable.logo)
+            .fallback(R.drawable.logo)
+            .error(R.drawable.logo)
+            .into(viewHolder.ivUserProfile)
+
         viewHolder.itemView.setOnClickListener {
             if (onItemClick != null) {
                 onItemClick!!.invoke(dataSet[position].id, position)

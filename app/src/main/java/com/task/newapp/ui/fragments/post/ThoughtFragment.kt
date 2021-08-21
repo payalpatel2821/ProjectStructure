@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
@@ -63,7 +64,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
 
     lateinit var fontArrayThoughts: Array<String>
     lateinit var colorFontArrayThoughts: IntArray
-    lateinit var colorArrayThoughts: IntArray
+    lateinit var colorBackgroundArrayThoughts: IntArray
     lateinit var patternArrayThoughts: ArrayList<ResponsePattern.Data>
     private var paginate: Paginate? = null
     var isloading = false
@@ -117,12 +118,24 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
         handleUserExit()
     }
 
+//    var delay: Long = 3000 // 1 seconds after user stops typing
+//    var last_text_edit: Long = 0
+//    var handler = Handler()
+//
+//    private val input_finish_checker = Runnable {
+//        if (System.currentTimeMillis() > last_text_edit + delay - 500) {
+//            val htmlString = "<u>" + binding.edtThought.text!!.trim().toString() + "</u>"
+//            binding.edtThought.setText(Html.fromHtml(htmlString))
+//        }
+//    }
+
     private fun initView() {
-        binding.edtThought.setUnderlineColor(Color.TRANSPARENT)
+//        binding.edtThought.setUnderlineColor(Color.TRANSPARENT)
+        binding.edtThought.textSize = 24f
 
         clickListerner()
 
-        colorArrayThoughts = fragmentActivity.resources.getIntArray(R.array.colorArrayThoughts)
+        colorBackgroundArrayThoughts = fragmentActivity.resources.getIntArray(R.array.colorBackgroundArrayThoughts)
         colorFontArrayThoughts = fragmentActivity.resources.getIntArray(R.array.colorFontArrayThoughts)
         patternArrayThoughts = ArrayList()
         fontArrayThoughts = fragmentActivity.resources.getStringArray(R.array.fontArrayThoughts)
@@ -130,7 +143,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
         binding.rvColorPattern.setHasFixedSize(true)
         binding.rvColorPattern.isFocusable = false
 
-        colorBg = colorArrayThoughts[0]
+        colorBg = colorBackgroundArrayThoughts[0]
         colorFont = colorFontArrayThoughts[0]
 
         binding.edtThought.addTextChangedListener(object : TextWatcher {
@@ -139,20 +152,105 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (s.isNullOrEmpty()) binding.edtThought.hint = "Type here..." else binding.edtThought.hint = ""
+                if (s.isNullOrEmpty()) {
+                    binding.edtThought.hint = "Type here..."
+                } else {
+                    if (count > 2) {
+                        showLog("onTextChanged", "text was pasted")
 
+                        if (s.length > 120) {
+                            flagIsMore120 = true
+                            flagIsLess120 = false
+                        }
+                    }
+                    binding.edtThought.hint = ""
+                    updateViewAsPerTextLimit()
+                }
+//                handler.removeCallbacks(input_finish_checker);
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+//                if (s!!.isNotEmpty()) {
+//                    last_text_edit = System.currentTimeMillis();
+//                    handler.postDelayed(input_finish_checker, delay);
+//                }
             }
         })
 
-        thoughtColorPatternAdapter = ThoughtColorPatternAdapter(fragmentActivity, colorArrayThoughts, colorFontArrayThoughts, patternArrayThoughts, 0)
+        thoughtColorPatternAdapter = ThoughtColorPatternAdapter(fragmentActivity, colorBackgroundArrayThoughts, colorFontArrayThoughts, patternArrayThoughts, 0)
         binding.rvColorPattern.adapter = thoughtColorPatternAdapter
 
         initPaging()
         callAPIPattern()
+    }
+
+    var flagIsLess120 = true
+    var flagIsMore120 = false
+
+    private fun updateViewAsPerTextLimit() {
+        if (binding.edtThought.text.toString().trim().length > 120) {
+
+            if (flagIsMore120) {
+                flagIsMore120 = false
+                flagIsLess120 = true
+
+                showLog("updateViewAsPerTextLimit", "121," + binding.edtThought.text.toString().trim().length)
+
+                //Set Background Color White
+                binding.rlText.setBackgroundColor(Color.WHITE)
+
+                //Set Font Size
+                binding.edtThought.textSize = 16f
+
+                //Hide All Editing Tools
+                binding.llEdit.visibility = View.INVISIBLE
+                binding.imgSelect.visibility = View.INVISIBLE
+
+                //Remove All Effects
+                binding.edtThought.setTextColor(colorFontArrayThoughts[0])
+                binding.edtThought.gravity = Gravity.LEFT or Gravity.TOP
+                binding.edtThought.setTypeface(Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[0]), Typeface.NORMAL)
+
+//            val htmlString = binding.edtThought.text!!.trim().toString()
+//            binding.edtThought.setText(Html.fromHtml(htmlString))
+
+            }
+
+        } else {
+
+            if (flagIsLess120) {
+                flagIsLess120 = false
+                flagIsMore120 = true
+
+                showLog("updateViewAsPerTextLimit", "1, " + binding.edtThought.text.toString().trim().length)
+
+                //Set Background Color White
+                binding.rlText.setBackgroundColor(colorBg)
+
+                //Set Font Size
+                binding.edtThought.textSize = 24f
+
+                //Hide All Editing Tools
+                binding.llEdit.visibility = View.VISIBLE
+                binding.imgSelect.visibility = View.VISIBLE
+
+                //Apply All Effects as per previous selection
+                binding.edtThought.setTextColor(colorFont)
+                setPosition()
+
+                binding.edtThought.setTypeface(Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]), Typeface.NORMAL)
+
+                if (isBold == 1) binding.edtThought.setTypeface(Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]), if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD)
+                if (isItalic == 1) binding.edtThought.setTypeface(Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]), if (isBold == 1) Typeface.BOLD_ITALIC else Typeface.ITALIC)
+
+                if (isUnderline == 1) {
+                    val htmlString = "<u>" + binding.edtThought.text!!.trim().toString() + "</u>"
+//                binding.edtThought.setText(Html.fromHtml(htmlString))
+                }
+            }
+
+
+        }
     }
 
     private fun clickListerner() {
@@ -208,7 +306,25 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
                 else binding.rvColorPattern.visibility = View.VISIBLE
             }
             R.id.imgFont -> setFont()
-            R.id.imgPosition -> setPosition()
+            R.id.imgPosition -> {
+
+                when (gravity) {
+                    0 -> {  // left
+                        gravity = 1
+                        currGravity = 0
+                    }
+                    1 -> {  // center
+                        gravity = 2
+                        currGravity = 1
+                    }
+                    2 -> {  // right
+                        gravity = 0
+                        currGravity = 2
+                    }
+                }
+
+                setPosition()
+            }
             R.id.imgBold -> setBold()
             R.id.imgItalik -> setItalic()
             R.id.imgUnderline -> setUnderline()
@@ -218,7 +334,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
     }
 
     private fun changeStyle(type: Int) {
-        thoughtColorPatternAdapter = ThoughtColorPatternAdapter(fragmentActivity, colorArrayThoughts, colorFontArrayThoughts, patternArrayThoughts, type)
+        thoughtColorPatternAdapter = ThoughtColorPatternAdapter(fragmentActivity, colorBackgroundArrayThoughts, colorFontArrayThoughts, patternArrayThoughts, type)
         binding.rvColorPattern.adapter = thoughtColorPatternAdapter
         if (binding.cvColor.visibility == View.VISIBLE) binding.cvColor.visibility = View.GONE
 
@@ -258,33 +374,63 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
         }
     }
 
+
     private fun setUnderline() {
         if (isUnderline == 0) {
             isUnderline = 1
-            binding.edtThought.setUnderlineColor(Color.BLACK)
+            val htmlString = "<u>" + binding.edtThought.text!!.trim().toString() + "</u>"
+            binding.edtThought.setText(Html.fromHtml(htmlString))
+
+//            binding.edtThought.paint.isUnderlineText = true
+
+//            val content = SpannableString(binding.edtThought.text!!.trim().toString())
+//            content.setSpan(UnderlineSpan(), 0, binding.edtThought.text!!.trim().toString().length, 0)
+//            binding.edtThought.setText(content)
+//            binding.edtThought.setUnderlineColor(Color.BLACK)
         } else {
             isUnderline = 0
-            binding.edtThought.setUnderlineColor(Color.TRANSPARENT)
+//            binding.edtThought.setUnderlineColor(Color.TRANSPARENT)
+            val htmlString = binding.edtThought.text!!.trim().toString()
+            binding.edtThought.setText(Html.fromHtml(htmlString))
+
+//            binding.edtThought.paint.isUnderlineText = false
+
+//            val content = SpannableString(binding.edtThought.text!!.trim().toString())
+//            content.setSpan(UnderlineSpan(), 0, 0, 0)
+//            binding.edtThought.setText(content)
         }
     }
 
     private fun setItalic() {
         if (isItalic == 0) {
             isItalic = 1
-            binding.edtThought.setTypeface(null, if (isBold == 1) Typeface.BOLD_ITALIC else Typeface.ITALIC)
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isBold == 1) Typeface.BOLD_ITALIC else Typeface.ITALIC
+            )
         } else {
             isItalic = 0
-            binding.edtThought.setTypeface(null, if (isBold == 1) Typeface.BOLD else Typeface.NORMAL)
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isBold == 1) Typeface.BOLD else Typeface.NORMAL
+            )
         }
     }
 
     private fun setBold() {
         if (isBold == 0) {
             isBold = 1
-            binding.edtThought.setTypeface(null, if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD)
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD
+            )
+
         } else {
             isBold = 0
-            binding.edtThought.setTypeface(null, if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL)
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL
+            )
         }
     }
 
@@ -295,6 +441,20 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
         Log.e("countFont: ", countFont.toString())
         binding.edtThought.typeface = Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont])
 
+        if (isBold == 1) {
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isItalic == 1) Typeface.BOLD_ITALIC else Typeface.BOLD
+            )
+        }
+
+        if (isItalic == 1) {
+            binding.edtThought.setTypeface(
+                Typeface.createFromAsset(requireActivity().assets, fontArrayThoughts[countFont]),
+                if (isBold == 1) Typeface.BOLD_ITALIC else Typeface.ITALIC
+            )
+        }
+
 //        binding.edtThought.setTypeface(null, if (isItalic == 1) Typeface.ITALIC else Typeface.NORMAL)
     }
 
@@ -303,23 +463,23 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
             0 -> {  // left
                 binding.imgPosition.setImageResource(R.drawable.ic_aline_center)
 
-                binding.rlText.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
-                gravity = 1
-                currGravity = 0
+                binding.edtThought.gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
+//                gravity = 1
+//                currGravity = 0
             }
             1 -> {  // center
                 binding.imgPosition.setImageResource(R.drawable.ic_aline_right)
 
-                binding.rlText.gravity = Gravity.CENTER
-                gravity = 2
-                currGravity = 1
+                binding.edtThought.gravity = Gravity.CENTER
+//                gravity = 2
+//                currGravity = 1
             }
             2 -> {  // right
                 binding.imgPosition.setImageResource(R.drawable.ic_aline_left)
 
-                binding.rlText.gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
-                gravity = 0
-                currGravity = 2
+                binding.edtThought.gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL
+//                gravity = 0
+//                currGravity = 2
             }
         }
     }
@@ -446,7 +606,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
                 return
             }
 
-            var gravity = if (currGravity == 0) "left" else if (currGravity == 1) "center" else "right"
+            var gravity = if (gravity == 0) "left" else if (gravity == 1) "center" else "right"
             var thought = if (binding.edtThought.text.toString().length > 120) "article" else "text"
 
             var colorBackground = '#' + Integer.toHexString(colorBg)

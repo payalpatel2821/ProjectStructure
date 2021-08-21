@@ -2,24 +2,30 @@ package com.task.newapp.service
 
 import android.app.Activity
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.JobIntentService
 import androidx.core.app.NotificationCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.luck.picture.lib.config.PictureMimeType
+import com.luck.picture.lib.entity.LocalMedia
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.models.CommonResponse
-import com.task.newapp.models.post.Post_Uri_Model
 import com.task.newapp.ui.activities.MainActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.compressor.SiliCompressor
+import com.task.newapp.utils.simplecropview.BasicFragment
 import com.vincent.videocompressor.VideoCompress
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -48,7 +54,7 @@ class FileUploadService : JobIntentService() {
     var thumbarray: ArrayList<MultipartBody.Part> = ArrayList<MultipartBody.Part>()
     var imagearray: ArrayList<MultipartBody.Part> = ArrayList<MultipartBody.Part>()
     var count = 0
-    private lateinit var arrayListMedia: ArrayList<Post_Uri_Model>
+    private lateinit var arrayListMedia: ArrayList<LocalMedia>
     private val mCompositeDisposable = CompositeDisposable()
 
     var onPostDoneClickListenerService: OnPostDoneClickListenerService? = null
@@ -216,7 +222,7 @@ class FileUploadService : JobIntentService() {
         commaSeperatedIds = intent.getStringExtra("commaSeperatedIds").toString()
         switchTurnOff = intent.getStringExtra("switchTurnOff").toString()
 
-        val type: Type = object : TypeToken<ArrayList<Post_Uri_Model>>() {}.type
+        val type: Type = object : TypeToken<ArrayList<LocalMedia>>() {}.type
         arrayListMedia = Gson().fromJson(intent.getStringExtra("mediaItemsArray"), type)
 
 //        if (caption == null) {
@@ -285,9 +291,38 @@ class FileUploadService : JobIntentService() {
                         val image_name = "contents[$index][file]"
 
                         captionarray.add(MultipartBody.Part.createFormData(cap_name, caption))
-                        typearray.add(MultipartBody.Part.createFormData(type_name, postUriModel.type))
+//                        typearray.add(MultipartBody.Part.createFormData(type_name, postUriModel.type))
 
-                        val myfile: File = File(postUriModel.file_path)
+                        //Add New
+//                        var type = if (PictureMimeType.isHasImage(postUriModel.mimeType)) "image" else "video"
+                        var type = if (isImageFile(postUriModel.path)) "image" else "video"
+                        typearray.add(MultipartBody.Part.createFormData(type_name, type))
+
+                        var filePath: String = ""
+
+                        if (type == "image") {
+//                            filePath = if (postUriModel.isCut && !postUriModel.isCompressed) {
+//                                // Cropped
+//                                postUriModel.cutPath
+//                            } else if (postUriModel.isCompressed || postUriModel.isCut && postUriModel.isCompressed) {
+//                                // Compressed, or cropped and compressed at the same time, the final compressed image shall prevail
+//                                postUriModel.compressPath
+//                            }
+////                        else if (PictureMimeType.isHasVideo(postUriModel.mimeType) && !TextUtils.isEmpty(postUriModel.coverPath)) {
+////                            postUriModel.coverPath
+////                        }
+//                            else {
+//                                // Original image
+//                                postUriModel.path
+//                            }
+
+                            filePath = getRealPathFromURI(context, Uri.parse(postUriModel.path)).toString()
+
+                        } else {
+                            filePath = postUriModel.path
+                        }
+
+                        val myfile: File = File(filePath)
 
                         val mainFolder = File(Environment.getExternalStorageDirectory().absolutePath + "/HOW")
                         if (!mainFolder.exists()) {
@@ -303,26 +338,27 @@ class FileUploadService : JobIntentService() {
                         val storedThumbPath: File = File(fileImage, System.currentTimeMillis().toString() + "_thumb.jpg")
 
                         //Check image or video
-                        if (postUriModel.type == "image") {
+                        if (type == "image") {
 
-//                            if (myfile.length() / 1024 > 25600) {  // More than 25 MB
-                            Log.e("uploadPost: >25MB ", myfile.toString())
+                            if (myfile.length() / 1024 > 5600) {  // More than 25 MB == 25600
+                                Log.e("uploadPost: >25MB ", myfile.toString())
 
-                            //Compress and Stored in .temp folder
-                            val filePath: String = SiliCompressor.with(context).compress(
-                                postUriModel.file_path,
-                                storedThumbPath,
-                                0
-                            )
-                            thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
-                            //thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))
-//                            }
-//                            else {
+                                //Compress and Stored in .temp folder
+                                val compressedPath: String = SiliCompressor.with(context).compress(
+                                    filePath,
+                                    storedThumbPath,
+                                    0
+                                )
+                                //thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
+                                thumbarray.add(prepareFilePart(thumb_name, compressedPath, "image/*"))
+
+                            } else {
 //                                Log.e("uploadPost: ", postUriModel.file_path.toString())
-//                                thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))
-//                            }
+                                thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
+                            }
+
                             //Original
-                            imagearray.add(prepareFilePart(image_name, postUriModel.file_path, "image/*"))
+                            imagearray.add(prepareFilePart(image_name, filePath, "image/*"))
                             count++
                             onProgress(count)
 
@@ -333,6 +369,7 @@ class FileUploadService : JobIntentService() {
 
                         } else {
                             //Video
+                            onProgress(count)
 
                             if (myfile.length() / 1024 > 51200) {  // More than 51 MB
                                 Log.e("uploadPost: >51MB ", myfile.toString())
@@ -359,7 +396,7 @@ class FileUploadService : JobIntentService() {
 
                                 val destPath: String = outputFile
 
-                                VideoCompress.compressVideoLow(postUriModel.file_path, destPath, object : VideoCompress.CompressListener {
+                                VideoCompress.compressVideoLow(filePath, destPath, object : VideoCompress.CompressListener {
                                     override fun onStart() {
                                         showLog("VideoCompress", "onStart")
 //                                        tv_indicator.setText(
@@ -395,19 +432,21 @@ class FileUploadService : JobIntentService() {
                                             Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
                                         }
 
-                                        //------------------------------thumb------------------------------
-                                        if (storeImage(bitmap, storedThumbPath)) {
-                                            thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
-                                        }
+                                        if (bitmap != null) {
+                                            //------------------------------thumb------------------------------
+                                            if (storeImage(bitmap, storedThumbPath)) {
+                                                thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
+                                            }
 
-                                        //Original
-                                        imagearray.add(prepareFilePart(image_name, destPath, "video/*"))
+                                            //Original
+                                            imagearray.add(prepareFilePart(image_name, destPath, "video/*"))
 
-                                        count++
-                                        onProgress(count)
-                                        if (count == arrayListMedia.size) {
-                                            showLog("VideoCompress", "callAPIPost_$count")
-                                            callAPIPost(caption)
+                                            count++
+                                            onProgress(count)
+                                            if (count == arrayListMedia.size) {
+                                                showLog("VideoCompress", "callAPIPost_$count")
+                                                callAPIPost(caption)
+                                            }
                                         }
                                     }
 
@@ -452,7 +491,7 @@ class FileUploadService : JobIntentService() {
 //                                imagearray.add(prepareFilePart(image_name, destPath, "video/*"))
 
                             } else {
-                                Log.e("uploadPost: ", postUriModel.file_path.toString())
+                                Log.e("uploadPost: ", filePath.toString())
 
                                 //Stored in .temp folder
 //                                val filePath: String = SiliCompressor.with(activity).compressVideo(
@@ -460,7 +499,20 @@ class FileUploadService : JobIntentService() {
 //                                    storedThumbPath.path
 //                                )
 
-                                VideoCompress.compressVideoLow(postUriModel.file_path, storedThumbPath.path, object : VideoCompress.CompressListener {
+                                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                                val outputName = "compress$timeStamp.mp4"
+
+                                val outputFile: String = checkCompressfolder().toString() + "/" + outputName  // /HOW/.compressvideo
+
+                                //Stored in .compressvideo folder
+//                                val compressVideoPath: String = SiliCompressor.with(activity).compressVideo(
+//                                    postUriModel.file_path,
+//                                    outputFile
+//                                )
+
+                                val destPath: String = outputFile
+
+                                VideoCompress.compressVideoLow(filePath, destPath, object : VideoCompress.CompressListener {
                                     override fun onStart() {
                                         showLog("VideoCompress", "onStart")
 //                                        tv_indicator.setText(
@@ -473,15 +525,6 @@ class FileUploadService : JobIntentService() {
                                     }
 
                                     override fun onSuccess() {
-                                        count++
-                                        onProgress(count)
-                                        showLog("VideoCompress", "onSuccess")
-
-                                        if (count == arrayListMedia.size) {
-                                            showLog("VideoCompress", "callAPIPost_$count")
-                                            callAPIPost(caption)
-                                        }
-
 //                                        val previous: String = tv_indicator.getText().toString()
 //                                        tv_indicator.setText(
 //                                            (previous + "\n"
@@ -495,7 +538,31 @@ class FileUploadService : JobIntentService() {
 //                                        Util.writeFile(this@MainActivity)
 
                                         //---------------------------New added-----------------------------
-                                        thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
+                                        val retriever = MediaMetadataRetriever()
+                                        retriever.setDataSource(destPath)
+                                        val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                        val bitmap: Bitmap = if (extractedImage!!.height > 500 && extractedImage.width > 500) {
+                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width / 3, extractedImage.height / 3, true)
+                                        } else {
+                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
+                                        }
+
+                                        //------------------------------thumb------------------------------
+                                        if (storeImage(bitmap, storedThumbPath)) {
+                                            thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
+                                        }
+
+                                        //Original
+                                        imagearray.add(prepareFilePart(image_name, filePath, "video/*"))
+
+                                        count++
+                                        onProgress(count)
+                                        showLog("VideoCompress", "onSuccess")
+
+                                        if (count == arrayListMedia.size) {
+                                            showLog("VideoCompress", "callAPIPost_$count")
+                                            callAPIPost(caption)
+                                        }
                                     }
 
                                     override fun onFail() {
@@ -521,12 +588,13 @@ class FileUploadService : JobIntentService() {
 
 //                                thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
 //
-//                                //Original
-                                imagearray.add(prepareFilePart(image_name, postUriModel.file_path, "video/*"))
+////                                //Original
+//                                imagearray.add(prepareFilePart(image_name, filePath, "video/*"))
                             }
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
+                        Log.e("uploadPost: ", e.toString())
                         count++
                         onProgress(count)
 
@@ -572,7 +640,7 @@ class FileUploadService : JobIntentService() {
 
                             onSuccess()
 
-                            //Close bottom sheet andrefresh post list
+                            //Close bottom sheet and refresh post list
 //                            dismiss()
                             onPostDoneClickListenerService?.onPostClickService()
 
@@ -612,5 +680,18 @@ class FileUploadService : JobIntentService() {
         onPostDoneClickListenerService = listener
     }
 
+    private fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
+        val result: String?
+        val cursor = context.contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) {
+            result = contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
+    }
 
 }

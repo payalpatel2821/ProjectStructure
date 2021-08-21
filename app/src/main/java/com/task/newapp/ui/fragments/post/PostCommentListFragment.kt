@@ -314,7 +314,8 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                 Constants.is_comment_reply to 0,
                 Constants.type to "comment",
                 Constants.comment_text to commentText,
-                Constants.post_id to postId
+                Constants.post_id to postId,
+                Constants.main_comment_id to 0
             )
 
             openProgressDialog(activity)
@@ -372,6 +373,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                                                 commentText = comment_text.toString(),
                                                 user = commentUser,
                                                 updatedAt = formattedDate,
+                                                mainCommentId = 0
                                             )
 
                                         tempArrayList.add(postDataModel)
@@ -451,8 +453,8 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                 override fun onPositiveButtonClick() {
                     if (activity!!.isNetworkConnected()) {
                         if (position < postCommentAdapter.getData()!!.size) {
-                            var commentId = postCommentAdapter.getData()[position].commentReply!!.id
-                            deleteComment(position, "reply", commentId)
+//                            var commentId = postCommentAdapter.getData()[position].commentReply!!.id
+//                            deleteComment(position, "reply", commentId)
                         }
                     } else {
                         Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
@@ -490,8 +492,8 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                                 if (reply == "reply") {
 //                                    val view: View = Show_Post.getInstance().manager.findViewByPosition(position)
 //                                    if (view != null) {
-                                    postCommentAdapter.getData()[position].commentReply = null
-                                    postCommentAdapter.notifyItemChanged(position)
+//                                    postCommentAdapter.getData()[position].commentReply = null
+//                                    postCommentAdapter.notifyItemChanged(position)
 
                                     onChangePostItem!!.onChangePostItem(
                                         responseGetPostComment.data?.commentText ?: "",
@@ -594,33 +596,33 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 
                                     val data = responseAddPostComment.data
 
-                                    val commentReplyUser =
-                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply.User(
-                                            data!!.first_name!!,
-                                            "",
-                                            0,
-                                            data!!.last_name!!,
-                                            ""
-                                        )
-
-                                    val comment_reply =
-                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply(
-                                            0,
-                                            data!!.comment_text!!,
-                                            "",
-                                            data!!.id,
-                                            0,
-                                            0,
-                                            0,
-                                            "",
-                                            data!!.updated_at!!,
-                                            commentReplyUser,
-                                            0
-                                        )
-
-                                    postCommentAdapter.allPostCommentDataList!![position].commentReply = comment_reply
-//                                    comments.setText(response.body().getData().getTotal_comment().toString() + " Comments")
-                                    postCommentAdapter.notifyDataSetChanged()
+//                                    val commentReplyUser =
+//                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply.User(
+//                                            data!!.first_name!!,
+//                                            "",
+//                                            0,
+//                                            data!!.last_name!!,
+//                                            ""
+//                                        )
+//
+//                                    val comment_reply =
+//                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply(
+//                                            0,
+//                                            data!!.comment_text!!,
+//                                            "",
+//                                            data!!.id,
+//                                            0,
+//                                            0,
+//                                            0,
+//                                            "",
+//                                            data!!.updated_at!!,
+//                                            commentReplyUser,
+//                                            0
+//                                        )
+//
+//                                    postCommentAdapter.allPostCommentDataList!![position].commentReply = comment_reply
+////                                    comments.setText(response.body().getData().getTotal_comment().toString() + " Comments")
+//                                    postCommentAdapter.notifyDataSetChanged()
                                 }
                             }
                         }

@@ -22,6 +22,7 @@ import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
+import com.luck.picture.lib.instagram.InsGallery
 import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.App.Companion.fastSave
@@ -36,6 +37,8 @@ import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.ShowPostActivity
 import com.task.newapp.utils.*
+import com.task.newapp.utils.instapicker.GlideCacheEngine
+import com.task.newapp.utils.instapicker.GlideEngine
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -175,11 +178,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     override fun onClick(v: View) {
         when (v.id) {
             R.id.ll_moments_photos -> {
-//                myBottomSheetMoment = MomentsFragment().newInstance(post_id.toString())
-//                myBottomSheetMoment.show(childFragmentManager, myBottomSheetMoment.tag)
+//                selectionType = MediaPickerFragment.PickerType.PHOTO.name
+//                openPicker(MediaPickerFragment.PickerType.PHOTO, Constants.MAX_IMAGE_COUNT)
 
-                selectionType = MediaPickerFragment.PickerType.PHOTO.name
-                openPicker(MediaPickerFragment.PickerType.PHOTO, Constants.MAX_IMAGE_COUNT)
+                myBottomSheetMoment = MomentsFragment().newInstance(ArrayList(), selectionType)
+//            myBottomSheetMoment.setListener(this)
+                myBottomSheetMoment!!.show(childFragmentManager, myBottomSheetMoment!!.tag)
+
             }
             R.id.ll_moments_videos -> {
 //                val ft: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
@@ -187,8 +192,12 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //                ft.replace(R.id.your_placeholder, fragmentDemo)
 //                ft.commit()
 
-                selectionType = MediaPickerFragment.PickerType.VIDEO.name
-                openPicker(MediaPickerFragment.PickerType.VIDEO, Constants.MAX_VIDEO_COUNT)
+//                selectionType = MediaPickerFragment.PickerType.VIDEO.name
+//                openPicker(MediaPickerFragment.PickerType.VIDEO, Constants.MAX_VIDEO_COUNT)
+
+                myBottomSheetMoment = MomentsFragment().newInstance(ArrayList(), selectionType)
+//            myBottomSheetMoment.setListener(this)
+                myBottomSheetMoment!!.show(childFragmentManager, myBottomSheetMoment!!.tag)
             }
             R.id.ll_thoughts -> {
                 myBottomSheetThought = ThoughtFragment().newInstance(post_id.toString())
@@ -1039,4 +1048,5 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             e.printStackTrace()
         }
     }
+
 }
