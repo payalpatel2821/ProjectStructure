@@ -5,12 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
 import android.widget.CompoundButton
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
-import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.peekandpop.shalskar.peekandpop.PeekAndPop
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityMyProfileBinding
@@ -26,7 +29,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.*
-import kotlin.math.roundToInt
 
 
 class MyProfileActivity : AppCompatActivity() {
@@ -56,16 +58,50 @@ class MyProfileActivity : AppCompatActivity() {
 
     }
 
+    private fun initPeakPop(profileImage: String, userName: String, profileColor: String) {
+        val peekAndPop = PeekAndPop.Builder(this)
+            .peekLayout(R.layout.item_edit_profile)
+            .longClickViews(binding.ivProfile)
+            .onHoldAndReleaseListener(object : PeekAndPop.OnHoldAndReleaseListener {
+                override fun onHold(view: View?, position: Int) {
+                    if (view?.id == R.id.txt_edit_profile) {
+                        showToast("onHold click edit proile")
+                    } else {
+                        showToast("onHold click edit other")
+                    }
+                }
+
+                override fun onLeave(view: View?, position: Int) {
+                    showToast("onLeave click edit profile")
+                }
+
+                override fun onRelease(view: View?, position: Int) {
+                    showToast("onRelease click edit profile")
+                }
+
+            })
+            .build()
+
+        val peekView = peekAndPop.peekView
+        val ivProfile: ImageView = peekView.findViewById(R.id.iv_profile)
+        val cardEditOption: CardView = peekView.findViewById(R.id.card_edit_option)
+
+        cardEditOption.visibility = GONE
+        peekAndPop.addHoldAndReleaseView(R.id.txt_edit_profile)
+        ivProfile.load(profileImage, true, userName, profileColor)
+    }
+
     private fun setData(data: ResponseMyProfile.MyProfileData) {
         val contentMyProfile: ContentMyProfileActivityBinding = binding.layoutContentMyprofile
-        Glide.with(this).asBitmap().load(data.profile_image).into(binding.ivProfile)
         contentMyProfile.txtFollowingCount.text = data.following
         contentMyProfile.txtFollowerCount.text = data.followers
         contentMyProfile.txtProfileviewCount.text = data.profile_views.toString()
 
         contentMyProfile.txtUsername.text = data.first_name + " " + data.last_name
         contentMyProfile.txtAccId.text = data.account_id
-        contentMyProfile.txtStatus.text = data.status
+        contentMyProfile.txtStatus.text = data.about
+        initPeakPop(data.profile_image, contentMyProfile.txtUsername.text.trim().toString(), data.profile_color)
+        binding.ivProfile.load(data.profile_image, true, contentMyProfile.txtUsername.text.toString(), data.profile_color)
 
         contentMyProfile.switchVisibility.isChecked = data.usersetting.is_visible == 1
         contentMyProfile.switchShowmenearby.isChecked = data.usersetting.near_location == 1
@@ -76,20 +112,17 @@ class MyProfileActivity : AppCompatActivity() {
 
         callAPISetVisibility()
         callAPISetShowNearBy()
-
     }
 
     private fun setBottomSheet() {
-
         binding.ivProfile.layoutParams.height =
-            ((getDisplayMatrix().heightPixels / 1.4).roundToInt())
+            ((getDisplayMatrix().widthPixels))
         var sheetBehavior = BottomSheetBehavior.from(binding.layoutContentMyprofile.bottomSheet)
 
         sheetBehavior.state = BottomSheetBehavior.STATE_DRAGGING
         binding.layoutContentMyprofile.bottomSheet.requestLayout()
 
         sheetBehavior.isHideable = false
-
     }
 
     private fun callAPIGetMyProfile() {
@@ -108,10 +141,10 @@ class MyProfileActivity : AppCompatActivity() {
                     .subscribeWith(object : DisposableObserver<ResponseMyProfile>() {
                         override fun onNext(loginResponse: ResponseMyProfile) {
                             Log.v("onNext: ", loginResponse.toString())
-                            showToast(loginResponse.message)
-
                             if (loginResponse.success == 1) {
                                 setData(loginResponse.data)
+                            } else {
+                                showToast(loginResponse.message)
                             }
                         }
 
@@ -200,8 +233,6 @@ class MyProfileActivity : AppCompatActivity() {
                         }
                     )
 
-//                    openProgressDialog(this@MyProfileActivity)
-
                     mCompositeDisposable.add(
                         ApiClient.create()
                             .setUserSetting(hashMap)
@@ -210,11 +241,10 @@ class MyProfileActivity : AppCompatActivity() {
                             .subscribeWith(object : DisposableObserver<ResponseUserSetting>() {
                                 override fun onNext(loginResponse: ResponseUserSetting) {
                                     Log.v("onNext: ", loginResponse.toString())
-                                    showToast(loginResponse.message)
-
                                     if (loginResponse.success == 0) {
+                                        showToast(loginResponse.message)
                                         binding.layoutContentMyprofile.switchVisibility.isSelected =
-                                            isChecked
+                                            !isChecked
                                     }
                                 }
 
@@ -272,7 +302,7 @@ class MyProfileActivity : AppCompatActivity() {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra(Constants.user_id, 0)
                     putExtra(Constants.type, PostNavigation.FROM_POST.flag)
-                    putExtra(Constants.title, PostNavigation.FROM_POST.title)
+                    putExtra(Constants.title, PostNavigation.FROM_MY_POST.title)
                 }
             }
             R.id.txt_tagged_post -> {
@@ -296,14 +326,13 @@ class MyProfileActivity : AppCompatActivity() {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra(Constants.user_id, 0)
                     putExtra(Constants.type, resources.getString(R.string.my_pages))
-//                    putExtra(Constants.title, PostNavigation.FROM_POST.title)
                 }
             }
             R.id.rl_frds -> {
                 val intent = Intent(this, FollowesFollowingListActivity::class.java)
                 intent.putExtra("By", "My")
                 intent.putExtra("From", ProfileNavigation.FROM_FRIENDS.fromname)
-                intent.putExtra("Title", ProfileNavigation.FROM_FRIENDS.title)
+                intent.putExtra("Title", ProfileNavigation.FROM_MY_FRIENDS.title)
                 resultLauncher.launch(intent)
             }
             R.id.rl_grps -> {
@@ -311,6 +340,9 @@ class MyProfileActivity : AppCompatActivity() {
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     putExtra(Constants.type, "My")
                 }
+            }
+            R.id.viewaa->{
+
             }
         }
     }
@@ -326,4 +358,5 @@ class MyProfileActivity : AppCompatActivity() {
         super.onDestroy()
         mCompositeDisposable.clear()
     }
+
 }

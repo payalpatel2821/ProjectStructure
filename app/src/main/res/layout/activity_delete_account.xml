@@ -28,11 +28,12 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/styleTextViewLarge"
+                    style="@style/styleTextViewActionbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_25sdp"
-                    android:text="@string/delete_account" />
+                    android:text="@string/delete_account"
+                    />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_layout_email"
@@ -51,13 +52,13 @@
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_email"
+                        style="@style/styleEditTextNormal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="@string/enter_email_address"
                         android:imeOptions="actionNext"
                         android:inputType="text|textNoSuggestions"
-                        android:singleLine="true"
-                        android:textSize="@dimen/_12ssp">
+                        android:singleLine="true">
                     </androidx.appcompat.widget.AppCompatEditText>
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -78,12 +79,12 @@
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_password"
+                        style="@style/styleEditTextNormal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="@string/password"
                         android:imeOptions="actionNext"
-                        android:inputType="textPassword"
-                        android:textSize="@dimen/_12ssp" />
+                        android:inputType="textPassword" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,7 +111,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="text|textNoSuggestions"
                         android:singleLine="true"
-                        android:textSize="@dimen/_12ssp">
+                        style="@style/styleEditTextNormal">
 
                     </androidx.appcompat.widget.AppCompatEditText>
                 </com.google.android.material.textfield.TextInputLayout>

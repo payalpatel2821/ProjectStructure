@@ -7,12 +7,14 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.RelativeLayout
 import com.task.newapp.R
+import com.task.newapp.utils.shadowpost.dpToPx
 import java.util.*
 
 
@@ -98,26 +100,15 @@ class RippleBackground : RelativeLayout {
 
     private inner class RippleView(context: Context?) : View(context) {
         override fun onDraw(canvas: Canvas) {
-            //val radius = Math.min(width, height) / 4
-            // canvas.drawCircle(radius.toFloat(), radius.toFloat(), radius - rippleStrokeWidth, paint!!)
-//            canvas.drawRoundRect(RectF(0F, 0F, 200F, 200F), 10F, 10F, paint!!)
-
-//            canvas.drawRoundRect(
-////                RectF(
-//                    0F, // left
-//                    0F, // top
-//                    200F, // right
-//                    200F // bottom
-////                )
-//            , 5F, 5F, paint!!
-//            )
-            canvas.drawRect(0F, 0F, 200F, 200F, paint!!)
+            canvas.drawRoundRect(0F, 0F, width.toFloat(), height.toFloat(), dpToPx(10F).toFloat(), dpToPx(10F).toFloat(), paint!!);
         }
 
         init {
             this.visibility = INVISIBLE
         }
+
     }
+
 
     fun startRippleAnimation() {
         if (!isRippleAnimationRunning) {

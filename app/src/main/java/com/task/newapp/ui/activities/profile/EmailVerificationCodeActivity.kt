@@ -200,7 +200,7 @@ class EmailVerificationCodeActivity : AppCompatActivity(), View.OnClickListener 
     private fun startTimer() {
         binding.txtTimer.text = "00:00"
 
-        countDownTimer = object : CountDownTimer(30000, 1000) {
+        countDownTimer = object : CountDownTimer(120000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.txtTimer.text = (millisUntilFinished / 1000).toString()

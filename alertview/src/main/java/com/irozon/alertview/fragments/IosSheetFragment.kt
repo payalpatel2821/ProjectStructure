@@ -23,16 +23,16 @@ import java.util.*
 @SuppressLint("ValidFragment")
 class IosSheetFragment(
     private val title: String, private val message: String, private val actions: ArrayList<AlertAction>,
-    private val theme: AlertTheme, private val cancelButtonText: String
+    private val theme: AlertTheme, private val cancelButtonText: String, private val cancelButtonTextColor: Int
 ) : BottomSheetDialogFragment() {
     private var withIcons: Boolean? = false
 
-    constructor(title: String, withIcons: Boolean? = false, message: String, actions: ArrayList<AlertAction>, theme: AlertTheme, cancelButtonText: String) : this(
+    constructor(title: String, withIcons: Boolean? = false, message: String, actions: ArrayList<AlertAction>, theme: AlertTheme, cancelButtonText: String,cancelButtonTextColor: Int) : this(
         title,
         message,
         actions,
         theme,
-        cancelButtonText
+        cancelButtonText,cancelButtonTextColor
     ) {
         this.withIcons = withIcons
     }
@@ -62,6 +62,7 @@ class IosSheetFragment(
         view?.tvTitle?.text = title
         view?.tvMessage?.text = message
         view?.tvCancel?.text = cancelButtonText
+        view?.tvCancel?.setTextColor(cancelButtonTextColor)
         view?.tvCancel?.visibility = View.VISIBLE
 
         // In case of title or message is empty

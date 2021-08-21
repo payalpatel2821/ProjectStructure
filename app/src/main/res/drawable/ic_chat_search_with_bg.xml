@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="@dimen/_20sdp"
+        android:height="@dimen/_20sdp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/yellow1" />
+            <corners android:radius="@dimen/_3sdp" />
+        </shape>
+    </item>
+    <item
+        android:width="@dimen/_10sdp"
+        android:height="@dimen/_10sdp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_search_chat">
+
+    </item>
+</layer-list>

@@ -15,4 +15,14 @@ data class OtherUserModel(
     val profileImage: String,
     @SerializedName("profile_color")
     val profileColor: String,
+    @SerializedName("is_follow")
+    var is_follow: Int,
+    @SerializedName("user_id")
+    var user_id: Int,
+    @SerializedName("follow_id")
+    var follow_id: Int,
+    @SerializedName("account_id")
+    val account_id: String,
+    @SerializedName("view_date")
+    val view_date: String
 )

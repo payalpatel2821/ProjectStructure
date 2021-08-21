@@ -10,6 +10,8 @@
     <!--    <color name="teal_200">#FF03DAC5</color>-->
     <!--    <color name="teal_700">#FF018786</color>-->
     <color name="black">#FF000000</color>
+    <color name="blue_opacity">#80041B33</color>
+    <color name="black_opacity">#CC000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="theme_color">#6CAEC4</color>
     <color name="gray">#AAA1A1</color>
@@ -52,6 +54,7 @@
     <color name="resend_request_btn_color">#353A5D</color>
     <color name="chat_icon_color">#353e54</color>
     <color name="chat_icon_disable_color">#bcbfc6</color>
+    <color name="edit_profile_text_color">#647B99</color>
 
     <!--photo editor-->
     <color name="blue_color_picker">#0066FF</color>
@@ -61,6 +64,7 @@
     <color name="red_color_picker">#ED0A3F</color>
     <color name="red_orange_color_picker">#FF3F34</color>
     <color name="red">#FF5B5B</color>
+    <color name="dark_red">#E62325</color>
     <color name="sky_blue_color_picker">#76D7EA</color>
     <color name="violet_color_picker">#8359A3</color>
     <color name="yellow_color_picker">#FBE870</color>

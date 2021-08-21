@@ -12,11 +12,11 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txt_title"
-            style="@style/styleTextViewSmall"
+            style="@style/styleTextViewNormal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/_10sdp"
+            android:layout_margin="@dimen/_10sdp"
             android:text="@string/conform_report" />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -43,36 +43,36 @@
                 android:id="@+id/txt_yes"
                 android:layout_width="@dimen/_100sdp"
                 android:layout_height="wrap_content"
-                style="@style/styleTextViewSmall"
+                style="@style/styleTextViewSmallBold"
                 android:background="@drawable/btn_rect_rounded_bg"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingLeft="@dimen/_20sdp"
-                android:paddingTop="@dimen/_5sdp"
+                android:paddingTop="@dimen/_8sdp"
                 android:paddingRight="@dimen/_20sdp"
-                android:paddingBottom="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_8sdp"
                 android:text="@string/yes"
                 android:textColor="@color/green"
-                android:layout_margin="@dimen/_5sdp"/>
+                android:layout_margin="@dimen/_8sdp"/>
 
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_no"
                 android:layout_width="@dimen/_100sdp"
                 android:layout_height="wrap_content"
-                style="@style/styleTextViewSmall"
+                style="@style/styleTextViewSmallBold"
                 android:background="@drawable/btn_rect_rounded_bg"
                 android:backgroundTint="@color/white"
                 android:gravity="center"
                 android:onClick="onClick"
                 android:paddingLeft="@dimen/_20sdp"
-                android:paddingTop="@dimen/_5sdp"
+                android:paddingTop="@dimen/_8sdp"
                 android:paddingRight="@dimen/_20sdp"
-                android:paddingBottom="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_8sdp"
                 android:text="@string/no"
                 android:textColor="@color/red"
-                android:layout_margin="@dimen/_5sdp"/>
+                android:layout_margin="@dimen/_8sdp"/>
         </LinearLayout>
 
     </LinearLayout>

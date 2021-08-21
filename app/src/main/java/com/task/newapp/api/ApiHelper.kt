@@ -197,4 +197,7 @@ interface ApiHelper {
 
     @GET(get_post_detail)
     fun get_post_detail(@Path("id") post_id: Int): Observable<ResponseGetAllPost>
+
+    @POST(set_group_setting_url)
+    fun setGroupSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseGroupSetting>
 }

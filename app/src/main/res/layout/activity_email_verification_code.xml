@@ -30,14 +30,17 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_25sdp"
+                    android:layout_marginTop="@dimen/_45sdp"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/styleTextViewLarge"
+                        style="@style/styleTextViewActionbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/change_email_id" />
+                        android:layout_margin="@dimen/_5sdp"
+                        android:text="@string/change_email_id"
+                        android:textSize="@dimen/_18ssp"
+                        />
 
 
                 </LinearLayout>
@@ -48,8 +51,8 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_25sdp"
                     android:gravity="center"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <com.task.newapp.utils.SegmentedRadioGroup
                         android:id="@+id/segment_text"
@@ -94,6 +97,7 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_email_or_mobile"
+                            style="@style/styleEditTextNormal"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_40sdp"
                             android:layout_gravity="center"
@@ -105,11 +109,11 @@
                             android:paddingLeft="@dimen/_4sdp"
                             android:paddingRight="@dimen/_4sdp"
                             android:singleLine="true"
-                            android:text=""
-                            android:textSize="@dimen/_13ssp" />
+                            android:text="" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_sendcode"
+                            style="@style/styleTextViewSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentRight="true"
@@ -120,11 +124,11 @@
                             android:onClick="onClick"
                             android:text="@string/send_code"
                             android:textColor="@color/theme_color"
-                            android:textSize="@dimen/_10ssp"
                             android:visibility="gone" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_changeemail"
+                            style="@style/styleTextViewSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_alignParentRight="true"
@@ -135,7 +139,6 @@
                             android:onClick="onClick"
                             android:text="@string/change_email"
                             android:textColor="@color/theme_color"
-                            android:textSize="@dimen/_10ssp"
                             android:visibility="gone" />
 
                     </LinearLayout>
@@ -161,11 +164,11 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/_15sdp"
                         android:text="Verification code"
-                        android:textColor="@color/darkgray"
-                        android:textSize="@dimen/_12ssp" />
+                        android:textColor="@color/darkgray" />
 
                     <in.aabhasjindal.otptextview.OtpTextView
                         android:id="@+id/otp_view"
+                        style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -191,24 +194,22 @@
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtTimer"
-                            style="@style/styleTextViewNormal"
+                            style="@style/styleTextViewSmall"
                             android:layout_width="@dimen/_40sdp"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:text="00:00"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textColor="@color/black" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_resend"
-                            style="@style/styleTextViewNormal"
+                            style="@style/styleTextViewSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_8sdp"
                             android:onClick="onClick"
                             android:text="@string/resend_code"
-                            android:textColor="@color/darkgray"
-                            android:textSize="@dimen/_10ssp" />
+                            android:textColor="@color/darkgray" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

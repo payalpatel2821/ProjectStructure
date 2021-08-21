@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.models.ResponsePostList
+import com.task.newapp.utils.showLog
 import java.util.*
 
 class PostListAdapter(
@@ -36,7 +37,11 @@ class PostListAdapter(
 
         viewHolder.tvLikeCount.text = dataSet[position].getlikesCount.toString()
         viewHolder.tvCommentCount.text = dataSet[position].commentsCount.toString()
-        Glide.with(applicationContext).asBitmap().load(dataSet[position].contents[0].content).into(viewHolder.ivPostContent)
+        showLog("PostList",dataSet[position].contents.toString())
+        if (dataSet[position].contents.isNotEmpty()){
+            Glide.with(applicationContext).asBitmap().load(dataSet[position].contents[0].content).into(viewHolder.ivPostContent)
+        }
+
 
         viewHolder.itemView.setOnClickListener {
             if (onItemClick != null) {

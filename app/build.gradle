@@ -100,6 +100,7 @@ dependencies {
     implementation project(path: ':alertview')
     implementation project(path: ':photopicker')
     implementation project(path: ':videocompressor')
+    implementation project(path: ':peekandpopview')
     implementation 'androidx.recyclerview:recyclerview:1.2.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
@@ -187,4 +188,7 @@ dependencies {
 
     //exoplayer
     implementation "com.google.android.exoplayer:exoplayer:2.11.2"
+
+    //PeekAndPop
+//    implementation 'com.github.shalskar:PeekAndPop:1.1.0'
 }

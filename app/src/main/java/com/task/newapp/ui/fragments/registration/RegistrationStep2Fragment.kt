@@ -115,6 +115,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
             }
 
             override fun onOTPComplete(otp: String) {
+                hideSoftKeyboard(requireActivity())
                 if (fromForgotPass) {
                     callAPIVerifyOTPForgotPass(otp)
                 } else {
@@ -169,7 +170,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                 afterClickSwitch()
             }
             R.id.txt_sendcode, R.id.txt_resend -> {
-
+                hideSoftKeyboard(requireActivity())
                 clearOtpNTimer()
                 binding.txtResend.isEnabled = false
 
@@ -203,7 +204,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
         binding.txtTimer.text = "00:00"
 //        }
 
-        countDownTimer = object : CountDownTimer(30000, 1000) {
+        countDownTimer = object : CountDownTimer(120000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
                 binding.txtTimer.text = (millisUntilFinished / 1000).toString()
@@ -259,6 +260,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            activity!!.showToast(resources.getString(R.string.session_expire))
                             hideProgressDialog()
                         }
 
@@ -297,6 +299,9 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                                     FastSave.getInstance().saveString(Constants.mobile, binding.edtEmailOrMobile.text.toString().trim())
 
                                     if (context is RegistrationActivity) {
+                                        clearAll()
+                                        afterTimerStop()
+                                        afterClickSwitch()
                                         onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
                                     }
                                 } else {
@@ -311,6 +316,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            activity!!.showToast(resources.getString(R.string.session_expire))
                             hideProgressDialog()
                         }
 
@@ -353,6 +359,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            activity!!.showToast(resources.getString(R.string.session_expire))
                             hideProgressDialog()
                         }
 
@@ -435,6 +442,9 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
                                     FastSave.getInstance().saveString(Constants.mobile, binding.edtEmailOrMobile.text.toString().trim())
 
                                     if (context is RegistrationActivity) {
+                                        clearAll()
+                                        afterTimerStop()
+                                        afterClickSwitch()
                                         onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
                                     }
                                 }
@@ -445,6 +455,7 @@ class RegistrationStep2Fragment : Fragment(), View.OnClickListener {
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            activity!!.showToast(resources.getString(R.string.session_expire))
                             hideProgressDialog()
                             binding.otpView.setOTP("")
                         }

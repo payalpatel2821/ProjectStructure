@@ -17,6 +17,8 @@ class GroupListAdapter(
 ) :
     RecyclerView.Adapter<GroupListAdapter.ViewHolder>() {
 
+    var onItemClick: ((Int, Int) -> Unit)? = null
+
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtUserName: TextView = view.findViewById(R.id.txt_user_name)
@@ -42,7 +44,12 @@ class GroupListAdapter(
             it.user_id
         }
         viewHolder.txtAccid.text = getUserNameFromId(userId)
-        viewHolder.ivUserProfile.load(dataSet[position].group_data?.grp_icon ?: "",true)
+        viewHolder.ivUserProfile.load(dataSet[position].group_data?.grp_icon ?: "", false)
+        viewHolder.itemView.setOnClickListener {
+            if (onItemClick != null) {
+                onItemClick!!.invoke(dataSet[position].id, position)
+            }
+        }
     }
 
     fun setData(data: List<Chats>) {

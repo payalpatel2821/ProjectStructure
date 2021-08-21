@@ -54,7 +54,7 @@
                     android:layout_height="@dimen/_55sdp"
                     android:layout_centerInParent="true"
                     android:padding="@dimen/_3sdp"
-                    android:src="@drawable/default_dp" />
+                    tools:src="@drawable/default_dp" />
 
             </RelativeLayout>
 
@@ -63,31 +63,31 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/image_layout"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:layout_marginRight="@dimen/_3sdp"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_page_name"
+                    style="@style/styleTextViewSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:singleLine="true"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_9ssp"
+                    android:layout_margin="@dimen/_2sdp"
                     tools:text="Global Group" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_page_member"
+                    style="@style/styleTextViewSmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_1sdp"
                     android:gravity="center"
                     android:singleLine="true"
                     android:textColor="@color/gray4"
-                    android:textSize="@dimen/_7ssp"
-                    tools:text="70 Members" />
+                    android:layout_margin="@dimen/_2sdp"
+                    tools:text="70 Members"
+                    android:textSize="@dimen/_8ssp"/>
 
             </LinearLayout>
 

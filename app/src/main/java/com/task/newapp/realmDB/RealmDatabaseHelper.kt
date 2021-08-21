@@ -416,7 +416,7 @@ fun getGroupDetail(grpID: Int): Chats {
 }
 
 fun getMyGroupSetting(grpID: Int, userID: Int): GroupUser? {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID).and().equalTo(GroupUser::user_id.name, userID).findFirst()
+    return /*App.getRealmInstance().copyFromRealm(*/App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID).and().equalTo(GroupUser::user_id.name, userID).findFirst()//)
 }
 
 fun getGroupCreatedUserName(userID: Int): String? {
@@ -437,6 +437,14 @@ fun getSelectedFriends(ids: List<Int>): List<FriendRequest> {
 fun getSingleFriendSetting(friendId: Int): FriendSettings? {
     return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()
 }
+
+fun getSelectedNotificationTuneNameBYID(notificationId: Int): String {
+    return App.getRealmInstance().where(NotificationTone::class.java).equalTo(NotificationTone::id.name, notificationId).findFirst()?.display_name ?: ""
+}
+
+//fun getSelectedGroupNotificationTuneName(friendId: Int,groupId: Int): String {
+//    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::user_id.name, friendId).and().equalTo(GroupUser::grp_id.name, groupId).findFirst()?.sound ?: ""
+//}
 
 /**   ------------------------------------ READ END ---------------------------------------------------------------  */
 
@@ -538,6 +546,17 @@ fun updateFriendSettings(friendId: Int, friendSettings: FriendSettings) {
 
 }
 
+fun updateGroupUserSettings(userId: Int, groupId: Int, groupuser: GroupUser) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        var data = realm.where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, groupId).and().equalTo(GroupUser::user_id.name, userId).findFirst()
+        if (data != null) {
+            data = groupuser
+            realm.copyToRealmOrUpdate(data)
+        }
+
+    })
+}
+
 /**   ------------------------------------ UPDATE END ---------------------------------------------------------------  */
 
 /**   ------------------------------------ DELETE  BEGIN ---------------------------------------------------------------  */
@@ -614,8 +633,6 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
             userHook.group_id = hookObj.groupId
             userHook.is_group = hookObj.isGroup
             userHook.is_friend = hookObj.isFriend
-
-
             if (hookObj.isGroup == 1) {
                 updateChatsIsHook(hookObj.groupId)
             } else {
@@ -635,9 +652,7 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
             hookObj.friend?.let { friend ->
                 users.add(prepareOtherUserData(friend))
             }
-
             hookDataList.add(userHook)
-
         }
         if (users.size > 0) {
             for (user in users) {
@@ -645,14 +660,10 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
                     override fun onSuccess(obj: Any) {
                         updateChatUserData(user.receiver_id, obj as Users)
                     }
-
                     override fun onError() {}
-
                 })
             }
-
         }
-
     }
 
     return hookDataList
@@ -734,35 +745,63 @@ fun prepareGroupLabelData(createGroupLbl: ChatLabel): ChatList {
 fun prepareGroupUserData(groupUserWithSettings: List<LoginResponse.GetAllGroup.GroupUserWithSetting>): RealmList<GroupUser> {
     val groupUserSettingsList = RealmList<GroupUser>()
     for (groupUserWithSetting in groupUserWithSettings) {
-        val groupUserObj = GroupUser()
-        groupUserObj.id = groupUserWithSetting.id
-        groupUserObj.user_id = groupUserWithSetting.userId
-        groupUserObj.grp_id = groupUserWithSetting.groupId
-        groupUserObj.label_color = groupUserWithSetting.labelColor
-        groupUserObj.location = groupUserWithSetting.location
-        groupUserObj.is_admin = groupUserWithSetting.isAdmin
-        groupUserObj.is_allow_to_add_post = groupUserWithSetting.isAllowToAddPost
-        groupUserObj.is_mute_notification = groupUserWithSetting.isMuteNotification
-        groupUserObj.is_report = groupUserWithSetting.isReport
-        groupUserObj.status = groupUserWithSetting.status
-        groupUserObj.is_deleted = groupUserWithSetting.isDeleted
-        groupUserObj.is_allow_to_edit_info = groupUserWithSetting.isAllowToEditInfo
-        groupUserObj.mute_time = groupUserWithSetting.muteTime
-        groupUserObj.end_mute_time = groupUserWithSetting.endMuteTime
-        groupUserObj.media_viewable = groupUserWithSetting.isMediaViewable
-        groupUserObj.custom_notification_enable = groupUserWithSetting.isCustomNotificationEnable
-        groupUserObj.vibrate_status = groupUserWithSetting.vibrateStatus
-        groupUserObj.is_popup_notification = groupUserWithSetting.isPopupNotification
-        groupUserObj.light = groupUserWithSetting.light
-        groupUserObj.high_priority_notification = groupUserWithSetting.useHighPriorityNotification
-        groupUserObj.notification_tone_id = groupUserWithSetting.notificationToneId
-        groupUserObj.created_at = groupUserWithSetting.createdAt
-        groupUserObj.updated_at = groupUserWithSetting.updatedAt
-        groupUserSettingsList.add(groupUserObj)
+        /*  val groupUserObj = GroupUser()
+          groupUserObj.id = groupUserWithSetting.id
+          groupUserObj.user_id = groupUserWithSetting.userId
+          groupUserObj.grp_id = groupUserWithSetting.groupId
+          groupUserObj.label_color = groupUserWithSetting.labelColor
+          groupUserObj.location = groupUserWithSetting.location
+          groupUserObj.is_admin = groupUserWithSetting.isAdmin
+          groupUserObj.is_allow_to_add_post = groupUserWithSetting.isAllowToAddPost
+          groupUserObj.is_mute_notification = groupUserWithSetting.isMuteNotification
+          groupUserObj.is_report = groupUserWithSetting.isReport
+          groupUserObj.status = groupUserWithSetting.status
+          groupUserObj.is_deleted = groupUserWithSetting.isDeleted
+          groupUserObj.is_allow_to_edit_info = groupUserWithSetting.isAllowToEditInfo
+          groupUserObj.mute_time = groupUserWithSetting.muteTime
+          groupUserObj.end_mute_time = groupUserWithSetting.endMuteTime
+          groupUserObj.media_viewable = groupUserWithSetting.isMediaViewable
+          groupUserObj.custom_notification_enable = groupUserWithSetting.isCustomNotificationEnable
+          groupUserObj.vibrate_status = groupUserWithSetting.vibrateStatus
+          groupUserObj.is_popup_notification = groupUserWithSetting.isPopupNotification
+          groupUserObj.light = groupUserWithSetting.light
+          groupUserObj.high_priority_notification = groupUserWithSetting.useHighPriorityNotification
+          groupUserObj.notification_tone_id = groupUserWithSetting.notificationToneId
+          groupUserObj.created_at = groupUserWithSetting.createdAt
+          groupUserObj.updated_at = groupUserWithSetting.updatedAt*/
+        groupUserSettingsList.add(prepareSingleGroupUsersData(groupUserWithSetting))
         insertUserData(prepareOtherUserData(groupUserWithSetting.user))
 
     }
     return groupUserSettingsList
+}
+
+fun prepareSingleGroupUsersData(groupUserWithSetting: LoginResponse.GetAllGroup.GroupUserWithSetting): GroupUser {
+    val groupUserObj = GroupUser()
+    groupUserObj.id = groupUserWithSetting.id
+    groupUserObj.user_id = groupUserWithSetting.userId
+    groupUserObj.grp_id = groupUserWithSetting.groupId
+    groupUserObj.label_color = groupUserWithSetting.labelColor
+    groupUserObj.location = groupUserWithSetting.location
+    groupUserObj.is_admin = groupUserWithSetting.isAdmin
+    groupUserObj.is_allow_to_add_post = groupUserWithSetting.isAllowToAddPost
+    groupUserObj.is_mute_notification = groupUserWithSetting.isMuteNotification
+    groupUserObj.is_report = groupUserWithSetting.isReport
+    groupUserObj.status = groupUserWithSetting.status
+    groupUserObj.is_deleted = groupUserWithSetting.isDeleted
+    groupUserObj.is_allow_to_edit_info = groupUserWithSetting.isAllowToEditInfo
+    groupUserObj.mute_time = groupUserWithSetting.muteTime
+    groupUserObj.end_mute_time = groupUserWithSetting.endMuteTime
+    groupUserObj.media_viewable = groupUserWithSetting.isMediaViewable
+    groupUserObj.custom_notification_enable = groupUserWithSetting.isCustomNotificationEnable
+    groupUserObj.vibrate_status = groupUserWithSetting.vibrateStatus
+    groupUserObj.is_popup_notification = groupUserWithSetting.isPopupNotification
+    groupUserObj.light = groupUserWithSetting.light
+    groupUserObj.high_priority_notification = groupUserWithSetting.useHighPriorityNotification
+    groupUserObj.notification_tone_id = groupUserWithSetting.notificationToneId
+    groupUserObj.created_at = groupUserWithSetting.createdAt
+    groupUserObj.updated_at = groupUserWithSetting.updatedAt
+    return groupUserObj
 }
 
 fun prepareGroupData(groupData: LoginResponse.GetAllGroup.GroupData): Groups {

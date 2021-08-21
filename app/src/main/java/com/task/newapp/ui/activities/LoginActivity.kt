@@ -164,6 +164,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            showToast(resources.getString(R.string.session_expire))
                             hideProgressDialog()
                             FastSave.getInstance().saveBoolean(Constants.isLogin, false)
                         }
@@ -171,6 +172,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         override fun onComplete() {
                             hideProgressDialog()
                         }
+
                     })
             )
         } catch (e: Exception) {

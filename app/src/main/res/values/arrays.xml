@@ -8,7 +8,7 @@
     </array>
 
     <integer-array name="colorFontArrayThoughts">
-        <item>@color/white</item>
+        <item>@color/black</item>
         <item>@color/red</item>
         <item>@color/theme_color</item>
     </integer-array>

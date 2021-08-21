@@ -28,22 +28,26 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/styleTextViewLarge"
+                    style="@style/styleTextViewActionbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_25sdp"
-                    android:text="@string/title_enter_your_password" />
+                    android:text="@string/title_enter_your_password"
+                    android:textSize="@dimen/_18ssp"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/set_a_password" />
+                    android:text="@string/set_a_password"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:textSize="@dimen/_14ssp"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_layout_password"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_45sdp"
                     android:theme="@style/EditTextThemeOverlay"
                     app:errorTextAppearance="@style/ErrorTextAppearance"
@@ -56,19 +60,20 @@
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_password"
+                        style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="@string/password"
                         android:imeOptions="actionNext"
                         android:inputType="textPassword"
-                        android:textSize="@dimen/_12ssp" />
+                         />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_layout_confirm_password"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_45sdp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:theme="@style/EditTextThemeOverlay"
                     app:errorTextAppearance="@style/ErrorTextAppearance"
@@ -80,6 +85,7 @@
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_confirm_password"
+                        style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:hint="@string/confirm_password"

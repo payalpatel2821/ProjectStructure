@@ -28,18 +28,22 @@
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/styleTextViewLarge"
+                    style="@style/styleTextViewActionbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_25sdp"
                     android:text="@string/create_your_nickname"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_18ssp"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/styleTextViewNormal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/choose_a_default_name_or_use_your_creativity" />
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/choose_a_default_name_or_use_your_creativity"
+                    android:textSize="@dimen/_14ssp" />
 
 
                 <LinearLayout
@@ -48,11 +52,10 @@
                     android:layout_marginTop="@dimen/_100sdp"
                     android:orientation="vertical">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
+                        android:focusableInTouchMode="true"
                         android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -60,22 +63,50 @@
                             style="@style/styleTextViewLarge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            android:layout_centerHorizontal="true"
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_."
+                            android:focusableInTouchMode="true"
+                            android:gravity="center"
                             android:imeOptions="actionDone"
-                            android:maxLength="18"
-                            android:text="Gohil5005"
-                            android:textColor="@color/theme_color" />
+                            android:maxLength="12"
+                            android:textColor="@color/theme_color"
+                            tools:text="Test123" />
+
+                        <ProgressBar
+                            android:id="@+id/pb_verification"
+                            style="?android:attr/progressBarStyle"
+                            android:layout_width="@dimen/_18sdp"
+                            android:layout_height="@dimen/_18sdp"
+                            android:layout_centerVertical="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_toRightOf="@+id/edt_acc_id"
+                            android:indeterminateTint="@color/theme_color"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_isVerified_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_toRightOf="@+id/edt_acc_id"
+                            android:src="@drawable/ic_correct"
+                            android:tint="@color/green"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/iv_copy"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_10sdp"
+                            android:layout_marginStart="@dimen/_10sdp"
                             android:onClick="onClick"
+                            android:src="@drawable/ic_copy"
                             android:tint="@color/black"
-                            android:src="@drawable/ic_copy" />
+                            android:visibility="gone" />
 
-                    </LinearLayout>
+                    </RelativeLayout>
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_change_username"
@@ -85,40 +116,54 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:onClick="onClick"
-                        android:text="@string/change_username" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_15sdp"
-                    android:layout_marginTop="@dimen/_60sdp"
-                    android:layout_marginRight="@dimen/_15sdp">
-
-                    <androidx.appcompat.widget.AppCompatCheckBox
-                        android:id="@+id/cb_term"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:buttonTint="@color/theme_color" />
+                        android:text="@string/change_username"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tv_term"
+                        android:id="@+id/tv_error_message"
                         style="@style/styleTextViewSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/term_condition"
-                        android:textColor="@color/gray2" />
+                        android:onClick="onClick"
+                        android:text="error message"
+                        android:textColor="@color/red"
+                        android:visibility="gone" />
+
                 </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_100sdp">
+
+                    <androidx.appcompat.widget.AppCompatCheckBox
+                        android:id="@+id/cb_term"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:buttonTint="@color/theme_color"
+                        android:gravity="bottom" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_term"
+                        style="@style/styleTextViewSmall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/cb_term"
+                        android:text="@string/term_condition"
+                        android:textColor="@color/gray2"
+                        android:textSize="@dimen/_12ssp" />
+                </RelativeLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_done"
                     style="@style/styleTextViewNormal"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
-                    android:layout_marginTop="@dimen/_60sdp"
-                    android:background="@drawable/btn_rect_rounded_bg"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/btn_rect_rounded_bg_disable"
                     android:gravity="center"
                     android:text="@string/done"
                     android:textColor="@color/white" />

@@ -6,11 +6,16 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.text.Editable
 import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.toSpannable
@@ -36,16 +41,28 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
 import java.io.InputStream
+import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
-    private var flagChangeUsername: Boolean = false
+    private lateinit var timer: Timer
+    var textChangedHandler = Handler() // declare it globally.
+
+    //private var flagChangeUsername: Boolean = false
     private lateinit var binding: FragmentRegistrationStep4Binding
     private lateinit var onPageChangeListener: OnPageChangeListener
     private val mCompositeDisposable = CompositeDisposable()
+    private val mCompositeDisposable1 = CompositeDisposable()
+    private var flagUsername: Boolean = false
+    private var flagTermsCondition: Boolean = false
+
+    private val USERID_PATTERN = "^(?=.{4,12}\$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])\$"
+    private val pattern: Pattern = Pattern.compile(USERID_PATTERN)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,23 +94,76 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
     private fun initView() {
         setupKeyboardListener(binding.scrollview)
-        binding.edtAccId.isEnabled = false
         binding.ivCopy.setOnClickListener(this)
         binding.tvChangeUsername.setOnClickListener(this)
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.btnDone.setOnClickListener(this)
         val strSpannable = binding.tvTerm.text.toSpannable() as SpannableString
-        strSpannable.withClickableSpan(
-            "Terms of Use", onClickListener = (
-                    { requireActivity().showToast("Clicked Terms of Use") }
-                    ))
-        strSpannable.withClickableSpan(
-            "Privacy Policy", onClickListener = (
-                    { requireActivity().showToast("Clicked Privacy Policy") }
-                    ))
-        binding.tvTerm.setText(strSpannable)
-        binding.tvTerm.setMovementMethod(LinkMovementMethod.getInstance());
+        strSpannable.withClickableSpan("Terms of Use", onClickListener = ({ requireActivity().showToast("Clicked Terms of Use") }))
+        strSpannable.withClickableSpan("Privacy Policy", onClickListener = ({ requireActivity().showToast("Clicked Privacy Policy") }))
+        binding.tvTerm.text = strSpannable
+        binding.tvTerm.movementMethod = LinkMovementMethod.getInstance();
+
         getUserNameFromAPI()
+        checkAndEnable()
+        binding.edtAccId.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(editable: Editable?) {
+                //call API to verify username after delay of 2 seconds after checking if it is valid else show error
+                if (binding.edtAccId.text.toString().isNotEmpty() && binding.edtAccId.text!!.trim().toString().length >= 4) {
+                    if (isValid(binding.edtAccId.text.toString().trim())) {
+                        flagUsername = true
+                        textChangedHandler.postDelayed(runnable, 2000)
+                        binding.tvErrorMessage.visibility = GONE
+                    }else
+                        showHideErrorMessageLayout(true, "Please enter correct username")
+                } else {
+                    flagUsername = false
+                    hideVerificationProgressBar()
+                    binding.ivIsVerifiedName.visibility = View.GONE
+
+                    checkAndEnable()
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                //to show/hide loader icon and remove callbacks of runnable and show error is invalid username
+                if (isValid(binding.edtAccId.text.toString().trim())) {
+                    showVerificationProgressBar()
+                    mCompositeDisposable1.clear()
+                    textChangedHandler.removeCallbacksAndMessages(runnable)
+                    binding.tvErrorMessage.visibility = GONE
+                } else {
+                    showHideErrorMessageLayout(true, "Please enter correct username")
+                    return
+                }
+            }
+        })
+
+        binding.cbTerm.setOnCheckedChangeListener { buttonView, isChecked ->
+            hideSoftKeyboard(requireActivity())
+            flagTermsCondition = isChecked
+            binding.edtAccId.clearFocus()
+            checkAndEnable()
+        }
+
+        binding.edtAccId.clearFocus()
+
+    }
+
+    var runnable = Runnable {
+        if (binding.edtAccId.text!!.trim().toString().length >= 4) {
+            callVerifyUsername() //do whatever you want to do here.
+        }
+    }
+
+    fun isValid(username: String?): Boolean {
+        val matcher: Matcher = pattern.matcher(username)
+        return matcher.matches()
     }
 
     override fun onClick(v: View?) {
@@ -104,13 +174,8 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
 
                 requireActivity().showToast("Username copied...")
             }
-            R.id.tv_change_username -> {
-                binding.edtAccId.isEnabled = true
-                binding.edtAccId.isFocusable = true
-                binding.edtAccId.requestFocus()
-                binding.edtAccId.setSelection(binding.edtAccId.text!!.length)
-                binding.btnDone.text = resources.getString(R.string.verify)
-                flagChangeUsername = true
+            R.id.edt_acc_id -> {
+                makeEditTextEditable()
             }
             R.id.tv_back -> {
                 onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_3.index)
@@ -120,23 +185,27 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                 if (binding.edtAccId.text.toString().trim().isEmpty()) {
                     requireActivity().showToast("Please enter username")
                 } else {
-                    //check username exists
-                    if (flagChangeUsername) {
-                        callVerifyUsername()
+                    if (binding.cbTerm.isChecked) {
+                        callAPIRegister()
                     } else {
-                        if (binding.cbTerm.isChecked) {
-                            callAPIRegister()
-                        } else {
-                            requireActivity().showToast(resources.getString(R.string.termmessage))
-                        }
-
+                        requireActivity().showToast(resources.getString(R.string.termmessage))
                     }
-
                 }
             }
         }
     }
 
+    private fun makeEditTextEditable() {
+        binding.edtAccId.isFocusable = true
+        binding.edtAccId.isFocusableInTouchMode = true
+        binding.edtAccId.requestFocus()
+        showSoftKeyboard(requireContext(), binding.edtAccId)
+        binding.edtAccId.setSelection(binding.edtAccId.text!!.length)
+    }
+
+    private fun checkAndEnable() {
+        enableOrDisableButton(requireContext(), flagTermsCondition && flagUsername, binding.btnDone)
+    }
 
     private fun callAPIRegister() {
         try {
@@ -237,7 +306,6 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
     }
 
 
-
     private fun callVerifyUsername() {
         try {
             if (!requireActivity().isNetworkConnected()) {
@@ -245,38 +313,55 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
                 return
             }
 
-            openProgressDialog(activity)
-
-            mCompositeDisposable.add(
+            mCompositeDisposable1.add(
                 ApiClient.create()
                     .checkUsername(binding.edtAccId.text.toString().trim())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseVerifyOTP>() {
                         override fun onNext(responseVerifyOTP: ResponseVerifyOTP) {
-                            activity!!.showToast(responseVerifyOTP.message)
-
                             if (responseVerifyOTP.success == 1) {
                                 //Next Screen
-                                flagChangeUsername = false
+
                                 binding.btnDone.text = resources.getString(R.string.done)
+                            } else {
+                                makeEditTextEditable()
+                                binding.ivIsVerifiedName.visibility = View.GONE
+
                             }
+                            showHideErrorMessageLayout(responseVerifyOTP.success == 0, "This username is already taken.")
                         }
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
-                            hideProgressDialog()
+                            hideVerificationProgressBar()
                         }
 
                         override fun onComplete() {
-                            hideProgressDialog()
+                            hideVerificationProgressBar()
                         }
                     })
             )
         } catch (e: Exception) {
             e.printStackTrace()
+            hideVerificationProgressBar()
         }
     }
+
+    private fun showHideErrorMessageLayout(isError: Boolean, errorMsg: String) {
+        if (isError) {
+            flagUsername = false
+            binding.ivIsVerifiedName.visibility = View.GONE
+            binding.tvErrorMessage.visibility = View.VISIBLE
+            binding.tvErrorMessage.text = errorMsg
+        } else {
+            flagUsername = true
+            binding.tvErrorMessage.visibility = View.GONE
+            binding.ivIsVerifiedName.visibility = View.VISIBLE
+        }
+        checkAndEnable()
+    }
+
 
     private fun getUserNameFromAPI() {
         try {
@@ -314,4 +399,12 @@ class RegistrationStep4Fragment : Fragment(), View.OnClickListener {
         }
     }
 
+    private fun showVerificationProgressBar() {
+        binding.pbVerification.visibility = View.VISIBLE
+        binding.ivIsVerifiedName.visibility = View.GONE
+    }
+
+    private fun hideVerificationProgressBar() {
+        binding.pbVerification.visibility = View.GONE
+    }
 }
