@@ -88,14 +88,14 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
         }
 
         fun setData(obj: BroadcastTable) {
-            layoutBinding.txtChatTitle.text = obj.broad_name
-            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.updated_at, DateTimeUtils.DateFormats.yyyyMMddTHHmmsssss.label)?.let {
+            layoutBinding.txtChatTitle.text = obj.broadcastName
+            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.updatedAt, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
                     it.time
                 )
             }
-            layoutBinding.txtChatMsg.text = obj.chats.last()?.message_text
-            layoutBinding.imgProfile.load(obj.broad_icon ?: "", false)
+            layoutBinding.txtChatMsg.text = obj.chats.last()?.messageText
+            layoutBinding.imgProfile.load(obj.broadcastIcon ?: "", false)
         }
 
         /**
@@ -139,7 +139,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        val broadcastName = row.broad_name
+                        val broadcastName = row.broadcastName
                         showLog(TAG, "broadcastName : $broadcastName")
                         if (broadcastName?.lowercase()?.contains(charString.lowercase()) == true) {
                             filteredList.add(row)

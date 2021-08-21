@@ -100,7 +100,7 @@ class RippleBackground : RelativeLayout {
 
     private inner class RippleView(context: Context?) : View(context) {
         override fun onDraw(canvas: Canvas) {
-            canvas.drawRoundRect(0F, 0F, width.toFloat(), height.toFloat(), dpToPx(10F).toFloat(), dpToPx(10F).toFloat(), paint!!);
+            canvas.drawRoundRect(0F, 0F, width.toFloat(), height.toFloat(), dpToPx(5F).toFloat(), dpToPx(5F).toFloat(), paint!!);
         }
 
         init {

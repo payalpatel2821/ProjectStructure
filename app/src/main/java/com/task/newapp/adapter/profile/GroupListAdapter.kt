@@ -43,17 +43,17 @@ class GroupListAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.btnFollowUnfollow.visibility = GONE
         viewHolder.txtUserName.text = dataSet[position].name
-        val userId = dataSet[position].group_user_with_settings.filter {
+        val userId = dataSet[position].groupUsers.filter {
             it.status != "Inactive"
         }.map {
-            it.user_id
+            it.userId
         }
         viewHolder.txtAccid.text = getUserNameFromId(userId)
 
-//        viewHolder.ivUserProfile.load(dataSet[position].group_data?.grp_icon ?: "", false)
+//        viewHolder.ivUserProfile.load(dataSet[position].groupData?.icon ?: "",true)
 
         Glide.with(viewHolder.itemView.context)
-            .load(dataSet[position].group_data?.grp_icon)
+            .load(dataSet[position].groupData?.icon)
 //            .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
 //            .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
             .placeholder(R.drawable.logo)

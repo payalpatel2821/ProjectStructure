@@ -4,36 +4,42 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class Groups : RealmObject() {
+    @PrimaryKey
+    var id: Int = 0
+    var userId: Int = 0
+    var createdBy: Int = 0
+    var name: String? = null
+    var description: String? = null
+    var icon: String? = null
+    var profileColor: String? = null
+    var totalUser: Int = 0
+    var otherUserId: String? = null
+    var createdAt: String? = null
+    var updatedAt: String? = null
+    var editInfoPermission: String? = null
+    var sendMessage: String? = null
 
     companion object {
-        const val PROPERTY_grp_id = "grp_id"
-        const val PROPERTY_grp_user_id = "grp_user_id"
-        const val PROPERTY_grp_created_by = "grp_created_by"
-        const val PROPERTY_grp_name = "grp_name"
-        const val PROPERTY_grp_description = "grp_description"
-        const val PROPERTY_grp_icon = "grp_icon"
-        const val PROPERTY_grp_profile_color = "profile_color"
-        const val PROPERTY_grp_total_user = "grp_total_user"
-        const val PROPERTY_grp_other_user_id = "grp_other_user_id"
-        const val PROPERTY_grp_created_at = "grp_created_at"
-        const val PROPERTY_grp_updated_at = "grp_updated_at"
-        const val PROPERTY_grp_edit_info_permission = "grp_edit_info_permission"
-        const val PROPERTY_grp_send_msg = "grp_send_msg"
-    }
+        fun create(id: Int, userId: Int, createdBy: Int, name: String, description: String, icon: String, profileColor: String, totalUser: Int,
+                   otherUserId: String, createdAt: String, updatedAt: String, editInfoPermission: String, sendMessage: String, ): Groups {
+            val groups = Groups()
+            groups.id = id
+            groups.userId = userId
+            groups.createdBy = createdBy
+            groups.name = name
+            groups.description = description
+            groups.icon = icon
+            groups.profileColor = profileColor
+            groups.totalUser = totalUser
+            groups.otherUserId = otherUserId
+            groups.createdAt = createdAt
+            groups.updatedAt = updatedAt
+            groups.editInfoPermission = editInfoPermission
+            groups.sendMessage = sendMessage
 
-    @PrimaryKey
-    var grp_id: Int = 0
-    var grp_user_id: Int = 0
-    var grp_created_by: Int = 0
-    var grp_name: String? = null
-    var grp_description: String? = null
-    var grp_icon: String? = null
-    var grp_profile_color: String? = null
-    var grp_total_user: Int = 0
-    var grp_other_user_id: String? = null
-    var grp_created_at: String? = null
-    var grp_updated_at: String? = null
-    var grp_edit_info_permission: String? = null
-    var grp_send_msg: String? = null
+            return groups
+
+        }
+    }
 
 }

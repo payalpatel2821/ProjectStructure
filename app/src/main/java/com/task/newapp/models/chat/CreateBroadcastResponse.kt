@@ -2,7 +2,6 @@ package com.task.newapp.models.chat
 
 
 import com.google.gson.annotations.SerializedName
-import com.task.newapp.models.ChatLabel
 import com.task.newapp.models.LoginResponse.Broadcast
 
 data class CreateBroadcastResponse(

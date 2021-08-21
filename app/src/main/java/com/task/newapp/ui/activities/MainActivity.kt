@@ -15,8 +15,8 @@ import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.contact.ContactActivity
 import com.task.newapp.databinding.ActivityMainBinding
-import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
+import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.profile.GroupProfileActivity
@@ -26,8 +26,9 @@ import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
 import io.reactivex.disposables.CompositeDisposable
+import com.task.newapp.workmanager.WorkManagerScheduler
 
-class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
+class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment.OnHideShowBottomSheet {
 
     lateinit var binding: ActivityMainBinding
 
@@ -42,10 +43,17 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         onSocketEventsListener = this
+        WorkManagerScheduler.refreshPeriodicWork(App.getAppInstance())
         callAPIGetAllNotification(mCompositeDisposable)
         initView()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        WorkManagerScheduler.cancel(App.getAppInstance())
+        if (isFinishing && App.fastSave.getBoolean(Constants.isLogin, false))
+            disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
+    }
 
     private fun initView() {
         setSupportActionBar(binding.activityMainToolbar)
@@ -95,7 +103,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 //        binding.bottomBar.removeBadge(2)
 
         binding.bottomBar.onItemSelected = { position ->
-           // showToast("Item $position selected")
+            //showToast("Item $position selected")
 
             when (position) {
                 0 -> {
@@ -105,10 +113,10 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                     setCurrentFragment(postFragment)
                 }
                 2 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 3 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 4 -> {
                     toggleRightDrawer()
@@ -117,7 +125,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
         }
 
         binding.bottomBar.onItemReselected = { position ->
-            showToast("Item $position re-selected")
+            //showToast("Item $position re-selected")
 
             when (position) {
                 0 -> {
@@ -127,10 +135,10 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                     setCurrentFragment(postFragment)
                 }
                 2 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 3 -> {
-                    setCurrentFragment(chatsFragment)
+                    setCurrentFragment(postFragment)
                 }
                 4 -> {
                     toggleRightDrawer()
@@ -221,7 +229,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             R.id.txt_logout -> {
                 FastSave.getInstance().saveBoolean(Constants.isLogin, false)
                 launchActivity<LoginActivity> { }
-                //showToast(getString(R.string.logout))
+                // showToast(getString(R.string.logout))
                 clearDatabase()
                 disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
                 finish()
@@ -251,16 +259,41 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     }
 
     override fun onOnlineOfflineSocketEvent(userId: Int, status: Boolean) {
+        super.onOnlineOfflineSocketEvent(userId, status)
         if (binding.bottomBar.getActiveItem() == 0) {
             chatsFragment.updateOnlineUser(userId, status)
         }
     }
 
-    override fun onPostLikeDislikeEvent() {
+
+    override fun onPostLikeDislikeSocketEvent() {
+        super.onPostLikeDislikeSocketEvent()
         if (binding.bottomBar.getActiveItem() == 1) {
             postFragment.postLikeDislike()
         }
     }
+
+    override fun onNewMessagePrivateSocketEvent(chatList: ChatList) {
+        super.onNewMessagePrivateSocketEvent(chatList)
+        if (binding.bottomBar.getActiveItem() == 0) {
+            chatsFragment.updateChatListItem(chatList)
+        }
+    }
+
+    override fun onUserTypingSocketEvent(receiverId: Int) {
+        super.onUserTypingSocketEvent(receiverId)
+        if (binding.bottomBar.getActiveItem() == 0) {
+            chatsFragment.showHideTypingIndicator(receiverId, true)
+        }
+    }
+
+    override fun onUserStopTypingSocketEvent(receiverId: Int) {
+        super.onUserStopTypingSocketEvent(receiverId)
+        if (binding.bottomBar.getActiveItem() == 0) {
+            chatsFragment.showHideTypingIndicator(receiverId, false)
+        }
+    }
+
 
     override fun hideShowBottomSheet(visibility: Int) {
         binding.blurView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE

@@ -34,6 +34,7 @@
         <item name="titleEnabled">false</item>
 
     </style>
+
     <!-- Styles -->
     <style name="OverFlowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_more</item>

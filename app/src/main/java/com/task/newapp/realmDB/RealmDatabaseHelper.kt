@@ -2,17 +2,20 @@ package com.task.newapp.realmDB
 
 import com.task.newapp.App
 import com.task.newapp.models.*
-import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.models.chat.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.realmDB.models.ChatContacts
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.findIndex
-import com.task.newapp.utils.getCurrentUserId
-import com.task.newapp.utils.getGroupLabelText
+import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
+import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.ChatTypeFlag
+import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.*
+import com.task.newapp.utils.Constants.Companion.MessageType
 import io.realm.Realm
 import io.realm.RealmList
 import io.realm.Sort
+import io.realm.Sort.ASCENDING
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -94,9 +97,14 @@ fun filterUserByName(username: String): String {
  * @param user : contains user data to be stored in DB
  */
 fun insertUserData(users: Users) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(users)
+        })
+    } else {
         realm.copyToRealmOrUpdate(users)
-    })
+    }
 }
 
 /**
@@ -105,10 +113,15 @@ fun insertUserData(users: Users) {
  * @param users : contains user data to be stored in DB
  * @param onRealmTransactionResult : callback returns to control after successful insertion
  */
-fun insertUserData(users: Users, onRealmTransactionResult: OnRealmTransactionResult) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        onRealmTransactionResult.onSuccess(realm.copyToRealmOrUpdate(users))
-    })
+fun insertUserData(users: Users, callback: (Users) -> Unit) {
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            callback.invoke(realm.copyToRealmOrUpdate(users))
+        })
+    } else {
+        callback.invoke(realm.copyToRealmOrUpdate(users))
+    }
 }
 
 /**
@@ -117,11 +130,33 @@ fun insertUserData(users: Users, onRealmTransactionResult: OnRealmTransactionRes
  * @param request : contains request object
  */
 fun insertFriendRequestData(request: RealmList<FriendRequest>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        realm.copyToRealmOrUpdate(request)
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(request)
 
-    })
+        })
+    } else {
+        realm.copyToRealmOrUpdate(request)
+    }
 }
+
+/**
+ * Insert friend request data to FriendRequest Table
+ *
+ * @param request : contains request object
+ */
+fun insertFriendRequestData(request: FriendRequest) {
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(request)
+        })
+    } else {
+        realm.copyToRealmOrUpdate(request)
+    }
+}
+
 
 /**
  * Insert Block user data to BlockUser Table
@@ -129,9 +164,14 @@ fun insertFriendRequestData(request: RealmList<FriendRequest>) {
  * @param blockUserData : contains block user object data
  */
 fun insertBlockUserData(blockUserData: RealmList<BlockUser>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(blockUserData)
+        })
+    } else {
         realm.copyToRealmOrUpdate(blockUserData)
-    })
+    }
 }
 
 /**
@@ -140,9 +180,14 @@ fun insertBlockUserData(blockUserData: RealmList<BlockUser>) {
  * @param userSettings : contains user settings data from login response
  */
 fun insertUserSettingsData(userSettings: UserSettings) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(userSettings)
+        })
+    } else {
         realm.copyToRealmOrUpdate(userSettings)
-    })
+    }
 }
 
 /**
@@ -151,9 +196,15 @@ fun insertUserSettingsData(userSettings: UserSettings) {
  * @param friendSettings : contains list of Friend Settings data coming from login response
  */
 fun insertFriendSettingsData(friendSettings: RealmList<FriendSettings>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(friendSettings)
+        })
+    } else {
         realm.copyToRealmOrUpdate(friendSettings)
-    })
+    }
+
 }
 
 /**
@@ -167,13 +218,22 @@ fun insertFriendSettingsData(friendSettings: RealmList<FriendSettings>) {
  * @param chats             : contains main list object of chat list
  */
 fun insertGroupData(groups: RealmList<Groups>, groupUser: RealmList<GroupUser>, chatlist: RealmList<ChatList>, addUserChatList: RealmList<ChatList>, chats: RealmList<Chats>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(groups)
+            realm.copyToRealmOrUpdate(groupUser)
+            realm.copyToRealmOrUpdate(chatlist)
+            realm.copyToRealmOrUpdate(addUserChatList)
+            realm.copyToRealmOrUpdate(chats)
+        })
+    } else {
         realm.copyToRealmOrUpdate(groups)
         realm.copyToRealmOrUpdate(groupUser)
         realm.copyToRealmOrUpdate(chatlist)
         realm.copyToRealmOrUpdate(addUserChatList)
         realm.copyToRealmOrUpdate(chats)
-    })
+    }
 
 }
 
@@ -183,9 +243,14 @@ fun insertGroupData(groups: RealmList<Groups>, groupUser: RealmList<GroupUser>, 
  * @param hook
  */
 fun insertHookData(hook: RealmList<UserHook>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(hook)
+        })
+    } else {
         realm.copyToRealmOrUpdate(hook)
-    })
+    }
 }
 
 /**
@@ -194,136 +259,216 @@ fun insertHookData(hook: RealmList<UserHook>) {
  * @param hook
  */
 fun insertHookData(hook: UserHook) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(hook)
+        })
+    } else {
         realm.copyToRealmOrUpdate(hook)
-    })
+    }
 }
 
 fun insertArchiveData(archive: UserArchive) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(archive)
+        })
+    } else {
         realm.copyToRealmOrUpdate(archive)
-    })
+    }
 }
 
 fun insertArchiveData(archive: RealmList<UserArchive>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(archive)
+        })
+    } else {
         realm.copyToRealmOrUpdate(archive)
-    })
+    }
 }
 
 fun insertBroadcastData(broadcastTable: RealmList<BroadcastTable>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(broadcastTable)
+        })
+    } else {
         realm.copyToRealmOrUpdate(broadcastTable)
-    })
+    }
 }
 
 fun insertSingleBroadcastData(broadcastTable: BroadcastTable) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(broadcastTable)
+        })
+    } else {
         realm.copyToRealmOrUpdate(broadcastTable)
-    })
+    }
 }
 
 fun insertChatListData(chatlist: ChatList) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatlist)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatlist)
-
-    })
+    }
 
 }
 
 fun insertChatData(chats: Chats) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chats)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chats)
-    })
+    }
 }
 
 fun insertChatContent(chatContents: RealmList<ChatContents>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatContents)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatContents)
-    })
+    }
 
 }
 
 fun insertChatContacts(chatContacts: RealmList<ChatContacts>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatContacts)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatContacts)
-    })
+    }
 }
 
 fun insertChatVoice(chatVoice: RealmList<ChatVoice>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatVoice)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatVoice)
-    })
+    }
 }
 
 fun insertChatDocument(chatDocument: RealmList<ChatDocument>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatDocument)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatDocument)
-    })
+    }
 }
 
 fun insertChatLocation(chatLocation: ChatLocation) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatLocation)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatLocation)
-    })
+    }
 }
 
 fun insertChatAudio(chatAudio: RealmList<ChatAudio>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(chatAudio)
+        })
+    } else {
         realm.copyToRealmOrUpdate(chatAudio)
-    })
+    }
 }
 
 fun insertNotificationToneData(notificationTone: RealmList<NotificationTone>) {
-    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(notificationTone)
+        })
+    } else {
         realm.copyToRealmOrUpdate(notificationTone)
-    })
+    }
 }
 
-/**   ------------------------------------ INSERT END ---------------------------------------------------------------  */
+fun insertGroupTickData(groupManageTick: GroupManageTick) {
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(groupManageTick)
+        })
+    } else {
+        realm.copyToRealmOrUpdate(groupManageTick)
+    }
+}
+
+/**  ------------------------------------ INSERT END ---------------------------------------------------------------  */
 
 /**   ------------------------------------ READ BEGIN ---------------------------------------------------------------  */
 
 fun getUserByUserId(userID: Int): Users? {
-    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst()
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiverId.name, userID).findFirst()
 }
 
 fun isLoggedInUser(userID: Int): Boolean {
     val user = getUserByUserId(userID)
-    return user != null && user.receiver_id == App.fastSave.getInt(Constants.prefUserId, 0)
+    return user != null && user.receiverId == App.fastSave.getInt(Constants.prefUserId, 0)
 }
 
 fun getSingleUserDetails(userId: Int): Users? {
-    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userId).findFirst()
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiverId.name, userId).findFirst()
 
 }
 
 fun getGroupUserById(groupId: Int, groupUserId: Int): GroupUser? {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, groupId).and().equalTo(GroupUser::user_id.name, groupUserId).findFirst()
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::id.name, groupId).and().equalTo(GroupUser::userId.name, groupUserId).findFirst()
 }
 
 fun getAllChats(): List<Chats> {
     val chats = App.getRealmInstance().where(Chats::class.java).findAll()
-        .sort(Chats::is_hook.name, Sort.DESCENDING, Chats::current_time.name, Sort.DESCENDING)
-        .filter { !it.is_archive }.sortedByDescending { it.is_hook }
+        .sort(Chats::isHook.name, Sort.DESCENDING, Chats::currentTime.name, Sort.DESCENDING)
+        .filter { !it.isArchive }.sortedByDescending { it.isHook }
     return chats.toList()
 
 }
 
 fun getAllArchivedChat(): List<Chats> {
-    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().sort(Chats::current_time.name, Sort.DESCENDING))
+    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(Chats::class.java).equalTo(Chats::isArchive.name, true).findAll().sort(Chats::currentTime.name, Sort.DESCENDING))
 }
 
 fun getAllBroadcastChat(): List<BroadcastTable> {
-    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(BroadcastTable::class.java).findAll().sort(BroadcastTable::updated_at.name, Sort.DESCENDING))
+    return App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(BroadcastTable::class.java).findAll().sort(BroadcastTable::updatedAt.name, Sort.DESCENDING))
 }
 
 fun getGroupsFromGroupId(groupId: List<Int>): List<Groups> {
-    return App.getRealmInstance().where(Groups::class.java).`in`(Groups::grp_id.name, groupId.toTypedArray()).findAll()
+    return App.getRealmInstance().where(Groups::class.java).`in`(Groups::id.name, groupId.toTypedArray()).findAll()
 }
 
 fun getSingleChatContent(chatId: Int): ChatContents? {
-    return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents::chat_id.name, chatId).findFirst()
+    return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents::chatId.name, chatId).findFirst()
 }
 
 fun getSingleChatAudio(chatId: Int): ChatAudio? {
@@ -346,12 +491,19 @@ fun getSingleChatDocument(chatId: Int): ChatDocument? {
     return App.getRealmInstance().where(ChatDocument::class.java).equalTo(ChatDocument::chat_id.name, chatId).findFirst()
 }
 
-fun getSingleChatListItem(chatId: Int): ChatList? {
-    return App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::chat_id.name, chatId).findFirst()
+fun getSingleChat(id: Int): Chats? {
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
 }
 
-fun getSingleUserChat(id: Int): Chats? {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
+fun getSingleChatList(chatId: Long): ChatList? {
+    return App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::id.name, chatId).findFirst()
+}
+
+fun getSingleGroupDetails(groupID: Int): Groups? {
+    /*  let realm = self.getRealm()
+      let results = realm.objects(GRP_TABLE.self).filter("\(DBTables.grouptable.grp_id) == %@",groupID).first
+      return results*/
+    return App.getRealmInstance().where(Groups::class.java).equalTo(Groups::id.name, groupID).findFirst()
 }
 
 fun getHookCount(): Int {
@@ -363,28 +515,28 @@ fun getAllGroups(): List<Groups> {
 }
 
 fun getAllGroupsInCommon(otherUserId: Int): List<GroupUser> {
-    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::user_id.name, otherUserId).findAll()
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::userId.name, otherUserId).findAll()
 }
 
 
 fun getArchivedChatCount(): Int {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_archive.name, true).findAll().size
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::isArchive.name, true).findAll().size
 }
 
-fun getChatPosition(chats: ArrayList<Chats>, userId: Int): Int {
-    val ids: List<Int> = chats.map { it.id }
+fun getChatPosition(chats: ArrayList<ChatsWrapperModel>, userId: Int): Int {
+    val ids: List<Int> = chats.map { it.chats.id }
     return findIndex(ids, userId) ?: -1
 }
 
 fun getMyGroup(): List<Chats> {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().toList()
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::isGroup.name, true).findAll().toList()
 }
 
 fun getUserNameFromId(groupUserId: List<Int>): String {
     val getUser = App.getRealmInstance().where(Users::class.java)
-        .`in`(Users::receiver_id.name, groupUserId.toTypedArray())
-        .findAll().filter { it.receiver_id != App.fastSave.getInt(Constants.prefUserId, 0) }
-    val getUserName = getUser.map { it.first_name + " " + it.last_name }
+        .`in`(Users::receiverId.name, groupUserId.toTypedArray())
+        .findAll().filter { it.receiverId != App.fastSave.getInt(Constants.prefUserId, 0) }
+    val getUserName = getUser.map { it.firstName + " " + it.lastName }
     return getUserName.joinToString()
 }
 
@@ -396,9 +548,9 @@ fun getUserNameFromId(groupUserId: List<Int>): String {
  */
 fun getCommonGroup(userID: Int): List<Chats> {
     return App.getRealmInstance().where(Chats::class.java)
-        .equalTo(Chats::is_group.name, true).findAll()
+        .equalTo(Chats::isGroup.name, true).findAll()
         .filter { chats: Chats ->
-            (chats.group_user_with_settings.map { it.user_id }).contains(userID)
+            (chats.groupUsers.map { it.userId }).contains(userID)
         }
         .toList()
 }
@@ -408,19 +560,19 @@ fun getAllNotificationTune(): List<NotificationTone> {
 }
 
 fun getSelectedNotificationTuneName(friendId: Int): String {
-    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()?.sound ?: ""
+    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friendId.name, friendId).findFirst()?.sound ?: ""
 }
 
 fun getGroupDetail(grpID: Int): Chats {
-    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::is_group.name, true).findAll().first { it.id == grpID }
+    return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::isGroup.name, true).findAll().first { it.id == grpID }
 }
 
 fun getMyGroupSetting(grpID: Int, userID: Int): GroupUser? {
-    return /*App.getRealmInstance().copyFromRealm(*/App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, grpID).and().equalTo(GroupUser::user_id.name, userID).findFirst()//)
+    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::groupId.name, grpID).and().equalTo(GroupUser::userId.name, userID).findFirst()
 }
 
 fun getGroupCreatedUserName(userID: Int): String? {
-    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiver_id.name, userID).findFirst().let { it!!.first_name + " " + it!!.last_name }
+    return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiverId.name, userID).findFirst().let { it!!.firstName + " " + it!!.lastName }
 }
 
 fun getAllFriends(status: String): List<FriendRequest> {
@@ -429,17 +581,59 @@ fun getAllFriends(status: String): List<FriendRequest> {
 
 fun getSelectedFriends(ids: List<Int>): List<FriendRequest> {
     return App.getRealmInstance().where(FriendRequest::class.java)
-        .`in`(FriendRequest::friend_id.name, ids.toTypedArray())
+        .`in`(FriendRequest::friendId.name, ids.toTypedArray())
         .or()
-        .`in`(FriendRequest::user_id.name, ids.toTypedArray()).findAll()
+        .`in`(FriendRequest::userId.name, ids.toTypedArray()).findAll()
 }
 
 fun getSingleFriendSetting(friendId: Int): FriendSettings? {
-    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()
+    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friendId.name, friendId).findFirst()
+}
+
+fun getSingleChatListByLocalId(id: Long): ChatList? {
+    return App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::localChatId.name, id).findFirst()
+
+}
+
+fun getSingleChatContentByLocalId(id: Long): ChatContents? {
+    return App.getRealmInstance().where(ChatContents::class.java).equalTo(ChatContents::chatId.name, id).findFirst()
+}
+
+fun getOneToOneChat(senderId: Int, opponentId: Int): List<ChatList>? {
+    return App.getRealmInstance().where(ChatList::class.java)
+        .equalTo(ChatList::isGroupChat.name, (0).toInt())
+        .and()
+        .equalTo(ChatList::isBroadcastChat.name, (0).toInt())
+        .and()
+        .equalTo(ChatList::isSecret.name, (0).toInt())
+        .and()
+        .beginGroup()
+        .equalTo(ChatList::userId.name, senderId)
+        .and()
+        .equalTo(ChatList::receiverId.name, opponentId)
+        .endGroup()
+        .or()
+        .beginGroup()
+        .equalTo(ChatList::userId.name, opponentId)
+        .and()
+        .equalTo(ChatList::receiverId.name, senderId)
+        .endGroup()
+        .findAll()
+        .sort(ChatList::createdAt.name, ASCENDING)
+}
+
+fun getAllOneToOneChatListForSync(isSync: Boolean): List<ChatList> {
+    return App.getRealmInstance().where(ChatList::class.java)
+        .equalTo(ChatList::isSync.name, isSync)
+        .and()
+        .equalTo(ChatList::isForward.name, (0).toInt())
+        .findAll().sort(ChatList::createdAt.name, ASCENDING).toList()
+
+
 }
 
 fun getSelectedNotificationTuneNameBYID(notificationId: Int): String {
-    return App.getRealmInstance().where(NotificationTone::class.java).equalTo(NotificationTone::id.name, notificationId).findFirst()?.display_name ?: ""
+    return App.getRealmInstance().where(NotificationTone::class.java).equalTo(NotificationTone::id.name, notificationId).findFirst()?.displayName ?: ""
 }
 
 //fun getSelectedGroupNotificationTuneName(friendId: Int,groupId: Int): String {
@@ -451,38 +645,62 @@ fun getSelectedNotificationTuneNameBYID(notificationId: Int): String {
 /**   ------------------------------------ UPDATE BEGIN ---------------------------------------------------------------  */
 
 fun updateChatUserData(id: Int, user: Users) {
-
     val result = App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
     if (result != null) {
-        result.name = (user.first_name ?: "") + " " + (user.last_name ?: "")
-        result.user_data = user
-        //App.getRealmInstance().copyToRealm(result)
+        result.name = (user.firstName ?: "") + " " + (user.lastName ?: "")
+        result.userData = user
+        App.getRealmInstance().copyToRealmOrUpdate(result)
     }
 
 }
 
 fun updateChatListUserData(id: Int, user: Users) {
-    val result = App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::sender_id.name, id).findFirst()
+    val result = App.getRealmInstance().where(ChatList::class.java).equalTo(ChatList::userId.name, id).findFirst()
     if (result != null) {
-        result.user_data = user
-        // App.getRealmInstance().copyToRealm(result)
+        result.userData = user
+        App.getRealmInstance().copyToRealmOrUpdate(result)
     }
 }
 
-fun updateChatsList(id: Int, chatlist: ChatList) {
+fun updateChatsList(id: Int, chatList: ChatList?, callback: (Boolean) -> Unit) {
 
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
+        val data = realm.copyFromRealm(realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst())
         if (data != null) {
-            data.updated_at = chatlist.created_at
-            data.current_time = chatlist.created_at
-            data.chat_list = chatlist
-            // realm.copyToRealmOrUpdate(data)
+            data.updatedAt = chatList?.createdAt
+            data.currentTime = chatList?.createdAt
+            data.chatList = chatList
+            realm.copyToRealmOrUpdate(data)
+            callback.invoke(true)
         }
 
     })
 
 
+}
+
+fun updateChatsList(id: Int, chatList: ChatList, listener: OnRealmTransactionResult) {
+
+    val data = App.getRealmInstance().copyFromRealm(App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst())
+    if (data != null) {
+        data.updatedAt = chatList.createdAt
+        data.currentTime = chatList.createdAt
+        data.chatList = chatList
+        listener.onSuccess(App.getRealmInstance().copyToRealmOrUpdate(data))
+    }
+
+
+}
+
+fun updateBroadcastChatList(broadcastId: Int, chatList: ChatList) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = realm.where(BroadcastTable::class.java).equalTo(BroadcastTable::broadcastId.name, broadcastId).findFirst()
+        if (data != null) {
+            data.chats.add(chatList)
+            realm.copyToRealmOrUpdate(data)
+        }
+
+    })
 }
 
 fun updateChatListAndUserData(id: Int, user: Users) {
@@ -494,9 +712,9 @@ fun updateChatsIsHook(id: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
-            data.is_hook = !data.is_hook
-            data.current_time = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updated_at
-            realm.copyToRealm(data)
+            data.isHook = !data.isHook
+            data.currentTime = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updatedAt
+            realm.copyToRealmOrUpdate(data)
         }
 
     })
@@ -506,9 +724,9 @@ fun updateChatsIsArchive(id: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
-            data.is_archive = !data.is_archive
-            data.current_time = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updated_at
-            realm.copyToRealm(data)
+            data.isArchive = !data.isArchive
+            data.currentTime = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updatedAt
+            realm.copyToRealmOrUpdate(data)
         }
 
     })
@@ -518,8 +736,8 @@ fun updateUserOnlineStatus(id: Int, isOnline: Boolean) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
         if (data != null) {
-            data.is_online = isOnline
-            realm.copyToRealm(data)
+            data.isOnline = isOnline
+            realm.copyToRealmOrUpdate(data)
         }
     })
 }
@@ -528,8 +746,8 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         val data = realm.where(NotificationTone::class.java).equalTo(NotificationTone::id.name, id).findFirst()
         if (data != null) {
-            data.is_set = isSet
-            realm.copyToRealm(data)
+            data.isSet = isSet
+            realm.copyToRealmOrUpdate(data)
         }
     })
 
@@ -537,7 +755,7 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
 
 fun updateFriendSettings(friendId: Int, friendSettings: FriendSettings) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        var data = realm.where(FriendSettings::class.java).equalTo(FriendSettings::friend_id.name, friendId).findFirst()
+        var data = realm.where(FriendSettings::class.java).equalTo(FriendSettings::friendId.name, friendId).findFirst()
         if (data != null) {
             data = friendSettings
             realm.copyToRealmOrUpdate(data)
@@ -548,7 +766,7 @@ fun updateFriendSettings(friendId: Int, friendSettings: FriendSettings) {
 
 fun updateGroupUserSettings(userId: Int, groupId: Int, groupuser: GroupUser) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        var data = realm.where(GroupUser::class.java).equalTo(GroupUser::grp_id.name, groupId).and().equalTo(GroupUser::user_id.name, userId).findFirst()
+        var data = realm.where(GroupUser::class.java).equalTo(GroupUser::id.name, groupId).and().equalTo(GroupUser::userId.name, userId).findFirst()
         if (data != null) {
             data = groupuser
             realm.copyToRealmOrUpdate(data)
@@ -556,6 +774,75 @@ fun updateGroupUserSettings(userId: Int, groupId: Int, groupuser: GroupUser) {
 
     })
 }
+
+
+fun updateChatListIdData(id: Long, chatList: ChatModel, isSync: Boolean, callback: (chatList: ChatList) -> Unit) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = getSingleChatListByLocalId(id)
+        if (data != null) {
+            data.id = chatList.id.toLong()
+            data.isGroupChat = chatList.isGroupChat
+            data.isShared = chatList.isShared
+            data.isForward = chatList.isForward
+            data.isDeleted = chatList.isDeleted
+            data.deletedForAll = chatList.deletedForAll
+            data.deletedBy = chatList.deletedBy
+            data.type = chatList.type
+            data.tick = chatList.tick
+            data.isReply = chatList.isReply
+            data.isReplyToStory = chatList.isReplyToStory
+            data.storyId = chatList.storyId
+            data.isSecret = chatList.isSecret
+            data.isRead = chatList.isRead
+            data.deliverTime = chatList.deliverTime
+            data.readTime = chatList.readTime
+            data.createdAt = chatList.createdAt
+            data.updatedAt = chatList.updatedAt
+            data.isActivityLabel = chatList.isActivityLabel
+            data.event = chatList.event
+            data.isBroadcastChat = chatList.isBroadcastChat
+            data.broadcastId = chatList.broadcastId
+            data.otherUserId = chatList.otherUserId
+            data.chatId = chatList.chatId
+            data.isSync = isSync
+            realm.copyToRealmOrUpdate(data)
+            callback.invoke(data)
+        }
+    })
+
+}
+
+fun updateChatContent(chatId: Long, chatContents: ChatContents) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = getSingleChatContentByLocalId(chatId)
+        if (data != null) {
+            data.id = chatContents.id
+            data.chatId = chatContents.chatId
+            data.content = chatContents.content
+            data.type = chatContents.type
+            data.caption = chatContents.caption
+            data.size = chatContents.size
+            data.duration = chatContents.duration
+            data.title = chatContents.title
+            data.name = chatContents.name
+            data.number = chatContents.number
+            data.email = chatContents.email
+            data.profileImage = chatContents.profileImage
+            data.location = chatContents.location
+            data.latitude = chatContents.latitude
+            data.longitude = chatContents.longitude
+            data.endTime = chatContents.endTime
+            data.sharingTime = chatContents.sharingTime
+            data.locationType = chatContents.locationType
+            data.deleteFor = chatContents.deleteFor
+            data.createdAt = chatContents.createdAt
+            data.updatedAt = chatContents.updatedAt
+            data.localPath = chatContents.localPath
+            realm.copyToRealmOrUpdate(data)
+        }
+    })
+}
+
 
 /**   ------------------------------------ UPDATE END ---------------------------------------------------------------  */
 
@@ -584,7 +871,7 @@ fun deleteArchive(key: String, id: Int) {
 
 fun deleteBroadcast(broadcastId: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        realm.where(BroadcastTable::class.java).equalTo(BroadcastTable::broadcast_id.name, broadcastId).findAll().deleteAllFromRealm()
+        realm.where(BroadcastTable::class.java).equalTo(BroadcastTable::broadcastId.name, broadcastId).findAll().deleteAllFromRealm()
     })
 
 }
@@ -596,30 +883,105 @@ fun clearDatabase() {
     })
 }
 
+fun deleteGroups(ids: List<Int>) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(Groups::class.java).`in`(Groups::id.name, ids.toTypedArray()).not().findAll().deleteAllFromRealm()
+
+    })
+}
+
+
+fun deleteBroadCasts(ids: List<Int>) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(BroadcastTable::class.java).`in`(BroadcastTable::broadcastId.name, ids.toTypedArray()).not().findAll().deleteAllFromRealm()
+
+    })
+}
+/*    func clearOnetoOneFriendChat(currentUserID:Int,receiverID:Int){
+        let realm = self.getRealm()
+
+        let query = "\(DBTables.chatlisttable.user_id) == \(currentUserID) AND \(DBTables.chatlisttable.receiver_id) == \(receiverID)
+        OR \(DBTables.chatlisttable.user_id) == \(receiverID) AND \(DBTables.chatlisttable.receiver_id) == \(currentUserID)"
+
+        let listToClearChatList = realm.objects(CHAT_LIST.self).filter(query)
+        try! realm.write{
+            for item in listToClearChatList {
+
+                if item.contacts.count > 0 {
+                    item.contacts.forEach { (objChatContact) in
+                        realm.delete(realm.objects(ChatContents.self).filter("\(DBTables.chatcontents.chat_id) == %@", (objChatContact.chat_id)).first!)
+                    }
+                }
+
+                if item.chatcontents != nil{
+                    realm.delete(realm.objects(ChatContents.self).filter("\(DBTables.chatcontents.chat_id) == %@", (item.chat_id)).first!)
+                }
+            }
+            realm.delete(listToClearChatList)
+        }
+
+        updateChatslist(fieldkey: DBTables.chatstable.id , id: receiverID, chatlist: nil, completion: { isSuccess in
+            if isSuccess{
+                DLog(isSuccess)
+            }
+        })
+
+
+    }*/
+
+fun clearOneToOneChat(receiverId: Int) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        val data = realm.where(ChatList::class.java).beginGroup().equalTo(ChatList::userId.name, getCurrentUserId()).and()
+            .equalTo(ChatList::receiverId.name, receiverId).endGroup()
+            .or()
+            .beginGroup().equalTo(ChatList::userId.name, receiverId).and().equalTo(ChatList::receiverId.name, getCurrentUserId()).endGroup().findAll()
+
+        data.toList()?.let { chatList ->
+            chatList.forEach { item ->
+                if (item.contacts.isNotEmpty()) {
+                    item.contacts.forEach { chatContactObj ->
+                        realm.where(ChatContents::class.java).equalTo(ChatContents::chatId.name, chatContactObj.chatId).findFirst()?.deleteFromRealm()
+                    }
+                }
+
+                item.chatContents?.let {
+                    realm.where(ChatContents::class.java).equalTo(ChatContents::chatId.name, item.chatId).findFirst()?.deleteFromRealm()
+                }
+            }
+        }
+        data.deleteAllFromRealm()
+
+    })
+    updateChatsList(receiverId, null) {}
+
+}
+
 /**   ------------------------------------ DELETE END ---------------------------------------------------------------  */
 
 
 fun prepareLoggedInUserData(user: User): Users {
     val users = Users()
-    users.first_name = user.firstName
-    users.last_name = user.lastName
-    users.profile_image = user.profileImage
-    users.profile_color = user.profileColor
-    users.receiver_id = user.id
+    users.firstName = user.firstName
+    users.lastName = user.lastName
+    users.profileImage = user.profileImage
+    users.profileColor = user.profileColor
+    users.receiverId = user.id
+    users.userName = user.accountId
     return users
 }
 
 fun prepareOtherUserData(user: OtherUserModel): Users {
     val users = Users()
-    users.first_name = user.firstName
-    users.last_name = user.lastName
-    users.profile_image = user.profileImage
-    users.profile_color = user.profileColor
-    users.receiver_id = user.id
+    users.firstName = user.firstName
+    users.lastName = user.lastName
+    users.profileImage = user.profileImage
+    users.profileColor = user.profileColor
+    users.receiverId = user.id
+    users.userName = user.accountId
     return users
 }
 
-fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook> {
+fun prepareHookData(hookData: List<HookData>): RealmList<UserHook> {
     val ids = hookData.map { it.id }
     deleteHooks(ids)
     val hookDataList = RealmList<UserHook>()
@@ -628,22 +990,24 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
         for (hookObj in it) {
             val userHook = UserHook()
             userHook.id = hookObj.id
-            userHook.user_id = hookObj.userId
-            userHook.friend_id = hookObj.friendId
-            userHook.group_id = hookObj.groupId
-            userHook.is_group = hookObj.isGroup
-            userHook.is_friend = hookObj.isFriend
+            userHook.userId = hookObj.userId
+            userHook.friendId = hookObj.friendId
+            userHook.groupId = hookObj.groupId
+            userHook.isGroup = hookObj.isGroup
+            userHook.isFriend = hookObj.isFriend
+
+
             if (hookObj.isGroup == 1) {
                 updateChatsIsHook(hookObj.groupId)
             } else {
-                val isChats = getSingleUserChat(hookObj.friendId)
+                val isChats = getSingleChat(hookObj.friendId)
                 if (isChats == null) {
                     val chat = Chats()
                     chat.id = hookObj.friendId
-                    chat.is_group = false
-                    chat.is_hook = true
-                    chat.updated_at = hookObj.updatedAt
-                    chat.current_time = hookObj.updatedAt
+                    chat.isGroup = false
+                    chat.isHook = true
+                    chat.updatedAt = hookObj.updatedAt
+                    chat.currentTime = hookObj.updatedAt
                     insertChatData(chat)
                 } else {
                     updateChatsIsHook(hookObj.friendId)
@@ -656,12 +1020,10 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
         }
         if (users.size > 0) {
             for (user in users) {
-                insertUserData(user, object : OnRealmTransactionResult {
-                    override fun onSuccess(obj: Any) {
-                        updateChatUserData(user.receiver_id, obj as Users)
-                    }
-                    override fun onError() {}
-                })
+                insertUserData(user) { obj ->
+
+                    updateChatUserData(user.receiverId, obj)
+                }
             }
         }
     }
@@ -669,106 +1031,124 @@ fun prepareHookData(hookData: List<LoginResponse.HookData>): RealmList<UserHook>
     return hookDataList
 }
 
-fun prepareChatsData(groupObj: LoginResponse.GetAllGroup): Chats {
+fun prepareChatsData(groupObj: GetAllGroup): Chats {
     val groups = prepareGroupData(groupObj.groupData)
     val groupUser = prepareGroupUserData(groupObj.groupUserWithSettings)
-    val createGroupLabelChatList = groupObj.createGroupLbl?.let { prepareGroupLabelData(it) }
-    val addUserGroupChatList = groupObj.addUserInGp?.let { prepareGroupLabelData(it) }
+    //val createGroupLabelChatList = groupObj.createGroupLbl?.let { prepareChatLabelData(it) }
+    // val addUserGroupChatList = groupObj.addUserInGp?.let { prepareChatLabelData(it) }
 
     val chats = Chats()
     chats.id = groupObj.groupData.id
     chats.name = groupObj.groupData.name
-    chats.is_group = true
-    chats.current_time = groupObj.groupData.updatedAt
-    chats.updated_at = groupObj.groupData.updatedAt
-    chats.group_data = groups
-    chats.group_user_with_settings = groupUser
-    chats.chat_list = addUserGroupChatList ?: createGroupLabelChatList
+    chats.isGroup = true
+    chats.currentTime = groupObj.groupData.updatedAt
+    chats.updatedAt = groupObj.groupData.updatedAt
+    chats.groupData = groups
+    chats.groupUsers = groupUser
+    // chats.chatList = addUserGroupChatList ?: createGroupLabelChatList
 
     return chats
 
 }
 
-fun prepareGroupLabelData(createGroupLbl: ChatLabel): ChatList {
-    createGroupLbl?.let {
-        val chatList = ChatList()
-        val groupUser = getGroupUserById(createGroupLbl.groupId, createGroupLbl.userId)
+fun prepareChatLabelData(chatModel: ChatModel): ChatList {
 
-        chatList.local_chat_id = createGroupLbl.id
-        chatList.id = createGroupLbl.id
-        chatList.user_id = createGroupLbl.userId
-        chatList.receiver_id = createGroupLbl.receiverId
-        chatList.sender_id = createGroupLbl.senderId
-        chatList.is_group_chat = createGroupLbl.isGroupChat
-        chatList.group_id = createGroupLbl.groupId
-        chatList.type = createGroupLbl.type
-        chatList.message_text = getGroupLabelText(createGroupLbl.userId, createGroupLbl.event, isLoggedInUser(createGroupLbl.userId), createGroupLbl.messageText ?: "")
-        chatList.is_shared = createGroupLbl.isShared
-        chatList.is_forward = createGroupLbl.isForward
-        chatList.is_deleted = createGroupLbl.isDeleted
-        chatList.deleted_for_all = createGroupLbl.deletedForAll
-        chatList.deleted_by = createGroupLbl.deletedBy
-        chatList.tick = createGroupLbl.tick
-        chatList.is_reply = createGroupLbl.isReply
-        chatList.is_reply_to_message = createGroupLbl.isReplyToMessage
-        chatList.is_reply_to_story = createGroupLbl.isReplyToStory
-        chatList.story_id = createGroupLbl.storyId
-        chatList.is_replyback_to_reply = createGroupLbl.isReplybackToReply
-        chatList.is_secret = createGroupLbl.isSecret
-        chatList.is_read = createGroupLbl.isRead
-        chatList.created_at = createGroupLbl.createdAt
-        chatList.is_activity_label = createGroupLbl.isActivityLabel
-        chatList.event = createGroupLbl.event
-        chatList.is_broadcast_chat = createGroupLbl.isBroadcastChat
-        chatList.broadcast_id = createGroupLbl.broadcastId
-        chatList.content_id = createGroupLbl.contentId
-        chatList.is_content_reply = createGroupLbl.isContentReply
-        chatList.grp_other_user_id = createGroupLbl.otherUserId
-        chatList.broadcast_chat_id = createGroupLbl.broadcastChatId
-        chatList.entry_id = createGroupLbl.entryId
-        chatList.chat_id = createGroupLbl.chatId
-        chatList.chat_contents = RealmList()
-        chatList.chat_audio = RealmList()
-        chatList.chat_contacts = RealmList()
-        chatList.chat_location = null
-        chatList.chat_document = RealmList()
-        chatList.grp_label_color = if (groupUser?.label_color != null) groupUser.label_color else "#000000"
-        chatList.isSync = true
 
-        return chatList
+    val randomLocalId = getNewChatId()
 
+    //  val second = Date().time.toString()//DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.ss.label)
+    //  randomLocalId += if (second == "") 1 else second.toLong()
+
+    val arrChatContact: RealmList<ChatContents> = RealmList()
+
+    var isContact = false
+    if (chatModel.type.lowercase() == MessageType.CONTACT.type.lowercase()) {
+        isContact = true
+        chatModel.contacts?.forEach {
+            val chatContact = createChatContent(it)
+            arrChatContact.add(chatContact)
+        }
     }
+    var messageText = chatModel.messageText
+    messageText = createEventWiseLabel(chatModel, messageText ?: "")
+
+    var userLabelColor = "#000000"
+    if (chatModel.isGroupChat == 1) {
+        val grpUserTable = getGroupUserById(chatModel.groupId, chatModel.userId)
+        userLabelColor = grpUserTable?.labelColor ?: "#000000"
+    }
+    return ChatList.create(
+        randomLocalId, chatModel.id.toLong(), chatModel.userId, chatModel.receiverId, chatModel.isGroupChat, chatModel.groupId, chatModel.otherUserId ?: "",
+        chatModel.type, messageText, chatModel.isShared, chatModel.isForward, chatModel.isDeleted, chatModel.deletedForAll, chatModel.deletedBy, chatModel.tick, chatModel.isReply,
+        isStar = 0, chatModel.isReplyToStory, chatModel.isStoryReplyBackToReply, chatModel.storyId, chatModel.isSecret, chatModel.isRead, chatModel.deliverTime ?: "",
+        chatModel.readTime ?: "", chatModel.createdAt, chatModel.isActivityLabel, chatModel.event, chatModel.isBroadcastChat, chatModel.broadcastId, chatModel.chatId,
+        if (isContact) null else chatModel.chatContents?.let { createChatContent(chatModel.chatContents) },
+        if (isContact) arrChatContact else RealmList<ChatContents>(), userLabelColor, isSync = true
+    )
 
 
 }
 
-fun prepareGroupUserData(groupUserWithSettings: List<LoginResponse.GetAllGroup.GroupUserWithSetting>): RealmList<GroupUser> {
+fun createChatContent(chatContentsModel: ChatContentsModel?): ChatContents? {
+    var chatContent: ChatContents? = null
+    if (chatContentsModel != null) {
+        chatContent = ChatContents()
+        val chatContentId = getNewChatId()
+        chatContent.contentId = chatContentId
+        chatContent.id = chatContentsModel.id ?: 0
+        chatContent.chatId = chatContentsModel.chatId ?: 0
+        chatContent.content = chatContentsModel.content ?: ""
+        chatContent.type = chatContentsModel.type ?: ""
+        chatContent.caption = chatContentsModel.caption ?: ""
+        chatContent.size = chatContentsModel.size ?: 0.0
+        chatContent.duration = chatContentsModel.duration ?: 0.0
+        chatContent.title = chatContentsModel.title ?: ""
+        chatContent.name = chatContentsModel.name ?: ""
+        chatContent.number = chatContentsModel.number ?: ""
+        chatContent.email = chatContentsModel.email ?: ""
+        chatContent.profileImage = chatContentsModel.profileImage ?: ""
+        chatContent.location = chatContentsModel.location ?: ""
+        chatContent.latitude = chatContentsModel.latitude ?: 0.0
+        chatContent.longitude = chatContentsModel.longitude ?: 0.0
+        chatContent.endTime = chatContentsModel.endTime ?: ""
+        chatContent.sharingTime = chatContentsModel.sharingTime ?: ""
+        chatContent.locationType = chatContentsModel.locationType ?: ""
+        chatContent.deleteFor = chatContentsModel.deleteFor ?: ""
+        chatContent.createdAt = chatContentsModel.createdAt ?: ""
+        chatContent.updatedAt = chatContentsModel.updatedAt ?: ""
+        chatContent.localPath = chatContentsModel.localPath ?: ""
+        chatContent.isDownload = false
+    }
+    return chatContent
+}
+
+fun prepareGroupUserData(groupUserWithSettings: List<GetAllGroup.GroupUserWithSetting>): RealmList<GroupUser> {
     val groupUserSettingsList = RealmList<GroupUser>()
     for (groupUserWithSetting in groupUserWithSettings) {
-        /*  val groupUserObj = GroupUser()
-          groupUserObj.id = groupUserWithSetting.id
-          groupUserObj.user_id = groupUserWithSetting.userId
-          groupUserObj.grp_id = groupUserWithSetting.groupId
-          groupUserObj.label_color = groupUserWithSetting.labelColor
-          groupUserObj.location = groupUserWithSetting.location
-          groupUserObj.is_admin = groupUserWithSetting.isAdmin
-          groupUserObj.is_allow_to_add_post = groupUserWithSetting.isAllowToAddPost
-          groupUserObj.is_mute_notification = groupUserWithSetting.isMuteNotification
-          groupUserObj.is_report = groupUserWithSetting.isReport
-          groupUserObj.status = groupUserWithSetting.status
-          groupUserObj.is_deleted = groupUserWithSetting.isDeleted
-          groupUserObj.is_allow_to_edit_info = groupUserWithSetting.isAllowToEditInfo
-          groupUserObj.mute_time = groupUserWithSetting.muteTime
-          groupUserObj.end_mute_time = groupUserWithSetting.endMuteTime
-          groupUserObj.media_viewable = groupUserWithSetting.isMediaViewable
-          groupUserObj.custom_notification_enable = groupUserWithSetting.isCustomNotificationEnable
-          groupUserObj.vibrate_status = groupUserWithSetting.vibrateStatus
-          groupUserObj.is_popup_notification = groupUserWithSetting.isPopupNotification
-          groupUserObj.light = groupUserWithSetting.light
-          groupUserObj.high_priority_notification = groupUserWithSetting.useHighPriorityNotification
-          groupUserObj.notification_tone_id = groupUserWithSetting.notificationToneId
-          groupUserObj.created_at = groupUserWithSetting.createdAt
-          groupUserObj.updated_at = groupUserWithSetting.updatedAt*/
+        val groupUserObj = GroupUser()
+        /*groupUserObj.id = groupUserWithSetting.id
+        groupUserObj.userId = groupUserWithSetting.userId
+        groupUserObj.groupId = groupUserWithSetting.groupId
+        groupUserObj.labelColor = groupUserWithSetting.labelColor
+        groupUserObj.location = groupUserWithSetting.location
+        groupUserObj.isAdmin = groupUserWithSetting.isAdmin
+        groupUserObj.isAllowToAddPost = groupUserWithSetting.isAllowToAddPost
+        groupUserObj.isMuteNotification = groupUserWithSetting.isMuteNotification
+        groupUserObj.isReport = groupUserWithSetting.isReport
+        groupUserObj.status = groupUserWithSetting.status
+        groupUserObj.isDeleted = groupUserWithSetting.isDeleted
+        groupUserObj.isAllowToEditInfo = groupUserWithSetting.isAllowToEditInfo
+        groupUserObj.muteTime = groupUserWithSetting.muteTime
+        groupUserObj.endMuteTime = groupUserWithSetting.endMuteTime
+        groupUserObj.mediaViewable = groupUserWithSetting.isMediaViewable
+        groupUserObj.customNotificationEnable = groupUserWithSetting.isCustomNotificationEnable
+        groupUserObj.vibrateStatus = groupUserWithSetting.vibrateStatus
+        groupUserObj.isPopupNotification = groupUserWithSetting.isPopupNotification
+        groupUserObj.light = groupUserWithSetting.light
+        groupUserObj.useHighPriorityNotification = groupUserWithSetting.useHighPriorityNotification
+        groupUserObj.notificationToneId = groupUserWithSetting.notificationToneId
+        groupUserObj.createdAt = groupUserWithSetting.createdAt
+        groupUserObj.updatedAt = groupUserWithSetting.updatedAt*/
         groupUserSettingsList.add(prepareSingleGroupUsersData(groupUserWithSetting))
         insertUserData(prepareOtherUserData(groupUserWithSetting.user))
 
@@ -776,49 +1156,21 @@ fun prepareGroupUserData(groupUserWithSettings: List<LoginResponse.GetAllGroup.G
     return groupUserSettingsList
 }
 
-fun prepareSingleGroupUsersData(groupUserWithSetting: LoginResponse.GetAllGroup.GroupUserWithSetting): GroupUser {
-    val groupUserObj = GroupUser()
-    groupUserObj.id = groupUserWithSetting.id
-    groupUserObj.user_id = groupUserWithSetting.userId
-    groupUserObj.grp_id = groupUserWithSetting.groupId
-    groupUserObj.label_color = groupUserWithSetting.labelColor
-    groupUserObj.location = groupUserWithSetting.location
-    groupUserObj.is_admin = groupUserWithSetting.isAdmin
-    groupUserObj.is_allow_to_add_post = groupUserWithSetting.isAllowToAddPost
-    groupUserObj.is_mute_notification = groupUserWithSetting.isMuteNotification
-    groupUserObj.is_report = groupUserWithSetting.isReport
-    groupUserObj.status = groupUserWithSetting.status
-    groupUserObj.is_deleted = groupUserWithSetting.isDeleted
-    groupUserObj.is_allow_to_edit_info = groupUserWithSetting.isAllowToEditInfo
-    groupUserObj.mute_time = groupUserWithSetting.muteTime
-    groupUserObj.end_mute_time = groupUserWithSetting.endMuteTime
-    groupUserObj.media_viewable = groupUserWithSetting.isMediaViewable
-    groupUserObj.custom_notification_enable = groupUserWithSetting.isCustomNotificationEnable
-    groupUserObj.vibrate_status = groupUserWithSetting.vibrateStatus
-    groupUserObj.is_popup_notification = groupUserWithSetting.isPopupNotification
-    groupUserObj.light = groupUserWithSetting.light
-    groupUserObj.high_priority_notification = groupUserWithSetting.useHighPriorityNotification
-    groupUserObj.notification_tone_id = groupUserWithSetting.notificationToneId
-    groupUserObj.created_at = groupUserWithSetting.createdAt
-    groupUserObj.updated_at = groupUserWithSetting.updatedAt
-    return groupUserObj
-}
-
-fun prepareGroupData(groupData: LoginResponse.GetAllGroup.GroupData): Groups {
+fun prepareGroupData(groupData: GetAllGroup.GroupData): Groups {
     val groupObj = Groups()
 
-    groupObj.grp_id = groupData.id
-    groupObj.grp_user_id = groupData.userId
-    groupObj.grp_name = groupData.name
-    groupObj.grp_description = groupData.description
-    groupObj.grp_icon = groupData.icon
-    groupObj.grp_created_by = groupData.createdBy
-    groupObj.grp_total_user = groupData.totalUsers
-    groupObj.grp_other_user_id = groupData.otherUserId
-    groupObj.grp_updated_at = groupData.updatedAt
-    groupObj.grp_created_at = groupData.createdAt
-    groupObj.grp_edit_info_permission = groupData.editInfoPermission
-    groupObj.grp_send_msg = groupData.sendMsg
+    groupObj.id = groupData.id
+    groupObj.userId = groupData.userId
+    groupObj.name = groupData.name
+    groupObj.description = groupData.description
+    groupObj.icon = groupData.icon
+    groupObj.createdBy = groupData.createdBy
+    groupObj.totalUser = groupData.totalUsers
+    groupObj.otherUserId = groupData.otherUserId
+    groupObj.updatedAt = groupData.updatedAt
+    groupObj.createdAt = groupData.createdAt
+    groupObj.editInfoPermission = groupData.editInfoPermission
+    groupObj.sendMessage = groupData.sendMsg
 
     return groupObj
 
@@ -833,68 +1185,71 @@ fun prepareLoggedInUserSettings(loginResponse: LoginResponse): UserSettings {
     insertUserData(loggedInUser)
 
     userSettingsObj.id = userSetting.id
-    userSettingsObj.user_id = userSetting.userId
-    userSettingsObj.theme_id = userSetting.themeId
-    userSettingsObj.wallpaper_id = userSetting.wallpaperId
-    userSettingsObj.is_chat_notification = userSetting.isChatNotification
-    userSettingsObj.is_new_post_notify = userSetting.isNewPostNotify
-    userSettingsObj.is_tag_notification = userSetting.isTagNotification
-    userSettingsObj.profile_image = userSetting.profileImage
-    userSettingsObj.notification_tone_id = userSetting.notificationToneId
-    userSettingsObj.is_followers_viewable = userSetting.isFollowersViewable
-    userSettingsObj.is_friend_enable = userSetting.isFriendEnable
-    userSettingsObj.is_image_wallpaper = userSetting.isImageWallpaper
-    userSettingsObj.is_color_wallpaper = userSetting.isColorWallpaper
-    userSettingsObj.wall_paper_color = userSetting.wallPaperColor
-    userSettingsObj.is_default_wallpaper = userSetting.isDefaultWallpaper
-    userSettingsObj.is_no_wallpaper = userSetting.isNoWallpaper
-    userSettingsObj.is_gallery_wallpaper = userSetting.isGalleryWallpaper
-    userSettingsObj.gallery_image = userSetting.galleryImage
-    userSettingsObj.font_size = userSetting.fontSize
+    userSettingsObj.userId = userSetting.userId
+    userSettingsObj.themeId = userSetting.themeId
+    userSettingsObj.wallpaperId = userSetting.wallpaperId
+    userSettingsObj.isChatNotification = userSetting.isChatNotification
+    userSettingsObj.isNewPostNotify = userSetting.isNewPostNotify
+    userSettingsObj.isTagNotification = userSetting.isTagNotification
+    userSettingsObj.profileImage = userSetting.profileImage
+    userSettingsObj.notificationToneId = userSetting.notificationToneId
+    userSettingsObj.isFollowersViewable = userSetting.isFollowersViewable
+    userSettingsObj.isFriendEnable = userSetting.isFriendEnable
+    userSettingsObj.isImageWallpaper = userSetting.isImageWallpaper
+    userSettingsObj.isColorWallpaper = userSetting.isColorWallpaper
+    userSettingsObj.wallpaperColor = userSetting.wallPaperColor
+    userSettingsObj.isDefaultWallpaper = userSetting.isDefaultWallpaper
+    userSettingsObj.isNoWallpaper = userSetting.isNoWallpaper
+    userSettingsObj.isGalleryWallpaper = userSetting.isGalleryWallpaper
+    userSettingsObj.galleryImage = userSetting.galleryImage
+    userSettingsObj.fontSize = userSetting.fontSize
     userSettingsObj.languages = userSetting.languages
-    userSettingsObj.is_enter_send = userSetting.isEnterSend
-    userSettingsObj.is_media_visible = userSetting.isMediaVisible
-    userSettingsObj.is_photo_autodownload = userSetting.isPhotoAutodownload
-    userSettingsObj.is_audio_autodownload = userSetting.isAudioAutodownload
-    userSettingsObj.is_video_autodownload = userSetting.isVideoAutodownload
-    userSettingsObj.is_document_autodownload = userSetting.isDocumentAutodownload
-    userSettingsObj.is_photo_autodownload_wifi = userSetting.isPhotoAutodownloadWifi
-    userSettingsObj.is_audio_autodownload_wifi = userSetting.isAudioAutodownloadWifi
-    userSettingsObj.is_video_autodownload_wifi = userSetting.isVideoAutodownloadWifi
-    userSettingsObj.is_document_autodownload_wifi = userSetting.isDocumentAutodownloadWifi
-    userSettingsObj.is_photo_autodownload_roaming = userSetting.isPhotoAutodownloadRoaming
-    userSettingsObj.is_audio_autodownload_roaming = userSetting.isAudioAutodownloadRoaming
-    userSettingsObj.is_video_autodownload_roaming = userSetting.isVideoAutodownloadRoaming
-    userSettingsObj.is_document_autodownload_roaming = userSetting.isDocumentAutodownloadRoaming
-    userSettingsObj.is_delete_request = userSetting.isDeleteRequest
-    userSettingsObj.story_view = userSetting.storyView
-    userSettingsObj.story_download = userSetting.storyDownload
-    userSettingsObj.vibrate_status = userSetting.vibrateStatus
-    userSettingsObj.is_popup_notification = userSetting.isPopupNotification
-    userSettingsObj.use_high_priority_notification = userSetting.useHighPriorityNotification
-    userSettingsObj.last_seen = userSetting.lastSeen
-    userSettingsObj.is_visible = userSetting.isVisible
-    userSettingsObj.profile_seen = userSetting.profileSeen
-    userSettingsObj.call_ringtone = userSetting.callRigtone
-    userSettingsObj.call_vibrate = userSetting.callVibrate
-    userSettingsObj.about_seen = userSetting.aboutSeen
-    userSettingsObj.who_can_add_me_in_group = userSetting.whoCanAddMeInGroup
-    userSettingsObj.live_location_sharing = userSetting.liveLocationSharing
-    userSettingsObj.is_fingerprint_lock_enabled = userSetting.isFingerprintLockEnabled
-    userSettingsObj.is_show_security_notification = userSetting.isShowSecurityNotification
-    userSettingsObj.is_two_step_verification_enabled = userSetting.isTwoStepVerificationEnabled
-    userSettingsObj.group_vibrate_status = userSetting.groupVibrateStatus
-    userSettingsObj.group_is_popup_notification = userSetting.groupIsPopupNotification
-    userSettingsObj.group_use_high_priority_notification = userSetting.groupUseHighPriorityNotification
-    userSettingsObj.group_notification_tone_id = userSetting.groupNotificationToneId
-    userSettingsObj.near_location = userSetting.nearLocation
+    userSettingsObj.isEnterSend = userSetting.isEnterSend
+    userSettingsObj.isMediaVisible = userSetting.isMediaVisible
+    userSettingsObj.isPhotoAutoDownload = userSetting.isPhotoAutodownload
+    userSettingsObj.isAudioAutoDownload = userSetting.isAudioAutodownload
+    userSettingsObj.isVideoAutoDownload = userSetting.isVideoAutodownload
+    userSettingsObj.isDocumentAutoDownload = userSetting.isDocumentAutodownload
+    userSettingsObj.isPhotoAutoDownloadWifi = userSetting.isPhotoAutodownloadWifi
+    userSettingsObj.isAudioAutoDownloadWifi = userSetting.isAudioAutodownloadWifi
+    userSettingsObj.isVideoAutoDownloadWifi = userSetting.isVideoAutodownloadWifi
+    userSettingsObj.isDocumentAutoDownloadWifi = userSetting.isDocumentAutodownloadWifi
+    userSettingsObj.isPhotoAutoDownloadRoaming = userSetting.isPhotoAutodownloadRoaming
+    userSettingsObj.isAudioAutoDownloadRoaming = userSetting.isAudioAutodownloadRoaming
+    userSettingsObj.isVideoAutoDownloadRoaming = userSetting.isVideoAutodownloadRoaming
+    userSettingsObj.isDocumentAutoDownloadRoaming = userSetting.isDocumentAutodownloadRoaming
+    userSettingsObj.isDeleteRequest = userSetting.isDeleteRequest
+    userSettingsObj.storyView = userSetting.storyView
+    userSettingsObj.storyDownload = userSetting.storyDownload
+    userSettingsObj.vibrateStatus = userSetting.vibrateStatus
+    userSettingsObj.isPopupNotification = userSetting.isPopupNotification
+    userSettingsObj.useHighPriorityNotification = userSetting.useHighPriorityNotification
+    userSettingsObj.lastSeen = userSetting.lastSeen
+    userSettingsObj.isVisible = userSetting.isVisible
+    userSettingsObj.profileSeen = userSetting.profileSeen
+    userSettingsObj.callRingtone = userSetting.callRigtone
+    userSettingsObj.callVibrate = userSetting.callVibrate
+    userSettingsObj.aboutSeen = userSetting.aboutSeen
+    userSettingsObj.whoCanAddMeInGroup = userSetting.whoCanAddMeInGroup
+    userSettingsObj.liveLocationSharing = userSetting.liveLocationSharing
+    userSettingsObj.isFingerprintLockEnabled = userSetting.isFingerprintLockEnabled
+    userSettingsObj.isShowSecurityNotification = userSetting.isShowSecurityNotification
+    userSettingsObj.isTwoStepVerificationEnabled = userSetting.isTwoStepVerificationEnabled
+    userSettingsObj.groupVibrateStatus = userSetting.groupVibrateStatus
+    userSettingsObj.groupIsPopupNotification = userSetting.groupIsPopupNotification
+    userSettingsObj.groupUseHighPriorityNotification = userSetting.groupUseHighPriorityNotification
+    userSettingsObj.groupNotificationToneId = userSetting.groupNotificationToneId
+    userSettingsObj.nearLocation = userSetting.nearLocation
     userSettingsObj.sound = userSetting.sound
     userSettingsObj.user = loggedInUser
-    userSettingsObj.updated_at = userSetting.updatedAt
+    userSettingsObj.updatedAt = userSetting.updatedAt
     return userSettingsObj
 }
 
-fun prepareAllGroupDataForDB(getAllGroups: List<LoginResponse.GetAllGroup>): Array<Any> {
+fun prepareAllGroupDataForDB(getAllGroups: List<GetAllGroup>): Array<Any> {
+
+    val ids = getAllGroups.map { it.groupData.id }
+    deleteGroups(ids)
 
     val groups = RealmList<Groups>()
     val groupUser = RealmList<GroupUser>()
@@ -904,16 +1259,17 @@ fun prepareAllGroupDataForDB(getAllGroups: List<LoginResponse.GetAllGroup>): Arr
     for (groupObj in getAllGroups) {
         val chatsObj = prepareChatsData(groupObj)
 
-        groups.add(chatsObj.group_data)
-        groupUser.addAll(chatsObj.group_user_with_settings)
+        groups.add(chatsObj.groupData)
+        groupUser.addAll(chatsObj.groupUsers)
 
 
         groupObj.createGroupLbl?.let {
-            chatList.add(prepareGroupLabelData(groupObj.createGroupLbl))
+            chatList.add(prepareChatLabelData(groupObj.createGroupLbl).also { chatsObj.chatList = it })
+
         }
 
         groupObj.addUserInGp?.let {
-            addUserChatList.add(prepareGroupLabelData(groupObj.addUserInGp))
+            addUserChatList.add(prepareChatLabelData(groupObj.addUserInGp).also { chatsObj.chatList = it })
         }
 
         chats.add(chatsObj)
@@ -929,25 +1285,25 @@ fun prepareArchiveData(archiveData: List<LoginResponse.ArchiveData>): RealmList<
         for (archiveObj in archiveData) {
             val userArchive = UserArchive()
             userArchive.id = archiveObj.id
-            userArchive.user_id = archiveObj.userId
-            userArchive.friend_id = archiveObj.isFriend
-            userArchive.group_id = archiveObj.groupId
-            userArchive.is_group = archiveObj.isGroup
-            userArchive.is_friend = archiveObj.isFriend
+            userArchive.userId = archiveObj.userId
+            userArchive.friendId = archiveObj.isFriend
+            userArchive.groupId = archiveObj.groupId
+            userArchive.isGroup = archiveObj.isGroup
+            userArchive.isFriend = archiveObj.isFriend
 
 
             if (archiveObj.isGroup == 1) {
                 updateChatsIsArchive(archiveObj.groupId)
 
             } else {
-                val isChats = getSingleUserChat(archiveObj.friendId)
+                val isChats = getSingleChat(archiveObj.friendId)
                 if (isChats == null) {
                     val chat = Chats()
                     chat.id = archiveObj.friendId
-                    chat.is_group = false
-                    chat.is_archive = true
-                    chat.updated_at = archiveObj.updatedAt
-                    chat.current_time = archiveObj.updatedAt
+                    chat.isGroup = false
+                    chat.isArchive = true
+                    chat.updatedAt = archiveObj.updatedAt
+                    chat.currentTime = archiveObj.updatedAt
                     insertChatData(chat)
 
                 } else {
@@ -963,14 +1319,11 @@ fun prepareArchiveData(archiveData: List<LoginResponse.ArchiveData>): RealmList<
         }
         if (users.size > 0) {
             for (user in users) {
-                insertUserData(user, object : OnRealmTransactionResult {
-                    override fun onSuccess(obj: Any) {
-                        updateChatUserData(user.receiver_id, obj as Users)
-                    }
+                insertUserData(user) { obj ->
+                    updateChatUserData(user.receiverId, obj)
 
-                    override fun onError() {}
 
-                })
+                }
             }
 
         }
@@ -979,6 +1332,10 @@ fun prepareArchiveData(archiveData: List<LoginResponse.ArchiveData>): RealmList<
 }
 
 fun prepareBroadcastData(broadcasts: List<LoginResponse.Broadcast>): RealmList<BroadcastTable> {
+
+    val ids = broadcasts.map { it.id }
+    deleteBroadCasts(ids)
+
     val broadcastList = RealmList<BroadcastTable>()
     broadcasts.let {
         for (broadcastObj in broadcasts) {
@@ -989,65 +1346,67 @@ fun prepareBroadcastData(broadcasts: List<LoginResponse.Broadcast>): RealmList<B
 }
 
 fun prepareSingleBroadcastData(broadcastObj: LoginResponse.Broadcast): BroadcastTable {
-    val broadcastTableData = BroadcastTable()
-    broadcastTableData.broadcast_id = broadcastObj.id
-    broadcastTableData.user_id = broadcastObj.userId
-    broadcastTableData.broad_name = broadcastObj.name
-    broadcastTableData.broad_icon = broadcastObj.icon
-    broadcastTableData.broad_total_user = broadcastObj.totalUsers
-    broadcastTableData.broad_other_userid = broadcastObj.otherUserId
-    broadcastTableData.created_at = broadcastObj.createdAt
-    broadcastTableData.updated_at = broadcastObj.updatedAt
+    val broadcastTableData = BroadcastTable.create(
+        broadcastObj.id,
+        broadcastObj.userId,
+        broadcastObj.name,
+        broadcastObj.icon,
+        broadcastObj.totalUsers,
+        broadcastObj.otherUserId,
+        broadcastObj.createdAt,
+        broadcastObj.updatedAt,
+    )
+    //broadcastTableData.broadcastId = broadcastObj.id
+    //broadcastTableData.userId = broadcastObj.userId
+    //broadcastTableData.broadcastName = broadcastObj.name
+    //broadcastTableData.broadcastIcon = broadcastObj.icon
+    //broadcastTableData.broadcastTotalUser = broadcastObj.totalUsers
+    //broadcastTableData.broadcastOtherUserId = broadcastObj.otherUserId
+    //broadcastTableData.createdAt = broadcastObj.createdAt
+    //broadcastTableData.updatedAt = broadcastObj.updatedAt
     //broadcastTableData.login_user = broadcastObj.userId
     broadcastTableData.chats = prepareBroadcastChatLabelData(broadcastObj.chat)
     return broadcastTableData
 }
 
-fun prepareBroadcastChatLabelData(broadCastChat: ChatLabel): RealmList<ChatList> {
+fun prepareBroadcastChatLabelData(broadCastChat: ChatModel): RealmList<ChatList> {
     val broadcastChatList = RealmList<ChatList>()
     broadCastChat?.let {
-        val chatList = ChatList()
-        chatList.local_chat_id = broadCastChat.id
-        chatList.id = broadCastChat.id
-        chatList.user_id = broadCastChat.userId
-        chatList.receiver_id = broadCastChat.receiverId
-        chatList.sender_id = broadCastChat.senderId
-        chatList.is_group_chat = broadCastChat.isGroupChat
-        chatList.group_id = broadCastChat.groupId
-        chatList.type = broadCastChat.type
-        chatList.message_text = broadCastChat.messageText
-        chatList.is_shared = broadCastChat.isShared
-        chatList.is_forward = broadCastChat.isForward
-        chatList.is_deleted = broadCastChat.isDeleted
-        chatList.deleted_for_all = broadCastChat.deletedForAll
-        chatList.deleted_by = broadCastChat.deletedBy
-        chatList.tick = broadCastChat.tick
-        chatList.is_reply = broadCastChat.isReply
-        chatList.is_reply_to_message = broadCastChat.isReplyToMessage
-        chatList.is_reply_to_story = broadCastChat.isReplyToStory
-        chatList.story_id = broadCastChat.storyId
-        chatList.is_replyback_to_reply = broadCastChat.isReplybackToReply
-        chatList.is_secret = broadCastChat.isSecret
-        chatList.is_read = broadCastChat.isRead
-        chatList.created_at = broadCastChat.createdAt
-        chatList.is_activity_label = broadCastChat.isActivityLabel
-        chatList.event = broadCastChat.event
-        chatList.is_broadcast_chat = broadCastChat.isBroadcastChat
-        chatList.broadcast_id = broadCastChat.broadcastId
-        chatList.content_id = broadCastChat.contentId
-        chatList.is_content_reply = broadCastChat.isContentReply
-        chatList.grp_other_user_id = broadCastChat.otherUserId
-        chatList.broadcast_chat_id = broadCastChat.broadcastChatId
-        chatList.entry_id = broadCastChat.entryId
-        chatList.chat_id = broadCastChat.chatId
-        chatList.chat_contents = RealmList()
-        chatList.chat_audio = RealmList()
-        chatList.chat_contacts = RealmList()
-        chatList.chat_location = null
-        chatList.chat_document = RealmList()
-        chatList.grp_label_color = ""
-        chatList.isSync = true
-        broadcastChatList.add(chatList)
+        prepareChatLabelData(it).let { chatlist: ChatList ->
+            insertChatListData(chatlist)
+            updateBroadcastChatList(it.broadcastId, chatlist)
+            broadcastChatList.add(chatlist)
+        }
+        /*   chatList.localChatId = it.id.toLong()
+           chatList.id = it.id.toLong()
+           chatList.userId = it.userId
+           chatList.receiverId = it.receiverId
+           chatList.isGroupChat = it.isGroupChat
+           chatList.groupId = it.groupId
+           chatList.type = it.type
+           chatList.messageText = it.messageText
+           chatList.isShared = it.isShared
+           chatList.isForward = it.isForward
+           chatList.isDeleted = it.isDeleted
+           chatList.deletedForAll = it.deletedForAll
+           chatList.deletedBy = it.deletedBy
+           chatList.tick = it.tick
+           chatList.isReply = it.isReply
+           chatList.isReplyToStory = it.isReplyToStory
+           chatList.storyId = it.storyId
+           chatList.isStoryReplyBackToReply = it.isStoryReplyBackToReply
+           chatList.isSecret = it.isSecret
+           chatList.isRead = it.isRead
+           chatList.createdAt = it.createdAt
+           chatList.isActivityLabel = it.isActivityLabel
+           chatList.event = it.event
+           chatList.isBroadcastChat = it.isBroadcastChat
+           chatList.broadcastId = it.broadcastId
+           chatList.otherUserId = it.otherUserId
+           chatList.broadcastChatId = it.broadcastChatId
+           chatList.chatId = it.chatId
+           chatList.groupLabelColor = ""
+           chatList.isSync = true*/
     }
     return broadcastChatList
 
@@ -1059,9 +1418,9 @@ fun prepareBlockUserDataForDB(blockUsers: List<OtherUserModel>): RealmList<Block
         for (blockUser in blockUsers) {
             insertUserData(prepareOtherUserData(blockUser))
             val objBlockUser = BlockUser()
-            objBlockUser.blocked_user_id = blockUser.id
-            objBlockUser.is_blocked = 1
-            objBlockUser.is_reported = 0
+            objBlockUser.blockedUserId = blockUser.id
+            objBlockUser.isBlocked = 1
+            objBlockUser.isReported = 0
             blockedList.add(objBlockUser)
         }
     }
@@ -1072,25 +1431,6 @@ fun prepareFriendSettingsDataForDB(friendSettings: List<FriendSetting>): RealmLi
     val friendSettingList: RealmList<FriendSettings> = RealmList()
     friendSettings.let {
         for (objUserSetting in friendSettings) {
-            /*  val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
-
-              if (usersObj != null) {
-                  val friendSettingObj = FriendSettings()
-                  friendSettingObj.id = objUserSetting.id
-                  friendSettingObj.user_id = objUserSetting.userId
-                  friendSettingObj.friend_id = objUserSetting.friendId
-                  friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
-                  friendSettingObj.mute_notification = objUserSetting.muteNotification
-                  friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
-                  friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
-                  friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
-                  friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
-                  friendSettingObj.call_ringtone = objUserSetting.callRigtone
-                  friendSettingObj.call_vibrate = objUserSetting.callVibrate
-                  friendSettingObj.sound = objUserSetting.sound
-                  friendSettingObj.user = usersObj
-                  friendSettingList.add(friendSettingObj)
-              }*/
             friendSettingList.add(prepareSingleFriendSettingData(objUserSetting))
         }
     }
@@ -1104,16 +1444,16 @@ fun prepareSingleFriendSettingData(objUserSetting: FriendSetting): FriendSetting
     if (usersObj != null) {
         val friendSettingObj = FriendSettings()
         friendSettingObj.id = objUserSetting.id
-        friendSettingObj.user_id = objUserSetting.userId
-        friendSettingObj.friend_id = objUserSetting.friendId
-        friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
-        friendSettingObj.mute_notification = objUserSetting.muteNotification
-        friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
-        friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
-        friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
-        friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
-        friendSettingObj.call_ringtone = objUserSetting.callRigtone
-        friendSettingObj.call_vibrate = objUserSetting.callVibrate
+        friendSettingObj.userId = objUserSetting.userId
+        friendSettingObj.friendId = objUserSetting.friendId
+        friendSettingObj.notificationToneId = objUserSetting.notificationToneId
+        friendSettingObj.muteNotification = objUserSetting.muteNotification
+        friendSettingObj.isCustomNotificationEnable = objUserSetting.isCustomNotificationEnable
+        friendSettingObj.vibrateStatus = objUserSetting.vibrateStatus
+        friendSettingObj.isPopupNotification = objUserSetting.isPopupNotification
+        friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
+        friendSettingObj.callRingtone = objUserSetting.callRingtone
+        friendSettingObj.callVibrate = objUserSetting.callVibrate
         friendSettingObj.sound = objUserSetting.sound
         friendSettingObj.user = usersObj
         return friendSettingObj
@@ -1127,16 +1467,16 @@ fun prepareSingleFriendSettingData(objUserSetting: ResponseFriendSetting.Data): 
     if (usersObj != null) {
         val friendSettingObj = FriendSettings()
         friendSettingObj.id = objUserSetting.id
-        friendSettingObj.user_id = objUserSetting.userId
-        friendSettingObj.friend_id = objUserSetting.friendId
-        friendSettingObj.notification_tone_id = objUserSetting.notificationToneId
-        friendSettingObj.mute_notification = objUserSetting.muteNotification
-        friendSettingObj.is_custom_notification_enable = objUserSetting.isCustomNotificationEnable
-        friendSettingObj.vibrate_status = objUserSetting.vibrateStatus
-        friendSettingObj.is_popup_notification = objUserSetting.isPopupNotification
-        friendSettingObj.use_high_priority_notification = objUserSetting.useHighPriorityNotification
-        friendSettingObj.call_ringtone = objUserSetting.callRigtone
-        friendSettingObj.call_vibrate = objUserSetting.callVibrate
+        friendSettingObj.userId = objUserSetting.userId
+        friendSettingObj.friendId = objUserSetting.friendId
+        friendSettingObj.notificationToneId = objUserSetting.notificationToneId
+        friendSettingObj.muteNotification = objUserSetting.muteNotification
+        friendSettingObj.isCustomNotificationEnable = objUserSetting.isCustomNotificationEnable
+        friendSettingObj.vibrateStatus = objUserSetting.vibrateStatus
+        friendSettingObj.isPopupNotification = objUserSetting.isPopupNotification
+        friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
+        friendSettingObj.callRingtone = objUserSetting.callRigtone
+        friendSettingObj.callVibrate = objUserSetting.callVibrate
         friendSettingObj.sound = objUserSetting.sound
         friendSettingObj.user = usersObj
         return friendSettingObj
@@ -1150,19 +1490,19 @@ fun prepareSingleFriendSettingData(objUserSetting: ResponseFriendSetting.Data): 
  * @param friendRequestList : the list of requests
  * @return the RealmList of the FriendRequest DB object which will be directly inserted to the Database
  */
-fun prepareRequestDataForDB(friendRequestList: List<LoginResponse.GetAllRequest>): RealmList<FriendRequest> {
+fun prepareRequestDataForDB(friendRequestList: List<GetAllRequest>): RealmList<FriendRequest> {
     val requestList: RealmList<FriendRequest> = RealmList<FriendRequest>()
     for (getAllRequest in friendRequestList) {
         val friendRequest = FriendRequest()
-        friendRequest._id = getAllRequest.id
-        friendRequest.user_id = getAllRequest.userId
-        friendRequest.friend_id = getAllRequest.friendId
+        friendRequest.id = getAllRequest.id
+        friendRequest.userId = getAllRequest.userId
+        friendRequest.friendId = getAllRequest.friendId
         friendRequest.status = getAllRequest.status
-        friendRequest.is_request = getAllRequest.isRequest
-        friendRequest.sender_request_count = getAllRequest.senderRequestCount
-        friendRequest.receiver_request_count = getAllRequest.receiverRequestCount
-        friendRequest.created_at = getAllRequest.createdAt
-        friendRequest.updated_at = getAllRequest.updatedAt
+        friendRequest.isRequest = getAllRequest.isRequest
+        friendRequest.senderRequestCount = getAllRequest.senderRequestCount
+        friendRequest.receiverRequestCount = getAllRequest.receiverRequestCount
+        friendRequest.createdAt = getAllRequest.createdAt
+        friendRequest.updatedAt = getAllRequest.updatedAt
 
         requestList.add(friendRequest)
 
@@ -1188,9 +1528,9 @@ fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification
         for (notificationObj in notificationList) {
             val notificationTone = NotificationTone()
             notificationTone.id = notificationObj.id
-            notificationTone.display_name = notificationObj.name
-            notificationTone.notification_url = notificationObj.toneName
-            notificationTone.sound_name = notificationObj.sound
+            notificationTone.displayName = notificationObj.name
+            notificationTone.notificationUrl = notificationObj.toneName
+            notificationTone.soundName = notificationObj.sound
 
             notificationToneList.add(notificationTone)
 
@@ -1202,14 +1542,14 @@ fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification
 fun prepareSelectFriendWrapperModelList(friendRequest: List<FriendRequest>): ArrayList<SelectFriendWrapperModel> {
     val allFriendsList: ArrayList<SelectFriendWrapperModel> = ArrayList()
     friendRequest.forEach {
-        getSingleUserDetails(if (it.user_id == getCurrentUserId()) it.friend_id else it.user_id)?.let { users: Users ->
+        getSingleUserDetails(if (it.userId == getCurrentUserId()) it.friendId else it.userId)?.let { users: Users ->
             val searchUser = SelectFriendWrapperModel(
-                users.receiver_id,
-                users.first_name ?: "",
-                users.last_name ?: "",
-                users.user_name ?: "",
-                users.profile_image ?: "",
-                users.profile_color ?: "",
+                users.receiverId,
+                users.firstName ?: "",
+                users.lastName ?: "",
+                users.userName ?: "",
+                users.profileImage ?: "",
+                users.profileColor ?: "",
                 isChecked = false,
                 isEdit = true
             )
@@ -1220,9 +1560,110 @@ fun prepareSelectFriendWrapperModelList(friendRequest: List<FriendRequest>): Arr
     return allFriendsList
 }
 
+
+fun createFriendRequest(createRequest: FriendRequestModel): FriendRequest {
+    val friendRequest = FriendRequest()
+    friendRequest.id = createRequest.id
+    friendRequest.userId = createRequest.userId
+    friendRequest.friendId = createRequest.friendId
+    friendRequest.isRequest = createRequest.isRequest
+    friendRequest.status = createRequest.status
+    friendRequest.senderRequestCount = createRequest.senderRequestCount
+    friendRequest.receiverRequestCount = createRequest.receiverRequestCount
+    friendRequest.createdAt = createRequest.createdAt
+    friendRequest.updatedAt = createRequest.updatedAt
+    return friendRequest
+    //addObject(createRequest: fr, update: true)
+}
+
+fun createGroupTickManageData(chatList: ChatList, receiverId: Int): GroupManageTick {
+    val randomId = getNewChatId()
+
+    val grpTickManage = GroupManageTick()
+    grpTickManage.id = randomId
+    grpTickManage.userId = getCurrentUserId()
+    grpTickManage.groupUserId = receiverId
+    grpTickManage.chatId = chatList.id
+    grpTickManage.groupId = chatList.groupId
+    grpTickManage.tick = chatList.tick
+    grpTickManage.isRead = chatList.isRead
+    grpTickManage.deliverTime = chatList.deliverTime ?: ""
+    grpTickManage.readTime = chatList.readTime ?: ""
+    return grpTickManage
+}
+
+/*  func clearAllChatList(fieldkey:String,currentUserID:Int,id:Int,type:String){
+//        let realm = self.getRealm()
+//
+//        let predicate = NSPredicate(format: "\(DBTables.chatlisttable.event) != '\(EventType.create.rawValue)' AND \(fieldkey) == \(id)")
+//        let chatlist = realm.objects(CHAT_LIST.self).filter(predicate)
+//        try! realm.write{
+//            realm.delete(chatlist)
+//        }
+        switch type {
+        case flag.groups.rawValue:
+            self.clearGroupChat(groupid: id)
+            break
+        case flag.broadcast.rawValue:
+
+            let broadcastChatlist = getAllBroadcastChatlist(id: id)
+            if broadcastChatlist.count > 0{
+                updateBroadcastChatlist(fieldkey: DBTables.broadcasttable.broadcast_id , id: id, chatlist: broadcastChatlist[0])
+            }
+            break
+        case flag.flgprivate.rawValue:
+            self.clearOnetoOneFriendChat(currentUserID: currentUserID, receiverID: id)
+            break
+        default:
+            break
+        }
+
+
+    }*/
+
+fun clearAllChatList(receiverId: Int, type: ChatTypeFlag) {
+    when (type) {
+        GROUPS -> {
+        }
+        PRIVATE -> clearOneToOneChat(receiverId)
+        BROADCAST -> {
+        }
+        SECRET -> {
+        }
+    }
+}
+
+fun prepareSingleGroupUsersData(groupUserWithSetting: GetAllGroup.GroupUserWithSetting): GroupUser {
+    val groupUserObj = GroupUser()
+    groupUserObj.id = groupUserWithSetting.id
+    groupUserObj.userId = groupUserWithSetting.userId
+    groupUserObj.groupId = groupUserWithSetting.groupId
+    groupUserObj.labelColor = groupUserWithSetting.labelColor
+    groupUserObj.location = groupUserWithSetting.location
+    groupUserObj.isAdmin = groupUserWithSetting.isAdmin
+    groupUserObj.isAllowToAddPost = groupUserWithSetting.isAllowToAddPost
+    groupUserObj.isMuteNotification = groupUserWithSetting.isMuteNotification
+    groupUserObj.isReport = groupUserWithSetting.isReport
+    groupUserObj.status = groupUserWithSetting.status
+    groupUserObj.isDeleted = groupUserWithSetting.isDeleted
+    groupUserObj.isAllowToEditInfo = groupUserWithSetting.isAllowToEditInfo
+    groupUserObj.muteTime = groupUserWithSetting.muteTime
+    groupUserObj.endMuteTime = groupUserWithSetting.endMuteTime
+    groupUserObj.mediaViewable = groupUserWithSetting.isMediaViewable
+    groupUserObj.customNotificationEnable = groupUserWithSetting.isCustomNotificationEnable
+    groupUserObj.vibrateStatus = groupUserWithSetting.vibrateStatus
+    groupUserObj.isPopupNotification = groupUserWithSetting.isPopupNotification
+    groupUserObj.light = groupUserWithSetting.light
+    groupUserObj.useHighPriorityNotification = groupUserWithSetting.useHighPriorityNotification
+    groupUserObj.notificationToneId = groupUserWithSetting.notificationToneId
+    groupUserObj.createdAt = groupUserWithSetting.createdAt
+    groupUserObj.updatedAt = groupUserWithSetting.updatedAt
+    return groupUserObj
+}
+
 interface OnRealmTransactionResult {
 
     fun onSuccess(obj: Any)
-    fun onError()
+    // fun onError()
 
 }

@@ -6,30 +6,33 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class BroadcastTable : RealmObject() {
-    companion object {
-        const val PROPERTY_broadcast_id = "broadcast_id"
-        const val PROPERTY_user_id = "user_id"
-        const val PROPERTY_broad_name = "broad_name"
-        const val PROPERTY_broad_icon = "broad_icon"
-        const val PROPERTY_broad_total_user = "broad_total_user"
-        const val PROPERTY_broad_other_userid = "broad_other_userid"
-        const val PROPERTY_created_at = "created_at"
-        const val PROPERTY_is_blocked = "is_blocked"
-        const val PROPERTY_updated_at = "updated_at"
-      //  const val PROPERTY_login_user = "login_user"
-        const val PROPERTY_chats = "chats"
-    }
-
     @PrimaryKey
-    var broadcast_id: Int = 0
-    var user_id: Int = 0
-    var broad_name: String? = null
-    var broad_icon: String? = null
-    var broad_total_user: Int = 0
-    var broad_other_userid: String? = null
-    var created_at: String? = null
-    var updated_at: String? = null
-  //  var login_user: Int = 0
+    var broadcastId: Int = 0
+    var userId: Int = 0
+    var broadcastName: String? = null
+    var broadcastIcon: String? = null
+    var broadcastTotalUser: Int = 0
+    var broadcastOtherUserId: String? = null
+    var createdAt: String? = null
+    var updatedAt: String? = null
     var chats: RealmList<ChatList> = RealmList()
 
+    companion object {
+        fun create(
+            broadcastId: Int, userId: Int, broadcastName: String, broadcastIcon: String,
+            broadcastTotalUser: Int, broadcastOtherUserId: String, createdAt: String, updatedAt: String
+        ): BroadcastTable {
+            val broadcastTable = BroadcastTable()
+            broadcastTable.broadcastId = broadcastId
+            broadcastTable.userId = userId
+            broadcastTable.broadcastName = broadcastName
+            broadcastTable.broadcastIcon = broadcastIcon
+            broadcastTable.broadcastTotalUser = broadcastTotalUser
+            broadcastTable.broadcastOtherUserId = broadcastOtherUserId
+            broadcastTable.createdAt = createdAt
+            broadcastTable.updatedAt = updatedAt
+            return broadcastTable
+
+        }
+    }
 }

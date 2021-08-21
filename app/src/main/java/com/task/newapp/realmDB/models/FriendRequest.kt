@@ -5,25 +5,34 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class FriendRequest : RealmObject() {
-    companion object {
-        const val PROPERTY_id = "_id"
-        const val PROPERTY_user_id = "user_id"
-        const val PROPERTY_friend_id = "friend_id"
-        const val PROPERTY_is_request = "is_request"
-        const val PROPERTY_status = "status"
-        const val PROPERTY_sender_request_count = "sender_request_count"
-        const val PROPERTY_receiver_request_count = "receiver_request_count"
-    }
-
     @PrimaryKey
-    var _id: Int = 0
-    var user_id: Int = 0
-    var friend_id: Int = 0
-    var is_request: Int = 0
+    var id: Int = 0
+    var userId: Int = 0
+    var friendId: Int = 0
+    var isRequest: Int = 0
     var status: String = ""
-    var sender_request_count: Int = 0
-    var receiver_request_count: Int = 0
-    var created_at: String = ""
-    var updated_at: String = ""
+    var senderRequestCount: Int = 0
+    var receiverRequestCount: Int = 0
+    var createdAt: String = ""
+    var updatedAt: String = ""
 
+    companion object {
+        fun create(
+            id: Int, userId: Int, friendId: Int, isRequest: Int, status: String, senderRequestCount: Int,
+            receiverRequestCount: Int, createdAt: String, updatedAt: String
+        ): FriendRequest {
+            val friendRequest = FriendRequest()
+            friendRequest.id = id
+            friendRequest.userId = userId
+            friendRequest.friendId = friendId
+            friendRequest.isRequest = isRequest
+            friendRequest.status = status
+            friendRequest.senderRequestCount = senderRequestCount
+            friendRequest.receiverRequestCount = receiverRequestCount
+            friendRequest.createdAt = createdAt
+            friendRequest.updatedAt = updatedAt
+            return friendRequest
+
+        }
+    }
 }

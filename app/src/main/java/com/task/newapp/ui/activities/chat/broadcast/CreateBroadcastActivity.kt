@@ -28,6 +28,7 @@ import com.task.newapp.realmDB.insertSingleBroadcastData
 import com.task.newapp.realmDB.models.FriendRequest
 import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
 import com.task.newapp.realmDB.prepareSingleBroadcastData
+import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.compressor.SiliCompressor
 import com.theartofdev.edmodo.cropper.CropImage
@@ -43,7 +44,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 
-class CreateBroadcastActivity : AppCompatActivity(), OnClickListener, MediaPickerFragment.Callback {
+class CreateBroadcastActivity : BaseAppCompatActivity(), OnClickListener, MediaPickerFragment.Callback {
     private val TAG = javaClass.simpleName
     lateinit var binding: ActivityCreateBroadcastBinding
     private val mCompositeDisposable = CompositeDisposable()

@@ -9,6 +9,7 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ActivitySplashBinding
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.launchActivity
+import com.task.newapp.utils.showToast
 
 class SplashActivity : AppCompatActivity() {
 

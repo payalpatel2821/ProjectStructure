@@ -1,4 +1,4 @@
-package com.task.newapp.models
+package com.task.newapp.models.socket
 
 import com.google.gson.annotations.SerializedName
 
@@ -41,5 +41,12 @@ class SendUserDetailSocket {
         this.userName = user_name
         this.otherUserId = other_user_id
         this.flag = flag
+    }
+
+    constructor (userId: Int, receiverId: Int, userName: String) {
+        this.userId = userId
+        this.receiverId = receiverId
+        this.userName = userName
+
     }
 }

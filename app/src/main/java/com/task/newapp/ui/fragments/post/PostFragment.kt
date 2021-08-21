@@ -32,8 +32,11 @@ import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
-import com.task.newapp.models.post.*
+import com.task.newapp.models.post.PostSocket
+import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
+import com.task.newapp.models.post.ResponseGetPostLikeUnlike
+import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.ShowPostActivity
 import com.task.newapp.utils.*
@@ -297,7 +300,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         }
 
                                                         Log.e("onNext: ", Gson().toJson(postSocket))
-                                                        socket.emit(Constants.post_like, Gson().toJson(postSocket))
+                                                        socket.emit(SocketConstant.post_like, Gson().toJson(postSocket))
 
                                                         //Call API for like
                                                         callAPIPostLikeDislike(likeType = likeType, postId = post_id.toString())

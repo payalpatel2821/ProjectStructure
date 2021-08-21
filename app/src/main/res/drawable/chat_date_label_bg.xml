@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="@color/chat_input_bg_color" />
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/chat_bg">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/chat_input_bg_color" />
 
-    <corners android:radius="@dimen/_7sdp" />
+            <corners android:radius="@dimen/_7sdp" />
 
-</shape>
+        </shape>
+    </item>
+</layer-list>

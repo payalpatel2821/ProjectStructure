@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/bottomsheet_bg"
+        android:id="@+id/constraint_layout"
         tools:context=".ui.activities.chat.OneToOneChatActivity">
 
         <include
@@ -16,22 +18,20 @@
             android:id="@+id/ll_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@drawable/bg_bottomsheet"
-            android:backgroundTint="@color/white"
+            android:background="@drawable/chat_bg_top_rounded"
             android:orientation="vertical"
             android:padding="@dimen/_10sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/ll_message_layout"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_chat_messages"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:clipToPadding="false"
-                android:paddingBottom="@dimen/_80sdp"
                 tools:itemCount="2"
-                tools:listitem="@layout/item_chat_date_label" />
+                tools:listitem="@layout/item_chat_text_right" />
 
             <LinearLayout
                 android:id="@+id/ll_friend_request_receiver_layout"
@@ -42,7 +42,8 @@
                 android:background="@drawable/rounded_corner_gray_bg_friend_request"
                 android:gravity="center|bottom"
                 android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/styleTextViewNormal"
@@ -74,7 +75,8 @@
                         android:textAllCaps="false"
                         android:textColor="@color/red_ignore_color"
                         android:textSize="@dimen/_12ssp"
-                        android:theme="@style/styleTextViewNormalBold" />
+                        android:theme="@style/styleTextViewNormalBold"
+                        tools:ignore="TouchTargetSizeCheck"/>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_accept"
@@ -89,7 +91,8 @@
                         android:textAllCaps="false"
                         android:textColor="@color/green_accept_color"
                         android:textSize="@dimen/_12ssp"
-                        android:theme="@style/styleTextViewNormalBold" />
+                        android:theme="@style/styleTextViewNormalBold"
+                        tools:ignore="TouchTargetSizeCheck,TextContrastCheck"/>
                 </LinearLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -102,7 +105,7 @@
                     android:text="@string/block_underline"
                     android:textAllCaps="false"
                     android:textSize="@dimen/_10ssp"
-                    />
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
 
             <LinearLayout
@@ -114,17 +117,17 @@
                 android:background="@drawable/rounded_corner_gray_bg_friend_request"
                 android:gravity="center|bottom"
                 android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/styleTextViewNormalBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Give it another try!"
+                    android:text="@string/give_it_another_try"
                     android:textAlignment="center"
                     android:textColor="@color/friend_request_msg_gray_color"
-                    android:textSize="@dimen/_10ssp"
-                    />
+                    android:textSize="@dimen/_10ssp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_resend_request"
@@ -137,11 +140,12 @@
                     android:minHeight="@dimen/_30sdp"
                     android:paddingStart="@dimen/_30sdp"
                     android:paddingEnd="@dimen/_30sdp"
-                    android:text="Resend Request"
+                    android:text="@string/resend_request"
                     android:textAllCaps="false"
                     android:textColor="@color/resend_request_btn_color"
                     android:textSize="@dimen/_12ssp"
-                    android:theme="@style/styleTextViewNormalBold" />
+                    android:theme="@style/styleTextViewNormalBold"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/styleTextViewNormal"
@@ -155,8 +159,25 @@
 
             </LinearLayout>
 
-            <include layout="@layout/layout_text_message_input" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_message_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <include
+                android:id="@+id/message_layout"
+                layout="@layout/layout_text_message_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+
+                />
         </LinearLayout>
 
 

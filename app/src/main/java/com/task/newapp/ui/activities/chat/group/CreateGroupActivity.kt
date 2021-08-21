@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.AdapterView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.appizona.yehiahd.fastsave.FastSave
@@ -22,6 +21,7 @@ import com.task.newapp.models.chat.SelectFriendWrapperModel
 import com.task.newapp.realmDB.getSelectedFriends
 import com.task.newapp.realmDB.models.FriendRequest
 import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
+import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.utils.Constants
 import com.task.newapp.utils.compressor.SiliCompressor
 import com.task.newapp.utils.enableOrDisableButtonBgColor
@@ -31,7 +31,7 @@ import io.reactivex.disposables.CompositeDisposable
 import lv.chi.photopicker.MediaPickerFragment
 import java.io.File
 
-class CreateGroupActivity : AppCompatActivity(), OnClickListener, MediaPickerFragment.Callback {
+class CreateGroupActivity : BaseAppCompatActivity(), OnClickListener, MediaPickerFragment.Callback {
 
     lateinit var binding: ActivityCreateGroupBinding
     private val mCompositeDisposable = CompositeDisposable()

@@ -84,7 +84,7 @@ class SelectedFriendsListAdapter(private val mActivity: Activity) : RecyclerView
 
         fun setData(obj: SelectFriendWrapperModel) {
             layoutBinding.txtName.text = obj.firstName
-            layoutBinding.imgProfile.load(obj.profileImage ?: "", false)
+            layoutBinding.imgProfile.load(obj.profileImage ?: "", true, obj.firstName + " " + obj.lastName, obj.profileColor)
             if (obj.isEdit) {
                 layoutBinding.ivDeleteFriend.visibility = View.VISIBLE
 

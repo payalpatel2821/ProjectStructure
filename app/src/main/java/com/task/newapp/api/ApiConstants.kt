@@ -12,7 +12,7 @@ const val verify_OTP_normal_url = "/api_v1/user-check-verification"
 const val get_unread_messages = "/api_v1/get_unread_message"
 const val hook_chat = "api_v1/hook-chat"
 const val archive_chat = "api_v1/archive-chat"
-const val delete_chat = "api_v1/delete_chat-chat"
+const val delete_chat = "api_v1/delete_chat"
 const val get_all_posts = "/api_v1/get-all-posts/{limit}/{offset}"
 const val add_postlikeunlike = "/api_v1/post_like"
 const val post_comment = "/api_v1/post_comment"
@@ -46,7 +46,9 @@ const val add_participates = "/api_v1/add-participates"
 const val set_group_setting_url = "/api_v1/group-settings"
 
 
-const val create_broadcast = "api_v1/broadcast"
-const val delete_broadcast = "/api_v1/broadcast/{id}"
+const val create_broadcast = "/api_v1/broadcast"
+const val delete_broadcast = "/api_v1/broadcast/{id}";
+const val send_chat_message = "/api_v1/chat";
+const val updated_all_group = "/api_v1/updated-all-group"
 const val get_post_detail = "/api_v1/post-details/{id}"
 

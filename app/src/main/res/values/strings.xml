@@ -246,6 +246,13 @@
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book"</string>
     <string name="error_msg_hook_chat">You cannot hook more than 3 chats</string>
+    <string name="give_it_another_try">Give it another try!</string>
+    <string name="resend_request">Resend Request</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="photo">Photo</string>
+    <string name="location">Location</string>
+    <string name="contact">Contact</string>
+    <string name="documents">Documents</string>
     <string name="blank_post">Your feed is empty.start adding people to catch up with your loved ones.</string>
     <string name="blank_followed_page">Follow the pages so that you don\'t miss out any updates that you are interested in.</string>
     <string name="blank_my_page">Create your own page to start posting your thoughts.</string>

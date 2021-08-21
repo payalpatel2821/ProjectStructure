@@ -1,4 +1,4 @@
-package com.task.newapp.models
+package com.task.newapp.models.chat
 
 import com.google.gson.annotations.SerializedName
 

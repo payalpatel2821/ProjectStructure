@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/chat_bg_right_first"
+            android:gravity="center_vertical|start"
+            android:padding="@dimen/_5sdp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rect_rounded_bg_white"
+                android:padding="@dimen/_5sdp"
+                android:tint="@color/chat_icon_color"
+                app:srcCompat="@drawable/ic_audio_call" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_message"
+                        style="@style/styleTextViewNormal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp"
+                        tools:text="myMusic_134534335435.mp3" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_duration"
+                        style="@style/styleTextViewNormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp"
+                        tools:text="05:30" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/sb_audio_progress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:indeterminateOnly="false"
+                    android:maxHeight="@dimen/_3sdp"
+                    android:progressDrawable="@drawable/seekbar_rounded_bg"
+                    android:thumb="@drawable/seekbar_thumb"
+                    android:thumbOffset="0dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

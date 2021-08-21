@@ -13,7 +13,6 @@ import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityLoginBinding
 import com.task.newapp.models.*
-import com.task.newapp.models.LoginResponse.GetAllGroup.*
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.utils.*
@@ -150,7 +149,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     .subscribeWith(object : DisposableObserver<LoginResponse>() {
                         override fun onNext(loginResponse: LoginResponse) {
                             Log.v("onNext: ", loginResponse.toString())
-                            showToast(loginResponse.message)
 
                             if (loginResponse.success == 1) {
                                 saveRemember()
@@ -159,6 +157,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                 //Next Screen
                                 launchActivity<MainActivity> { }
                                 finish()
+                            } else {
+                                showToast(loginResponse.message)
                             }
                         }
 
