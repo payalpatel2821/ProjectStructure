@@ -176,11 +176,13 @@ class Constants {
             FROM_FOLLOWINGS("following", R.string.following),
             FROM_FOLLOWERS("follower", R.string.followers),
             FROM_PROFILE_VIEWS("profile_view", R.string.profile_views),
-            FROM_FRIENDS("friend", R.string.friends);
+            FROM_MY_FRIENDS("friend", R.string.my_friends),
+            FROM_FRIENDS("friend", R.string.friends)
         }
 
         enum class PostNavigation(val flag: String, val title: Int) {
-            FROM_POST("post", R.string.my_post),
+            FROM_POST("post", R.string.all_post),
+            FROM_MY_POST("post", R.string.my_post),
             FROM_TAGGED_POST("tag_post", R.string.tagged_posts),
             FROM_SAVED_POST("save_post", R.string.saved_posts)
         }

@@ -13,26 +13,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.appizona.yehiahd.fastsave.FastSave
 import com.bumptech.glide.Glide
 import com.task.newapp.R
+import com.task.newapp.models.OtherUserModel
 import com.task.newapp.models.ResponseUserFollowingFollower
-import com.task.newapp.utils.Constants
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.ProfileNavigation.*
-import com.task.newapp.utils.DateTimeUtils
-import com.task.newapp.utils.DialogUtils
-import com.task.newapp.utils.showToast
 import java.text.SimpleDateFormat
 import java.util.*
 
 class FollowerFollowingAdapter(
     private val applicationContext: Context,
-    private val dataSet: ArrayList<ResponseUserFollowingFollower.Data>,
+    private val dataSet: ArrayList<OtherUserModel>,
     private val from: String,
     private val by: String,
     private val activity: AppCompatActivity
 ) :
     RecyclerView.Adapter<FollowerFollowingAdapter.ViewHolder>() {
 
-    var onFollowItemClick: ((String, ResponseUserFollowingFollower.Data, ViewHolder, Int, String) -> Unit)? = null
-    var onItemClick: ((Int, ArrayList<ResponseUserFollowingFollower.Data>, Int) -> Unit)? = null
+    var onFollowItemClick: ((String, OtherUserModel, ViewHolder, Int, String) -> Unit)? = null
+    var onItemClick: ((Int, ArrayList<OtherUserModel>, Int) -> Unit)? = null
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtUserName: TextView = view.findViewById(R.id.txt_user_name)
@@ -54,7 +52,7 @@ class FollowerFollowingAdapter(
             FROM_FOLLOWERS.fromname -> {
                 viewHolder.ivMsg.visibility = GONE
                 viewHolder.btnTime.visibility = GONE
-                if (dataSet[position].isFollow != 1) {
+                if (dataSet[position].is_follow != 1) {
                     setFollowText(viewHolder)
                 }
             }
@@ -62,7 +60,7 @@ class FollowerFollowingAdapter(
                 viewHolder.ivMsg.visibility = GONE
                 viewHolder.btnTime.visibility = GONE
                 if (by != "My") {
-                    if (dataSet[position].isFollow != 1) {
+                    if (dataSet[position].is_follow != 1) {
                         setFollowText(viewHolder)
                     }
                 }
@@ -89,7 +87,7 @@ class FollowerFollowingAdapter(
         viewHolder.btnFollowUnfollow.setOnClickListener {
             when (from) {
                 FROM_FOLLOWERS.fromname -> {
-                    if (dataSet[position].isFollow == 0) {
+                    if (dataSet[position].is_follow == 0) {
                         checkFollowUnfollow(viewHolder, dataSet[position], position, "follow", "")
                     } else {
                         checkFollowUnfollow(viewHolder, dataSet[position], position, "unfollow", "other")
@@ -99,7 +97,7 @@ class FollowerFollowingAdapter(
                     if (by == "My") {
                         checkFollowUnfollow(viewHolder, dataSet[position], position, "unfollow", "my")
                     } else {
-                        if (dataSet[position].isFollow == 0) {
+                        if (dataSet[position].is_follow == 0) {
                             checkFollowUnfollow(viewHolder, dataSet[position], position, "follow", "")
                         } else {
                             checkFollowUnfollow(viewHolder, dataSet[position], position, "unfollow", "other")
@@ -114,8 +112,9 @@ class FollowerFollowingAdapter(
         }
 
         viewHolder.txtUserName.text = dataSet[position].firstName + " " + dataSet[position].lastName
-        viewHolder.txtAccid.text = dataSet[position].accountId
-        Glide.with(applicationContext).asBitmap().load(dataSet[position].profileImage).into(viewHolder.ivUserProfile)
+        viewHolder.txtAccid.text = dataSet[position].account_id
+//        Glide.with(applicationContext).asBitmap().load(dataSet[position].profileImage).into(viewHolder.ivUserProfile)
+        viewHolder.ivUserProfile.load(dataSet[position].profileImage,true,viewHolder.txtUserName.text.trim().toString(),dataSet[position].profileColor)
 
         viewHolder.itemView.setOnClickListener {
             if (onItemClick != null) {
@@ -131,24 +130,24 @@ class FollowerFollowingAdapter(
         viewHolder.btnFollowUnfollow.text = applicationContext.resources.getString(R.string.follow)
     }
 
-    fun setUnFollowText(viewHolder: ViewHolder, dataSet: ResponseUserFollowingFollower.Data) {
+    fun setUnFollowText(viewHolder: ViewHolder, dataSet: OtherUserModel) {
         viewHolder.btnFollowUnfollow.setTextColor(applicationContext.resources.getColor(R.color.black))
         viewHolder.btnFollowUnfollow.setBackgroundResource(R.drawable.bg_border)
         val padding: Int = applicationContext.resources.getDimensionPixelSize(R.dimen._5sdp)
         viewHolder.btnFollowUnfollow.setPadding(padding, 0, 0, 0)
         viewHolder.btnFollowUnfollow.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_right_resize, 0, 0, 0)
         viewHolder.btnFollowUnfollow.text = applicationContext.resources.getString(R.string.following)
-        dataSet.isFollow = 1
+        dataSet.is_follow = 1
     }
 
-    fun setData(data: ArrayList<ResponseUserFollowingFollower.Data>) {
+    fun setData(data: ArrayList<OtherUserModel>) {
         dataSet.addAll(data)
         notifyDataSetChanged()
     }
 
     override fun getItemCount() = dataSet.size
 
-    private fun checkFollowUnfollow(viewHolder: ViewHolder, dataSet1: ResponseUserFollowingFollower.Data, position: Int, f_uf: String, from: String) {
+    private fun checkFollowUnfollow(viewHolder: ViewHolder, dataSet1: OtherUserModel, position: Int, f_uf: String, from: String) {
         if (f_uf == "follow") {
             if (onFollowItemClick != null) {
                 onFollowItemClick!!.invoke(f_uf, dataSet1, viewHolder, position, from)
@@ -177,4 +176,11 @@ class FollowerFollowingAdapter(
         notifyDataSetChanged()
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }

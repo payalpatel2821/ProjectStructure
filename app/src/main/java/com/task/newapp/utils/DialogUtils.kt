@@ -33,7 +33,7 @@ class DialogUtils {
     fun showConfirmationDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert1 = AlertView(title, message, AlertStyle.BOTTOM_SHEET)
         alert1.show(activity)
-        alert1.addAction(AlertAction(UnfollowDialogActionName.UNFOLLOW.value, AlertActionStyle.POSITIVE) {
+        alert1.addAction(AlertAction(UnfollowDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
             listener.onPositiveButtonClick()
         })
         alert1.addAction(AlertAction(UnfollowDialogActionName.CANCEL.value, AlertActionStyle.NEGATIVE) {
@@ -82,7 +82,7 @@ class DialogUtils {
     fun showConfirmationIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
         alert.show(activity)
-
+        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.black))
         alert.addAction(AlertAction(PostDialogActionName.REPORT.value, AlertActionStyle.NEGATIVE) {
             listener.onNegativeButtonClick()
         })
@@ -111,13 +111,13 @@ class DialogUtils {
 
     fun showVibrationStatusDialog(activity: AppCompatActivity, checkedOption: String, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS_RADIO)
-        alert.show(activity)
-
+        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.red))
         for (value in VibrationDialogActionName.values()) {
             alert.addAction(AlertAction(value.value, value.value == checkedOption, AlertActionStyle.DEFAULT) {
                 listener.onDefaultButtonClick(value.value)
             })
         }
+        alert.show(activity)
     }
 
     fun showReportDialog(activity: AppCompatActivity, message: String, listener: DialogCallbacks) {
@@ -132,6 +132,10 @@ class DialogUtils {
         txtTitle.text = message
 
         txtYes.setOnClickListener {
+            if (edtReason.text.trim().isEmpty()) {
+                edtReason.error = activity.resources.getString(R.string.enter_reason)
+                return@setOnClickListener
+            }
             listener.onDefaultButtonClick(edtReason.text.toString())
             dialog.dismiss()
         }
@@ -239,7 +243,6 @@ class DialogUtils {
             if (edtNewPassword.text.toString().trim().length < 6) {
                 inputNewPassword.error = activity.resources.getString(R.string.please_enter_minimum_password)
                 inputNewPassword.endIconDrawable!!.setTint(activity.resources.getColor(R.color.red))
-
                 return@setOnClickListener
             }
             if (edtConfirmPassword.text.toString().trim().length < 6) {
@@ -264,7 +267,7 @@ class DialogUtils {
 
     fun showMemberClickIOSDialogIfAdmin(activity: AppCompatActivity, title: String, message: String, is_admin: Int, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
-        alert.show(activity)
+        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.black))
 
         alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
@@ -281,14 +284,15 @@ class DialogUtils {
                 listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.DISMISS_AS_CAPTAIN.value)
             })
         }
-        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.REMOVE_FROM_GROUP.value, AlertActionStyle.DEFAULT) {
+        alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.REMOVE_FROM_GROUP.value, AlertActionStyle.NEGATIVE) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.REMOVE_FROM_GROUP.value)
         })
+        alert.show(activity)
     }
 
     fun showMemberClickIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
-        alert.show(activity)
+        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.red))
 
         alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
@@ -296,6 +300,7 @@ class DialogUtils {
         alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.SEND_MESSAGE.value)
         })
+        alert.show(activity)
 
     }
 

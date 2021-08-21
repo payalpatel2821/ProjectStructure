@@ -25,11 +25,7 @@ class RegistrationActivity : AppCompatActivity(), OnPageChangeListener {
     }
 
     private fun setupViewPager(viewPager: ViewPager) {
-        var adapter = RegistrationPagerAdapter(
-            supportFragmentManager,
-            FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
-        )
-
+        val adapter = RegistrationPagerAdapter(supportFragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
         adapter.addFragment(RegistrationStep1Fragment(), "Basic Info")
 
         val bundle = Bundle()

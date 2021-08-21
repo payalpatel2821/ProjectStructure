@@ -41,13 +41,12 @@ class GroupMemberListAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
         val userDetail = getSingleUserDetails(dataSet[position].user_id)!!
-        viewHolder.ivUserProfile.load(userDetail.profile_image, true)
         if (dataSet[position].user_id == getCurrentUserId()) {
             viewHolder.txtUserName.text = "You"
         } else {
             viewHolder.txtUserName.text = userDetail.first_name + " " + userDetail.last_name
         }
-
+        viewHolder.ivUserProfile.load(userDetail.profile_image, true,viewHolder.txtUserName.text.trim().toString(),userDetail.profile_color)
         if (dataSet[position].is_admin == 1) {
             viewHolder.btnCaptain.visibility = VISIBLE
         } else {
@@ -68,6 +67,8 @@ class GroupMemberListAdapter(
     override fun getItemCount(): Int {
         return if (dataSet.size > limit) {
             limit
+        } else if (dataSet.size < limit) {
+            dataSet.size
         } else {
             5
         }

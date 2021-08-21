@@ -8,8 +8,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:behavior_hideable="true"
-        tools:context="com.task.newapp.ui.activities.profile.MyProfileActivity"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:context="com.task.newapp.ui.activities.profile.MyProfileActivity">
 
 
         <LinearLayout
@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_90sdp"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_10sdp">
+                    android:padding="@dimen/_5sdp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -53,16 +53,17 @@
 
                         <TextView
                             android:id="@+id/txt_following_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
                             android:text="@string/following"
                             android:textColor="@color/white" />
 
@@ -79,16 +80,17 @@
 
                         <TextView
                             android:id="@+id/txt_follower_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
                             android:text="@string/followers"
                             android:textColor="@color/white" />
 
@@ -105,16 +107,17 @@
 
                         <TextView
                             android:id="@+id/txt_profileview_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
                             android:text="@string/profile_views"
                             android:textColor="@color/white" />
 
@@ -135,6 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="-20dp"
+                android:clickable="true"
                 android:background="@drawable/bg_bottomsheet"
                 android:backgroundTint="@color/bottomsheet_bg"
                 android:orientation="vertical"
@@ -147,7 +151,10 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginBottom="@dimen/_8sdp"
-                    android:background="@color/gray" />
+                    android:background="@color/gray"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false" />
 
 
                 <androidx.core.widget.NestedScrollView
@@ -167,9 +174,10 @@
 
                             <TextView
                                 android:id="@+id/txt_username"
-                                style="@style/styleTextViewLarge"
+                                style="@style/styleTextViewActionbar"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/_3sdp"
                                 android:text="Prinsa adbiz" />
 
                             <ImageView
@@ -190,6 +198,7 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
                             android:paddingLeft="@dimen/_10sdp"
                             android:text="prinsa25" />
 
@@ -198,10 +207,9 @@
                             style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_3sdp"
                             android:paddingLeft="@dimen/_10sdp"
-                            android:paddingTop="@dimen/_2sdp"
-                            android:text="Hi,i am using HOW"
-                            android:textSize="@dimen/_14ssp" />
+                            android:text="Hi,i am using HOW" />
 
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
@@ -232,9 +240,8 @@
                                         android:drawableLeft="@drawable/ic_edit_with_bg"
                                         android:drawablePadding="@dimen/_10sdp"
                                         android:gravity="center"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/edit_my_profile"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:padding="@dimen/_7sdp"
+                                        android:text="@string/edit_profile" />
 
                                 </RelativeLayout>
 
@@ -257,9 +264,8 @@
                                         android:drawableLeft="@drawable/ic_pass_read_with_bg"
                                         android:drawablePadding="@dimen/_10sdp"
                                         android:gravity="center"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/visibility"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:padding="@dimen/_7sdp"
+                                        android:text="@string/visibility" />
 
                                     <androidx.appcompat.widget.SwitchCompat
                                         android:id="@+id/switch_visibility"
@@ -288,8 +294,7 @@
                                         android:drawablePadding="@dimen/_10sdp"
                                         android:gravity="center"
                                         android:padding="@dimen/_5sdp"
-                                        android:text="@string/show_me_nearby"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:text="@string/show_me_nearby" />
 
                                     <androidx.appcompat.widget.SwitchCompat
                                         android:id="@+id/switch_showmenearby"
@@ -319,13 +324,11 @@
                                         android:drawablePadding="@dimen/_10sdp"
                                         android:gravity="center"
                                         android:padding="@dimen/_5sdp"
-                                        android:text="@string/performance_rewards"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:text="@string/performance_rewards" />
 
                                 </RelativeLayout>
 
                             </LinearLayout>
-
                         </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
@@ -343,35 +346,34 @@
                                 android:padding="@dimen/_5sdp">
 
 
-                                <TextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txt_my_post"
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:drawableRight="@drawable/ic_next"
-                                    android:drawableTint="@color/black"
+                                    android:drawableRight="@drawable/ic_next_resize"
+                                    android:drawableTint="@color/gray4"
+                                    android:gravity="center_vertical"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
-                                    android:text="@string/my_post"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:padding="@dimen/_9sdp"
+                                    android:text="@string/all_post" />
 
                                 <View
                                     android:layout_width="match_parent"
                                     android:layout_height="0.2dp"
                                     android:background="@color/gray" />
 
-                                <TextView
+                                <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txt_tagged_post"
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:drawableRight="@drawable/ic_next"
+                                    android:drawableRight="@drawable/ic_next_resize"
                                     android:drawablePadding="@dimen/_10sdp"
-                                    android:drawableTint="@color/black"
+                                    android:drawableTint="@color/gray4"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
-                                    android:text="@string/tagged_posts"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:padding="@dimen/_9sdp"
+                                    android:text="@string/tagged_posts" />
 
                                 <View
                                     android:layout_width="match_parent"
@@ -383,13 +385,12 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:drawableRight="@drawable/ic_next"
+                                    android:drawableRight="@drawable/ic_next_resize"
                                     android:drawablePadding="@dimen/_10sdp"
-                                    android:drawableTint="@color/black"
+                                    android:drawableTint="@color/gray4"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
-                                    android:text="@string/saved_posts"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:padding="@dimen/_9sdp"
+                                    android:text="@string/saved_posts" />
 
 
                             </LinearLayout>
@@ -414,15 +415,17 @@
                                     android:id="@+id/rl_grps"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:onClick="onClick">
 
                                     <TextView
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/groups"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:layout_centerVertical="true"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/groups" />
 
                                     <TextView
                                         android:id="@+id/txt_grp_count"
@@ -430,11 +433,13 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
                                         android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="14" />
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp" />
+
                                 </RelativeLayout>
 
                                 <View
@@ -446,15 +451,17 @@
                                     android:id="@+id/rl_pages"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:onClick="onClick">
 
                                     <TextView
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/pages"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:layout_centerVertical="true"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/pages" />
 
                                     <TextView
                                         android:id="@+id/txt_pages_count"
@@ -462,11 +469,12 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
                                         android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="14" />
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp" />
                                 </RelativeLayout>
 
                                 <View
@@ -479,15 +487,17 @@
                                     android:id="@+id/rl_frds"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:onClick="onClick">
 
                                     <TextView
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/friends"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:layout_centerVertical="true"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/friends" />
 
                                     <TextView
                                         android:id="@+id/txt_frds_count"
@@ -495,11 +505,12 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
                                         android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="14" />
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp" />
                                 </RelativeLayout>
 
                             </LinearLayout>

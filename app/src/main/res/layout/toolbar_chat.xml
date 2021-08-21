@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0dp"
-            android:minHeight="?attr/actionBarSize"
             android:theme="@style/ToolbarIconTintStyle"
             android:weightSum="1"
             app:buttonGravity="center_vertical"
@@ -29,11 +28,10 @@
                 android:id="@+id/ll_profile_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="?attr/actionBarSize"
                 android:gravity="center"
                 android:onClick="onClick"
                 android:orientation="vertical"
-                android:padding="@dimen/_10sdp">
+                android:padding="@dimen/_5sdp">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/img_profile"
@@ -50,11 +48,11 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
                     android:text="User name"
+                    android:textAppearance="?attr/titleTextAppearance"
                     android:textColor="@color/chat_icon_color"
-                    android:textSize="@dimen/_15ssp" />
+                    android:textSize="@dimen/_10ssp" />
             </LinearLayout>
 
 

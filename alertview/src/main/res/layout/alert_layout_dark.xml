@@ -24,13 +24,12 @@
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
+                android:fontFamily="@font/lato_bold"
                 android:gravity="center"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
                 android:textColor="@color/white"
                 android:textSize="14sp"
-                android:textStyle="bold"
                 tools:text="Delete" />
 
             <androidx.appcompat.widget.AppCompatTextView

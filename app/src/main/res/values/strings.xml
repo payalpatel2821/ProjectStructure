@@ -37,6 +37,7 @@
     <string name="no_internet">Please connect to internet</string>
     <string name="enter_email_address">Enter email address</string>
     <string name="enter_mobile_number">Enter mobile number</string>
+    <string name="mobile_number">Mobile number</string>
     <string name="enter_valid_address">Enter valid email address</string>
     <string name="enter_password">Enter Password</string>
     <string name="enter_confirm_password">Enter Confirm Password</string>
@@ -74,12 +75,12 @@
     <string name="visibility">Visibility</string>
     <string name="show_me_nearby">Show me Nearby</string>
     <string name="performance_rewards">Performance rewards</string>
-    <string name="my_post">My posts</string>
+    <string name="all_post">All post</string>
     <string name="tagged_posts">Tagged Posts</string>
     <string name="saved_posts">Saved Posts</string>
     <string name="groups">Groups</string>
     <string name="pages">Pages</string>
-    <string name="friends">Friends</string>
+    <string name="friends">Friends List</string>
     <string name="message">Message</string>
     <string name="mobile">Mobile</string>
     <string name="email">Email</string>
@@ -117,10 +118,10 @@
     <string name="verify">Verify</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
-    <string name="term_condition">By Signing up,you\'re agree to our Terms of Use and Privacy Policy.</string>
+    <string name="term_condition">I agree to Terms of Use and Privacy Policy.</string>
     <string name="termmessage">Please agree to our terms and conditions or privacy policy</string>
     <string name="unfollow_confirm_msg">Do you want to Unfollow this user?</string>
-    <string name="edit_my_profile">Edit my profile</string>
+    <string name="edit_profile">Edit profile</string>
     <string name="delete_replay">Do you want to delete this reply ?</string>
     <string name="delete_comment">Do you want to delete this comment ?</string>
     <string name="secret_chat">Secret Chat</string>
@@ -170,7 +171,7 @@
     <string name="no">No</string>
     <string name="email_id">Email ID</string>
     <string name="enter_new_password">Enter new password</string>
-    <string name="please_enter_minimum_password">Enter minimum 6 characters password.</string>
+    <string name="please_enter_minimum_password">Enter minimum 6 characters password</string>
     <string name="empty_broadcast_text"><![CDATA[You should use broadcast list to message\n
         multiple people at once\n\n
         Only your friends will receive your\n
@@ -215,7 +216,7 @@
     <string name="exit_without_save">The edited image is not saved. Do you want to exit?</string>
     <string name="enter_reason">Enter reason</string>
     <string name="change_password">Change Password</string>
-    <string name="annivarsary_date">Annivarsary Date</string>
+    <string name="annivarsary_date">Anniversary Date</string>
     <string name="save">Save</string>
     <string name="change_email_id">Change Email ID</string>
     <string name="confirm">Confirm</string>
@@ -245,4 +246,24 @@
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard placeholder text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book"</string>
     <string name="error_msg_hook_chat">You cannot hook more than 3 chats</string>
+    <string name="blank_post">Your feed is empty.start adding people to catch up with your loved ones.</string>
+    <string name="blank_followed_page">Follow the pages so that you don\'t miss out any updates that you are interested in.</string>
+    <string name="blank_my_page">Create your own page to start posting your thoughts.</string>
+    <string name="blank_page">No pages yet.</string>
+    <string name="reset_profile">Reset Profile</string>
+    <string name="new_email">New email id</string>
+    <string name="my_post">My Post</string>
+    <string name="groups_list">Group List</string>
+    <string name="page_list">Page List</string>
+    <string name="blank_group">No groups yet</string>
+    <string name="blank_follow">No followres/following yet.</string>
+    <string name="blank_friends">No friends yet.</string>
+    <string name="blank_profile_viewers">No profile viewers yet.</string>
+    <string name="please_choose_your_method_for_verification">Please choose your method for verification</string>
+    <string name="validate_yourself">Validate yourself</string>
+    <string name="_91">+91</string>
+    <string name="session_expire">Something went wrong. Please try again.</string>
+    <string name="title_activity_contact">ContactActivity</string>
+    <string name="tab_text_1">My Contact</string>
+    <string name="tab_text_2">Explore</string>
 </resources>

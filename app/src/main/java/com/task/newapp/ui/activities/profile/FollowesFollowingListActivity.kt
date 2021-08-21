@@ -2,7 +2,10 @@ package com.task.newapp.ui.activities.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +14,7 @@ import com.task.newapp.R
 import com.task.newapp.adapter.profile.FollowerFollowingAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityFollowesFollowingListBinding
+import com.task.newapp.models.OtherUserModel
 import com.task.newapp.models.ResponseFollowUnfollow
 import com.task.newapp.models.ResponseUserFollowingFollower
 import com.task.newapp.utils.*
@@ -23,6 +27,7 @@ import kotlin.collections.ArrayList
 
 class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
 
+    private val alldata: ArrayList<OtherUserModel> = ArrayList<OtherUserModel>()
     private lateinit var by: String
     private var titleName: Int = 0
     private lateinit var from: String
@@ -52,10 +57,19 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         from = intent.getStringExtra("From")!!
         by = intent.getStringExtra("By")!!
         titleName = intent.getIntExtra("Title", 0)
-        binding.txtTitle.text = resources.getString(titleName)
+//        binding.txtTitle.text = resources.getString(titleName)
+        binding.toolbarLayout.txtTitle.text = resources.getString(titleName)
+        setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
         if (by == "Other") {
             userID = intent.getIntExtra(Constants.user_id, 0)
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun setAdapter() {
@@ -130,6 +144,27 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         }
     }
 
+    fun manageBlankResponse(){
+        if (alldata.isEmpty()) {
+            binding.rvFollowlist.visibility=GONE
+            binding.llEmptyData.visibility = VISIBLE
+            when (from) {
+                "profile_view" -> {
+                    binding.txtEmptyData.text=resources.getString(R.string.blank_profile_viewers)
+                }
+                "friend" -> {
+                    binding.txtEmptyData.text=resources.getString(R.string.blank_friends)
+                }
+                else -> {
+                    binding.txtEmptyData.text=resources.getString(R.string.blank_follow)
+                }
+            }
+        } else {
+            binding.rvFollowlist.visibility=VISIBLE
+            binding.llEmptyData.visibility = GONE
+        }
+    }
+
     private fun callAPIGetProfileViewer(limit: Int, offset: Int) {
         if (!isNetworkConnected()) {
             showToast(getString(R.string.no_internet))
@@ -151,11 +186,13 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                     .subscribeWith(object : DisposableObserver<ResponseUserFollowingFollower>() {
                         override fun onNext(loginResponse: ResponseUserFollowingFollower) {
                             if (loginResponse.success == 1) {
-                                followerfollowingadapter.setData(loginResponse.data as ArrayList<ResponseUserFollowingFollower.Data>)
+                                alldata.addAll(loginResponse.data)
+                                followerfollowingadapter.setData(loginResponse.data as ArrayList<OtherUserModel>)
                                 isloading = false
                                 hasLoadedAllItems = false
                             } else {
                                 hasLoadedAllItems = true
+                                manageBlankResponse()
                             }
                         }
 
@@ -179,16 +216,15 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
             return
         }
         try {
-            val hashMap: HashMap<String, Any>
-            if (by == "Other") {
-                hashMap = hashMapOf(
+            val hashMap: HashMap<String, Any> = if (by == "Other") {
+                hashMapOf(
                     Constants.type to type,
                     Constants.limit to limit,
                     Constants.offset to offset,
                     Constants.user_id to userID,
                 )
             } else {
-                hashMap = hashMapOf(
+                hashMapOf(
                     Constants.type to type,
                     Constants.limit to limit,
                     Constants.offset to offset,
@@ -203,11 +239,13 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                     .subscribeWith(object : DisposableObserver<ResponseUserFollowingFollower>() {
                         override fun onNext(loginResponse: ResponseUserFollowingFollower) {
                             if (loginResponse.success == 1) {
-                                followerfollowingadapter.setData(loginResponse.data as ArrayList<ResponseUserFollowingFollower.Data>)
+                                alldata.addAll(loginResponse.data)
+                                followerfollowingadapter.setData(loginResponse.data as ArrayList<OtherUserModel>)
                                 isloading = false
                                 hasLoadedAllItems = false
                             } else {
                                 hasLoadedAllItems = true
+                                manageBlankResponse()
                             }
                         }
 
@@ -225,7 +263,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         }
     }
 
-    private fun callAPIFollowUnfollow(f_uf: String, dataSet1: ResponseUserFollowingFollower.Data, viewHolder: FollowerFollowingAdapter.ViewHolder, position: Int, from: String) {
+    private fun callAPIFollowUnfollow(f_uf: String, dataSet1: OtherUserModel, viewHolder: FollowerFollowingAdapter.ViewHolder, position: Int, from: String) {
         if (!applicationContext.isNetworkConnected()) {
             applicationContext.showToast(applicationContext.getString(R.string.no_internet))
             return
@@ -257,7 +295,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                                         followerfollowingadapter.updateData(position)
                                     } else {
                                         followerfollowingadapter.setFollowText(viewHolder)
-                                        dataSet1.isFollow = 0
+                                        dataSet1.is_follow = 0
                                     }
                                 }
                             }
@@ -298,11 +336,13 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                     .subscribeWith(object : DisposableObserver<ResponseUserFollowingFollower>() {
                         override fun onNext(loginResponse: ResponseUserFollowingFollower) {
                             if (loginResponse.success == 1) {
-                                followerfollowingadapter.setData(loginResponse.data as ArrayList<ResponseUserFollowingFollower.Data>)
+                                alldata.addAll(loginResponse.data)
+                                followerfollowingadapter.setData(loginResponse.data as ArrayList<OtherUserModel>)
                                 isloading = false
                                 hasLoadedAllItems = false
                             } else {
                                 hasLoadedAllItems = true
+                                manageBlankResponse()
                             }
                         }
 

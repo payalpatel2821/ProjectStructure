@@ -23,6 +23,8 @@ import kotlin.collections.ArrayList
 
 class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
 
+    private var allPage: ArrayList<ResponsePageList.Data> = ArrayList<ResponsePageList.Data>()
+
     private lateinit var pageListAdapter: PageListAdapter
     lateinit var binding: ActivityPageListBinding
     var isloading = false
@@ -57,12 +59,16 @@ class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
 
             when (checkedId) {
                 R.id.rb_followed_pages -> {
+                    allPage = ArrayList<ResponsePageList.Data>()
+                    binding.llEmptyPage.visibility = GONE
                     flag = resources.getString(R.string.followed_page)
                     isloading = false
                     hasLoadedAllItems = false
                     setAdapter()
                 }
                 R.id.rb_my_pages -> {
+                    allPage = ArrayList<ResponsePageList.Data>()
+                    binding.llEmptyPage.visibility = GONE
                     flag = resources.getString(R.string.my_pages)
                     isloading = false
                     hasLoadedAllItems = false
@@ -98,13 +104,30 @@ class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponsePageList>() {
-                        override fun onNext(loginResponse: ResponsePageList) {
-                            if (loginResponse.success == 1) {
-                                pageListAdapter.setData(loginResponse.data as ArrayList<ResponsePageList.Data>)
+                        override fun onNext(responsePageList: ResponsePageList) {
+                            if (responsePageList.success == 1) {
+                                allPage.addAll(responsePageList.data)
+                                pageListAdapter.setData(responsePageList.data as ArrayList<ResponsePageList.Data>)
                                 isloading = false
                                 hasLoadedAllItems = false
                             } else {
                                 hasLoadedAllItems = true
+                                if (allPage.isEmpty()) {
+                                    binding.llEmptyPage.visibility = VISIBLE
+                                    when (flag) {
+                                        resources.getString(R.string.pages) -> {
+                                            binding.txtBlankMsg.text = resources.getString(R.string.blank_page)
+                                        }
+                                        resources.getString(R.string.followed_page) -> {
+                                            binding.txtBlankMsg.text = resources.getString(R.string.blank_followed_page)
+                                        }
+                                        resources.getString(R.string.my_pages) -> {
+                                            binding.txtBlankMsg.text = resources.getString(R.string.blank_my_page)
+                                        }
+                                    }
+                                } else {
+                                    binding.llEmptyPage.visibility = GONE
+                                }
                             }
                         }
 

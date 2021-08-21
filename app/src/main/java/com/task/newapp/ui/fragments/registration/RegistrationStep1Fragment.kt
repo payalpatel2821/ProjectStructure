@@ -1,34 +1,26 @@
 package com.task.newapp.ui.fragments.registration
 
-import android.app.Activity.RESULT_OK
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
-import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.databinding.FragmentRegistrationStep1Binding
 import com.task.newapp.interfaces.OnPageChangeListener
-import com.task.newapp.utils.Constants
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
 import com.task.newapp.utils.compressor.SiliCompressor
-import com.task.newapp.utils.firstCharacter
-import com.task.newapp.utils.setupKeyboardListener
-import com.task.newapp.utils.showLog
 import com.theartofdev.edmodo.cropper.CropImage
 import lv.chi.photopicker.MediaPickerFragment
 import java.io.File
@@ -36,7 +28,7 @@ import java.io.File
 
 class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View.OnClickListener {
 
-    private var imageUri: Uri? = null
+    private var imageUri: String? = ""
     private lateinit var binding: FragmentRegistrationStep1Binding
     private lateinit var onPageChangeListener: OnPageChangeListener
     var flagFirst = false
@@ -72,8 +64,8 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
 
     private fun initView() {
         setupKeyboardListener(binding.scrollview)
-
-        binding.relProfile.setOnClickListener(this)
+        binding.ivProfile.load(imageUri, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), "#6CAEC4")
+        binding.ivEditImg.setOnClickListener(this)
         binding.btnNext.setOnClickListener(this)
         binding.layoutBack.tvBack.setOnClickListener(this)
 
@@ -87,16 +79,8 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
 
             override fun afterTextChanged(s: Editable?) {
                 validateFirstName()
-                if (imageUri == null) {
-                    if (binding.edtFirstName.text!!.isEmpty() && binding.edtLastName.text!!.isEmpty()) {
-                        binding.ivProfile.setImageResource(R.drawable.ic_user)
-                        binding.ivProfile.setColorFilter(Color.argb(255, 255, 255, 255))
-                        binding.txtDpName.visibility = GONE
-                    } else {
-                        binding.ivProfile.setImageResource(0)
-                        binding.txtDpName.visibility = VISIBLE
-                        binding.txtDpName.text = firstCharacter(binding.edtFirstName.text.toString().trim() + " " + binding.edtLastName.text.toString().trim())
-                    }
+                if (imageUri == "") {
+                    binding.ivProfile.load(imageUri, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), "#6CAEC4")
                 }
             }
         })
@@ -105,21 +89,16 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                val text: String = binding.edtLastName.getText().toString()
+                if (text.startsWith(" ")) {
+                    binding.edtLastName.setText(text.trim { it <= ' ' })
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
                 validateLastName()
-                if (imageUri == null) {
-                    if (binding.edtFirstName.text!!.isEmpty() && binding.edtLastName.text!!.isEmpty()) {
-                        binding.ivProfile.setImageResource(R.drawable.ic_user)
-                        binding.ivProfile.setColorFilter(Color.argb(255, 255, 255, 255))
-                        binding.txtDpName.visibility = GONE
-                    } else {
-                        binding.ivProfile.setImageResource(0)
-                        binding.txtDpName.visibility = VISIBLE
-                        binding.txtDpName.text = firstCharacter(binding.edtFirstName.text.toString().trim() + " " + binding.edtLastName.text.toString().trim())
-                    }
+                if (imageUri == "") {
+                    binding.ivProfile.load(imageUri, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), "#6CAEC4")
                 }
             }
         })
@@ -141,29 +120,19 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             val result = CropImage.getActivityResult(data)
-            if (resultCode == RESULT_OK) {
-                val resultUri = result.uri
-                imageUri = resultUri
-                binding.ivProfile.setColorFilter(0)
-                Glide.with(requireActivity()).load(resultUri).into(binding.ivProfile)
-                FastSave.getInstance().saveString(Constants.profile_image, resultUri.path.toString())
-                binding.ivEditImg.setImageResource(R.drawable.ic_close)
-                binding.txtDpName.visibility = GONE
-                Log.e("callAPIRegister:result", resultUri.path.toString())
-
-
-                //------------------------Add New------------------------
-
-//                val filePath: String = SiliCompressor.with(activity).compress(resultUri.toString(), File(resultUri.path.toString()))
+            if (resultCode == Activity.RESULT_OK) {
+                imageUri = result.uri.path
+                binding.ivEditImg.setImageResource(R.drawable.ic_delete_profile)
                 val filePath: String = SiliCompressor.with(activity).compress(
-                    resultUri.toString(),
-                    File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "temp_profile.jpg"), 1
+                    imageUri,
+                    File(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                        "temp_profile.jpg"
+                    ),
+                    0
                 )
-                Log.e("callAPI:resultPath", filePath)
-
-                Glide.with(requireActivity()).load(filePath).into(binding.ivProfile)
+                binding.ivProfile.load(filePath, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), "#6CAEC4")
                 FastSave.getInstance().saveString(Constants.profile_image, filePath)
-
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 val error = result.error
@@ -234,26 +203,19 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
 
     override fun onClick(v: View?) {
         when (v!!.id) {
-            R.id.rel_profile -> {
-                if (imageUri != null) {
+            R.id.iv_edit_img -> {
+                if (imageUri != "") {
                     FastSave.getInstance().saveString(Constants.profile_image, "")
-                    binding.ivEditImg.setImageResource(R.drawable.ic_edit)
-                    imageUri = null
-                    if (binding.edtFirstName.text!!.isEmpty() && binding.edtLastName.text!!.isEmpty()) {
-                        binding.ivProfile.setImageResource(R.drawable.ic_user)
-                        binding.ivProfile.setColorFilter(Color.argb(255, 255, 255, 255))
-                        binding.txtDpName.visibility = GONE
-                    } else {
-                        binding.ivProfile.setImageResource(0)
-                        binding.txtDpName.visibility = VISIBLE
-                        binding.txtDpName.text = firstCharacter(binding.edtFirstName.text.toString().trim() + " " + binding.edtLastName.text.toString().trim())
-                    }
+                    binding.ivEditImg.setImageResource(R.drawable.ic_gallery)
+                    imageUri = ""
+                    binding.ivProfile.load(imageUri, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), "#6CAEC4")
                 } else {
                     openPicker()
                 }
 
             }
             R.id.btn_next -> {
+                hideSoftKeyboard(requireActivity())
                 if (!validateFirstName()) {
                     return
                 }
@@ -280,6 +242,6 @@ class RegistrationStep1Fragment : Fragment(), MediaPickerFragment.Callback, View
     override fun onMediaPicked(photos: ArrayList<Uri>) {
         showLog("URL", photos[0].toString())
         CropImage.activity(photos[0])
-            .start(requireContext(), this)
+            .setAspectRatio(1, 1).start(requireContext(), this)
     }
 }

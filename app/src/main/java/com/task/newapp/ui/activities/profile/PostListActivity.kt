@@ -1,6 +1,7 @@
 package com.task.newapp.ui.activities.profile
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -45,10 +46,13 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
     }
 
     private fun setData() {
-        binding.txtTitle.text = resources.getString(intent.getIntExtra(Constants.title, 0))
+        binding.toolbarLayout.txtTitle.text = resources.getString(intent.getIntExtra(Constants.title, 0))
+        setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
         userId = intent.getIntExtra(Constants.user_id, 0)
         type = intent.getStringExtra(Constants.type)!!
     }
+
+
 
     private fun setAdapter() {
         // If RecyclerView was recently bound, unbind
@@ -66,6 +70,13 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
         postListAdapter.onItemClick = { dataset, position ->
             showToast("Item Click")
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun initPaginate() {
@@ -119,9 +130,9 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
                             } else {
                                 hasLoadedAllItems = true
                                 if (allpost.isEmpty()) {
-                                    binding.ivEmptyPost.visibility = VISIBLE
+                                    binding.llEmptyPost.visibility = VISIBLE
                                 } else {
-                                    binding.ivEmptyPost.visibility = GONE
+                                    binding.llEmptyPost.visibility = GONE
                                 }
                             }
                         }

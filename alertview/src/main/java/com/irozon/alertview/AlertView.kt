@@ -19,6 +19,7 @@ class AlertView(
 ) {
 
     private var cancelButtonText: String = ""
+    private var cancelButtonColor: Int = R.color.black
     private var theme: AlertTheme = AlertTheme.LIGHT
     private var actions: ArrayList<AlertAction> = ArrayList()
 
@@ -34,8 +35,9 @@ class AlertView(
      * Add Actions to AlertView
      * @param string: String
      */
-    fun setCancelButtonText(string: String) {
+    fun setCancelButtonText(string: String,textColor:Int) {
         this.cancelButtonText = string
+        this.cancelButtonColor=textColor
     }
 
     /**
@@ -49,15 +51,15 @@ class AlertView(
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
             IOS -> {
-                val bottomSheet = IosSheetFragment(title, message, actions, theme, cancelButtonText)
+                val bottomSheet = IosSheetFragment(title, message, actions, theme, cancelButtonText,cancelButtonColor)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
             IOS_RADIO -> {
-                val bottomSheet = IosRadioSheetFragment(title, message, actions, theme, cancelButtonText)
+                val bottomSheet = IosRadioSheetFragment(title, message, actions, theme, cancelButtonText,cancelButtonColor)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
             IOS_ICON -> {
-                val bottomSheet = IosSheetFragment(title, withIcons = true, message, actions, theme, cancelButtonText)
+                val bottomSheet = IosSheetFragment(title, withIcons = true, message, actions, theme, cancelButtonText,cancelButtonColor)
                 bottomSheet.show(activity.supportFragmentManager, bottomSheet.tag)
             }
             DIALOG -> {

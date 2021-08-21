@@ -7,7 +7,7 @@ data class ResponseMyProfile(
 ) {
 
     data class MyProfileData(
-        val about: String,
+        val about: String?,
         val account_id: String,
         val age: String,
         val anniversary: Any,
@@ -52,6 +52,7 @@ data class ResponseMyProfile(
         val mobile: String,
         val profession: Any,
         val profile_image: String,
+        val profile_color: String,
         val profile_views: Int,
         val request_date: String,
         val secret_password: String,

@@ -380,7 +380,7 @@
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txt_logout"
-                                style="@style/styleTextViewSmall"
+                                style="@style/styleTextViewSmallBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
@@ -392,8 +392,7 @@
                                 android:gravity="center"
                                 android:onClick="onClick"
                                 android:text="@string/logout"
-                                android:textColor="@color/red"
-                                android:textStyle="bold" />
+                                android:textColor="@color/red" />
 
                             <View
                                 android:layout_width="match_parent"

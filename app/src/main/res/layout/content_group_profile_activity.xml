@@ -24,7 +24,7 @@
                 android:rotation="180"
                 android:scaleType="centerCrop"
                 android:src="@drawable/drop_shadow"
-                app:tint="@color/black" />
+                app:tint="@color/gray" />
 
         </RelativeLayout>
 
@@ -32,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="-20dp"
+            android:clickable="true"
             android:background="@drawable/bg_bottomsheet"
             android:backgroundTint="@color/bottomsheet_bg"
             android:orientation="vertical"
@@ -66,8 +67,7 @@
                             android:id="@+id/txt_grp_name"
                             style="@style/styleTextViewLarge"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Prinsa adbiz" />
+                            android:layout_height="wrap_content" />
 
                         <ImageView
                             android:id="@+id/iv_edit_profile"
@@ -89,7 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingLeft="@dimen/_10sdp"
-                        android:text="prinsa25" />
+                        android:layout_margin="@dimen/_2sdp"/>
 
 
                     <androidx.cardview.widget.CardView
@@ -116,9 +116,8 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:padding="@dimen/_7sdp"
-                                    android:text="@string/photo_video_link_docs"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:padding="@dimen/_9sdp"
+                                    android:text="@string/photo_video_link_docs" />
 
                                 <TextView
                                     android:id="@+id/txt_pwld_count"
@@ -126,10 +125,10 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentRight="true"
-                                    android:drawableRight="@drawable/ic_next"
-                                    android:drawablePadding="@dimen/_10sdp"
-                                    android:drawableTint="@color/black"
-                                    android:padding="@dimen/_5sdp" />
+                                    android:drawableRight="@drawable/ic_next_resize"
+                                    android:drawablePadding="@dimen/_5sdp"
+                                    android:drawableTint="@color/gray4"
+                                    android:padding="@dimen/_9sdp" />
                             </RelativeLayout>
 
                             <View
@@ -142,12 +141,12 @@
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableLeft="@drawable/ic_contact_detail_with_bg"
+                                android:drawableLeft="@drawable/ic_chat_search_with_bg"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:onClick="onClick"
                                 android:padding="@dimen/_7sdp"
-                                android:text="@string/chat_search"
-                                android:textSize="@dimen/_14ssp" />
+                                android:gravity="center_vertical"
+                                android:text="@string/chat_search"/>
 
                             <View
                                 android:id="@+id/view_grp_setting"
@@ -160,12 +159,12 @@
                                 style="@style/styleTextViewNormal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:drawableLeft="@drawable/ic_secret_chat_with_bg"
+                                android:drawableLeft="@drawable/ic_group_setting_with_bg"
                                 android:drawablePadding="@dimen/_10sdp"
                                 android:onClick="onClick"
                                 android:padding="@dimen/_7sdp"
-                                android:text="@string/group_setting"
-                                android:textSize="@dimen/_14ssp" />
+                                android:gravity="center_vertical"
+                                android:text="@string/group_setting" />
 
                             <View
                                 android:id="@+id/view_custom_notification"
@@ -191,7 +190,7 @@
                                     android:drawablePadding="@dimen/_10sdp"
                                     android:padding="@dimen/_7sdp"
                                     android:text="@string/custom_notification"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:gravity="center_vertical" />
 
                                 <TextView
                                     android:id="@+id/txt_custom_notification_status"
@@ -199,12 +198,11 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:padding="@dimen/_5sdp"
-                                    android:text="on"
-                                    android:textSize="@dimen/_12ssp" />
+                                    android:text="on" />
 
                             </LinearLayout>
-
                         </LinearLayout>
+
                     </androidx.cardview.widget.CardView>
 
                     <RelativeLayout
@@ -252,12 +250,12 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/styleTextViewSmall"
-                                android:textSize="@dimen/_10ssp"
                                 android:layout_gravity="center"
                                 android:drawableLeft="@drawable/ic_add_resize"
                                 android:drawablePadding="@dimen/_5sdp"
                                 android:drawableTint="@color/gray3"
-                                android:text="@string/add_members" />
+                                android:text="@string/add_members"
+                                android:visibility="gone"/>
 
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/rv_member_list"
@@ -269,13 +267,13 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 style="@style/styleTextViewSmall"
-                                android:textSize="@dimen/_10ssp"
                                 android:layout_gravity="center"
                                 android:onClick="onClick"
                                 android:drawableLeft="@drawable/ic_down_resize"
                                 android:drawablePadding="@dimen/_5sdp"
                                 android:drawableTint="@color/gray3"
-                                android:text="10 more" />
+                                android:text="10 more"
+                                android:visibility="gone"/>
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
@@ -303,12 +301,13 @@
                                 android:drawablePadding="@dimen/_5sdp"
                                 android:drawableTint="@color/red"
                                 android:onClick="onClickByTag"
-                                android:padding="@dimen/_5sdp"
+                                android:padding="@dimen/_9sdp"
                                 android:text="@string/exit_group"
-                                android:textColor="@color/red"
-                                android:textSize="@dimen/_14ssp" />
+                                android:gravity="center_vertical"
+                                android:textColor="@color/red" />
 
                             <View
+                                android:id="@+id/view_report"
                                 android:layout_width="match_parent"
                                 android:layout_height="0.2dp"
                                 android:background="@color/gray" />
@@ -322,10 +321,10 @@
                                 android:drawablePadding="@dimen/_5sdp"
                                 android:drawableTint="@color/red"
                                 android:onClick="onClick"
-                                android:padding="@dimen/_5sdp"
+                                android:padding="@dimen/_9sdp"
                                 android:text="@string/report_group"
-                                android:textColor="@color/red"
-                                android:textSize="@dimen/_14ssp" />
+                                android:gravity="center_vertical"
+                                android:textColor="@color/red" />
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>

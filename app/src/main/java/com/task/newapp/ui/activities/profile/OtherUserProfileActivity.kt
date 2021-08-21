@@ -15,12 +15,15 @@ import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.peekandpop.shalskar.peekandpop.PeekAndPop
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityOtherUserProfileBinding
@@ -60,12 +63,11 @@ class OtherUserProfileActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
-
-                val isCustomNotification = data!!.getIntExtra(Constants.bundle_custom_notification, 0)
+                val isCustomNotification =
+                    data!!.getIntExtra(Constants.bundle_custom_notification, 0)
                 val notiToneId = data!!.getIntExtra(Constants.bundle_notification_tone, 0)
                 val vibrate = data!!.getStringExtra(Constants.bundle_vibration)
                 setOnOffText(isCustomNotification, notiToneId, vibrate!!)
-
             }
         }
 
@@ -86,14 +88,46 @@ class OtherUserProfileActivity : AppCompatActivity() {
         User_ID = intent.getIntExtra(Constants.user_id, 0)
     }
 
+    private fun initPeakPop(profileImage: String, userName: String, profileColor: String) {
+        val peekAndPop = PeekAndPop.Builder(this)
+            .peekLayout(R.layout.item_edit_profile)
+            .longClickViews(binding.ivProfile)
+            .onHoldAndReleaseListener(object : PeekAndPop.OnHoldAndReleaseListener {
+                override fun onHold(view: View?, position: Int) {
+                    if (view?.id == R.id.txt_edit_profile) {
+                        showToast("onHold click edit proile")
+                    } else {
+                        showToast("onHold click edit other")
+                    }
+                }
+
+                override fun onLeave(view: View?, position: Int) {
+                    showToast("onLeave click edit profile")
+                }
+
+                override fun onRelease(view: View?, position: Int) {
+                    showToast("onRelease click edit profile")
+                }
+
+            })
+            .build()
+
+        val peekView = peekAndPop.peekView
+        val ivProfile: ImageView = peekView.findViewById(R.id.iv_profile)
+        val cardEditOption: CardView = peekView.findViewById(R.id.card_edit_option)
+
+        cardEditOption.visibility = GONE
+        peekAndPop.addHoldAndReleaseView(R.id.txt_edit_profile)
+        ivProfile.load(profileImage, true, userName, profileColor)
+    }
+
     @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setData(data: ResponseMyProfile.MyProfileData) {
         val contentOtherProfile = binding.layoutContentOtherprofile
-        binding.ivProfile.load(data.profile_image, true)
         isfollow = data.is_follow
 
-        data.friendsetting?.let{
+        data.friendsetting?.let {
             manageIsMuteOrNot(it.muteNotification)
             setOnOffText(it.isCustomNotificationEnable, it.notificationToneId, it.vibrateStatus)
         }
@@ -101,10 +135,20 @@ class OtherUserProfileActivity : AppCompatActivity() {
         contentOtherProfile.txtFollowerCount.text = data.followers.toString()
         contentOtherProfile.txtFollowingCount.text = data.following.toString()
         contentOtherProfile.txtUsername.text = data.first_name + " " + data.last_name
+        contentOtherProfile.txtPwldCount.text="0"
+        contentOtherProfile.txtStarCount.text="0"
+        initPeakPop(data.profile_image, contentOtherProfile.txtUsername.text.trim().toString(), data.profile_color)
+        binding.ivProfile.load(data.profile_image, true, contentOtherProfile.txtUsername.text.toString(),data.profile_color)
+
         contentOtherProfile.txtAccId.text = data.account_id
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         contentOtherProfile.txtLastseen.text = DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(data.last_seen_time, formatter))
-        contentOtherProfile.txtStatus.text = data.status
+        contentOtherProfile.txtStatus.text = data.about
+        if (data.about == null) {
+            contentOtherProfile.txtStatus.visibility = GONE
+        } else {
+            contentOtherProfile.txtStatus.visibility = VISIBLE
+        }
         contentOtherProfile.txtPostsCount.text = data.count_post.toString()
         contentOtherProfile.txtGrpcommonCount.text = getCommonGroup(User_ID).size.toString()
         contentOtherProfile.txtPagescommonCount.text = data.count_common_pages.toString()
@@ -135,35 +179,33 @@ class OtherUserProfileActivity : AppCompatActivity() {
 
     private fun manageIsMuteOrNot(muteNotification: Int) {
         if (muteNotification == 1) {
-            binding.layoutContentOtherprofile.btnMute.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(this, R.drawable.ic_profile_unmute_resize), null, null)
-            binding.layoutContentOtherprofile.btnMute.text = resources.getString(R.string.unmute)
+            binding.layoutContentOtherprofile.btnMute.setImageResource(R.drawable.ic_unmute)
         } else {
-            binding.layoutContentOtherprofile.btnMute.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(this, R.drawable.ic_profile_mute_resize), null, null)
-            binding.layoutContentOtherprofile.btnMute.text = resources.getString(R.string.mute)
+            binding.layoutContentOtherprofile.btnMute.setImageResource(R.drawable.ic_mute)
         }
     }
 
     private fun setBottomSheet() {
-//        binding.layoutContentOtherprofile.txtLastseen.isSelected = true
-
         binding.ivProfile.layoutParams.height =
-            ((getDisplayMatrix().heightPixels / 1.7).roundToInt())
-        var sheetBehavior = BottomSheetBehavior.from(binding.layoutContentOtherprofile.bottomSheet)
+            getDisplayMatrix().widthPixels
+        val sheetBehavior = BottomSheetBehavior.from(binding.layoutContentOtherprofile.bottomSheet)
 
         sheetBehavior.state = BottomSheetBehavior.STATE_DRAGGING
         binding.layoutContentOtherprofile.bottomSheet.requestLayout()
 
-        sheetBehavior.isHideable = false
+        sheetBehavior.isHideable=false
     }
 
     private fun getContactIdFromPhoneNumber(phone: String): String? {
         if (TextUtils.isEmpty(phone)) return null
         val uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone))
         val contentResolver: ContentResolver = contentResolver
-        val phoneQueryCursor: Cursor? = contentResolver.query(uri, arrayOf<String>(PhoneLookup._ID), null, null, null)
+        val phoneQueryCursor: Cursor? =
+            contentResolver.query(uri, arrayOf<String>(PhoneLookup._ID), null, null, null)
         if (phoneQueryCursor != null) {
             if (phoneQueryCursor.moveToFirst()) {
-                val result: String = phoneQueryCursor.getString(phoneQueryCursor.getColumnIndex(PhoneLookup._ID))
+                val result: String =
+                    phoneQueryCursor.getString(phoneQueryCursor.getColumnIndex(PhoneLookup._ID))
                 phoneQueryCursor.close()
                 return result
             }
@@ -177,9 +219,6 @@ class OtherUserProfileActivity : AppCompatActivity() {
             Constants.tag_follow -> {
                 setFlagFollowUnfollow()
             }
-            Constants.tag_message -> {
-                showToast("click message")
-            }
         }
     }
 
@@ -188,15 +227,24 @@ class OtherUserProfileActivity : AppCompatActivity() {
             R.id.ll_following -> {
                 val intent = Intent(this, FollowesFollowingListActivity::class.java)
                 intent.putExtra("By", "Other")
-                intent.putExtra("From", Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS.fromname)
-                intent.putExtra("Title", Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS.title)
+                intent.putExtra(
+                    "From",
+                    Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS.fromname
+                )
+                intent.putExtra(
+                    "Title",
+                    Constants.Companion.ProfileNavigation.FROM_FOLLOWINGS.title
+                )
                 intent.putExtra(Constants.user_id, User_ID)
                 resultLauncher.launch(intent)
             }
             R.id.ll_follower -> {
                 val intent = Intent(this, FollowesFollowingListActivity::class.java)
                 intent.putExtra("By", "Other")
-                intent.putExtra("From", Constants.Companion.ProfileNavigation.FROM_FOLLOWERS.fromname)
+                intent.putExtra(
+                    "From",
+                    Constants.Companion.ProfileNavigation.FROM_FOLLOWERS.fromname
+                )
                 intent.putExtra("Title", Constants.Companion.ProfileNavigation.FROM_FOLLOWERS.title)
                 intent.putExtra(Constants.user_id, User_ID)
                 resultLauncher.launch(intent)
@@ -287,6 +335,9 @@ class OtherUserProfileActivity : AppCompatActivity() {
                 resultLauncher1.launch(intent)
 
             }
+            R.id.btn_message -> {
+                showToast("click message")
+            }
         }
     }
 
@@ -306,19 +357,23 @@ class OtherUserProfileActivity : AppCompatActivity() {
             if (isFollow == "follow") {
                 callAPIFollowUnfollow(isFollow)
             } else {
-                DialogUtils().showConfirmationDialog(this@OtherUserProfileActivity, "", applicationContext.resources.getString(R.string.unfollow_confirm_msg), object : DialogUtils.DialogCallbacks {
-                    override fun onPositiveButtonClick() {
-                        callAPIFollowUnfollow(isFollow)
-                    }
+                DialogUtils().showConfirmationDialog(
+                    this@OtherUserProfileActivity,
+                    "",
+                    applicationContext.resources.getString(R.string.unfollow_confirm_msg),
+                    object : DialogUtils.DialogCallbacks {
+                        override fun onPositiveButtonClick() {
+                            callAPIFollowUnfollow(isFollow)
+                        }
 
-                    override fun onNegativeButtonClick() {
+                        override fun onNegativeButtonClick() {
 
-                    }
+                        }
 
-                    override fun onDefaultButtonClick(actionName: String) {
-                    }
+                        override fun onDefaultButtonClick(actionName: String) {
+                        }
 
-                })
+                    })
             }
 
         } catch (e: Exception) {
@@ -331,33 +386,21 @@ class OtherUserProfileActivity : AppCompatActivity() {
         profileData.friendsetting.notificationToneId = notiToneId
         profileData.friendsetting.vibrateStatus = vibrate
         if (isCustomNotification == 1) {
-            binding.layoutContentOtherprofile.txtCustomNotificationStatus.text = resources.getString(R.string.on)
+            binding.layoutContentOtherprofile.txtCustomNotificationStatus.text =
+                resources.getString(R.string.on)
         } else {
-            binding.layoutContentOtherprofile.txtCustomNotificationStatus.text = resources.getString(R.string.off)
+            binding.layoutContentOtherprofile.txtCustomNotificationStatus.text =
+                resources.getString(R.string.off)
         }
     }
 
     private fun setTag(tag: Int) {
         val follow = binding.layoutContentOtherprofile.btnFollow
-        val message = binding.layoutContentOtherprofile.btnMessage
+        follow.tag = Constants.tag_follow
         if (tag == 0) {
-            follow.tag = Constants.tag_follow
-            message.tag = Constants.tag_message
             follow.setBackgroundResource(R.drawable.btn_follow_user)
-            follow.backgroundTintList = null
-            follow.text = ""
-            message.setBackgroundResource(R.drawable.btn_rect_rounded_bg)
-            message.backgroundTintList = ContextCompat.getColorStateList(this@OtherUserProfileActivity, R.color.white)
-            message.text = resources.getString(R.string.message)
         } else {
-            follow.tag = Constants.tag_message
-            message.tag = Constants.tag_follow
-            message.setBackgroundResource(R.drawable.btn_follow_user_accept)
-            message.backgroundTintList = null
-            message.text = ""
-            follow.setBackgroundResource(R.drawable.btn_rect_rounded_bg)
-            follow.backgroundTintList = ContextCompat.getColorStateList(this@OtherUserProfileActivity, R.color.white)
-            follow.text = resources.getString(R.string.message)
+            follow.setBackgroundResource(R.drawable.btn_follow_user_accept)
         }
     }
 
@@ -417,7 +460,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
                         @RequiresApi(Build.VERSION_CODES.O)
                         override fun onNext(loginResponse: ResponseMyProfile) {
                             Log.v("onNext: ", loginResponse.toString())
-                           // showToast(loginResponse.message)
+                            // showToast(loginResponse.message)
 
                             if (loginResponse.success == 1) {
                                 profileData = loginResponse.data
@@ -487,7 +530,6 @@ class OtherUserProfileActivity : AppCompatActivity() {
 
     }
 
-
     private fun callAPIBlockReportUser(isBlock: String) {
         val message: String = when (isBlock) {
             "block" -> {
@@ -502,69 +544,74 @@ class OtherUserProfileActivity : AppCompatActivity() {
         }
 
         if (isBlock == "block" || isBlock == "unblock") {
-            DialogUtils().showConfirmationYesNoDialog(this, "", message, object : DialogUtils.DialogCallbacks {
-                override fun onPositiveButtonClick() {
-                    if (!isNetworkConnected()) {
-                        showToast(getString(R.string.no_internet))
-                        return
-                    }
-                    try {
-                        openProgressDialog(this@OtherUserProfileActivity)
+            DialogUtils().showConfirmationYesNoDialog(
+                this,
+                "",
+                message,
+                object : DialogUtils.DialogCallbacks {
+                    override fun onPositiveButtonClick() {
+                        if (!isNetworkConnected()) {
+                            showToast(getString(R.string.no_internet))
+                            return
+                        }
+                        try {
+                            openProgressDialog(this@OtherUserProfileActivity)
 
-                        val hashMap: HashMap<String, Any> = hashMapOf(
-                            Constants.id to User_ID,
-                            Constants.type to isBlock,
-                        )
+                            val hashMap: HashMap<String, Any> = hashMapOf(
+                                Constants.id to User_ID,
+                                Constants.type to isBlock,
+                            )
 
-                        mCompositeDisposable.add(
-                            ApiClient.create()
-                                .setBlockUnblockReportSetting(hashMap)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeWith(object : DisposableObserver<ResponseBlockReportUser>() {
-                                    @RequiresApi(Build.VERSION_CODES.O)
-                                    override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
-                                        Log.v("onNext: ", blockreportuserresponse.toString())
-                                        showToast(blockreportuserresponse.message)
+                            mCompositeDisposable.add(
+                                ApiClient.create()
+                                    .setBlockUnblockReportSetting(hashMap)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeWith(object :
+                                        DisposableObserver<ResponseBlockReportUser>() {
+                                        @RequiresApi(Build.VERSION_CODES.O)
+                                        override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
+                                            Log.v("onNext: ", blockreportuserresponse.toString())
+                                            showToast(blockreportuserresponse.message)
 
-                                        if (blockreportuserresponse.success == 1) {
-                                            if (isBlock == "block" || isBlock == "unblock") {
-                                                if (profileData.is_block == 1) {
-                                                    profileData.is_block = 0
-                                                    manageBlockUnblockText(0)
+                                            if (blockreportuserresponse.success == 1) {
+                                                if (isBlock == "block" || isBlock == "unblock") {
+                                                    if (profileData.is_block == 1) {
+                                                        profileData.is_block = 0
+                                                        manageBlockUnblockText(0)
+                                                    } else {
+                                                        profileData.is_block = 1
+                                                        manageBlockUnblockText(1)
+                                                    }
                                                 } else {
-                                                    profileData.is_block = 1
-                                                    manageBlockUnblockText(1)
+                                                    onBackPressed()
                                                 }
-                                            } else {
-                                                onBackPressed()
                                             }
                                         }
-                                    }
 
-                                    override fun onError(e: Throwable) {
-                                        Log.v("onError: ", e.toString())
-                                        hideProgressDialog()
-                                    }
+                                        override fun onError(e: Throwable) {
+                                            Log.v("onError: ", e.toString())
+                                            hideProgressDialog()
+                                        }
 
-                                    override fun onComplete() {
-                                        hideProgressDialog()
-                                    }
-                                })
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                                        override fun onComplete() {
+                                            hideProgressDialog()
+                                        }
+                                    })
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
-                }
 
-                override fun onNegativeButtonClick() {
+                    override fun onNegativeButtonClick() {
 
-                }
+                    }
 
-                override fun onDefaultButtonClick(actionName: String) {
-                }
+                    override fun onDefaultButtonClick(actionName: String) {
+                    }
 
-            })
+                })
         } else {
             DialogUtils().showReportDialog(this, message, object : DialogUtils.DialogCallbacks {
                 override fun onPositiveButtonClick() {
@@ -594,7 +641,8 @@ class OtherUserProfileActivity : AppCompatActivity() {
                                 .setBlockUnblockReportSetting(hashMap)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeWith(object : DisposableObserver<ResponseBlockReportUser>() {
+                                .subscribeWith(object :
+                                    DisposableObserver<ResponseBlockReportUser>() {
                                     @RequiresApi(Build.VERSION_CODES.O)
                                     override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
                                         Log.v("onNext: ", blockreportuserresponse.toString())

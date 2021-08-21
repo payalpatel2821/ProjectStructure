@@ -27,16 +27,17 @@ import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Patterns
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentManager
+import com.task.newapp.utils.avatarGenerator.AvatarGenerator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -45,12 +46,21 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.api.ApiClient
+import com.task.newapp.databinding.LayoutCustomToastBinding
+import com.task.newapp.models.ResponseNotification
 import com.task.newapp.models.User
 import com.task.newapp.realmDB.getUserByUserId
+import com.task.newapp.realmDB.insertNotificationToneData
 import com.task.newapp.realmDB.models.ChatList
+import com.task.newapp.realmDB.prepareNotificationToneData
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import lv.chi.photopicker.MediaPickerFragment
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -125,8 +135,18 @@ inline fun <reified T : Any> newIntent(context: Context): Intent =
 /**
  * show toast
  */
-fun Context.showToast(msg: String) {
+/*fun Context.showToast(msg: String) {
     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+}*/
+
+fun Context.showToast(msg: String) {
+    val layoutBinding: LayoutCustomToastBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.layout_custom_toast, null, false)
+    val toast = Toast(this)
+    toast.duration = Toast.LENGTH_SHORT
+    toast.setGravity(Gravity.BOTTOM, 0, 50)
+    toast.setView(layoutBinding.root) //setting the view of custom toast layout
+    layoutBinding.toastMessage.text = msg
+    toast.show()
 }
 
 
@@ -444,8 +464,8 @@ fun convertDurationStringToSeconds(duration: String): String {
 fun ImageView.load(
     url: String?,
     isProfile: Boolean? = false,
-    name: String? = null,
-    color: String? = null,
+    name: String? = "",
+    color: String? = "",
     previousUrl: String? = "",
     round: Boolean = false,
     cornersRadius: Int = 0,
@@ -461,21 +481,20 @@ fun ImageView.load(
                 RoundedCorners(cornersRadius)
             )
         }
-
         else -> null
     }
     val glide = Glide.with(context).load(url)
-    /*if (isProfile == true) {
-        glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.CIRCLE, name ?: "", color ?: ""))
+    if (isProfile == true) {
+        glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.RECTANGLE, name ?: "", color ?: ""))
     } else {
         glide.placeholder(R.drawable.default_dp)
-    }*/
-    glide.placeholder(R.drawable.default_dp)
+    }
+    //glide.placeholder(R.drawable.default_dp)
     glide.let {
         // Apply request options
         if (requestOptions != null) {
             it.apply(requestOptions)
-            it.placeholder(R.drawable.default_dp)
+//            it.placeholder(R.drawable.default_dp)
         } else {
             it
         }
@@ -1178,9 +1197,6 @@ fun Activity.requestFocus(view: View) {
     }
 }
 
-
-
-
 /**
  * check and return true if chat message is in-coming else return false for outgoing message
  *
@@ -1223,4 +1239,48 @@ fun getBytes(inputStream: InputStream): ByteArray? {
         byteBuff.write(buff, 0, len)
     }
     return byteBuff.toByteArray()
+}
+
+fun Activity.callAPIGetAllNotification(mCompositeDisposable: CompositeDisposable) {
+    if (!isNetworkConnected()) {
+        showToast(getString(R.string.no_internet))
+        return
+    }
+    try {
+        openProgressDialog(this)
+
+        val hashMap: HashMap<String, Any> = hashMapOf(
+            Constants.type to "my_notification"
+        )
+
+        mCompositeDisposable.add(
+            ApiClient.create()
+                .getNotificationTune(hashMap)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : DisposableObserver<ResponseNotification>() {
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onNext(responseNotification: ResponseNotification) {
+                        Log.v("onNext: ", responseNotification.toString())
+                        if (responseNotification.success == 1) {
+                            insertNotificationToneData(prepareNotificationToneData(responseNotification.data))
+                        }else{
+                            showToast(responseNotification.message)
+                        }
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Log.v("onError: ", e.toString())
+                        hideProgressDialog()
+                    }
+
+                    override fun onComplete() {
+                        hideProgressDialog()
+                    }
+                })
+        )
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
 }

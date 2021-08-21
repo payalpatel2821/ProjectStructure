@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:scrollbars="none">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bottomsheet_bg"
@@ -32,8 +32,7 @@
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_100sdp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_margin="@dimen/_30sdp"
-                    android:onClick="onClick">
+                    android:layout_margin="@dimen/_30sdp">
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/iv_profile"
@@ -56,24 +55,28 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/iv_edit_img"
-                        android:layout_width="@dimen/_20sdp"
-                        android:layout_height="@dimen/_20sdp"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_alignParentRight="true"
                         android:layout_gravity="center"
-                        android:layout_margin="@dimen/_5sdp"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
                         android:background="@drawable/btn_edit_rounded_bg"
                         android:gravity="center"
-                        android:src="@drawable/ic_gallery"
                         android:marqueeRepeatLimit="marquee_forever"
-                        android:singleLine="true" />
+                        android:onClick="onClick"
+                        android:singleLine="true"
+                        android:src="@drawable/ic_gallery" />
                 </RelativeLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/_15sdp"
-                    android:paddingRight="@dimen/_15sdp">
+                    android:paddingLeft="@dimen/_25sdp"
+                    android:paddingRight="@dimen/_25sdp">
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/input_layout_first"
@@ -88,15 +91,16 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_first_name"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
+                            android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                             android:hint="@string/first_name"
                             android:imeOptions="actionNext"
-                            android:inputType="text|textNoSuggestions"
+                            android:inputType="textCapWords|textNoSuggestions"
                             android:singleLine="true"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,15 +118,16 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_last_name"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
                             android:hint="@string/last_name"
                             android:imeOptions="actionNext"
-                            android:inputType="text|textNoSuggestions"
+                            android:inputType="textCapWords|textNoSuggestions"
                             android:singleLine="true"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -140,15 +145,16 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_about"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:hint="@string/about"
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
-                            android:maxLength="18"
+                            android:maxLength="40"
                             android:singleLine="true"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -160,15 +166,16 @@
                         android:layout_marginTop="@dimen/_15sdp"
                         android:gravity="center"
                         android:theme="@style/EditTextThemeOverlay"
-                        app:endIconDrawable="@drawable/ic_delete_profile"
-                        app:endIconTint="@color/black"
+                        app:endIconDrawable="@drawable/ic_close_chat"
                         app:endIconMode="custom"
+                        app:endIconTint="@color/black"
                         app:errorTextAppearance="@style/ErrorTextAppearance"
                         app:helperTextTextAppearance="@style/HelperTextAppearance"
                         app:hintTextAppearance="@style/HintTextAppearance">
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_birthdate"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
@@ -178,9 +185,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
                             android:longClickable="false"
-                            android:singleLine="true"
                             android:onClick="onClick"
-                            android:textSize="@dimen/_12ssp" />
+                            android:singleLine="true"
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -192,15 +199,16 @@
                         android:layout_marginTop="@dimen/_15sdp"
                         android:gravity="center"
                         android:theme="@style/EditTextThemeOverlay"
-                        app:endIconDrawable="@drawable/ic_delete_profile"
-                        app:endIconTint="@color/black"
+                        app:endIconDrawable="@drawable/ic_close_chat"
                         app:endIconMode="custom"
+                        app:endIconTint="@color/black"
                         app:errorTextAppearance="@style/ErrorTextAppearance"
                         app:helperTextTextAppearance="@style/HelperTextAppearance"
                         app:hintTextAppearance="@style/HintTextAppearance">
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_anniversary"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
@@ -210,9 +218,9 @@
                             android:imeOptions="actionNext"
                             android:inputType="text|textNoSuggestions"
                             android:longClickable="false"
-                            android:singleLine="true"
                             android:onClick="onClick"
-                            android:textSize="@dimen/_12ssp" />
+                            android:singleLine="true"
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -223,6 +231,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_15sdp"
                         android:gravity="center"
+                        android:visibility="gone"
                         android:theme="@style/EditTextThemeOverlay"
                         app:errorTextAppearance="@style/ErrorTextAppearance"
                         app:helperTextTextAppearance="@style/HelperTextAppearance"
@@ -230,15 +239,16 @@
 
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/edt_contact_no"
+                            style="@style/styleTextViewNormalBold"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:hint="@string/mobile"
+                            android:hint="@string/mobile_number"
                             android:imeOptions="actionNext"
                             android:inputType="phone"
                             android:maxLength="10"
                             android:singleLine="true"
-                            android:textSize="@dimen/_12ssp" />
+                            android:textColor="@color/edit_profile_text_color" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -255,26 +265,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/_15sdp"
-                    android:paddingRight="@dimen/_15sdp">
+                    android:paddingLeft="@dimen/_20sdp"
+                    android:paddingRight="@dimen/_20sdp">
 
                     <TextView
-                        style="@style/styleTextViewNormal"
+                        style="@style/styleTextViewNormalBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/_3sdp"
                         android:text="@string/security"
-                        android:textStyle="bold" />
+                        android:textSize="@dimen/_16ssp" />
 
                     <TextView
                         android:id="@+id/txt_change_email"
                         style="@style/styleTextViewNormal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
                         android:onClick="onClick"
-                        android:paddingTop="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_10sdp"
-                        android:text="@string/email_id"
-                        android:textSize="@dimen/_14ssp" />
+                        android:paddingTop="@dimen/_15sdp"
+                        android:paddingBottom="@dimen/_15sdp"
+                        android:text="@string/email_id" />
 
                     <View
                         android:layout_width="match_parent"
@@ -287,10 +298,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:onClick="onClick"
-                        android:paddingTop="@dimen/_10sdp"
-                        android:paddingBottom="@dimen/_10sdp"
-                        android:text="@string/change_password"
-                        android:textSize="@dimen/_14ssp" />
+                        android:paddingTop="@dimen/_15sdp"
+                        android:paddingBottom="@dimen/_15sdp"
+                        android:text="@string/change_password" />
 
                 </LinearLayout>
 
@@ -298,22 +308,23 @@
                     android:id="@+id/ll_delete_account"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:background="@color/bottomsheet_bg"
-                    android:onClick="onClick"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:onClick="onClick">
 
                     <TextView
-                        style="@style/styleTextViewSmall"
+                        style="@style/styleTextViewNormalBold"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_40sdp"
                         android:layout_gravity="center"
-                        android:drawableLeft="@drawable/ic_delete"
+                        android:drawableLeft="@drawable/ic_delete_profile"
                         android:drawablePadding="@dimen/_5sdp"
-                        android:drawableTint="@color/red"
+                        android:drawableTint="@color/dark_red"
                         android:gravity="center"
                         android:text="@string/delete_account"
                         android:textAllCaps="false"
-                        android:textColor="@color/red" />
+                        android:textColor="@color/dark_red" />
                 </LinearLayout>
 
                 <View

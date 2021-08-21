@@ -1,5 +1,6 @@
 package com.task.newapp.ui.activities.profile
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,10 +9,16 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.AdapterView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.peekandpop.shalskar.peekandpop.PeekAndPop
 import com.task.newapp.R
 import com.task.newapp.adapter.profile.GroupMemberListAdapter
 import com.task.newapp.api.ApiClient
@@ -27,28 +34,38 @@ import com.task.newapp.realmDB.getUserByUserId
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.models.GroupUser
 import com.task.newapp.utils.*
+import de.hdodenhof.circleimageview.CircleImageView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.filter
-import kotlin.collections.first
-import kotlin.collections.hashMapOf
-import kotlin.collections.sortedByDescending
-import kotlin.collections.toList
+import kotlin.math.roundToInt
+
 
 class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
 
+    private lateinit var groupSetting: GroupUser
     private lateinit var currentUser: GroupUser
     private lateinit var groupMemberList: ArrayList<GroupUser>
     private lateinit var contentGrpProfile: ContentGroupProfileActivityBinding
     private lateinit var groupMemberAdapter: GroupMemberListAdapter
     lateinit var grpDetail: Chats
     lateinit var binding: ActivityGroupProfileBinding
-    private val grpID = 114
+    private var grpID = 0
     private val mCompositeDisposable = CompositeDisposable()
+    private var resultLauncher1 =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val isCustomNotification =
+                    data!!.getIntExtra(Constants.bundle_custom_notification, 0)
+                val notiToneId = data!!.getIntExtra(Constants.bundle_notification_tone, 0)
+                val vibrate = data!!.getStringExtra(Constants.bundle_vibration)
+                setOnOffText(isCustomNotification, notiToneId, vibrate!!)
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +74,9 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
     }
 
     private fun initView() {
+        grpID=intent.getIntExtra(Constants.group_id,0)
         getGroupDetailFromID()
+        setBottomSheet()
         setData()
         setMemberList()
     }
@@ -66,12 +85,101 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
         return getMyGroupSetting(grpID, getCurrentUserId())
     }
 
+    private fun setBottomSheet() {
+        binding.ivProfile.layoutParams.height =
+            ((getDisplayMatrix().heightPixels / 1.7).roundToInt())
+        val sheetBehavior = BottomSheetBehavior.from(binding.layoutContentGrpProfile.bottomSheet)
+        sheetBehavior.state = BottomSheetBehavior.STATE_DRAGGING
+        binding.layoutContentGrpProfile.bottomSheet.requestLayout()
+        sheetBehavior.isHideable = false
+    }
+
+    private fun initPeakPop() {
+        val peekAndPop = PeekAndPop.Builder(this)
+            .peekLayout(R.layout.item_edit_profile)
+            .longClickViews(binding.ivProfile)
+            .onHoldAndReleaseListener(object : PeekAndPop.OnHoldAndReleaseListener {
+                override fun onHold(view: View?, position: Int) {
+                    if (view?.id == R.id.txt_edit_profile) {
+                        showToast("onHold click edit proile")
+                    } else {
+                        showToast("onHold click edit other")
+                    }
+                }
+
+                override fun onLeave(view: View?, position: Int) {
+                    showToast("onLeave click edit profile")
+                }
+
+                override fun onRelease(view: View?, position: Int) {
+                    showToast("onRelease click edit profile")
+                }
+
+            })
+            .build()
+
+        val peekView = peekAndPop.peekView
+        val userName: TextView = peekView.findViewById(R.id.txt_user_name)
+        val accId: TextView = peekView.findViewById(R.id.txt_accid)
+        val userProfile: CircleImageView = peekView.findViewById(R.id.iv_user_profile)
+        val ivProfile: ImageView = peekView.findViewById(R.id.iv_profile)
+        val editProfile: TextView = peekView.findViewById(R.id.txt_edit_profile)
+        val resetProfile: TextView = peekView.findViewById(R.id.txt_reset_profile)
+        val linearlay: LinearLayout = peekView.findViewById(R.id.linearlay)
+
+        linearlay.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                showToast("click linearlay")
+            }
+        })
+
+        peekAndPop.addHoldAndReleaseView(R.id.txt_edit_profile)
+
+        userName.text = grpDetail.name
+        accId.text = "Created by " + getGroupCreatedUserName(grpDetail.group_data!!.grp_created_by)
+
+        userProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
+        ivProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
+
+
+        editProfile.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View) {
+                showToast("click edit profile")
+                peekAndPop.pop(view, -1)
+                openPicker(supportFragmentManager)
+            }
+        })
+
+        resetProfile.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View) {
+                showToast("click edit profile")
+                peekAndPop.pop(view, -1)
+            }
+        })
+
+
+    }
+
+    private fun setOnOffText(isCustomNotification: Int, notiToneId: Int, vibrate: String) {
+//        groupSetting.custom_notification_enable = isCustomNotification
+//        groupSetting.notification_tone_id = notiToneId
+//        groupSetting.vibrate_status = vibrate
+        if (isCustomNotification == 1) {
+            binding.layoutContentGrpProfile.txtCustomNotificationStatus.text = resources.getString(R.string.on)
+        } else {
+            binding.layoutContentGrpProfile.txtCustomNotificationStatus.text = resources.getString(R.string.off)
+        }
+    }
+
     private fun setData() {
         binding.ivProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
         contentGrpProfile = binding.layoutContentGrpProfile
         contentGrpProfile.txtGrpName.text = grpDetail.name
         contentGrpProfile.txtCreatedByNTime.text = "Created by " + getGroupCreatedUserName(grpDetail.group_data!!.grp_created_by)
-        val groupSetting = getCurrentUserGroupSetting()
+        groupSetting = getCurrentUserGroupSetting()!!
+        groupSetting?.let { setOnOffText(it.custom_notification_enable, it.notification_tone_id, it.vibrate_status!!) }
+        initPeakPop()
+
         if (groupSetting?.is_allow_to_edit_info == 1) {
             contentGrpProfile.ivEditProfile.visibility = VISIBLE
         } else {
@@ -97,34 +205,40 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
         }
         if (grpDetail.group_data?.grp_created_by == getCurrentUserId()) {
             contentGrpProfile.txtReportGrp.visibility = GONE
+            contentGrpProfile.viewReport.visibility = GONE
         } else {
             contentGrpProfile.txtReportGrp.visibility = VISIBLE
+            contentGrpProfile.viewReport.visibility = VISIBLE
         }
     }
 
     private fun setMemberList() {
-        groupMemberList = grpDetail.group_user_with_settings.filter { it.status == "Active" }.sortedByDescending { it.is_admin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
-        currentUser = groupMemberList.first { it.user_id == getCurrentUserId() }
-        val index: Int = groupMemberList.indexOf(currentUser)
-        groupMemberList.removeAt(index)
-        groupMemberList.add(0, currentUser)
 
-        groupMemberAdapter = GroupMemberListAdapter(ArrayList())
-        val layoutManager = LinearLayoutManager(this)
-        contentGrpProfile.rvMemberList.layoutManager = layoutManager
-        contentGrpProfile.rvMemberList.adapter = groupMemberAdapter
-        groupMemberAdapter.setData(groupMemberList, 5/*, currentUser.is_admin*/)
+            groupMemberList = grpDetail.group_user_with_settings?.let {
+                it.filter { it.status == "Active" }.sortedByDescending { it.is_admin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
+            }
 
-        if (groupMemberList.size > 5) {
-            contentGrpProfile.txtLoadMore.visibility = VISIBLE
-        } else {
-            contentGrpProfile.txtLoadMore.visibility = GONE
-        }
+            currentUser = groupMemberList.first { it.user_id == getCurrentUserId() }
+            val index: Int = groupMemberList.indexOf(currentUser)
+            groupMemberList.removeAt(index)
+            groupMemberList.add(0, currentUser)
 
-        contentGrpProfile.txtTotalMember.text = groupMemberList.size.toString() + " MEMBERS"
-        contentGrpProfile.txtLoadMore.text = (groupMemberList.size - 5).toString() + " more"
+            groupMemberAdapter = GroupMemberListAdapter(ArrayList())
+            val layoutManager = LinearLayoutManager(this)
+            contentGrpProfile.rvMemberList.layoutManager = layoutManager
+            contentGrpProfile.rvMemberList.adapter = groupMemberAdapter
+            groupMemberAdapter.setData(groupMemberList, 5/*, currentUser.is_admin*/)
 
-        groupMemberAdapter.setOnItemClickListener(this)
+            if (groupMemberList.size > 5) {
+                contentGrpProfile.txtLoadMore.visibility = VISIBLE
+            } else {
+                contentGrpProfile.txtLoadMore.visibility = GONE
+            }
+
+            contentGrpProfile.txtTotalMember.text = groupMemberList.size.toString() + " MEMBERS"
+            contentGrpProfile.txtLoadMore.text = (groupMemberList.size - 5).toString() + " more"
+
+            groupMemberAdapter.setOnItemClickListener(this)
 
     }
 
@@ -194,6 +308,14 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
             R.id.txt_load_more -> {
                 groupMemberAdapter.setData(groupMemberList, groupMemberList.size/*, currentUser.is_admin*/)
                 contentGrpProfile.txtLoadMore.visibility = GONE
+            }
+            R.id.ll_custom_notification -> {
+                val intent = Intent(this, CustomNotificationForGroupActivity::class.java)
+                intent.putExtra(Constants.bundle_custom_notification, groupSetting.custom_notification_enable)
+                intent.putExtra(Constants.bundle_notification_tone, groupSetting.notification_tone_id)
+                intent.putExtra(Constants.bundle_vibration, groupSetting.vibrate_status)
+                intent.putExtra(Constants.group_id, grpID)
+                resultLauncher1.launch(intent)
             }
         }
     }

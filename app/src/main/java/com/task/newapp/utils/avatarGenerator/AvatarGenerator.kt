@@ -1,4 +1,4 @@
-package com.avatarfirst.avatargenlib
+package com.task.newapp.utils.avatarGenerator
 
 import android.content.Context
 import android.graphics.*
@@ -21,7 +21,6 @@ class AvatarGenerator {
             return avatarImageGenerate(context, size, shape, name, color)
         }
 
-
         private fun avatarImageGenerate(context: Context, size: Int, shape: Int, name: String, color: String): BitmapDrawable {
             uiContext = context
 
@@ -34,7 +33,7 @@ class AvatarGenerator {
 
             if (shape == 0) {
                 val firstLetter = firstCharacter(name)
-                val r = firstLetter[0]
+//                val r = firstLetter[0]
                 //Random rnd = new Random();
                 //int color = generateRandomColor();// Color.argb(255, rnd.nextInt(100), rnd.nextInt(150), rnd.nextInt(256));
                 val color = Color.parseColor(color)//RandomColors(colorModel).getColor()
@@ -56,7 +55,7 @@ class AvatarGenerator {
                 painter.color = Color.TRANSPARENT
             } else {
                 val firstLetter = firstCharacter(name)
-                val r = firstLetter[0]
+//                val r = firstLetter[0]
                 // painter.color = RandomColors(colorModel).getColor()
 
                 val color = Color.parseColor(color)//RandomColors(colorModel).getColor()
@@ -85,7 +84,20 @@ class AvatarGenerator {
 
 
         private fun firstCharacter(name: String): String {
-            return name.first().toString().toUpperCase(Locale.ROOT)
+            val splitArray = name.split(" ")
+            var first: String = ""
+            var last: String = ""
+            if (splitArray.isNotEmpty()) {
+                if(splitArray[0]!="") {
+                    first = splitArray[0].first().toString().toUpperCase(Locale.ROOT)
+                }
+                if (splitArray.size>1) {
+                    if (splitArray[1] != "") {
+                        last = splitArray[1].first().toString().toUpperCase(Locale.ROOT)
+                    }
+                }
+            }
+            return first + last
         }
 
         private fun textPainter(): TextPaint {
@@ -101,7 +113,7 @@ class AvatarGenerator {
         }
 
         private fun calTextSize(size: Int): Float {
-            return (size / 3.125).toFloat()
+            return (size / 6.125).toFloat()
         }
     }
 }

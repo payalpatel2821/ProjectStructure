@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -20,133 +21,139 @@
             android:id="@+id/scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/white"
             android:fillViewport="true"
-            android:scrollbars="none"
-            android:background="@color/white">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:scrollbars="none">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_25sdp"
-                android:text="@string/hello"
-                android:textColor="@color/black" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/styleTextViewNormal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/please_enter_your_basic_details" />
-
-            <RelativeLayout
-                android:id="@+id/rel_profile"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="@dimen/_100sdp"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="@dimen/_30sdp">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/iv_profile"
-                    android:layout_width="@dimen/_100sdp"
-                    android:layout_height="@dimen/_100sdp"
-                    android:layout_centerInParent="true"
-                    android:background="@drawable/btn_rounded_bg"
-                    android:src="@drawable/ic_user_with_padding"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txt_dp_name"
+                    style="@style/styleTextViewActionbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_25sdp"
+                    android:text="@string/hello"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_18ssp" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/please_enter_your_basic_details"
+                    android:textSize="@dimen/_14ssp" />
+
+                <RelativeLayout
+                    android:id="@+id/rel_profile"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_100sdp"
-                    android:text="PR"
-                    android:visibility="gone"
-                    style="@style/styleTextViewLarge"
-                    android:gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_35ssp"/>
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="@dimen/_30sdp">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/iv_edit_img"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/_5sdp"
-                    android:onClick="onClick"
-                    android:background="@drawable/btn_edit_rounded_bg"
-                    android:gravity="center"
-                    android:src="@drawable/ic_edit"
-                    android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true" />
-            </RelativeLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_profile"
+                        android:layout_width="@dimen/_100sdp"
+                        android:layout_height="@dimen/_100sdp"
+                        android:layout_centerInParent="true"
+                        android:background="@drawable/btn_rounded_bg" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout_first"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                app:errorTextAppearance="@style/ErrorTextAppearance"
-                app:hintTextAppearance="@style/HintTextAppearance"
-                app:helperTextTextAppearance="@style/HelperTextAppearance"
-                android:theme="@style/EditTextThemeOverlay">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_dp_name"
+                        style="@style/styleTextViewLarge"
+                        android:layout_width="@dimen/_100sdp"
+                        android:layout_height="@dimen/_100sdp"
+                        android:gravity="center"
+                        android:text="PR"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_35ssp"
+                        android:visibility="gone" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edt_first_name"
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_edit_img"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:background="@drawable/btn_edit_rounded_bg"
+                        android:gravity="center"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:onClick="onClick"
+                        android:singleLine="true"
+                        android:src="@drawable/ic_edit" />
+                </RelativeLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout_first"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:hint="@string/first_name"
-                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-                    android:imeOptions="actionNext"
-                    android:inputType="text|textNoSuggestions"
-                    android:singleLine="true"
-                    android:textSize="@dimen/_12ssp" />
+                    android:gravity="center"
+                    android:theme="@style/EditTextThemeOverlay"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_first_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                        android:hint="@string/first_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords|textNoSuggestions"
+                        android:singleLine="true"
+                        android:textSize="@dimen/_12ssp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout_last"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_15sdp"
-                app:errorTextAppearance="@style/ErrorTextAppearance"
-                app:hintTextAppearance="@style/HintTextAppearance"
-                app:helperTextTextAppearance="@style/HelperTextAppearance"
-                android:gravity="center"
-                android:theme="@style/EditTextThemeOverlay">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edt_last_name"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout_last"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:hint="@string/last_name"
-                    android:imeOptions="actionDone"
-                    android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-                    android:inputType="text|textNoSuggestions"
-                    android:singleLine="true"
-                    android:textSize="@dimen/_12ssp" />
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:gravity="center"
+                    android:theme="@style/EditTextThemeOverlay"
+                    app:errorTextAppearance="@style/ErrorTextAppearance"
+                    app:helperTextTextAppearance="@style/HelperTextAppearance"
+                    app:hintTextAppearance="@style/HintTextAppearance">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_last_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
+                        android:hint="@string/last_name"
+                        android:imeOptions="actionDone"
+                        android:inputType="textCapWords|textNoSuggestions"
+                        android:singleLine="true"
+                        android:textSize="@dimen/_12ssp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_next"
-                style="@style/styleTextViewNormal"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_marginTop="@dimen/_50sdp"
-                android:background="@drawable/btn_rect_rounded_bg_disable"
-                android:gravity="center"
-                android:text="@string/next"
-                android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_next"
+                    style="@style/styleTextViewNormal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_50sdp"
+                    android:background="@drawable/btn_rect_rounded_bg_disable"
+                    android:gravity="center"
+                    android:text="@string/next"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
 
         </ScrollView>
     </LinearLayout>

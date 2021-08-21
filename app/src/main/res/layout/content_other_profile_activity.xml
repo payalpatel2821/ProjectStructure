@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <RelativeLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_90sdp"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_10sdp">
+                    android:padding="@dimen/_5sdp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -53,17 +53,18 @@
 
                         <TextView
                             android:id="@+id/txt_post_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/post"
+                            android:layout_margin="@dimen/_3sdp"
                             android:textColor="@color/white" />
 
                     </LinearLayout>
@@ -79,17 +80,18 @@
 
                         <TextView
                             android:id="@+id/txt_follower_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/followers"
+                            android:layout_margin="@dimen/_3sdp"
                             android:textColor="@color/white" />
 
                     </LinearLayout>
@@ -105,17 +107,18 @@
 
                         <TextView
                             android:id="@+id/txt_following_count"
-                            style="@style/styleTextViewLarge"
+                            style="@style/styleTextViewActionbar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
                             android:textColor="@color/white" />
 
                         <TextView
-                            style="@style/styleTextViewSmall"
+                            style="@style/styleTextViewNormal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/following"
+                            android:layout_margin="@dimen/_3sdp"
                             android:textColor="@color/white" />
 
                     </LinearLayout>
@@ -135,6 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-20dp"
+                android:clickable="true"
                 android:background="@drawable/bg_bottomsheet"
                 android:backgroundTint="@color/bottomsheet_bg"
                 android:orientation="vertical"
@@ -165,7 +169,7 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
@@ -180,10 +184,11 @@
 
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:id="@+id/txt_username"
-                                        style="@style/styleTextViewLarge"
+                                        style="@style/styleTextViewActionbar"
                                         android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
+                                        android:layout_height="wrap_content"
                                         android:layout_gravity="center_vertical"
+                                        android:layout_margin="@dimen/_3sdp"
                                         android:layout_weight="1"
                                         android:gravity="center_vertical"
                                         android:singleLine="true"
@@ -197,6 +202,7 @@
                                     style="@style/styleTextViewSmall"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/_3sdp"
                                     android:paddingLeft="@dimen/_10sdp"
                                     android:text="prinsa25"
                                     android:textColor="@color/darkgray" />
@@ -206,17 +212,18 @@
                                     style="@style/styleTextViewNormal"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_margin="@dimen/_3sdp"
                                     android:paddingLeft="@dimen/_10sdp"
-                                    android:paddingTop="@dimen/_2sdp"
                                     android:text="Hi,i am using HOW"
-                                    android:textSize="@dimen/_14ssp" />
+                                    />
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/txt_lastseen"
                                     style="@style/styleTextViewSmall"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:layout_gravity="center_vertical"
+                                    android:layout_margin="@dimen/_3sdp"
                                     android:layout_marginLeft="@dimen/_2sdp"
                                     android:layout_marginRight="@dimen/_4sdp"
                                     android:drawableLeft="@drawable/ic_time"
@@ -226,14 +233,14 @@
                                     android:paddingLeft="@dimen/_10sdp"
                                     android:singleLine="true"
                                     android:textColor="@color/darkgray"
-                                    android:textSize="@dimen/_10ssp"
                                     tools:text="Yesterday" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:layout_gravity="center_vertical">
 
                                 <androidx.appcompat.widget.AppCompatButton
                                     android:id="@+id/btn_follow"
@@ -245,10 +252,10 @@
                                     android:onClick="onClickTag"
                                     android:padding="@dimen/_5sdp"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/_14ssp" />
+                                    />
 
                                 <androidx.appcompat.widget.AppCompatButton
-                                    android:id="@+id/btn_message"
+                                    android:id="@+id/btn_message1"
                                     style="@style/styleCommonButton"
                                     android:layout_width="@dimen/_80sdp"
                                     android:layout_height="@dimen/_30sdp"
@@ -258,7 +265,8 @@
                                     android:onClick="onClickTag"
                                     android:text="@string/message"
                                     android:textColor="@color/black"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:visibility="gone"
+                                     />
 
                             </LinearLayout>
                         </LinearLayout>
@@ -266,87 +274,86 @@
                         <LinearLayout
                             android:id="@+id/ll_imagebutton"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_marginTop="@dimen/_10sdp"
-                            android:paddingLeft="@dimen/_15sdp"
                             android:paddingTop="@dimen/_2sdp"
-                            android:paddingRight="@dimen/_15sdp"
                             android:paddingBottom="@dimen/_2sdp">
 
-                            <androidx.appcompat.widget.AppCompatButton
-                                android:id="@+id/btn_video"
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/btn_message"
                                 style="@style/styleTextViewSmall"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:layout_marginLeft="@dimen/_4sdp"
-                                android:layout_marginRight="@dimen/_2sdp"
+                                android:layout_marginStart="@dimen/_6sdp"
+                                android:layout_marginEnd="@dimen/_4sdp"
                                 android:layout_weight="1"
                                 android:background="@drawable/rect_rounded_bg_white"
-                                android:drawableTop="@drawable/ic_video_call"
                                 android:drawablePadding="@dimen/_2sdp"
-                                android:drawableTint="@color/black"
-                                android:padding="@dimen/_2sdp"
+                                android:padding="@dimen/_10sdp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_message_menu"
                                 android:text="@string/video"
                                 android:textAllCaps="false"
-                                android:textColor="@color/black" />
+                                android:textColor="@color/black"
+                                android:onClick="onClick"
+                                android:tint="@color/black" />
 
-                            <androidx.appcompat.widget.AppCompatButton
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/btn_audio"
                                 style="@style/styleTextViewSmall"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:layout_marginLeft="@dimen/_4sdp"
-                                android:layout_marginRight="@dimen/_2sdp"
+                                android:layout_marginStart="@dimen/_6sdp"
+                                android:layout_marginEnd="@dimen/_4sdp"
                                 android:layout_weight="1"
                                 android:background="@drawable/rect_rounded_bg_white"
-                                android:drawableTop="@drawable/ic_audio_call"
                                 android:drawablePadding="@dimen/_2sdp"
-                                android:drawableTint="@color/black"
-                                android:padding="@dimen/_2sdp"
+                                android:padding="@dimen/_10sdp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_audio_call"
                                 android:text="@string/audio"
                                 android:textAllCaps="false"
-                                android:textColor="@color/black" />
+                                android:textColor="@color/black"
+                                android:tint="@color/black" />
 
-                            <androidx.appcompat.widget.AppCompatButton
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/btn_mute"
                                 style="@style/styleTextViewSmall"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
                                 android:layout_gravity="center"
-                                android:layout_marginLeft="@dimen/_4sdp"
-                                android:layout_marginRight="@dimen/_2sdp"
+                                android:layout_marginStart="@dimen/_6sdp"
+                                android:layout_marginEnd="@dimen/_4sdp"
                                 android:layout_weight="1"
                                 android:background="@drawable/rect_rounded_bg_white"
-                                android:drawableTop="@drawable/ic_mute"
                                 android:drawablePadding="@dimen/_2sdp"
-                                android:drawableTint="@color/black"
-                                android:gravity="center"
-                                android:onClick="onClick"
-                                android:padding="@dimen/_5sdp"
-                                android:text="@string/mute"
+                                android:padding="@dimen/_10sdp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_mute"
                                 android:textAllCaps="false"
-                                android:textColor="@color/black" />
+                                android:textColor="@color/black"
+                                android:onClick="onClick"
+                                android:tint="@color/black" />
 
-                            <androidx.appcompat.widget.AppCompatButton
+                            <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/btn_search"
                                 style="@style/styleTextViewSmall"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:layout_marginLeft="@dimen/_4sdp"
-                                android:layout_marginRight="@dimen/_2sdp"
+                                android:layout_marginStart="@dimen/_6sdp"
+                                android:layout_marginEnd="@dimen/_4sdp"
                                 android:layout_weight="1"
                                 android:background="@drawable/rect_rounded_bg_white"
-                                android:drawableTop="@drawable/ic_search_setting"
                                 android:drawablePadding="@dimen/_2sdp"
-                                android:drawableTint="@color/black"
-                                android:gravity="center"
-                                android:padding="@dimen/_5sdp"
-                                android:text="@string/search"
+                                android:padding="@dimen/_10sdp"
+                                android:scaleType="centerInside"
+                                android:src="@drawable/ic_search_setting"
                                 android:textAllCaps="false"
-                                android:textColor="@color/black" />
+                                android:textColor="@color/black"
+                                android:tint="@color/black" />
 
                         </LinearLayout>
 
@@ -373,10 +380,11 @@
                                     android:layout_height="wrap_content"
                                     android:drawableLeft="@drawable/ic_contact_detail_with_bg"
                                     android:drawablePadding="@dimen/_10sdp"
+                                    android:gravity="center_vertical"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_7sdp"
                                     android:text="@string/contact_detail"
-                                    android:textSize="@dimen/_14ssp" />
+                                     />
 
                                 <View
                                     android:layout_width="match_parent"
@@ -390,10 +398,11 @@
                                     android:layout_height="wrap_content"
                                     android:drawableLeft="@drawable/ic_secret_chat_with_bg"
                                     android:drawablePadding="@dimen/_10sdp"
+                                    android:gravity="center_vertical"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_7sdp"
                                     android:text="@string/secret_chat"
-                                    android:textSize="@dimen/_14ssp" />
+                                    />
 
                                 <View
                                     android:layout_width="match_parent"
@@ -404,6 +413,7 @@
                                     android:id="@+id/ll_custom_notification"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
                                     android:onClick="onClick"
                                     android:orientation="horizontal">
 
@@ -416,9 +426,10 @@
                                         android:layout_weight="1"
                                         android:drawableLeft="@drawable/ic_custom_notification_with_bg"
                                         android:drawablePadding="@dimen/_10sdp"
-                                        android:padding="@dimen/_5sdp"
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_7sdp"
                                         android:text="@string/custom_notification"
-                                        android:textSize="@dimen/_14ssp" />
+                                         />
 
                                     <TextView
                                         android:id="@+id/txt_custom_notification_status"
@@ -427,7 +438,7 @@
                                         android:layout_height="wrap_content"
                                         android:padding="@dimen/_5sdp"
                                         android:text="on"
-                                        android:textSize="@dimen/_12ssp" />
+                                         />
 
                                 </LinearLayout>
 
@@ -453,15 +464,16 @@
                                 <RelativeLayout
                                     android:id="@+id/rl_p_w_l_d"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical">
 
                                     <TextView
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/photo_video_link_docs"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:gravity="center_vertical"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/photo_video_link_docs" />
 
                                     <TextView
                                         android:id="@+id/txt_pwld_count"
@@ -469,10 +481,12 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp" />
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_9sdp" />
                                 </RelativeLayout>
 
                                 <View
@@ -489,9 +503,9 @@
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/star_message"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:layout_centerVertical="true"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/star_message" />
 
                                     <TextView
                                         android:id="@+id/txt_star_count"
@@ -499,10 +513,12 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp" />
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_9sdp" />
                                 </RelativeLayout>
 
                                 <View
@@ -516,24 +532,26 @@
                                     android:layout_height="wrap_content"
                                     android:onClick="onClick">
 
-                                    <TextView
+                                    <androidx.appcompat.widget.AppCompatTextView
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/post"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:layout_centerVertical="true"
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/post" />
 
-                                    <TextView
+                                    <androidx.appcompat.widget.AppCompatTextView
                                         android:id="@+id/txt_posts_count"
                                         style="@style/styleTextViewSmall"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
+                                        android:layout_centerVertical="true"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_9sdp"
                                         android:text="0" />
                                 </RelativeLayout>
 
@@ -565,20 +583,20 @@
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/groups_in_common"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/groups_in_common" />
 
-                                    <TextView
+                                    <androidx.appcompat.widget.AppCompatTextView
                                         android:id="@+id/txt_grpcommon_count"
                                         style="@style/styleTextViewSmall"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_9sdp"
                                         android:text="0" />
                                 </RelativeLayout>
 
@@ -598,9 +616,8 @@
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/pages_in_common"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/pages_in_common" />
 
                                     <TextView
                                         android:id="@+id/txt_pagescommon_count"
@@ -608,10 +625,11 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_9sdp"
                                         android:text="0" />
                                 </RelativeLayout>
 
@@ -631,9 +649,8 @@
                                         style="@style/styleTextViewNormal"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:padding="@dimen/_5sdp"
-                                        android:text="@string/friends_in_common"
-                                        android:textSize="@dimen/_14ssp" />
+                                        android:padding="@dimen/_9sdp"
+                                        android:text="@string/friends_in_common" />
 
                                     <TextView
                                         android:id="@+id/txt_frdscommon_count"
@@ -641,13 +658,13 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_alignParentRight="true"
-                                        android:drawableRight="@drawable/ic_next"
-                                        android:drawablePadding="@dimen/_10sdp"
-                                        android:drawableTint="@color/black"
-                                        android:padding="@dimen/_5sdp"
+                                        android:drawableRight="@drawable/ic_next_resize"
+                                        android:drawablePadding="@dimen/_5sdp"
+                                        android:drawableTint="@color/gray4"
+                                        android:padding="@dimen/_9sdp"
+                                        android:gravity="center"
                                         android:text="0" />
                                 </RelativeLayout>
-
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
 
@@ -675,10 +692,10 @@
                                     android:drawablePadding="@dimen/_5sdp"
                                     android:drawableTint="@color/red"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_9sdp"
                                     android:text="@string/block"
-                                    android:textColor="@color/red"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:gravity="center_vertical"
+                                    android:textColor="@color/red" />
 
                                 <View
                                     android:layout_width="match_parent"
@@ -695,10 +712,10 @@
                                     android:drawablePadding="@dimen/_5sdp"
                                     android:drawableTint="@color/red"
                                     android:onClick="onClick"
-                                    android:padding="@dimen/_5sdp"
+                                    android:padding="@dimen/_9sdp"
                                     android:text="@string/report"
-                                    android:textColor="@color/red"
-                                    android:textSize="@dimen/_14ssp" />
+                                    android:gravity="center_vertical"
+                                    android:textColor="@color/red" />
 
                             </LinearLayout>
 

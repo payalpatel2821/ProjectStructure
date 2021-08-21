@@ -14,11 +14,8 @@ import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.R
 import com.task.newapp.databinding.FragmentRegistrationStep3Binding
 import com.task.newapp.interfaces.OnPageChangeListener
-import com.task.newapp.utils.Constants
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.RegistrationStepsEnum
-import com.task.newapp.utils.isNetworkConnected
-import com.task.newapp.utils.setupKeyboardListener
-import com.task.newapp.utils.showToast
 
 
 class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
@@ -49,9 +46,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             false
         )
         // Inflate the layout for this fragment
-
         clearAll()
-
         return binding.root
     }
 
@@ -60,9 +55,21 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
         binding.edtConfirmPassword.setText("")
     }
 
+    override fun onResume() {
+        super.onResume()
+        clearAll()
+        binding.inputLayoutPassword.isErrorEnabled = false
+        binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.black))
+        flagPass = false
+        binding.inputLayoutConfirmPassword.isErrorEnabled = false
+        binding.inputLayoutConfirmPassword.endIconDrawable!!.setTint(resources.getColor(R.color.black))
+        flagConfirmPass = false
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupKeyboardListener(binding.scrollview)
+        clearAll()
         binding.layoutBack.tvBack.setOnClickListener(this)
         binding.btnNext.setOnClickListener(this)
 
@@ -74,7 +81,8 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                validatePassword()
+                if (binding.edtPassword.hasFocus())
+                    validatePassword()
             }
         })
         binding.edtConfirmPassword.addTextChangedListener(object : TextWatcher {
@@ -85,7 +93,8 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                validateConfirmPassword()
+                if (binding.edtConfirmPassword.hasFocus())
+                    validateConfirmPassword()
             }
         })
     }
@@ -159,6 +168,7 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
                 onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_2.index)
             }
             R.id.btn_next -> {
+                hideSoftKeyboard(requireActivity())
                 if (!requireActivity().isNetworkConnected()) {
                     requireActivity().showToast(getString(R.string.no_internet))
                     return
@@ -177,7 +187,10 @@ class RegistrationStep3Fragment : Fragment(), View.OnClickListener {
                     //Redirect to next registration step fragment
                     onPageChangeListener.onPageChange(RegistrationStepsEnum.STEP_4.index)
                 } else {
-                    requireActivity().showToast(getString(R.string.password_and_confirm_password_must_be_same))
+                    binding.inputLayoutConfirmPassword.error = getString(R.string.password_and_confirm_password_must_be_same)
+                    requestFocus(binding.edtConfirmPassword)
+                    flagConfirmPass = false
+                    checkAndEnable()
                 }
             }
         }

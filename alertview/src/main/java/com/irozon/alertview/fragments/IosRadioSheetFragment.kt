@@ -24,7 +24,7 @@ import java.util.*
 @SuppressLint("ValidFragment")
 class IosRadioSheetFragment(
     private val title: String, private val message: String, private val actions: ArrayList<AlertAction>,
-    private val theme: AlertTheme, private val cancelButtonText: String
+    private val theme: AlertTheme, private val cancelButtonText: String, private val cancelButtonTextColor: Int
 ) : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +52,7 @@ class IosRadioSheetFragment(
         view?.tvTitle?.text = title
         view?.tvMessage?.text = message
         view?.tvCancel?.text = cancelButtonText
+        view?.tvCancel?.setTextColor(cancelButtonTextColor)
         view?.tvCancel?.visibility = View.VISIBLE
 
         // In case of title or message is empty

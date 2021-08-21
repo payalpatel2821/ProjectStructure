@@ -18,13 +18,12 @@
         android:drawableStart="@drawable/ic_delete"
         android:drawablePadding="10dp"
         android:drawableTint="@color/theme_color"
-        android:fontFamily="@font/bogleregular"
+        android:fontFamily="@font/lato_bold"
         android:gravity="center_vertical"
         android:padding="16dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textSize="14sp"
-        android:textStyle="bold"
         tools:text="Text" />
 
 </LinearLayout>

@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.contact.ContactActivity
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.realmDB.clearDatabase
@@ -25,6 +26,7 @@ import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
+import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEventsListener, PostFragment.OnHideShowBottomSheet {
 
@@ -33,15 +35,18 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
     val chatsFragment = ChatsFragment()
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
+    private val mCompositeDisposable = CompositeDisposable()
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         onSocketEventsListener = this
-
+        callAPIGetAllNotification(mCompositeDisposable)
         initView()
     }
+
 
     private fun initView() {
         setSupportActionBar(binding.activityMainToolbar)
@@ -91,7 +96,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 //        binding.bottomBar.removeBadge(2)
 
         binding.bottomBar.onItemSelected = { position ->
-            showToast("Item $position selected")
+           // showToast("Item $position selected")
 
             when (position) {
                 0 -> {
@@ -217,18 +222,16 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             R.id.txt_logout -> {
                 FastSave.getInstance().saveBoolean(Constants.isLogin, false)
                 launchActivity<LoginActivity> { }
-                showToast(getString(R.string.logout))
+                //showToast(getString(R.string.logout))
                 clearDatabase()
                 disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
                 finish()
-
             }
             R.id.img_profile -> {
                 launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
-//                launchActivity<OtherUserProfileActivity> {  }
-                launchActivity<GroupProfileActivity> { }
+                launchActivity<ContactActivity> {  }
             }
         }
     }

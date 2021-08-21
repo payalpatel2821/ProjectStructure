@@ -12,7 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <ImageView
                 android:id="@+id/iv_profile"
                 android:layout_width="match_parent"
@@ -28,7 +27,8 @@
                 android:layout_height="@dimen/_50sdp"
                 android:onClick="onClick"
                 android:padding="@dimen/_17sdp"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"
+                android:elevation="@dimen/_2sdp"/>
 
             <include
                 android:id="@+id/layout_content_grp_profile"
