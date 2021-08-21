@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/rect_rounded_search_bg"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"
@@ -20,18 +20,6 @@
             app:queryBackground="@android:color/transparent"
             app:queryHint="@string/search"
             app:searchIcon="@drawable/ic_search" />
-
-        <!--  <androidx.appcompat.widget.SearchView
-              android:id="@+id/search_view"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="@null"
-              android:iconifiedByDefault="false"
-              android:layoutDirection="ltr"
-              app:queryBackground="@android:color/transparent"
-              app:queryHint="Search"
-              app:searchIcon="@drawable/ic_search"
-              app:showAsAction="always" />-->
 
     </LinearLayout>
 </layout>

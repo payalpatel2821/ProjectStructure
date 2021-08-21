@@ -138,10 +138,10 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
         peekAndPop.addHoldAndReleaseView(R.id.txt_edit_profile)
 
         userName.text = grpDetail.name
-        accId.text = "Created by " + getGroupCreatedUserName(grpDetail.group_data!!.grp_created_by)
+        accId.text = "Created by " + getGroupCreatedUserName(grpDetail.groupData!!.createdBy)
 
-        userProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
-        ivProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
+        userProfile.load(grpDetail.groupData!!.icon.toString(), false)
+        ivProfile.load(grpDetail.groupData!!.icon.toString(), false)
 
 
         editProfile.setOnClickListener(object : View.OnClickListener {
@@ -174,20 +174,20 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
     }
 
     private fun setData() {
-        binding.ivProfile.load(grpDetail.group_data!!.grp_icon.toString(), false)
+        binding.ivProfile.load(grpDetail.groupData!!.icon.toString(), false)
         contentGrpProfile = binding.layoutContentGrpProfile
         contentGrpProfile.txtGrpName.text = grpDetail.name
-        contentGrpProfile.txtCreatedByNTime.text = "Created by " + getGroupCreatedUserName(grpDetail.group_data!!.grp_created_by)
+        contentGrpProfile.txtCreatedByNTime.text = "Created by " + getGroupCreatedUserName(grpDetail.groupData!!.createdBy)
         groupSetting = getCurrentUserGroupSetting()!!
-        groupSetting?.let { setOnOffText(it.custom_notification_enable, it.notification_tone_id, it.vibrate_status!!) }
+        groupSetting?.let { setOnOffText(it.customNotificationEnable, it.notificationToneId, it.vibrateStatus!!) }
         initPeakPop()
 
-        if (groupSetting?.is_allow_to_edit_info == 1) {
+        if (groupSetting?.isAllowToEditInfo == 1) {
             contentGrpProfile.ivEditProfile.visibility = VISIBLE
         } else {
             contentGrpProfile.ivEditProfile.visibility = GONE
         }
-        if (groupSetting?.is_admin == 1) {
+        if (groupSetting?.isAdmin == 1) {
             contentGrpProfile.txtGrpSetting.visibility = VISIBLE
             contentGrpProfile.viewGrpSetting.visibility = VISIBLE
             contentGrpProfile.txtAddMember.visibility = VISIBLE
@@ -205,7 +205,7 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
             contentGrpProfile.viewCustomNotification.visibility = GONE
             visibleDeleteGroup()
         }
-        if (grpDetail.group_data?.grp_created_by == getCurrentUserId()) {
+        if (grpDetail.groupData?.createdBy == getCurrentUserId()) {
             contentGrpProfile.txtReportGrp.visibility = GONE
             contentGrpProfile.viewReport.visibility = GONE
         } else {
@@ -216,11 +216,11 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
 
     private fun setMemberList() {
 
-        groupMemberList = grpDetail.group_user_with_settings?.let {
-            it.filter { it.status == "Active" }.sortedByDescending { it.is_admin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
+        groupMemberList = grpDetail.groupUsers?.let {
+            it.filter { it.status == "Active" }.sortedByDescending { it.isAdmin == 1 }.toList() as ArrayList<GroupUser>//.sortedBy { it.user_id== getCurrentUserId() }
         }
 
-        currentUser = groupMemberList.first { it.user_id == getCurrentUserId() }
+        currentUser = groupMemberList.first { it.userId == getCurrentUserId() }
         val index: Int = groupMemberList.indexOf(currentUser)
         groupMemberList.removeAt(index)
         groupMemberList.add(0, currentUser)
@@ -313,9 +313,9 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
             }
             R.id.ll_custom_notification -> {
                 val intent = Intent(this, CustomNotificationForGroupActivity::class.java)
-                intent.putExtra(Constants.bundle_custom_notification, groupSetting.custom_notification_enable)
-                intent.putExtra(Constants.bundle_notification_tone, groupSetting.notification_tone_id)
-                intent.putExtra(Constants.bundle_vibration, groupSetting.vibrate_status)
+                intent.putExtra(Constants.bundle_custom_notification, groupSetting.customNotificationEnable)
+                intent.putExtra(Constants.bundle_notification_tone, groupSetting.notificationToneId)
+                intent.putExtra(Constants.bundle_vibration, groupSetting.vibrateStatus)
                 intent.putExtra(Constants.group_id, grpID)
                 resultLauncher1.launch(intent)
             }
@@ -434,12 +434,12 @@ class GroupProfileActivity : AppCompatActivity(), AdapterView.OnItemClickListene
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if (groupMemberList[position].user_id != getCurrentUserId()) {
-            val userID = groupMemberList[position].user_id
-            val user = getUserByUserId(groupMemberList[position].user_id)
-            val userName = user?.first_name + " " + user?.last_name
-            if (currentUser.is_admin == 1) {
-                openDialogAsAdmin(groupMemberList[position].is_admin, userID, userName)
+        if (groupMemberList[position].userId != getCurrentUserId()) {
+            val userID = groupMemberList[position].userId
+            val user = getUserByUserId(groupMemberList[position].userId)
+            val userName = user?.firstName + " " + user?.lastName
+            if (currentUser.isAdmin == 1) {
+                openDialogAsAdmin(groupMemberList[position].isAdmin, userID, userName)
             } else {
                 openDialogMemberClick(userID, userName)
             }

@@ -5,28 +5,36 @@ import io.realm.RealmList
 import io.realm.RealmObject
 
 open class LocalImageVideoDataTask : RealmObject() {
-    companion object {
-        const val PROPERTY_title = "title"
-        const val PROPERTY_desc = "desc"
-        const val PROPERTY_is_location = "is_location"
-        const val PROPERTY_latitude = "latitude"
-        const val PROPERTY_longitude = "longitude"
-        const val PROPERTY_location_name = "location_name"
-        const val PROPERTY_hashtag = "hashtag"
-        const val PROPERTY_post_comment_disable = "post_comment_disable"
-        const val PROPERTY_user_tags = "user_tags"
-        const val PROPERTY_assets = "assets"
-    }
-
     var title: String? = null
     var desc: String? = null
-    var is_location: String? = null
+    var isLocation: String? = null
     var latitude: String? = null
     var longitude: String? = null
-    var location_name: String? = null
-    var hashtag: String? = null
-    var post_comment_disable: String? = null
-    var user_tags: String? = null
+    var locationName: String? = null
+    var hashTag: String? = null
+    var postCommentDisable: String? = null
+    var userTags: String? = null
     var assets: RealmList<UploadDataObject> = RealmList()
 
+    companion object {
+        fun create(
+            title: String, desc: String, isLocation: String, latitude: String, longitude: String, locationName: String, hashTag: String, postCommentDisable: String,
+            userTags: String, assets: RealmList<UploadDataObject>
+        ): LocalImageVideoDataTask {
+            val localImageVideoDataTask = LocalImageVideoDataTask()
+            localImageVideoDataTask.title = title
+            localImageVideoDataTask.desc = desc
+            localImageVideoDataTask.isLocation = isLocation
+            localImageVideoDataTask.latitude = latitude
+            localImageVideoDataTask.longitude = longitude
+            localImageVideoDataTask.locationName = locationName
+            localImageVideoDataTask.hashTag = hashTag
+            localImageVideoDataTask.postCommentDisable = postCommentDisable
+            localImageVideoDataTask.userTags = userTags
+            localImageVideoDataTask.assets = assets
+
+            return localImageVideoDataTask
+
+        }
+    }
 }

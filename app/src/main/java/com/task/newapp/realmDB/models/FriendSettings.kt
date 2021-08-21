@@ -5,35 +5,42 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class FriendSettings : RealmObject() {
-    companion object {
-        const val PROPERTY_id = "id"
-        const val PROPERTY_user_id = "user_id"
-        const val PROPERTY_friend_id = "friend_id"
-        const val PROPERTY_notification_tone_id = "notification_tone_id"
-        const val PROPERTY_mute_notification = "mute_notification"
-        const val PROPERTY_is_custom_notification_enable = "is_custom_notification_enable"
-        const val PROPERTY_vibrate_status = "vibrate_status"
-        const val PROPERTY_is_popup_notification = "is_popup_notification"
-        const val PROPERTY_use_high_priority_notification = "use_high_priority_notification"
-        const val PROPERTY_call_ringtone = "call_ringtone"
-        const val PROPERTY_call_vibrate = "call_vibrate"
-        const val PROPERTY_sound = "sound"
-        const val PROPERTY_user = "user"
-    }
-
     @PrimaryKey
     var id: Int = 0
-    var user_id: Int = 0
-    var friend_id: Int = 0
-    var notification_tone_id: Int = 0
-    var mute_notification: Int = 0
-    var is_custom_notification_enable: Int = 0
-    var vibrate_status: String = ""
-    var is_popup_notification: Int = 0
-    var use_high_priority_notification: Int = 0
-    var call_ringtone: String = ""
-    var call_vibrate: String = ""
+    var userId: Int = 0
+    var friendId: Int = 0
+    var notificationToneId: Int = 0
+    var muteNotification: Int = 0
+    var isCustomNotificationEnable: Int = 0
+    var vibrateStatus: String = ""
+    var isPopupNotification: Int = 0
+    var useHighPriorityNotification: Int = 0
+    var callRingtone: String = ""
+    var callVibrate: String = ""
     var sound: String = ""
     var user: Users? = null
 
+    companion object {
+        fun create(
+            id: Int, userId: Int, friendId: Int, notificationToneId: Int, muteNotification: Int, isCustomNotificationEnable: Int, vibrateStatus: String,
+            isPopupNotification: Int, useHighPriorityNotification: Int, callRingtone: String, callVibrate: String, sound: String, user: Users
+        ): FriendSettings {
+            val friendSettings = FriendSettings()
+            friendSettings.id = id
+            friendSettings.userId = userId
+            friendSettings.friendId = friendId
+            friendSettings.notificationToneId = notificationToneId
+            friendSettings.muteNotification = muteNotification
+            friendSettings.isCustomNotificationEnable = isCustomNotificationEnable
+            friendSettings.vibrateStatus = vibrateStatus
+            friendSettings.isPopupNotification = isPopupNotification
+            friendSettings.useHighPriorityNotification = useHighPriorityNotification
+            friendSettings.callRingtone = callRingtone
+            friendSettings.callVibrate = callVibrate
+            friendSettings.sound = sound
+            friendSettings.user = user
+            return friendSettings
+
+        }
+    }
 }

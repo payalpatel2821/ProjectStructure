@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/chat_bg_left_first"
+            android:gravity="center_vertical|start"
+            android:padding="@dimen/_5sdp">
+
+            <com.eyalbira.loadingdots.LoadingDots
+                android:id="@+id/typing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:LoadingDots_auto_play="true"
+                app:LoadingDots_dots_color="@color/theme_color"
+                app:LoadingDots_dots_count="3"
+                app:LoadingDots_dots_size="@dimen/_5sdp"
+                app:LoadingDots_dots_space="@dimen/_2sdp"
+                app:LoadingDots_loop_duration="1200"
+                app:LoadingDots_loop_start_delay="100" />
+            <!--  <com.eyalbira.loadingdots.LoadingDots
+                  android:id="@+id/typing"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  app:LoadingDots_loop_duration="1200"
+                  app:LoadingDots_loop_start_delay="600" />-->
+        </LinearLayout>
+    </LinearLayout>
+</layout>

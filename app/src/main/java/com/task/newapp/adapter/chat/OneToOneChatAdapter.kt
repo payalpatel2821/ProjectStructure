@@ -1,19 +1,28 @@
 package com.task.newapp.adapter.chat
 
 import android.app.Activity
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.AdapterView.*
+import android.widget.AdapterView.OnItemClickListener
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemChatDateLabelBinding
 import com.task.newapp.databinding.ItemChatTextLeftBinding
 import com.task.newapp.databinding.ItemChatTextRightBinding
+import com.task.newapp.databinding.ItemChatTypingIndicatorLeftBinding
 import com.task.newapp.realmDB.models.ChatList
-import com.task.newapp.realmDB.models.Chats
-import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants
+import com.task.newapp.utils.Constants.Companion.MessageStatus
+import com.task.newapp.utils.Constants.Companion.MessageStatus.*
+import com.task.newapp.utils.isIncoming
 
 
 class OneToOneChatAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerView.Adapter<OneToOneChatAdapter.RecyclerViewHolder>() {
@@ -21,7 +30,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
     private var onItemClickListener: OnItemClickListener? = null
     //private var listData: List<ChatList>? = null
 
-    var messages = listOf<ChatList>()
+    var messages = arrayListOf<ChatList>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -45,16 +54,27 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         TYPE_CONTACT_LEFT(R.layout.item_chat_text_left),
         TYPE_CONTACT_RIGHT(R.layout.item_chat_text_right),
         TYPE_DATE_LABEL(R.layout.item_chat_text_right),
-        TYPE_TYPING_INDICATOR(R.layout.item_chat_text_right)
+        TYPE_TYPING_INDICATOR(R.layout.item_chat_typing_indicator_left);
+
+        companion object {
+            fun getViewTypeFromId(viewTypeId: Int): ChatItemViewType {
+                ChatItemViewType.values().forEach {
+                    if (it.layoutResourceId == viewTypeId) {
+                        return it
+                    }
+                }
+                return TYPE_TEXT_RIGHT
+            }
+        }
     }
 
-    fun doRefresh(list_data: List<ChatList>) {
+    fun doRefresh(list_data: ArrayList<ChatList>) {
         this.messages = list_data
         notifyDataSetChanged()
     }
 
     fun updateOnlineOfflineStatus(position: Int, isOnline: Boolean) {
-        notifyItemChanged(position, ChatListAdapterPayloadType.ONLINE_OFFLINE)
+        notifyItemChanged(position, ChatListAdapterChangedPayloadType.ONLINE_OFFLINE)
     }
 
     fun addUnarchivedChat() {
@@ -66,86 +86,110 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
     }
 
     fun onItemHolderClick(holder: RecyclerViewHolder) {
-        onItemClickListener?.onItemClick(null, holder.itemView, holder.adapterPosition, holder.itemId)
+        onItemClickListener?.onItemClick(null, holder.itemView, holder.bindingAdapterPosition, holder.itemId)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
 
-        return when (viewType as ChatItemViewType) {
+        return when (ChatItemViewType.getViewTypeFromId(viewType)) {
             ChatItemViewType.TYPE_TEXT_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_TEXT_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_IMAGE_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_IMAGE_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_AUDIO_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_AUDIO_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VIDEO_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VIDEO_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_DOCUMENT_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_DOCUMENT_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VOICE_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VOICE_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_STORY_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_STORY_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_CONTACT_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(layoutBinding)
+                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_CONTACT_RIGHT -> {
                 val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_DATE_LABEL -> {
                 val layoutBinding: ItemChatDateLabelBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_date_label, parent, false)
                 RecyclerViewHolder.DateViewHolder(layoutBinding)
             }
             ChatItemViewType.TYPE_TYPING_INDICATOR -> {
-                val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(layoutBinding)
+                val layoutBinding: ItemChatTypingIndicatorLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_typing_indicator_left, parent, false)
+                RecyclerViewHolder.TypingIndicatorViewHolder(layoutBinding)
             }
         }
 
+    }
+
+    fun setData(newMessages: ArrayList<ChatList>, isRefresh: Boolean) {
+        //-----------------Add New-----------------------
+
+        val diffCallback = ChatDiffCallback(this.messages, newMessages)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.messages.clear()
+        this.messages.addAll(newMessages)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun getData(): ArrayList<ChatList> {
+        return messages
+    }
+
+    fun getChatItemFromLocalId(localChatId: Long): ChatList? {
+        messages.forEachIndexed { index, chatList ->
+            if (chatList.localChatId == localChatId) {
+                return chatList
+            }
+        }
+        return null
     }
 
     /*  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -170,7 +214,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
     override fun getItemViewType(position: Int): Int {
         val chatMessage = messages[position]
         return when (Constants.Companion.MessageType.getMessageTypeFromText(chatMessage.type ?: Constants.Companion.MessageType.TEXT.type)) {
-            Constants.Companion.MessageType.TYPE_INDICATOR -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+            Constants.Companion.MessageType.TYPE_INDICATOR -> ChatItemViewType.TYPE_TYPING_INDICATOR.layoutResourceId
             Constants.Companion.MessageType.LABEL -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.TEXT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.MIX -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
@@ -182,149 +226,36 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
             Constants.Companion.MessageType.STORY -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.VIDEO -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.LINK -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.DATE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+            Constants.Companion.MessageType.DATE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_DATE_LABEL.layoutResourceId else ChatItemViewType.TYPE_DATE_LABEL.layoutResourceId
         }
 
 
     }
 
     interface OnChatItemClickListener {
-        fun onBlockChatClick(position: Int, chats: Chats)
-        fun onHookChatClick(position: Int, chats: Chats)
-        fun onClearChatClick(position: Int, chats: Chats)
-        fun onArchiveChatClick(position: Int, chats: Chats)
+        //fun onBlockChatClick(position: Int, chats: Chats)
+        //fun onHookChatClick(position: Int, chats: Chats)
+        //fun onClearChatClick(position: Int, chats: Chats)
+        //fun onArchiveChatClick(position: Int, chats: Chats)
     }
-
-
-    /* inner class ViewHolder(private val layoutBinding: ItemChatBinding, private val mAdapter: OneToOneChatAdapter) : RecyclerView.ViewHolder(layoutBinding.root), View.OnClickListener {
-         override fun onClick(v: View) {
-             when (v.id) {
-                  R.id.txt_block -> {
-                      list_data?.get(adapterPosition)?.let { listener.onBlockChatClick(adapterPosition, it) }
-                  }
-                  R.id.txt_hook_unhook -> {
-                      list_data?.get(adapterPosition)?.let { listener.onHookChatClick(adapterPosition, it) }
-                  }
-                  R.id.txt_clear_chat -> {
-                      list_data?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
-                  }
-                  R.id.txt_archive -> {
-                      list_data?.get(adapterPosition)?.let { listener.onArchiveChatClick(adapterPosition, it) }
-                  }
-                  R.id.content_layout -> {
-                      mAdapter.onItemHolderClick(this)
-                      closeAllItems() //close if any swipe layout is open
-                  }
-             }
-         }
-
-         fun setData(obj: ChatList) {
-              layoutBinding.txtChatTitle.text = obj.name
-              layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
-                  DateTimeUtils.instance?.getConversationTimestamp(
-                      it.time
-                  )
-              }
-              layoutBinding.txtChatMsg.text = obj.chat_list?.message_text
-              //load profile picture
-              if (obj.is_group) {
-                  obj.group_data?.let {
-                      layoutBinding.imgProfile.load(it.grp_icon ?: "")//, true, obj.name, obj.group_data?.grp_profile_color)
-                  }
-                  //show/hide block swipe layout
-                  layoutBinding.txtBlock.visibility = GONE
-              } else {
-                  obj.user_data?.let {
-                      layoutBinding.imgProfile.load(it.profile_image ?: "")//, true, obj.name, obj.user_data?.profile_color)
-
-                  }
-                  //show/hide block swipe layout
-                  layoutBinding.txtBlock.visibility = VISIBLE
-
-                  //show/hide online dot
-                  layoutBinding.imgOnline.visibility = if (obj.is_online) VISIBLE else GONE
-                  getUserStatusEmitEvent(App.fastSave.getInt(Constants.prefUserId, 0), obj.id)
-              }
-
-              //show/hide hook chat divider
-              if (adapterPosition == getHookCount()) {
-                  layoutBinding.divider.visibility = VISIBLE
-
-              } else {
-                  layoutBinding.divider.visibility = GONE
-
-              }
-
-              //show/hide hook icon
-              if (obj.is_hook) {
-                  layoutBinding.imgHook.visibility = VISIBLE
-                  layoutBinding.txtHookUnhook.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mActivity, R.drawable.ic_unhook), null, null)
-                  layoutBinding.txtHookUnhook.text = mActivity.resources.getString(R.string.unhook)
-              } else {
-                  layoutBinding.imgHook.visibility = GONE
-                  layoutBinding.txtHookUnhook.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mActivity, R.drawable.ic_hook), null, null)
-                  layoutBinding.txtHookUnhook.text = mActivity.resources.getString(R.string.hook)
-              }
-
-              //show/hide online dot
-              if (obj.is_online) {
-                  layoutBinding.imgOnline.visibility = VISIBLE
-              } else {
-                  layoutBinding.imgOnline.visibility = GONE
-              }
-
-         }
-
-         */
-    /**
-     * populate rows
-     *
-     * @param holder
-     * @param position
-     *//*
-        fun populateItemRows(obj: ChatList, position: Int, listPayload: List<Any>?) {
-
-            if (listPayload == null || listPayload.isEmpty()) {
-                setData(obj)
-            } else {
-                showLog("PAYLOAD :", Gson().toJson(listPayload))
-                for (payload in listPayload) {
-                    when (payload as ChatListAdapterPayloadType) {
-                        ChatListAdapterPayloadType.ONLINE_OFFLINE -> {
-                        }
-                        ChatListAdapterPayloadType.PROFILE_PIC_CHANGE -> TODO()
-                        ChatListAdapterPayloadType.NEW_MESSAGE -> TODO()
-                        ChatListAdapterPayloadType.DELETE_MESSAGE -> {
-                            setData(obj)
-                        }
-                    }
-                }
-            }
-        }
-
-        init {
-            layoutBinding.contentLayout.setOnClickListener(this)
-            layoutBinding.txtBlock.setOnClickListener(this)
-            layoutBinding.txtHookUnhook.setOnClickListener(this)
-            layoutBinding.txtClearChat.setOnClickListener(this)
-            layoutBinding.txtArchive.setOnClickListener(this)
-
-        }
-    }*/
 
 
     sealed class RecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
         abstract fun bind(chats: ChatList, listPayload: List<Any>?)
 
-        class TextViewHolderLeft(private val binding: ItemChatTextLeftBinding) : RecyclerViewHolder(binding) {
+        class TextViewHolderLeft(private val mActivity: Activity, private val binding: ItemChatTextLeftBinding) : RecyclerViewHolder(binding) {
             override fun bind(chats: ChatList, listPayload: List<Any>?) {
-                binding.txtMessage.text = chats.message_text
+                binding.txtMessage.text = chats.messageText
             }
         }
 
-        class TextViewHolderRight(private val binding: ItemChatTextRightBinding) : RecyclerViewHolder(binding) {
+        class TextViewHolderRight(private val mActivity: Activity, private val binding: ItemChatTextRightBinding) : RecyclerViewHolder(binding) {
             override fun bind(chats: ChatList, listPayload: List<Any>?) {
-                binding.txtMessage.text = chats.message_text
+                binding.txtMessage.text = chats.messageText
+                val messageStatus = MessageStatus.getMessageStatusFromId(chats.tick)
+                binding.txtMessage.setTextColor(ContextCompat.getColor(mActivity, getChatTextColor(messageStatus)));
+                updateChatBubbleBackground(mActivity, getChatBubbleColor(messageStatus), binding.llContent.background, binding.llContent)
+
             }
         }
 
@@ -335,13 +266,87 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
 
         }
 
+        class TypingIndicatorViewHolder(private val binding: ItemChatTypingIndicatorLeftBinding) : RecyclerViewHolder(binding) {
+            override fun bind(chats: ChatList, listPayload: List<Any>?) {
+                binding.typing.startAnimation()
+            }
+
+        }
+
+        fun updateChatBubbleBackground(mActivity: Activity, color: Int, drawable: Drawable, view: LinearLayout) {
+            val bgDrawable: LayerDrawable = drawable as LayerDrawable /*drawable*/
+            bgDrawable.colorFilter = PorterDuffColorFilter(ContextCompat.getColor(mActivity, color), android.graphics.PorterDuff.Mode.SRC)
+            // val bg_layer: GradientDrawable = bgDrawable.findDrawableByLayerId(R.id.chat_bg) as GradientDrawable /*findDrawableByLayerId*/
+            // bg_layer.setColor(color) /*set color to layer*/
+            view.background = bgDrawable /*set drawable to image*/
+
+
+        }
+
+        fun getChatBubbleColor(messageStatus: MessageStatus): Int {
+            return when (messageStatus) {
+                SENT -> {
+                    R.color.chat_sent_message_bubble_color
+                }
+                DELIVERED -> {
+                    R.color.chat_delivered_message_bubble_color
+                }
+                READ -> {
+                    R.color.chat_seen_message_bubble_color
+                }
+            }
+        }
+
+        fun getChatTextColor(messageStatus: MessageStatus): Int {
+            return when (messageStatus) {
+                SENT -> {
+                    R.color.semi_black_transparent
+                }
+                DELIVERED -> {
+                    R.color.black
+                }
+                READ -> {
+                    R.color.black
+                }
+            }
+        }
     }
 
-    enum class ChatListAdapterPayloadType {
+    enum class ChatListAdapterChangedPayloadType {
         ONLINE_OFFLINE,
         PROFILE_PIC_CHANGE,
         NEW_MESSAGE,
         DELETE_MESSAGE
+    }
+
+    //-----------------------------------DiffUtil Class-----------------------------------------
+    class ChatDiffCallback(oldMessagesList: List<ChatList>, newMessagesList: List<ChatList>) : DiffUtil.Callback() {
+        private val mOldMessagesList: List<ChatList> = oldMessagesList
+        private val mNewMessagesList: List<ChatList> = newMessagesList
+        override fun getOldListSize(): Int {
+            return mOldMessagesList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return mNewMessagesList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mOldMessagesList[oldItemPosition] == mNewMessagesList[newItemPosition]
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldPostData: ChatList = mOldMessagesList[oldItemPosition]
+            val newPostData: ChatList = mNewMessagesList[newItemPosition]
+
+            return oldPostData == newPostData
+        }
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            // Implement method if you're going to use ItemAnimator
+            return super.getChangePayload(oldItemPosition, newItemPosition)
+        }
+
     }
 
 

@@ -25,5 +25,4 @@
         android:paddingEnd="16dp"
         android:textSize="14sp"
         tools:text="Text" />
-
 </LinearLayout>

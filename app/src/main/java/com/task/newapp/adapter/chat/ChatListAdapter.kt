@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import android.widget.AdapterView.*
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.adapter.chat.ChatListAdapter.ChatListAdapterPayloadType.*
 import com.task.newapp.databinding.ItemChatBinding
 import com.task.newapp.realmDB.getHookCount
 import com.task.newapp.realmDB.models.Chats
+import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.utils.*
 import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 
@@ -21,19 +24,47 @@ import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 class ChatListAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerSwipeAdapter<ChatListAdapter.ViewHolder>() {
     private val TAG = javaClass.simpleName
     private var onItemClickListener: OnItemClickListener? = null
-    private var listData: List<Chats>? = null
+    var listData = arrayListOf<ChatsWrapperModel>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
-    fun doRefresh(list_data: List<Chats>?) {
+    fun doRefresh(list_data: ArrayList<ChatsWrapperModel>) {
         this.listData = list_data
         notifyDataSetChanged()
     }
 
+    fun setData(newMessages: ArrayList<ChatsWrapperModel>, isRefresh: Boolean) {
+        //-----------------Add New-----------------------
+
+        val diffCallback = ChatListDiffCallback(this.listData, newMessages)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        this.listData.clear()
+        this.listData.addAll(newMessages)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun getData(): ArrayList<ChatsWrapperModel> {
+        return listData
+    }
+
     fun updateOnlineOfflineStatus(position: Int, isOnline: Boolean) {
-        notifyItemChanged(position, ChatListAdapterPayloadType.ONLINE_OFFLINE)
+        notifyItemChanged(position, ONLINE_OFFLINE)
+    }
+
+    fun updateNewMessage(position: Int, chats: ChatsWrapperModel) {
+        notifyItemChanged(position, NEW_MESSAGE)
+    }
+
+    fun updateTypeIndicator(position: Int, isTyping: Boolean) {
+        this.listData[position].isTyping = isTyping
+        notifyItemChanged(position, TYPING)
     }
 
     fun addUnarchivedChat() {
-        notifyItemInserted(listData!!.size - 1)
+        notifyItemInserted(listData.size - 1)
     }
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener?) {
@@ -41,7 +72,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
     }
 
     fun onItemHolderClick(holder: ViewHolder) {
-        onItemClickListener?.onItemClick(null, holder.itemView, holder.adapterPosition, holder.itemId)
+        onItemClickListener?.onItemClick(null, holder.itemView, holder.bindingAdapterPosition, holder.itemId)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -50,19 +81,19 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = listData!![position]
+        val item = listData[position]
         holder.populateItemRows(item, position, null)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payload: List<Any>) {
-        val item = listData!![position]
+        val item = listData[position]
         /*holder.setData(item)*/
         holder.populateItemRows(item, position, payload)
     }
 
 
     override fun getItemCount(): Int {
-        return listData!!.size
+        return listData.size
     }
 
     override fun getSwipeLayoutResourceId(position: Int): Int {
@@ -80,54 +111,54 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
         override fun onClick(v: View) {
             when (v.id) {
                 R.id.txt_block -> {
-                    listData?.get(adapterPosition)?.let { listener.onBlockChatClick(adapterPosition, it) }
+                    listData[bindingAdapterPosition].let { listener.onBlockChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.txt_hook_unhook -> {
-                    listData?.get(adapterPosition)?.let { listener.onHookChatClick(adapterPosition, it) }
+                    listData[bindingAdapterPosition].let { listener.onHookChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.txt_clear_chat -> {
-                    listData?.get(adapterPosition)?.let { listener.onClearChatClick(adapterPosition, it) }
+                    listData[bindingAdapterPosition].let { listener.onClearChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.txt_archive -> {
-                    listData?.get(adapterPosition)?.let { listener.onArchiveChatClick(adapterPosition, it) }
+                    listData[bindingAdapterPosition].let { listener.onArchiveChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)
-                    closeAllItems() //close if any swipe layout is open
                 }
             }
+            closeAllItems() //close if any swipe layout is open
         }
 
-        fun setData(obj: Chats) {
-            layoutBinding.txtChatTitle.text = obj.name
-            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddTHHmmsssss.label)?.let {
+        fun setData(obj: ChatsWrapperModel) {
+            layoutBinding.txtChatTitle.text = obj.chats.name
+            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.chats.currentTime, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
                     it.time
                 )
             }
-            layoutBinding.txtChatMsg.text = obj.chat_list?.message_text
+            layoutBinding.txtChatMsg.text = obj.chats.chatList?.messageText
             //load profile picture
-            if (obj.is_group) {
-                obj.group_data?.let {
-                    layoutBinding.imgProfile.load(it.grp_icon ?: "")//, true, obj.name, obj.group_data?.grp_profile_color)
+            if (obj.chats.isGroup) {
+                obj.chats.groupData?.let {
+                    layoutBinding.imgProfile.load(it.icon ?: "", false)
                 }
                 //show/hide block swipe layout
                 layoutBinding.txtBlock.visibility = GONE
             } else {
-                obj.user_data?.let {
-                    layoutBinding.imgProfile.load(it.profile_image ?: "")//, true, obj.name, obj.user_data?.profile_color)
+                obj.chats.userData?.let {
+                    layoutBinding.imgProfile.load(it.profileImage ?: "", true, obj.chats.name, obj.chats.userData?.profileColor)
 
                 }
                 //show/hide block swipe layout
                 layoutBinding.txtBlock.visibility = VISIBLE
 
                 //show/hide online dot
-                layoutBinding.imgOnline.visibility = if (obj.is_online) VISIBLE else GONE
-                getUserStatusEmitEvent(App.fastSave.getInt(Constants.prefUserId, 0), obj.id)
+                layoutBinding.imgOnline.visibility = if (obj.chats.isOnline) VISIBLE else GONE
+                getUserStatusEmitEvent(App.fastSave.getInt(Constants.prefUserId, 0), obj.chats.id)
             }
 
             //show/hide hook chat divider
-            if (adapterPosition == getHookCount()) {
+            if (bindingAdapterPosition == getHookCount()) {
                 layoutBinding.divider.visibility = VISIBLE
 
             } else {
@@ -136,7 +167,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
             }
 
             //show/hide hook icon
-            if (obj.is_hook) {
+            if (obj.chats.isHook) {
                 layoutBinding.imgHook.visibility = VISIBLE
                 layoutBinding.txtHookUnhook.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(mActivity, R.drawable.ic_unhook), null, null)
                 layoutBinding.txtHookUnhook.text = mActivity.resources.getString(R.string.unhook)
@@ -147,12 +178,20 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
             }
 
             //show/hide online dot
-            if (obj.is_online) {
+            if (obj.chats.isOnline) {
                 layoutBinding.imgOnline.visibility = VISIBLE
             } else {
                 layoutBinding.imgOnline.visibility = GONE
             }
-
+            if (obj.isTyping) {
+                layoutBinding.txtChatMsg.visibility = GONE
+                layoutBinding.typing.visibility = VISIBLE
+                layoutBinding.typing.startAnimation()
+            } else {
+                layoutBinding.txtChatMsg.visibility = VISIBLE
+                layoutBinding.typing.visibility = GONE
+                layoutBinding.typing.stopAnimation()
+            }
         }
 
         /**
@@ -161,7 +200,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
          * @param holder
          * @param position
          */
-        fun populateItemRows(obj: Chats, position: Int, listPayload: List<Any>?) {
+        fun populateItemRows(obj: ChatsWrapperModel, position: Int, listPayload: List<Any>?) {
 
             if (listPayload == null || listPayload.isEmpty()) {
                 setData(obj)
@@ -169,23 +208,42 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
                 showLog("PAYLOAD :", Gson().toJson(listPayload))
                 for (payload in listPayload) {
                     when (payload as ChatListAdapterPayloadType) {
-                        ChatListAdapterPayloadType.ONLINE_OFFLINE -> {
-                            if (obj.is_online) {
+                        ONLINE_OFFLINE -> {
+                            if (obj.chats.isOnline) {
                                 layoutBinding.imgOnline.visibility = VISIBLE
                             } else {
                                 layoutBinding.imgOnline.visibility = GONE
                             }
                         }
-                        ChatListAdapterPayloadType.PROFILE_PIC_CHANGE -> TODO()
-                        ChatListAdapterPayloadType.NEW_MESSAGE -> TODO()
-                        ChatListAdapterPayloadType.UNARCHIVE_CHAT -> {
+                        PROFILE_PIC_CHANGE -> TODO()
+                        NEW_MESSAGE -> {
+                            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.chats.currentTime, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
+                                DateTimeUtils.instance?.getConversationTimestamp(
+                                    it.time
+                                )
+                            }
+                            layoutBinding.txtChatMsg.text = obj.chats.chatList?.messageText
+                        }
+                        UNARCHIVE_CHAT -> {
+                            setData(obj)
+                        }
+                        TYPING -> {
+                            if (obj.isTyping) {
+                                layoutBinding.txtChatMsg.visibility = GONE
+                                layoutBinding.typing.visibility = VISIBLE
+                                layoutBinding.typing.startAnimation()
+                            } else {
+                                layoutBinding.txtChatMsg.visibility = VISIBLE
+                                layoutBinding.typing.visibility = GONE
+                                layoutBinding.typing.stopAnimation()
+                            }
                             setData(obj)
                         }
                     }
                 }
             }
 
-            mItemManger.bind(layoutBinding.root, adapterPosition)
+            mItemManger.bind(layoutBinding.root, bindingAdapterPosition)
         }
 
         init {
@@ -202,6 +260,38 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
         ONLINE_OFFLINE,
         PROFILE_PIC_CHANGE,
         NEW_MESSAGE,
-        UNARCHIVE_CHAT
+        UNARCHIVE_CHAT,
+        TYPING
     }
+
+    //-----------------------------------DiffUtil Class-----------------------------------------
+    class ChatListDiffCallback(oldChatsList: List<ChatsWrapperModel>, newChatsList: List<ChatsWrapperModel>) : DiffUtil.Callback() {
+        private val mOldChatsList: List<ChatsWrapperModel> = oldChatsList
+        private val mNewChatsList: List<ChatsWrapperModel> = newChatsList
+        override fun getOldListSize(): Int {
+            return mOldChatsList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return mNewChatsList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return mOldChatsList[oldItemPosition].chats == mNewChatsList[newItemPosition].chats
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldPostData: ChatsWrapperModel = mOldChatsList[oldItemPosition]
+            val newPostData: ChatsWrapperModel = mNewChatsList[newItemPosition]
+
+            return oldPostData == newPostData
+        }
+
+        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
+            // Implement method if you're going to use ItemAnimator
+            return super.getChangePayload(oldItemPosition, newItemPosition)
+        }
+
+    }
+
 }

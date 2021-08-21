@@ -6,96 +6,102 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class ChatList : RealmObject() {
-    companion object {
-        const val PROPERTY_local_chat_id = "local_chat_id"
-        const val PROPERTY_id = "id"
-        const val PROPERTY_user_id = "user_id"
-        const val PROPERTY_receiver_id = "receiver_id"
-        const val PROPERTY_sender_id = "sender_id"
-        const val PROPERTY_is_group_chat = "is_group_chat"
-        const val PROPERTY_group_id = "group_id"
-        const val PROPERTY_type = "type"
-        const val PROPERTY_message_text = "message_text"
-        const val PROPERTY_is_shared = "is_shared"
-        const val PROPERTY_is_forward = "is_forward"
-        const val PROPERTY_is_deleted = "is_deleted"
-        const val PROPERTY_deleted_for_all = "deleted_for_all"
-        const val PROPERTY_deleted_by = "deleted_by"
-        const val PROPERTY_tick = "tick"
-        const val PROPERTY_is_star = "is_star"
-        const val PROPERTY_is_reply = "is_reply"
-        const val PROPERTY_is_reply_to_message = "is_reply_to_message"
-        const val PROPERTY_is_reply_to_story = "is_reply_to_story"
-        const val PROPERTY_story_id = "is_story_id"
-        const val PROPERTY_is_replyback_to_reply = "is_replyback_to_reply"
-        const val PROPERTY_is_secret = "is_secret"
-        const val PROPERTY_is_read = "is_read"
-        const val PROPERTY_created_at = "created_at"
-        const val PROPERTY_is_activity_label = "is_activity_label"
-        const val PROPERTY_event = "event"
-        const val PROPERTY_is_broadcast_chat = "is_broadcast_chat"
-        const val PROPERTY_broadcast_id = "broadcast_id"
-        const val PROPERTY_broadcast_chat_id = "broadcast_chat_id"
-        const val PROPERTY_is_content_reply = "is_content_reply"
-        const val PROPERTY_content_id = "content_id"
-        const val PROPERTY_grp_other_user_id = "grp_other_user_id"
-        const val PROPERTY_entry_id = "entry_id"
-        const val PROPERTY_chat_id = "chat_id"
-        const val PROPERTY_isSync = "isSync"
-        const val PROPERTY_chat_contents = "chat_contents"
-        const val PROPERTY_chat_audio = "chat_audio"
-        const val PROPERTY_chat_location = "chat_location"
-        const val PROPERTY_chat_contacts = "chat_contacts"
-        const val PROPERTY_chat_voice = "chat_voice"
-        const val PROPERTY_chat_document = "chat_document"
-        const val PROPERTY_user_data = "user_data"
-        const val PROPERTY_grp_label_color = "grp_label_color"
-
-    }
-
     @PrimaryKey
-    var local_chat_id: Int = 0
-    var id: Int = 0
-    var user_id: Int = 0
-    var receiver_id: Int = 0
-    var sender_id: Int = 0
-    var is_group_chat: Int = 0
-    var group_id: Int = 0
+    var localChatId: Long = 0
+    var id: Long = 0
+    var userId: Int = 0
+    var receiverId: Int = 0
+    var isGroupChat: Int = 0
+    var groupId: Int = 0
+    var otherUserId: String? = null
     var type: String? = null
-    var message_text: String? = null
-    var is_shared: Int = 0
-    var is_forward: Int = 0
-    var is_deleted: Int = 0
-    var deleted_for_all: Int = 0
-    var deleted_by: Int = 0
-    var tick: String = ""
-    var is_star: Int = 0
-    var is_reply: Int = 0
-    var is_reply_to_message: Int = 0
-    var is_reply_to_story: Int = 0
-    var story_id: Int = 0
-    var is_replyback_to_reply: Int = 0
-    var is_secret: Int = 0
-    var is_read: Int = 0
-    var created_at: String? = null
-    var is_activity_label: Int = 0
+    var messageText: String? = null
+    var isShared: Int = 0
+    var isForward: Int = 0
+    var isDeleted: Int = 0
+    var deletedForAll: Int = 0
+    var deletedBy: Int = 0
+    var tick: Int = 0
+    var isStar: Int = 0
+    var isReply: Int = 0
+    var chatId: Int = 0
+    var isReplyToStory: Int = 0
+    var isStoryReplyBackToReply: Int = 0
+    var storyId: Int = 0
+    var isSecret: Int = 0
+    var isRead: Int = 0
+    var deliverTime: String? = null
+    var readTime: String? = null
+    var createdAt: String? = null
+    var updatedAt: String? = null
+    var isActivityLabel: Int = 0
     var event: String? = null
-    var is_broadcast_chat: Int = 0
-    var broadcast_id: Int = 0
-    var broadcast_chat_id: Int = 0
+    var isBroadcastChat: Int = 0
+    var broadcastId: Int = 0
+    var broadcastChatId: Int = 0
+    var isSync: Boolean = false
+    var chatContents: ChatContents? = null
+    var contacts: RealmList<ChatContents> = RealmList<ChatContents>()
+    var userData: Users? = null
+    var groupLabelColor: String? = null
+    /*var is_reply_to_message: Int = 0 payal
+    var is_replyback_to_reply: Int = 0
     var is_content_reply: Int = 0
     var content_id: Int = 0
     var grp_other_user_id: String? = null
     var entry_id: Int = 0
-    var chat_id: Int = 0
-    var isSync: Boolean = false
-    var chat_contents: RealmList<ChatContents> = RealmList()
     var chat_audio: RealmList<ChatAudio> = RealmList()
     var chat_location: ChatLocation? = null
     var chat_contacts: RealmList<ChatContacts> = RealmList()
     var chat_voice: RealmList<ChatVoice> = RealmList()
-    var chat_document: RealmList<ChatDocument> = RealmList()
-    var user_data: Users? = null
-    var grp_label_color: String? = null
+    var chat_document: RealmList<ChatDocument> = RealmList()*/
 
+    companion object {
+        fun create(
+            localChatId: Long, id: Long, userId: Int, receiverId: Int, isGroupChat: Int, groupId: Int, otherUserId: String, type: String, messageText: String, isShared: Int,
+            isForward: Int, isDeleted: Int, deletedForAll: Int, deletedBy: Int, tick: Int, isReply: Int, isStar: Int, isReplyToStory: Int, isStoryReplyBackToReply: Int,
+            storyId: Int, isSecret: Int, isRead: Int, deliverTime: String, readTime: String, createdAt: String, isActivityLabel: Int, event: String, isBroadcastChat: Int,
+            broadcastId: Int, chatId: Int, chatContents: ChatContents?, contacts: RealmList<ChatContents>, groupLabelColor: String, isSync: Boolean
+        ): ChatList {
+            val chatList = ChatList()
+            chatList.localChatId = localChatId
+            chatList.id = id
+            chatList.userId = userId
+            chatList.receiverId = receiverId
+            chatList.isGroupChat = isGroupChat
+            chatList.groupId = groupId
+            chatList.otherUserId = otherUserId
+            chatList.type = type
+            chatList.messageText = messageText
+            chatList.isShared = isShared
+            chatList.isForward = isForward
+            chatList.isDeleted = isDeleted
+            chatList.deletedForAll = deletedForAll
+            chatList.deletedBy = deletedBy
+            chatList.tick = tick
+            chatList.isStar = isStar
+            chatList.isReply = isReply
+            chatList.chatId = chatId
+            chatList.isReplyToStory = isReplyToStory
+            chatList.isStoryReplyBackToReply = isStoryReplyBackToReply
+            chatList.storyId = storyId
+            chatList.isSecret = isSecret
+            chatList.isRead = isRead
+            chatList.deliverTime = deliverTime
+            chatList.readTime = readTime
+            chatList.createdAt = createdAt
+            //chatList.updatedAt = updatedAt
+            chatList.isActivityLabel = isActivityLabel
+            chatList.event = event
+            chatList.isBroadcastChat = isBroadcastChat
+            chatList.broadcastId = broadcastId
+            chatList.isSync = isSync
+            chatList.chatContents = chatContents
+            chatList.contacts = contacts
+            chatList.groupLabelColor = groupLabelColor
+
+            return chatList
+
+        }
+    }
 }

@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemArchiveChatBinding
-import com.task.newapp.realmDB.models.BroadcastTable
 import com.task.newapp.realmDB.models.Chats
+import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.utils.DateTimeUtils
 import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
@@ -23,18 +23,18 @@ import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 class ArchivedChatListAdapter(private val mActivity: Activity, private val listener: OnChatItemClickListener) : RecyclerSwipeAdapter<ArchivedChatListAdapter.ViewHolder>(), Filterable {
     private val TAG = javaClass.simpleName
     private var onItemClickListener: OnItemClickListener? = null
-    private var listData: ArrayList<Chats> = ArrayList()
-    private var filteredListData: ArrayList<Chats> = ArrayList()
+    private var listData: ArrayList<ChatsWrapperModel> = ArrayList()
+    private var filteredListData: ArrayList<ChatsWrapperModel> = ArrayList()
 
 
-    fun doRefresh(data: List<Chats>) {
+    fun doRefresh(data: List<ChatsWrapperModel>) {
         listData.addAll(data)
         filteredListData.addAll(data)
         notifyDataSetChanged()
     }
 
     fun updateOnlineOfflineStatus(position: Int, isOnline: Boolean) {
-        notifyItemChanged(position, ChatListAdapterPayloadType.ONLINE_OFFLINE)
+        notifyItemChanged(position, ArchivedChatListAdapterChangedPayloadType.ONLINE_OFFLINE)
     }
 
     fun addUnarchivedChat() {
@@ -46,7 +46,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
     }
 
     fun onItemHolderClick(holder: ViewHolder) {
-        onItemClickListener?.onItemClick(null, holder.itemView, holder.adapterPosition, holder.itemId)
+        onItemClickListener?.onItemClick(null, holder.itemView, holder.bindingAdapterPosition, holder.itemId)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -85,11 +85,11 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
         override fun onClick(v: View) {
             when (v.id) {
                 R.id.txt_clear_chat -> {
-                    filteredListData[adapterPosition].let { listener.onClearChatClick(adapterPosition, it) }
+                    filteredListData[bindingAdapterPosition].let { listener.onClearChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.txt_unarchive -> {
-                    filteredListData[adapterPosition].let {
-                        listener.onUnarchiveChatClick(adapterPosition, it) }
+                    filteredListData[bindingAdapterPosition].let {
+                        listener.onUnarchiveChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)
@@ -98,27 +98,26 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
             }
         }
 
-        fun setData(obj: Chats) {
-            layoutBinding.txtChatTitle.text = obj.name
-            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.current_time, DateTimeUtils.DateFormats.yyyyMMddTHHmmsssss.label)?.let {
+        fun setData(obj: ChatsWrapperModel) {
+            layoutBinding.txtChatTitle.text = obj.chats.name
+            layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.chats.currentTime, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
                     it.time
                 )
             }
-            layoutBinding.txtChatMsg.text = obj.chat_list?.message_text
+            layoutBinding.txtChatMsg.text = obj.chats.chatList?.messageText
             //load profile picture
-            if (obj.is_group) {
-                obj.group_data?.let {
-                    layoutBinding.imgProfile.load(it.grp_icon ?: "")
+            if (obj.chats.isGroup) {
+                obj.chats.groupData?.let {
+                    layoutBinding.imgProfile.load(it.icon ?: "")
                 }
 
             } else {
-                obj.user_data?.let {
-                    layoutBinding.imgProfile.load(it.profile_image ?: "")
-
+                obj.chats.userData?.let {
+                    layoutBinding.imgProfile.load(it.profileImage ?: "", true, obj.chats.name, obj.chats.userData?.profileColor)
                 }
                 //show/hide online dot
-                layoutBinding.imgOnline.visibility = if (obj.is_online) VISIBLE else GONE
+                layoutBinding.imgOnline.visibility = if (obj.chats.isOnline) VISIBLE else GONE
 
             }
 
@@ -131,7 +130,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
          * @param holder
          * @param position
          */
-        fun populateItemRows(obj: Chats, position: Int, listPayload: List<Any>?) {
+        fun populateItemRows(obj: ChatsWrapperModel, position: Int, listPayload: List<Any>?) {
 
 
             if (listPayload == null || listPayload.isEmpty()) {
@@ -139,24 +138,24 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
             } else {
                 showLog("PAYLOAD :", Gson().toJson(listPayload))
                 for (payload in listPayload) {
-                    when (payload as ChatListAdapterPayloadType) {
-                        ChatListAdapterPayloadType.ONLINE_OFFLINE -> {
-                            if (obj.is_online) {
+                    when (payload as ArchivedChatListAdapterChangedPayloadType) {
+                        ArchivedChatListAdapterChangedPayloadType.ONLINE_OFFLINE -> {
+                            if (obj.chats.isOnline) {
                                 layoutBinding.imgOnline.visibility = VISIBLE
                             } else {
                                 layoutBinding.imgOnline.visibility = GONE
                             }
                         }
-                        ChatListAdapterPayloadType.PROFILE_PIC_CHANGE -> TODO()
-                        ChatListAdapterPayloadType.NEW_MESSAGE -> TODO()
-                        ChatListAdapterPayloadType.UNARCHIVE_CHAT -> {
+                        ArchivedChatListAdapterChangedPayloadType.PROFILE_PIC_CHANGE -> TODO()
+                        ArchivedChatListAdapterChangedPayloadType.NEW_MESSAGE -> TODO()
+                        ArchivedChatListAdapterChangedPayloadType.UNARCHIVE_CHAT -> {
                             setData(obj)
                         }
                     }
                 }
             }
 
-            mItemManger.bind(layoutBinding.root, adapterPosition)
+            mItemManger.bind(layoutBinding.root, bindingAdapterPosition)
         }
 
         init {
@@ -167,7 +166,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
         }
     }
 
-    enum class ChatListAdapterPayloadType {
+    enum class ArchivedChatListAdapterChangedPayloadType {
         ONLINE_OFFLINE,
         PROFILE_PIC_CHANGE,
         NEW_MESSAGE,
@@ -181,16 +180,16 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
                 filteredListData = if (charString.isEmpty()) {
                     listData
                 } else {
-                    val filteredList: MutableList<Chats> = ArrayList()
+                    val filteredList: MutableList<ChatsWrapperModel> = ArrayList()
                     for (row in listData) {
 
                         // name match condition. this might differ depending on your requirement
                         // here we are looking for name or phone number match
-                        if (row.name?.lowercase()?.contains(charString.lowercase()) == true) {
+                        if (row.chats.name?.lowercase()?.contains(charString.lowercase()) == true) {
                             filteredList.add(row)
                         }
                     }
-                    filteredList as ArrayList<Chats>
+                    filteredList as ArrayList<ChatsWrapperModel>
                 }
                 val filterResults = FilterResults()
                 filterResults.values = filteredListData
@@ -198,7 +197,7 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
             }
 
             override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
-                filteredListData = filterResults.values as ArrayList<Chats>
+                filteredListData = filterResults.values as ArrayList<ChatsWrapperModel>
                 notifyDataSetChanged()
             }
         }

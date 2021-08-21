@@ -40,14 +40,14 @@ class GroupMemberListAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-        val userDetail = getSingleUserDetails(dataSet[position].user_id)!!
-        if (dataSet[position].user_id == getCurrentUserId()) {
+        val userDetail = getSingleUserDetails(dataSet[position].userId)!!
+        if (dataSet[position].userId == getCurrentUserId()) {
             viewHolder.txtUserName.text = "You"
         } else {
-            viewHolder.txtUserName.text = userDetail.first_name + " " + userDetail.last_name
+            viewHolder.txtUserName.text = userDetail.firstName + " " + userDetail.lastName
         }
-        viewHolder.ivUserProfile.load(userDetail.profile_image, true,viewHolder.txtUserName.text.trim().toString(),userDetail.profile_color)
-        if (dataSet[position].is_admin == 1) {
+        viewHolder.ivUserProfile.load(userDetail.profileImage, true,viewHolder.txtUserName.text.trim().toString(),userDetail.profileColor)
+        if (dataSet[position].isAdmin == 1) {
             viewHolder.btnCaptain.visibility = VISIBLE
         } else {
             viewHolder.btnCaptain.visibility = GONE

@@ -96,6 +96,8 @@ class Constants {
         const val users = "users"
         const val name = "name"
         const val icon = "icon"
+        const val local_id = "local_id"
+        const val message_text = "message_text"
 
 
         // bundle value
@@ -107,6 +109,7 @@ class Constants {
         const val bundle_selected_friends = "selected_friends"
         const val bundle_navigate_from = "navigate_from"
         const val bundle_opponent_id = "opponent_id"
+        const val bundle_is_typing = "is_typing"
 
         enum class RegistrationStepsEnum(val index: Int) {
             STEP_1(0), //Basic information
@@ -120,6 +123,13 @@ class Constants {
             CREATE("create"),
             ADD_USER("add_user"),
             REMOVE_USER("remove_user"),
+            MAKE_ADMIN("make_admin"),
+            NO_LONGER_ADMIN("no_longer_admin"),
+            EXIT_GROUP("exit_group"),
+            CHANGE_NAME("change_name"),
+            SET_ICON("set_icon"),
+            REMOVE_ICON("remove_icon"),
+            FRIEND_REQUEST("friend_request"),
             CHAT("chat"),
             DATE("date");
 
@@ -204,6 +214,31 @@ class Constants {
             UNFRIEND("Unfriend")
         }
 
+        enum class MessageStatus(val status: Int) {
+            SENT(0),
+            DELIVERED(1),
+            READ(2);
+
+            companion object {
+                fun getMessageStatusFromId(id: Int): MessageStatus {
+                    MessageStatus.values().forEach {
+                        if (it.status == id) {
+                            return it
+                        }
+                    }
+                    return SENT
+                }
+            }
+        }
+
+
+        enum class ChatTypeFlag(val flag: String) {
+            GROUPS("groups"),
+            PRIVATE("private"),
+            BROADCAST("broadcast"),
+            SECRET("secret")
+        }
+
         //-----------------Pref--------------------
         const val prefUserId = "prefUserId"
         const val prefUser = "prefUser"
@@ -213,8 +248,13 @@ class Constants {
         const val prefUserNameRemember = "prefUserNameRemember"
         const val prefPasswordRemember = "prefPasswordRemember"
 
-        //----------------------Socket-------------------------
 
+    }
+}
+
+//----------------------Socket-------------------------
+class SocketConstant {
+    companion object {
         //On events
         const val userjoinedthechat = "userjoinedthechat"
         const val isonlineresponse = "isonlineresponse"
@@ -227,6 +267,15 @@ class Constants {
         const val story_delete_response = "story_delete_response"
         const val post_like_response = "post_like_response"
         const val newMessage = "newMessage"
+        const val status_change_response = "status_change_response_"
+        const val typing_response = "typing_response_"
+        const val user_typing_response = "user_typing_response_"
+        const val stop_typing_response = "stop_typing_response_"
+        const val user_stop_typing_response = "user_stop_typing_response_"
+        const val new_message_response_private = "new_message_response_private_"
+        const val new_message_response_group = "new_message_response_group_"
+        const val manage_tick_private_response = "manage_tick_private_response_"
+        const val manage_tick_group_response = "manage_tick_group_response_"
 
         // emit events
         const val join = "join"
@@ -234,6 +283,17 @@ class Constants {
         const val disconnect = "disconnect"
         const val post_like = "post_like"
         const val is_online = "is_online"
+        const val status_change = "status_change"
+        const val typing = "typing"
+        const val user_typing = "user_typing"
+        const val stop_typing = "stop_typing"
+        const val user_stop_typing = "user_stop_typing"
+        const val new_message_private = "new_message_private"
+        const val new_message_group = "new_message_group"
+        const val manage_tick_private = "manage_tick_private"
+        const val manage_tick_group = "manage_tick_group"
+
 
     }
+
 }

@@ -1,21 +1,18 @@
-package com.task.newapp.models
+package com.task.newapp.models.chat
 
 import com.google.gson.annotations.SerializedName
 
-data class ChatDocumentModel(
-
+data class ChatContacts(
     @SerializedName("id")
-    val id: Int,
+    var id: Int,
     @SerializedName("chat_id")
-    val chat_id: Int,
-    @SerializedName("document")
-    var document: String,
-    @SerializedName("title")
-    var title: String,
-    @SerializedName("type")
-    var type: String,
-    @SerializedName("no_of_pages")
-    var no_of_pages: Int,
+    var chat_id: Int,
+    @SerializedName("number")
+    var number: String,
+    @SerializedName("name")
+    var name: String,
+    @SerializedName("email")
+    var email: String,
     @SerializedName("size")
     var size: Double,
     @SerializedName("delete_for")
@@ -24,8 +21,10 @@ data class ChatDocumentModel(
     var created_at: String,
     @SerializedName("updated_at")
     var updated_at: String,
-    @SerializedName("local_path")
-    var local_path: String,
+    @SerializedName("profile_image")
+    var profile_image: String,
+    @SerializedName("profile_color")
+    var profile_color: String,
     @SerializedName("flag")
     var flag: String
 )

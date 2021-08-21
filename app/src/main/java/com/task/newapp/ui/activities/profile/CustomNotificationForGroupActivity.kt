@@ -153,7 +153,7 @@ class CustomNotificationForGroupActivity : AppCompatActivity() {
                                 vibrateStatus = responseGroupSetting.data.vibrateStatus
                                 prepareSingleGroupUsersData(responseGroupSetting.data)?.let {
                                     updateGroupUserSettings(
-                                        it.user_id,
+                                        it.userId,
                                         GroupID,
                                         it
                                     )

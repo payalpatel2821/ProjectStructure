@@ -89,7 +89,7 @@ class SelectFriendsListAdapter(private val mActivity: Activity) : RecyclerView.A
         fun setData(obj: SelectFriendWrapperModel) {
             layoutBinding.txtName.text = obj.firstName + " " + obj.lastName
             layoutBinding.txtUserName.text = obj.userName
-            layoutBinding.imgProfile.load(obj.profileImage ?: "", false)
+            layoutBinding.imgProfile.load(obj.profileImage ?: "", true, obj.firstName + " " + obj.lastName, obj.profileColor)
             layoutBinding.imgCheck.isSelected = obj.isChecked
 
         }

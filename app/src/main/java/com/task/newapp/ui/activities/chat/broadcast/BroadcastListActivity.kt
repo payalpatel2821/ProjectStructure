@@ -20,6 +20,7 @@ import com.task.newapp.models.CommonResponse
 import com.task.newapp.realmDB.deleteBroadcast
 import com.task.newapp.realmDB.getAllBroadcastChat
 import com.task.newapp.realmDB.models.BroadcastTable
+import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
@@ -30,7 +31,7 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
-class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, BroadcastChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
+class BroadcastListActivity : BaseAppCompatActivity(), View.OnClickListener, BroadcastChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
     lateinit var binding: ActivityBroadcastListBinding
     private var broadcastChatList = ArrayList<BroadcastTable>()
     private lateinit var chatsAdapter: BroadcastChatListAdapter
@@ -143,9 +144,9 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        launchActivity<CreateBroadcastActivity> {
-            putExtra(Constants.bundle_selected_friends, broadcastChatList[position].broad_other_userid)
-        }
+      /*  launchActivity<CreateBroadcastActivity> {
+            putExtra(Constants.bundle_selected_friends, broadcastChatList[position].broadcastOtherUserId)
+        }*/
     }
 
     override fun onClearChatClick(position: Int, broadcastChat: BroadcastTable) {
@@ -187,13 +188,13 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
 
             mCompositeDisposable.add(
                 ApiClient.create()
-                    .deleteBroadcast(broadcastTable.broadcast_id)
+                    .deleteBroadcast(broadcastTable.broadcastId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
                         override fun onNext(commonResponse: CommonResponse) {
                             if (commonResponse.success == 1) {
-                                deleteBroadcast(broadcastTable.broadcast_id)
+                                deleteBroadcast(broadcastTable.broadcastId)
                                 setAdapter()
                             }
 
@@ -225,7 +226,7 @@ class BroadcastListActivity : AppCompatActivity(), View.OnClickListener, Broadca
             openProgressDialog(this)
 
             val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.broadcast_id to broadcastTable.broadcast_id
+                Constants.broadcast_id to broadcastTable.broadcastId
             )
             mCompositeDisposable.add(
                 ApiClient.create()

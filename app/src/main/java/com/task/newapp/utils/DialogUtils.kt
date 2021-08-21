@@ -5,13 +5,17 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -20,8 +24,11 @@ import com.irozon.alertview.AlertView
 import com.irozon.alertview.enums.AlertActionStyle
 import com.irozon.alertview.enums.AlertStyle
 import com.irozon.alertview.objects.AlertAction
+import com.skydoves.balloon.*
+import com.skydoves.balloon.extensions.dp
 import com.task.newapp.R
 import com.task.newapp.adapter.profile.NotificationListAdapter
+import com.task.newapp.databinding.LayoutAttachmentPopupBinding
 import com.task.newapp.models.NotificationToneWrapper
 import com.task.newapp.realmDB.getAllNotificationTune
 import java.util.*
@@ -66,10 +73,10 @@ class DialogUtils {
         notificationAdp.selectSingleItem(setPosition - 1)
         notificationAdp.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
             notificationAdp.selectSingleItem(position)
-            listener.onItemClick(position, notificationTunes.get(position).notificationTone.notification_url)
+            listener.onItemClick(position, notificationTunes.get(position).notificationTone.notificationUrl)
         })
         txtDone.setOnClickListener(View.OnClickListener {
-            textView.text = notificationTunes.get(notificationAdp.getCheckedItem()).notificationTone.display_name
+            textView.text = notificationTunes.get(notificationAdp.getCheckedItem()).notificationTone.displayName
             doneClick.onDefaultButtonClick(notificationAdp.getCheckedItem().toString())
             dialog.dismiss()
         })
@@ -97,16 +104,51 @@ class DialogUtils {
         })
     }
 
-    fun showChatAttachmentIOSDialog(activity: AppCompatActivity, title: String = "", message: String = "", listener: DialogCallbacks) {
-        val alert = AlertView(title, message, AlertStyle.IOS_ICON)
-        alert.show(activity)
+    fun showChatAttachmentIOSDialog(activity: AppCompatActivity, anchor: AppCompatImageView, listener: DialogCallbacks): Balloon {
+        //val alert = AlertView(title, message, AlertStyle.IOS_ICON)
+        //alert.show(activity)
 
-        ChatAttachmentActionsName.values().forEach { actionNames: ChatAttachmentActionsName ->
-            alert.addAction(AlertAction(actionNames.value, actionNames.resouceId, AlertActionStyle.DEFAULT) {
-                listener.onDefaultButtonClick(actionNames.value)
-            })
+        val binding: LayoutAttachmentPopupBinding = DataBindingUtil.inflate(LayoutInflater.from(activity), R.layout.layout_attachment_popup, null, false)
+        val balloon = Balloon.Builder(activity)
+            .setLayout(binding.root)
+            .setArrowSize(20)
+            .setArrowDrawableResource(R.drawable.ic_arrow_filled_white)
+            .setArrowOrientation(ArrowOrientation.BOTTOM)
+            .setWidthRatio(0.55f)
+            .setArrowPosition(0.18f)
+            .setCornerRadius(10f)
+            .setMarginLeft(10)
+            .setMarginBottom(3)
+            .setBackgroundColor(ContextCompat.getColor(activity, R.color.white))
+            .setBalloonAnimation(BalloonAnimation.FADE)
+            .build()
+
+        binding.actionCamera.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.CAMERA.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
-
+        binding.actionPhoto.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.PHOTOS.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
+        binding.actionDocument.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.DOCUMENTS.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
+        binding.actionContact.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.CONTACTS.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
+        binding.actionLocation.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.LOCATION.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
+        return balloon
     }
 
     fun showVibrationStatusDialog(activity: AppCompatActivity, checkedOption: String, title: String, message: String, listener: DialogCallbacks) {

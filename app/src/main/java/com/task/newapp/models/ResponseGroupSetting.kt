@@ -2,7 +2,8 @@ package com.task.newapp.models
 
 
 import com.google.gson.annotations.SerializedName
-import com.task.newapp.models.LoginResponse.GetAllGroup.GroupUserWithSetting
+import com.task.newapp.models.chat.GetAllGroup.GroupUserWithSetting
+
 
 data class ResponseGroupSetting(
     @SerializedName("data")

@@ -55,6 +55,10 @@
     <color name="resend_request_btn_color">#353A5D</color>
     <color name="chat_icon_color">#353e54</color>
     <color name="chat_icon_disable_color">#bcbfc6</color>
+    <color name="chat_sent_message_bubble_color">#F6EBE9</color>
+    <color name="chat_delivered_message_bubble_color">#F6EBE9</color>
+    <color name="chat_seen_message_bubble_color">#F2E3E0</color>
+
     <color name="edit_profile_text_color">#647B99</color>
 
     <!--photo editor-->

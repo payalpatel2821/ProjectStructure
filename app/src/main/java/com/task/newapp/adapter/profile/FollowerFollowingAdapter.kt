@@ -112,7 +112,7 @@ class FollowerFollowingAdapter(
         }
 
         viewHolder.txtUserName.text = dataSet[position].firstName + " " + dataSet[position].lastName
-        viewHolder.txtAccid.text = dataSet[position].account_id
+        viewHolder.txtAccid.text = dataSet[position].accountId
 //        Glide.with(applicationContext).asBitmap().load(dataSet[position].profileImage).into(viewHolder.ivUserProfile)
         viewHolder.ivUserProfile.load(dataSet[position].profileImage,true,viewHolder.txtUserName.text.trim().toString(),dataSet[position].profileColor)
 

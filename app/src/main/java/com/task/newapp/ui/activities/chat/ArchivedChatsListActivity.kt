@@ -20,6 +20,7 @@ import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.models.UserArchive
 import com.task.newapp.realmDB.models.UserHook
+import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,7 +31,7 @@ import java.util.*
 
 class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener, ArchivedChatListAdapter.OnChatItemClickListener, AdapterView.OnItemClickListener, OnSocketEventsListener,
     SearchView.OnQueryTextListener {
-    private var chats = ArrayList<Chats>()
+    private var chats = ArrayList<ChatsWrapperModel>()
     private lateinit var chatsAdapter: ArchivedChatListAdapter
     lateinit var binding: ActivityArchivedChatsListBinding
     private val mCompositeDisposable = CompositeDisposable()
@@ -114,7 +115,10 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
     private fun prepareChatListAdapterModel(chatsList: List<Chats>) {
         if (chats.isNotEmpty())
             chats.clear()
-        chats.addAll(chatsList)
+        chatsList.forEach { chat ->
+            chats.add(ChatsWrapperModel(chat))
+
+        }
 
     }
 
@@ -152,9 +156,9 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
             }
 
             openProgressDialog(this)
-            val type = if (chats.is_group) Constants.group else Constants.friend
+            val type = if (chats.isGroup) Constants.group else Constants.friend
             val archiveId = chats.id
-            val isArchive = if (chats.is_archive) 0 else 1
+            val isArchive = if (chats.isArchive) 0 else 1
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.type to type,
                 Constants.archive_id to archiveId,
@@ -169,31 +173,31 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
                         override fun onNext(commonResponse: CommonResponse) {
                             isModified = true
                             if (commonResponse.success == 1) {
-                                if (chats.is_hook) {
+                                if (chats.isHook) {
                                     updateChatsIsHook(archiveId)
-                                    deleteHook(if (type == Constants.group) UserArchive.PROPERTY_group_id else UserArchive.PROPERTY_friend_id, archiveId)
+                                    deleteHook(if (type == Constants.group) UserArchive::groupId.name else UserArchive::friendId.name, archiveId)
                                 }
                                 updateChatsIsArchive(archiveId)
                                 if (isArchive == 1) {
-                                    deleteArchive(if (type == Constants.group) UserArchive.PROPERTY_group_id else UserArchive.PROPERTY_friend_id, archiveId)
+                                    deleteArchive(if (type == Constants.group) UserArchive::groupId.name else UserArchive::friendId.name, archiveId)
                                 } else {
                                     val userArchive = UserArchive()
                                     userArchive.id = archiveId
-                                    userArchive.user_id = App.fastSave.getInt(Constants.prefUserId, 0)
-                                    if (chats.is_group) {
-                                        userArchive.friend_id = 0
-                                        userArchive.group_id = chats.id
-                                        userArchive.is_group = 1
-                                        userArchive.is_friend = 0
+                                    userArchive.userId = App.fastSave.getInt(Constants.prefUserId, 0)
+                                    if (chats.isGroup) {
+                                        userArchive.friendId = 0
+                                        userArchive.groupId = chats.id
+                                        userArchive.isGroup = 1
+                                        userArchive.isFriend = 0
                                     } else {
-                                        userArchive.friend_id = chats.id
-                                        userArchive.group_id = 0
-                                        userArchive.is_group = 0
-                                        userArchive.is_friend = 1
+                                        userArchive.friendId = chats.id
+                                        userArchive.groupId = 0
+                                        userArchive.isGroup = 0
+                                        userArchive.isFriend = 1
 
                                     }
-                                    if (chats.is_hook) {
-                                        deleteHook(if (chats.is_group) UserHook.PROPERTY_group_id else UserHook.PROPERTY_friend_id, chats.id)
+                                    if (chats.isHook) {
+                                        deleteHook(if (chats.isGroup) UserHook::groupId.name else UserHook::friendId.name, chats.id)
                                     }
                                     insertArchiveData(userArchive)
                                 }
@@ -242,7 +246,7 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
         updateOnlineUser(userId, status)
     }
 
-    override fun onPostLikeDislikeEvent() {
+    override fun onPostLikeDislikeSocketEvent() {
 
     }
 }

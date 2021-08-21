@@ -60,7 +60,8 @@
         <activity
             android:name=".ui.activities.chat.OneToOneChatActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.post.ShowPostActivity"
             android:screenOrientation="portrait"
@@ -200,7 +201,11 @@
         <!--                <data android:mimeType="image/*" />-->
         <!--            </intent-filter>-->
         <!--        </activity>-->
-
+        <receiver android:name=".ConnectionReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

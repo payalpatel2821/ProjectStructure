@@ -37,23 +37,27 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentManager
-import com.task.newapp.utils.avatarGenerator.AvatarGenerator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
 import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.LayoutCustomToastBinding
 import com.task.newapp.models.ResponseNotification
 import com.task.newapp.models.User
-import com.task.newapp.realmDB.getUserByUserId
+import com.task.newapp.models.chat.ChatModel
+import com.task.newapp.realmDB.getSingleUserDetails
 import com.task.newapp.realmDB.insertNotificationToneData
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.prepareNotificationToneData
+import com.task.newapp.utils.Constants.Companion.MessageEvents
+import com.task.newapp.utils.Constants.Companion.MessageEvents.*
+import com.task.newapp.utils.avatarGenerator.AvatarGenerator
 import com.task.newapp.utils.simplecropview.CropImageView
 import com.task.newapp.utils.simplecropview.util.Logger
 import eightbitlab.com.blurview.BlurView
@@ -66,10 +70,12 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.*
+import java.lang.reflect.Type
 import java.net.URLConnection
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.absoluteValue
 
 
 /**
@@ -135,10 +141,6 @@ inline fun <reified T : Any> newIntent(context: Context): Intent =
 /**
  * show toast
  */
-/*fun Context.showToast(msg: String) {
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-}*/
-
 fun Context.showToast(msg: String) {
     val layoutBinding: LayoutCustomToastBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.layout_custom_toast, null, false)
     val toast = Toast(this)
@@ -147,6 +149,7 @@ fun Context.showToast(msg: String) {
     toast.setView(layoutBinding.root) //setting the view of custom toast layout
     layoutBinding.toastMessage.text = msg
     toast.show()
+
 }
 
 
@@ -415,23 +418,6 @@ fun flipAnimation(view: View) {
     oa1.start()
 }
 
-fun getGroupLabelText(userId: Int, event: String, isCurrentUser: Boolean, messageText: String): String {
-    val user = getUserByUserId(userId)
-    val message = ""
-    if (user != null) {
-        if (Constants.Companion.MessageEvents.getMessageEventFromName(event) == Constants.Companion.MessageEvents.CREATE) {
-            return if (isCurrentUser)
-                "You $messageText"
-            else
-                "${user.first_name} ${user.last_name} $messageText"
-
-        } else if (Constants.Companion.MessageEvents.getMessageEventFromName(event) == Constants.Companion.MessageEvents.ADD_USER) {
-            return "${user.first_name} ${user.last_name} added you"
-        }
-    }
-    return message
-}
-
 fun getFileNameFromURLString(URLString: String): String {
     return URLString.substring(URLString.lastIndexOf('/') + 1);
 
@@ -487,7 +473,7 @@ fun ImageView.load(
     if (isProfile == true) {
         glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.RECTANGLE, name ?: "", color ?: ""))
     } else {
-        glide.placeholder(R.drawable.logo)
+        glide.placeholder(R.drawable.default_profile)
     }
     //glide.placeholder(R.drawable.default_dp)
     glide.let {
@@ -1198,6 +1184,7 @@ fun Activity.requestFocus(view: View) {
     }
 }
 
+
 /**
  * check and return true if chat message is in-coming else return false for outgoing message
  *
@@ -1205,7 +1192,7 @@ fun Activity.requestFocus(view: View) {
  * @return
  */
 fun isIncoming(chatMessage: ChatList): Boolean {
-    return chatMessage.sender_id != App.fastSave.getInt(Constants.prefUserId, 0)
+    return chatMessage.userId != App.fastSave.getInt(Constants.prefUserId, 0)
 
 }
 
@@ -1285,3 +1272,214 @@ fun Activity.callAPIGetAllNotification(mCompositeDisposable: CompositeDisposable
     }
 
 }
+
+
+fun createEventWiseLabel(chatModel: ChatModel, msgText: String): String {
+    var strMessage = ""
+    strMessage = when (MessageEvents.getMessageEventFromName((chatModel.event!!))) {
+        CREATE -> setCreateGroupMessageText(chatModel)
+        ADD_USER -> setAddUserMessageText(chatModel)
+        REMOVE_USER -> setRemoveUserMessageText(chatModel)
+        MAKE_ADMIN -> setMakeAdminMessageText(chatModel)
+        NO_LONGER_ADMIN -> setRemoveAdminMessageText(chatModel)
+        EXIT_GROUP -> setExitUserMessageText(chatModel)
+        CHANGE_NAME -> setCommonMessageText(chatModel)
+        SET_ICON -> setCommonMessageText(chatModel)
+        REMOVE_ICON -> setCommonMessageText(chatModel)
+        FRIEND_REQUEST -> setFriendRequestText(chatModel)
+        else -> {
+            chatModel.messageText ?: ""
+        }
+    }
+    return strMessage
+}
+
+fun setCreateGroupMessageText(chatModel: ChatModel): String {
+    var strMessage = ""
+    if (chatModel.isBroadcastChat == 1) {
+        strMessage = chatModel.messageText ?: ""
+    } else {
+        if (chatModel.userId == getCurrentUserId()) {
+            strMessage = "You ${chatModel.messageText}"
+        } else {
+            getSingleUserDetails(chatModel.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName} ${chatModel.messageText}"
+            }
+        }
+    }
+    return strMessage
+}
+
+fun setAddUserMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    when {
+        chatlist.addedUserId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName} added you."
+            }
+        }
+        chatlist.userId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.addedUserId)?.let {
+                strMessage = " You added ${it.firstName} ${it.lastName}."
+            }
+        }
+        else -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName}"
+            }
+            getSingleUserDetails(chatlist.addedUserId)?.let {
+                strMessage = "$strMessage added ${it.firstName} ${it.lastName}."
+            }
+        }
+    }
+    return strMessage
+}
+
+fun setRemoveUserMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    when {
+        chatlist.removedUserId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName} removed you."
+            }
+        }
+        chatlist.userId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.removeAdminUserId)?.let {
+                strMessage = "You removed ${it.firstName} ${it.lastName}."
+            }
+        }
+        else -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName}"
+            }
+            getSingleUserDetails(chatlist.removedUserId)?.let {
+                strMessage = "$strMessage removed ${it.firstName} ${it.lastName}."
+            }
+        }
+    }
+
+    return strMessage
+}
+
+fun setMakeAdminMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    when {
+        chatlist.makeAdminUserId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName} made you the new captain."
+            }
+        }
+        chatlist.userId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.makeAdminUserId)?.let {
+                strMessage = "You made ${it.firstName} ${it.lastName} the new captain."
+            }
+        }
+        else -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName}"
+            }
+            getSingleUserDetails(chatlist.makeAdminUserId)?.let {
+                strMessage = "$strMessage made ${it.firstName} ${it.lastName} the new captain."
+            }
+        }
+    }
+    return strMessage
+}
+
+fun setRemoveAdminMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    when {
+        chatlist.removeAdminUserId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName} removed you from captain."
+            }
+        }
+        chatlist.userId == getCurrentUserId() -> {
+            getSingleUserDetails(chatlist.removeAdminUserId)?.let {
+                strMessage = "You removed ${it.firstName} ${it.lastName} from captain."
+            }
+        }
+        else -> {
+            getSingleUserDetails(chatlist.userId)?.let {
+                strMessage = "${it.firstName} ${it.lastName}"
+            }
+            getSingleUserDetails(chatlist.removeAdminUserId)?.let {
+                strMessage = "$strMessage removed ${it.firstName} ${it.lastName} from captain."
+            }
+        }
+    }
+    return strMessage
+}
+
+fun setExitUserMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+
+    if (chatlist.userId == getCurrentUserId()) {
+        strMessage = "You left the group."
+    } else {
+        getSingleUserDetails(chatlist.userId)?.let {
+            strMessage = "${it.firstName} ${it.lastName} left the group."
+        }
+    }
+    return strMessage
+}
+
+fun setCommonMessageText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    if (chatlist.userId == getCurrentUserId()) {
+        strMessage = "You ${chatlist.messageText}"
+    } else {
+        getSingleUserDetails(chatlist.userId)?.let {
+            strMessage = "${it.firstName} ${it.lastName} ${chatlist.messageText}"
+        }
+    }
+    return strMessage
+}
+
+fun setFriendRequestText(chatlist: ChatModel): String {
+    var strMessage = ""
+
+    getSingleUserDetails(chatlist.userId)?.let {
+        strMessage = if (chatlist.userId == getCurrentUserId()) {
+            "You sent request to ${it.firstName} ${it.lastName}."
+        } else {
+            "${it.firstName} ${it.lastName} sent you a request."
+        }
+    }
+    return strMessage
+}
+
+
+fun getNewChatId(): Long {
+    return UUID.randomUUID().mostSignificantBits.absoluteValue     //App.getRealmInstance().where(ChatList::class.java).sort(ChatList::localChatId.name, DESCENDING).findFirst()?.let { it.localChatId.plus(1) } ?: 1
+}
+
+
+/**
+ * json to pojo with type class
+ *
+ * @param jsonString
+ * @param pojoType
+ * @return
+ */
+fun jsonToPojo(jsonString: String, pojoType: Type): Any {
+    return Gson().fromJson(jsonString, pojoType)
+}
+
+/**
+ * json to pojo
+ *
+ * @param jsonString
+ * @param pojoClass
+ * @return
+ */
+fun jsonToPojo(jsonString: String, pojoClass: Class<*>): Any {
+    return Gson().fromJson(jsonString, pojoClass)
+}
+
