@@ -1,27 +1,37 @@
 package com.task.newapp.ui.activities.post
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager.widget.ViewPager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.luck.picture.lib.entity.LocalMedia
 import com.task.newapp.R
 import com.task.newapp.adapter.post.PostPagerAdapter
+import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityPostPagerBinding
+import com.task.newapp.models.ResponseBlockReportUser
 import com.task.newapp.models.post.Post_Uri_Model
-import com.task.newapp.utils.showLog
+import com.task.newapp.utils.*
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import java.lang.reflect.Type
+import java.util.HashMap
 
 
 class PostPagerActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityPostPagerBinding
     private lateinit var postPagerAdapter: PostPagerAdapter
-    private lateinit var arrayListMedia: ArrayList<Post_Uri_Model>
+    private lateinit var arrayListMedia: ArrayList<LocalMedia>
     private var menuPost: Menu? = null
     var currPosition = 0
     private val ACTION_REQUEST_EDITIMAGE = 9
@@ -30,13 +40,13 @@ class PostPagerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_post_pager)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         if (!intent.extras?.isEmpty!!) {
 
             currPosition = intent.getIntExtra("position", 0)
 
-            val type: Type = object : TypeToken<ArrayList<Post_Uri_Model>>() {}.type
+            val type: Type = object : TypeToken<ArrayList<LocalMedia>>() {}.type
             arrayListMedia = Gson().fromJson(intent.getStringExtra("arraylist"), type)
 
             postPagerAdapter = PostPagerAdapter(this, arrayListMedia)
@@ -76,19 +86,39 @@ class PostPagerActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_edit -> {
                 //Open Edit Activity
-                editImageClick(arrayListMedia[currPosition].file_path, currPosition, arrayListMedia[currPosition].type)
+                //editImageClick(arrayListMedia[currPosition].file_path, currPosition, arrayListMedia[currPosition].type)
             }
             R.id.action_delete -> {
-                //Delete
-                if (arrayListMedia.isNotEmpty()) {
-                    arrayListMedia.removeAt(currPosition)
-                    postPagerAdapter.notifyDataSetChanged()
-                }
+                //Show Delete Dialog
+                showDeleteDialog()
             }
         }
 
         return super.onOptionsItemSelected(item)
 
+    }
+
+    private fun showDeleteDialog() {
+        DialogUtils().showConfirmationYesNoDialog(this, "", getString(R.string.delete_post_item), object : DialogUtils.DialogCallbacks {
+            override fun onPositiveButtonClick() {
+                try {
+                    if (arrayListMedia.isNotEmpty()) {
+                        arrayListMedia.removeAt(currPosition)
+                        postPagerAdapter.notifyDataSetChanged()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onNegativeButtonClick() {
+
+            }
+
+            override fun onDefaultButtonClick(actionName: String) {
+            }
+
+        })
     }
 
     override fun onSupportNavigateUp(): Boolean {

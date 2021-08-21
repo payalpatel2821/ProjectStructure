@@ -487,7 +487,7 @@ fun ImageView.load(
     if (isProfile == true) {
         glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.RECTANGLE, name ?: "", color ?: ""))
     } else {
-        glide.placeholder(R.drawable.default_dp)
+        glide.placeholder(R.drawable.logo)
     }
     //glide.placeholder(R.drawable.default_dp)
     glide.let {
@@ -546,6 +546,7 @@ fun AppCompatEditText.setUnderlineColor(color: Int) {
             setColorFilter(color, PorterDuff.Mode.SRC_IN)
         }
     }
+
 }
 
 /**

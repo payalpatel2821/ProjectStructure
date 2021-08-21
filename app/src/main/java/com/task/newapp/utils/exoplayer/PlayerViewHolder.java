@@ -117,7 +117,7 @@ public class PlayerViewHolder extends RecyclerView.ViewHolder {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                     ((ShowPostActivity) context).playVideo(false);
+                     //((ShowPostActivity) context).playVideo(false);
                 }
             });
         }

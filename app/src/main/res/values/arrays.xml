@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <array name="colorArrayThoughts">
-        <item>@color/white</item>
+    <array name="colorBackgroundArrayThoughts">
+        <item>@color/gray1</item>
         <item>@color/red</item>
         <item>@color/theme_color</item>
     </array>
@@ -20,10 +20,10 @@
     </integer-array>
 
     <string-array name="fontArrayThoughts">
-        <item>boglebold.otf</item>
+        <item>lato_regular.ttf</item>
         <item>bogleregular.otf</item>
-        <item>boglebold.otf</item>
-        <item>bogleregular.otf</item>
+        <item>arizonia.ttf</item>
+        <item>cinzel_decorative.ttf</item>
     </string-array>
 
     <string-array name="photo_editor_emoji">

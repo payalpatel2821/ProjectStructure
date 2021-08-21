@@ -16,6 +16,7 @@ class Constants {
         const val typeCode = "type"
         const val comment_text = "comment_text"
         const val post_id = "post_id"
+        const val main_comment_id = "main_comment_id"
         const val comment_id = "comment_id"
         const val is_comment_reply = "is_comment_reply"
         const val hastags = "hastags"
@@ -61,6 +62,9 @@ class Constants {
         const val data = "data"
         const val SIZE_DEFAULT = 2048
         const val SIZE_LIMIT = 4096
+
+        var IMAGE_COUNT_SELECTION = 0
+        var VIDEO_COUNT_SELECTION = 0
 
         var sInputImageWidth = 0
         var sInputImageHeight = 0

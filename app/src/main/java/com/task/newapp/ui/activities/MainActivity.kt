@@ -1,11 +1,10 @@
 package com.task.newapp.ui.activities
 
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -231,7 +230,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
                 launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
-                launchActivity<ContactActivity> {  }
+               // launchActivity<ContactActivity> {  }
             }
         }
     }
@@ -243,6 +242,11 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
             postFragment.expandCommentSheet()
         } else {
             super.onBackPressed()
+        }
+
+        var orientation = resources.configuration.orientation
+        when (orientation) {
+            Configuration.ORIENTATION_LANDSCAPE -> requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
     }
 
@@ -281,4 +285,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, OnSocketEven
 //            }
         }
     }
+
+
 }

@@ -206,31 +206,31 @@ class PostCommentAdapter(
 
                                     val data = responseAddPostComment.data
 
-                                    val commentReplyUser = AllPostCommentData.CommentReply.User(
-                                        data!!.first_name!!,
-                                        "",
-                                        0,
-                                        data!!.last_name!!,
-                                        ""
-                                    )
-
-                                    val comment_reply = AllPostCommentData.CommentReply(
-                                        0,
-                                        data!!.comment_text!!,
-                                        "",
-                                        data!!.id,
-                                        0,
-                                        0,
-                                        0,
-                                        "",
-                                        data!!.updated_at!!,
-                                        commentReplyUser,
-                                        0
-                                    )
-
-                                    allPostCommentDataList!![position].commentReply = comment_reply
-//                                    comments.setText(response.body().getData().getTotal_comment().toString() + " Comments")
-                                    notifyDataSetChanged()
+//                                    val commentReplyUser = AllPostCommentData.CommentReply.User(
+//                                        data!!.first_name!!,
+//                                        "",
+//                                        0,
+//                                        data!!.last_name!!,
+//                                        ""
+//                                    )
+//
+//                                    val comment_reply = AllPostCommentData.CommentReply(
+//                                        0,
+//                                        data!!.comment_text!!,
+//                                        "",
+//                                        data!!.id,
+//                                        0,
+//                                        0,
+//                                        0,
+//                                        "",
+//                                        data!!.updated_at!!,
+//                                        commentReplyUser,
+//                                        0
+//                                    )
+//
+//                                    allPostCommentDataList!![position].commentReply = comment_reply
+////                                    comments.setText(response.body().getData().getTotal_comment().toString() + " Comments")
+//                                    notifyDataSetChanged()
                                 }
                             }
                         }
@@ -276,12 +276,10 @@ class PostCommentAdapter(
         }
 
         fun populateItemRows(allPostCommentData: AllPostCommentData) {
-            val userName: String = (allPostCommentData.user!!.firstName
-                ?: "") + " " + (allPostCommentData.user!!.lastName ?: "")
+            val userName: String = (allPostCommentData.user!!.firstName ?: "") + " " + (allPostCommentData.user!!.lastName ?: "")
             layoutBinding.username.text = userName
 
-            val profileImg: String =
-                allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
+            val profileImg: String = allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
             Glide.with(context)
                 .load(profileImg)
                 .placeholder(R.drawable.default_dp)
@@ -332,21 +330,20 @@ class PostCommentAdapter(
             if (formattedDate == date[0]) {
                 layoutBinding.blockDate.text = msg_time
             } else {
-                layoutBinding.blockDate.text =
-                    date_split[2] + "/" + date_split[1] + "/" + date_split[0]
+                layoutBinding.blockDate.text = date_split[2] + "/" + date_split[1] + "/" + date_split[0]
             }
 
-            if (allPostCommentData.commentReply == null) {
-                layoutBinding.showReplyBox.visibility = View.GONE
-//            holder.text.setContent("")
-                layoutBinding.textReply.text = ""
-            } else {
-                layoutBinding.showReplyBox.visibility = View.VISIBLE
-//            holder.text.setContent(data.commentReply?.commentText)
-                layoutBinding.textReply.text = allPostCommentData.commentReply?.commentText
-                layoutBinding.usernm.text = allPostCommentData.commentReply?.user!!.firstName
-                    ?: "" + " " + allPostCommentData.commentReply?.user!!.lastName ?: ""
-            }
+//            if (allPostCommentData.commentReply == null) {
+//                layoutBinding.showReplyBox.visibility = View.GONE
+////            holder.text.setContent("")
+//                layoutBinding.textReply.text = ""
+//            } else {
+//                layoutBinding.showReplyBox.visibility = View.VISIBLE
+////            holder.text.setContent(data.commentReply?.commentText)
+//                layoutBinding.textReply.text = allPostCommentData.commentReply?.commentText
+//                layoutBinding.usernm.text = allPostCommentData.commentReply?.user!!.firstName
+//                    ?: "" + " " + allPostCommentData.commentReply?.user!!.lastName ?: ""
+//            }
 
             if (post_by_me == 0) {
                 if (App.fastSave.getInt(Constants.prefUserId, 0) == allPostCommentData.user!!.id) {

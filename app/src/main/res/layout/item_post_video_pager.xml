@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/black"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/flMainVideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+
+        <!--                <com.allattentionhere.autoplayvideos.AAH_VideoImage-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="match_parent" />-->
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/ivInfo"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_centerInParent="true" />-->
+
+        <ImageView
+            android:id="@+id/ivInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+         />
+
+        <ImageView
+            android:id="@+id/img_playpause"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_5sdp"
+            android:elevation="@dimen/_10sdp"
+            android:src="@drawable/play"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/img_playback"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_gravity="left|bottom"
+            android:layout_margin="8dp"
+            android:src="@drawable/pause"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/img_vol"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_unmute"
+            android:visibility="gone" />
+
+        <!--        <ImageView-->
+        <!--            android:id="@+id/ivInfo"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:scaleType="centerCrop" />-->
+
+        <!--        <ImageView-->
+        <!--            android:layout_width="55dp"-->
+        <!--            android:layout_height="55dp"-->
+        <!--            android:layout_gravity="bottom|left"-->
+        <!--            android:padding="10dp"-->
+        <!--            android:src="@drawable/discover_volume_on" />-->
+
+        <!--        <com.task.newapp.utils.videoautoplay.CameraAnimation-->
+        <!--            android:id="@+id/ivCameraAnimation"-->
+        <!--            android:layout_width="55dp"-->
+        <!--            android:layout_height="55dp"-->
+        <!--            android:layout_gravity="bottom|right"-->
+        <!--            android:padding="10dp" />-->
+
+    </RelativeLayout>
+
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:orientation="vertical">-->
+
+    <!--        <RelativeLayout-->
+    <!--            android:id="@+id/mainlay"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:orientation="vertical">-->
+
+    <!--            <RelativeLayout-->
+    <!--                android:id="@+id/rlMain"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="@dimen/_170sdp"-->
+    <!--                android:orientation="vertical">-->
+    <!--                &lt;!&ndash;                    android:background="@drawable/rect_bg_post_shadow"&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                    <io.github.florent37.shapeofview.ShapeOfView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        android:layout_height="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                        app:shape_clip_drawable="@drawable/rect_bg_post">&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                <ImageView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:id="@+id/post_img"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_height="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_gravity="center"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:scaleType="centerCrop" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;                <VideoView&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:id="@+id/videoView"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+    <!--                &lt;!&ndash;                    android:layout_height="match_parent" />&ndash;&gt;-->
+
+    <!--                &lt;!&ndash;Add New&ndash;&gt;-->
+    <!--                <FrameLayout-->
+    <!--                    android:id="@+id/flVideo"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content">-->
+
+    <!--                    <com.task.newapp.utils.videoautoplay.VideoView-->
+    <!--                        android:id="@+id/vvInfo"-->
+    <!--                        android:layout_width="match_parent"-->
+    <!--                        android:layout_height="match_parent"-->
+    <!--                        android:background="#000000" />-->
+
+    <!--                    <ImageView-->
+    <!--                        android:id="@+id/ivInfo"-->
+    <!--                        android:layout_width="match_parent"-->
+    <!--                        android:layout_height="match_parent"-->
+    <!--                        android:scaleType="centerCrop" />-->
+
+    <!--                    <ImageView-->
+    <!--                        android:layout_width="55dp"-->
+    <!--                        android:layout_height="55dp"-->
+    <!--                        android:layout_gravity="bottom|left"-->
+    <!--                        android:padding="10dp"-->
+    <!--                        android:src="@drawable/discover_volume_on" />-->
+
+    <!--                    <com.task.newapp.utils.videoautoplay.CameraAnimation-->
+    <!--                        android:id="@+id/ivCameraAnimation"-->
+    <!--                        android:layout_width="55dp"-->
+    <!--                        android:layout_height="55dp"-->
+    <!--                        android:layout_gravity="bottom|right"-->
+    <!--                        android:padding="10dp" />-->
+    <!--                </FrameLayout>-->
+
+    <!--                <ImageView-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="@dimen/_70sdp"-->
+    <!--                    android:layout_alignParentBottom="true"-->
+    <!--                    android:scaleType="centerCrop"-->
+    <!--                    android:src="@drawable/shadow" />-->
+
+
+    <!--                &lt;!&ndash;                    </io.github.florent37.shapeofview.ShapeOfView>&ndash;&gt;-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_multi"-->
+    <!--                    android:layout_width="@dimen/_15sdp"-->
+    <!--                    android:layout_height="@dimen/_15ssp"-->
+    <!--                    android:layout_margin="@dimen/_5sdp"-->
+    <!--                    android:elevation="@dimen/_10sdp"-->
+    <!--                    android:src="@drawable/ic_multiple"-->
+    <!--                    android:visibility="gone" />-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_playpause"-->
+    <!--                    android:layout_width="@dimen/_25sdp"-->
+    <!--                    android:layout_height="@dimen/_25sdp"-->
+    <!--                    android:layout_centerInParent="true"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_margin="@dimen/_5sdp"-->
+    <!--                    android:elevation="@dimen/_10sdp"-->
+    <!--                    android:src="@drawable/play"-->
+    <!--                    android:visibility="visible" />-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/img_default"-->
+    <!--                    android:layout_width="wrap_content"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_centerInParent="true"-->
+    <!--                    android:layout_gravity="center"-->
+    <!--                    android:layout_margin="5pt"-->
+    <!--                    android:elevation="10pt"-->
+    <!--                    android:src="@drawable/gallery_post"-->
+    <!--                    android:visibility="gone" />-->
+
+    <!--            </RelativeLayout>-->
+
+    <!--            <ImageView-->
+    <!--                android:id="@+id/imgShadow"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="@dimen/_50sdp"-->
+    <!--                android:layout_below="@+id/rlMain"-->
+    <!--                android:scaleType="centerCrop"-->
+    <!--                android:src="@drawable/shadowpostitem"-->
+    <!--                android:visibility="gone"-->
+    <!--                app:tint="@color/black" />-->
+
+    <!--        </RelativeLayout>-->
+
+    <!--    </LinearLayout>-->
+
+</RelativeLayout><!--    </layout>-->
