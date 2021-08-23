@@ -716,7 +716,6 @@ fun updateChatsIsHook(id: Int) {
             data.currentTime = /*if (data.is_hook) DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString() else*/ data.updatedAt
             realm.copyToRealmOrUpdate(data)
         }
-
     })
 }
 
@@ -750,7 +749,6 @@ fun updateNotificationStatus(id: Int, isSet: Boolean) {
             realm.copyToRealmOrUpdate(data)
         }
     })
-
 }
 
 fun updateFriendSettings(friendId: Int, friendSettings: FriendSettings) {
