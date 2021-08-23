@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
+import android.app.KeyguardManager
 import android.content.*
 import android.content.res.ColorStateList
 import android.database.Cursor
@@ -20,6 +21,7 @@ import android.opengl.GLES10
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.*
@@ -76,6 +78,10 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
 
 
 /**
@@ -1483,3 +1489,15 @@ fun jsonToPojo(jsonString: String, pojoClass: Class<*>): Any {
     return Gson().fromJson(jsonString, pojoClass)
 }
 
+/**
+ * checks is device's screen is locked or not
+ *
+ * @return
+ */
+fun Context.isScreenLocked(): Boolean {
+    val keyguardManager: KeyguardManager? = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
+    val powerManager: PowerManager? = getSystemService(Context.POWER_SERVICE) as PowerManager?
+    val locked = keyguardManager != null && keyguardManager.isKeyguardLocked
+    val interactive = powerManager != null && powerManager.isInteractive
+    return locked || !interactive
+}

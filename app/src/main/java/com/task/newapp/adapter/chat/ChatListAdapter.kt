@@ -215,7 +215,8 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
                                 layoutBinding.imgOnline.visibility = GONE
                             }
                         }
-                        PROFILE_PIC_CHANGE -> TODO()
+                        PROFILE_PIC_CHANGE -> {
+                        }
                         NEW_MESSAGE -> {
                             layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.chats.currentTime, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
                                 DateTimeUtils.instance?.getConversationTimestamp(

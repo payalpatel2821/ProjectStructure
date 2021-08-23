@@ -15,11 +15,11 @@ import com.github.nkzawa.socketio.client.Socket
 import com.luck.picture.lib.app.IApp
 import com.luck.picture.lib.app.PictureAppMaster
 import com.luck.picture.lib.crash.PictureSelectorCrashUtils
-import com.luck.picture.lib.crash.PictureSelectorCrashUtils.CrashAppListener
 import com.luck.picture.lib.engine.PictureSelectorEngine
 import com.task.newapp.utils.GlideImageLoader
 import com.task.newapp.utils.instapicker.PictureSelectorEngineImp
 import com.task.newapp.utils.joinSocket
+import com.testfairy.TestFairy
 import com.vanniktech.emoji.EmojiManager
 import com.vanniktech.emoji.ios.IosEmojiProvider
 import io.realm.Realm
@@ -81,6 +81,8 @@ class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
         appInstance = this
         TrafficStats.setThreadStatsTag(1000)
 
+        //testfairy initialization
+        TestFairy.begin(this, "SDK-ZhTY4p68");
         //FastSave pref lib initialization
         FastSave.init(this)
         fastSave = FastSave.getInstance()
