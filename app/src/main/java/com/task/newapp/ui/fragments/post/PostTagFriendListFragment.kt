@@ -44,6 +44,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
     private lateinit var postTagListAdapter: PostTagListAdapter
     var onPostTagDoneClickListener: OnPostTagDoneClickListener? = null
     private lateinit var allfriendList: ArrayList<ResponseFriendsList.Data>
+    private lateinit var allfriendListTemp: ArrayList<ResponseFriendsList.Data>
     private lateinit var commaSeperatedIds: String
     private lateinit var commaSeperatedNames: String
     private var searchtxt: String = ""
@@ -100,6 +101,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
         initSearchView()
 
         allfriendList = ArrayList()
+        allfriendListTemp = ArrayList()
         postTagListAdapter = PostTagListAdapter(fragmentActivity, allfriendList)
         binding.rvTagList.layoutManager = LinearLayoutManager(activity)
         binding.rvTagList.adapter = postTagListAdapter
@@ -159,7 +161,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
     }
 
     private fun handleUserExit() {
-        Toast.makeText(requireContext(), "TODO - SAVE data or similar", Toast.LENGTH_SHORT).show()
+        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -167,6 +169,9 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
             R.id.imgBack -> dismiss()
             R.id.btnDone -> {
                 dismiss()
+                if (commaSeperatedIds.isEmpty()) {
+                    commaSeperatedIds = postTagListAdapter.commaSeperatedIds
+                }
                 onPostTagDoneClickListener!!.onPostTagDoneClick(commaSeperatedIds)
             }
         }

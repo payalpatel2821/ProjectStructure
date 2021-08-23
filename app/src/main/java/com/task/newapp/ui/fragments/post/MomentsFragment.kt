@@ -327,7 +327,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //    }
 
     private fun handleUserExit() {
-        Toast.makeText(requireContext(), "TODO - SAVE data or similar", Toast.LENGTH_SHORT).show()
+        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -383,6 +383,14 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
             }
             R.id.fabPost -> {
 //                uploadPost()
+
+                val arrayList = createPostAdapter.getData() as ArrayList<LocalMedia>
+
+                if (arrayList.isNullOrEmpty()) {
+                    activity.showToast("Please select some media for post")
+                    return
+                }
+
                 FastSave.getInstance().saveFloat("mAspectRadioNew", 0f)
 
                 arrayListMedia.addAll(createPostAdapter.getData() as ArrayList<LocalMedia>)

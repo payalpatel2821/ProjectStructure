@@ -26,7 +26,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -42,15 +41,27 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <TextView
+                        <!--                        <TextView-->
+                        <!--                            android:id="@+id/name_txt"-->
+                        <!--                            android:layout_width="match_parent"-->
+                        <!--                            android:layout_height="wrap_content"-->
+                        <!--                            android:layout_marginLeft="@dimen/_2sdp"-->
+                        <!--                            android:ellipsize="end"-->
+                        <!--                            android:fontFamily="@font/bogleregular"-->
+                        <!--                            android:text=""-->
+                        <!--                            android:maxLines="2"-->
+                        <!--                            android:textColor="@color/black"-->
+                        <!--                            android:textSize="@dimen/_12ssp" />-->
+
+                        <com.task.newapp.utils.SeeMoreTextView
                             android:id="@+id/name_txt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/_2sdp"
-                            android:ellipsize="end"
                             android:fontFamily="@font/bogleregular"
-                            android:text=""
+                            android:lineSpacingExtra="@dimen/_1sdp"
                             android:textColor="@color/black"
+                            android:text=""
                             android:textSize="@dimen/_12ssp" />
 
                         <LinearLayout
@@ -213,7 +224,7 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/txtThought"

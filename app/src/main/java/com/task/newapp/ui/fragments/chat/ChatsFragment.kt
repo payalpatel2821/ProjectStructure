@@ -233,10 +233,10 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
                     }
                     messageObj.isSecret == 1 -> {
-                        TODO()
+
                     }
                     messageObj.isBroadcastChat == 1 -> {
-                        TODO()
+                        
                     }
                     else -> {
                         val singleUser = getSingleChat(messageObj.userId)

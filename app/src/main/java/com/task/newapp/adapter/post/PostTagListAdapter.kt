@@ -25,6 +25,7 @@ class PostTagListAdapter(
 
     var commaSeperatedIds: String = ""
     var commaSeperatedNames: String = ""
+    var arrayListTemp: ArrayList<ResponseFriendsList.Data> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostTagListAdapter.ViewHolder {
         val layoutBinding: ItemTaglistPostBinding = DataBindingUtil.inflate(
@@ -42,13 +43,36 @@ class PostTagListAdapter(
             with(arrayList[position]) {
                 Glide.with(context).load(this.profileImage).placeholder(R.drawable.default_dp).into(layoutBinding.imgProfile)
                 layoutBinding.txtName.text = (this.firstName ?: "") + " " + (this.lastName ?: "")
-                viewHolder.layoutBinding.imgCheck.isSelected = this.isSelected
+
+                //viewHolder.layoutBinding.imgCheck.isSelected = this.isSelected
+
+                if (arrayListTemp.contains(arrayList[position])) {
+                    viewHolder.layoutBinding.imgCheck.isSelected = true
+                }else{
+                    viewHolder.layoutBinding.imgCheck.isSelected = arrayList[position].isSelected
+                }
+
+                //Add New
+                if (arrayList[position].isSelected) {
+                    arrayListTemp.add(arrayList[position])
+                } else {
+                    arrayListTemp.remove(arrayList[position])
+                }
+
             }
         }
 
         viewHolder.itemView.setOnClickListener {
             arrayList[position].isSelected = !arrayList[position].isSelected
             viewHolder.layoutBinding.imgCheck.isSelected = !viewHolder.layoutBinding.imgCheck.isSelected
+
+            //Add New
+            if (arrayList[position].isSelected) {
+                arrayListTemp.add(arrayList[position])
+            } else {
+                arrayListTemp.remove(arrayList[position])
+            }
+
             setSelectedName()
         }
     }
@@ -82,10 +106,10 @@ class PostTagListAdapter(
 
     fun setSelectedName() {
         try {
-            commaSeperatedNames = arrayList.filter(ResponseFriendsList.Data::isSelected)
+            commaSeperatedNames = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
                 .joinToString(separator = ", ") { if (it.isSelected) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
 
-            commaSeperatedIds = arrayList.filter(ResponseFriendsList.Data::isSelected)
+            commaSeperatedIds = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
                 .joinToString(separator = ",") { if (it.isSelected) it.id.toString() else "" }
 
             onItemClick?.invoke(commaSeperatedNames, commaSeperatedIds)

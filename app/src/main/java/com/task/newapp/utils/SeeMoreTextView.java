@@ -11,13 +11,14 @@ import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.appcompat.widget.AppCompatTextView;
+
 import com.task.newapp.R;
-import com.vanniktech.emoji.EmojiTextView;
 
 
-public class SeeMoreTextView extends EmojiTextView {
+public class SeeMoreTextView extends AppCompatTextView {
 
-    private Integer textMaxLength = 250;
+    private Integer textMaxLength = 300;
     private Integer seeMoreTextColor = R.color.colorPrimary;
 
     private String collapsedTextWithSeeMoreButton;
@@ -28,20 +29,8 @@ public class SeeMoreTextView extends EmojiTextView {
     private SpannableString expandedTextSpannable;
 
     private Boolean isExpanded = false;
-    ClickableSpan clickableSpan = new ClickableSpan() {
-        @Override
-        public void onClick(View widget) {
-            toggle();
-        }
 
-        @Override
-        public void updateDrawState(TextPaint ds) {
-            super.updateDrawState(ds);
-            ds.setUnderlineText(false);
-            ds.setColor(getResources().getColor(R.color.colorPrimary));
-        }
-    };
-    private String seeMore = "SeeMore", seeLess = "SeeLess";
+    private String seeMore = "see more", seeLess = "see less";
 
     public SeeMoreTextView(Context context) {
         super(context);
@@ -51,10 +40,10 @@ public class SeeMoreTextView extends EmojiTextView {
         super(context, attrs);
     }
 
-
     public SeeMoreTextView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs);
+        super(context, attrs, defStyleAttr);
     }
+
 
     //set max length of the string text
     public void setTextMaxLength(Integer maxLength) {
@@ -96,6 +85,7 @@ public class SeeMoreTextView extends EmojiTextView {
         }
     }
 
+
     public void setContent(String text) {
         orignalContent = text;
         this.setMovementMethod(LinkMovementMethod.getInstance());
@@ -125,5 +115,20 @@ public class SeeMoreTextView extends EmojiTextView {
             setText(orignalContent);
         }
     }
+
+
+    ClickableSpan clickableSpan = new ClickableSpan() {
+        @Override
+        public void onClick(View widget) {
+            toggle();
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            super.updateDrawState(ds);
+            ds.setUnderlineText(false);
+            ds.setColor(getResources().getColor(R.color.colorPrimary));
+        }
+    };
 
 }
