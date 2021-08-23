@@ -221,8 +221,10 @@ class SelectFriendsActivity : BaseAppCompatActivity(), SearchView.OnQueryTextLis
                         )
                         // launchActivity<CreateBroadcastActivity> { putExtra(Constants.bundle_selected_friends, selectedFriendsList) }
                     }
-                    FROM_EDIT_GROUP -> TODO()
-                    FROM_EDIT_BROADCAST -> TODO()
+                    FROM_EDIT_GROUP -> {
+                    }
+                    FROM_EDIT_BROADCAST -> {
+                    }
                 }
             }
         }

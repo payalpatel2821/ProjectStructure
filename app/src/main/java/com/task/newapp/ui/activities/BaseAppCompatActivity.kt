@@ -98,7 +98,7 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
 
     override fun onPause() {
         super.onPause()
-        if (powerManager!!.isScreenOn) {
+        if (!isScreenLocked()) {
             destroySocketListeners()
 
         }

@@ -39,7 +39,6 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                 //Do Your task here
                 // Thread.sleep(10000)
 
-
                 startDataSync()
                 Result.success()
 
@@ -55,11 +54,10 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
     @WorkerThread
     private fun startDataSync() {
-        ContextCompat.getMainExecutor(applicationContext).execute(
-            Runnable {
-                showLog(TAG, "After Delay Run work manager")
-                syncOneToOneChatData()
-            })
+        ContextCompat.getMainExecutor(applicationContext).execute {
+            showLog(TAG, "After Delay Run work manager")
+            syncOneToOneChatData()
+        }
     }
 
     private fun syncOneToOneChatData() {
@@ -79,7 +77,7 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
         // This is where your UI code goes.
         if (syncOneToOneChatCount < chatListArray.size) {
             showLog(TAG, "Total Sync count : ${chatListArray.size}")
-            callAPISendChatMessage() { isSuccess ->
+            callAPISendChatMessage { isSuccess ->
                 if (isSuccess) {
                     syncOneToOneChatCount += 1
                     showLog(TAG, "syncOneToOneChatCount : $syncOneToOneChatCount")

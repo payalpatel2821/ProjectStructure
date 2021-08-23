@@ -89,7 +89,8 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
                 }
                 R.id.txt_unarchive -> {
                     filteredListData[bindingAdapterPosition].let {
-                        listener.onUnarchiveChatClick(bindingAdapterPosition, it.chats) }
+                        listener.onUnarchiveChatClick(bindingAdapterPosition, it.chats)
+                    }
                 }
                 R.id.content_layout -> {
                     mAdapter.onItemHolderClick(this)
@@ -146,8 +147,10 @@ class ArchivedChatListAdapter(private val mActivity: Activity, private val liste
                                 layoutBinding.imgOnline.visibility = GONE
                             }
                         }
-                        ArchivedChatListAdapterChangedPayloadType.PROFILE_PIC_CHANGE -> TODO()
-                        ArchivedChatListAdapterChangedPayloadType.NEW_MESSAGE -> TODO()
+                        ArchivedChatListAdapterChangedPayloadType.PROFILE_PIC_CHANGE -> {
+                        }
+                        ArchivedChatListAdapterChangedPayloadType.NEW_MESSAGE -> {
+                        }
                         ArchivedChatListAdapterChangedPayloadType.UNARCHIVE_CHAT -> {
                             setData(obj)
                         }

@@ -192,6 +192,15 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         return null
     }
 
+    fun isChatTypingIndicatorAdded(): Boolean {
+        messages.forEachIndexed { index, chatList ->
+            if (chatList.localChatId == (-1).toLong()) {
+                return true
+            }
+        }
+        return false
+    }
+
     /*  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
           val item = listData!![position]
           holder.populateItemRows(item, position, null)

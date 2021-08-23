@@ -35,6 +35,7 @@ allprojects {
         maven {
             url 'https://maven.google.com/'
         }
+        maven { url 'https://maven.testfairy.com' }
         jcenter() // Warning: this repository is going to shut down soon
     }
 }

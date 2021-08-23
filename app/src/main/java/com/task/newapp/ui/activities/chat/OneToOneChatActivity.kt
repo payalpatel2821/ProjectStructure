@@ -248,35 +248,44 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener, OneToOneC
         )
         insertChatListData(chatMessage)
         updateChatsList(opponentId, chatMessage) {}
-        chats.add(chatMessage)
+        if (chatsAdapter.isChatTypingIndicatorAdded())
+            chats.add(chats.size - 1, chatMessage)
+        else chats.add(chatMessage)
         chatsAdapter.setData(chats, true)
         binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
-        //setAdapter()
         WorkManagerScheduler.refreshPeriodicWork(App.getAppInstance())
     }
 
     private fun addTypeIndicator() {
-        val chatMessage = ChatList.create(
-            -1, -1, getCurrentUserId(), opponentId, 0, 0, "", MessageType.TYPE_INDICATOR.type, "", 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "",
-            DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString(), 0, "chat", 0, 0,
-            0, null, RealmList(), "#000000", false
-        )
-        chats.add(chatMessage)
-        chatsAdapter.setData(chats, true)
-        binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
+        if (this::chatsAdapter.isInitialized) {
+            if (!chatsAdapter.isChatTypingIndicatorAdded()) {
+                val chatMessage = ChatList.create(
+                    -1, -1, getCurrentUserId(), opponentId, 0, 0, "", MessageType.TYPE_INDICATOR.type, "", 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", "",
+                    DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString(), 0, "chat", 0, 0,
+                    0, null, RealmList(), "#000000", false
+                )
+                chats.add(chatMessage)
+                chatsAdapter.setData(chats, true)
+                binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
+            }
+        }
+
 
     }
 
     private fun removeTypeIndicator() {
         if (this::chatsAdapter.isInitialized) {
-            chatsAdapter.getChatItemFromLocalId(-1)?.let { chatList ->
-                chats.remove(chatList)
-                chatsAdapter.setData(chats, true)
-                binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
+            if (chatsAdapter.isChatTypingIndicatorAdded()) {
+                chatsAdapter.getChatItemFromLocalId(-1)?.let { chatList ->
+                    chats.remove(chatList)
+                    chatsAdapter.setData(chats, true)
+                    binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
+                }
             }
         }
     }
+
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
@@ -285,7 +294,9 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener, OneToOneC
     override fun onNewMessagePrivateSocketEvent(chatList: ChatList) {
         super.onNewMessagePrivateSocketEvent(chatList)
         if (chatList.userId == opponentId) {
-            chats.add(chatList)
+            if (chatsAdapter.isChatTypingIndicatorAdded())
+                chats.add(chats.size - 1, chatList)
+            else chats.add(chatList)
             chatsAdapter.setData(chats, true)
             binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
         }
