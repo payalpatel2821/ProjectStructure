@@ -89,7 +89,7 @@ class EditProfileActivity : AppCompatActivity(), MediaPickerFragment.Callback {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val text: String = binding.edtLastName.getText().toString()
+                val text: String = binding.edtLastName.text.toString()
                 if (text.startsWith(" ")) {
                     binding.edtLastName.setText(text.trim { it <= ' ' })
                 }
@@ -98,10 +98,24 @@ class EditProfileActivity : AppCompatActivity(), MediaPickerFragment.Callback {
             override fun afterTextChanged(s: Editable?) {
                 validateLastName()
                 if (imageUri == "") {
-
                     binding.ivProfile.load(imageUri, true, binding.edtFirstName.text.toString() + " " + binding.edtLastName.text.toString(), prefUser.profileColor)
-
                 }
+            }
+        })
+
+        binding.edtAbout.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val text: String = binding.edtAbout.text.toString()
+                if (text.startsWith(" ")) {
+                    binding.edtAbout.setText(text.trim { it <= ' ' })
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
             }
         })
 
