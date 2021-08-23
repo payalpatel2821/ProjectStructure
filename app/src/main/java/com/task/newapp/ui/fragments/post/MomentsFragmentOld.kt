@@ -204,7 +204,7 @@ class MomentsFragmentOld : BottomSheetDialogFragment(), View.OnClickListener, Me
 //    }
 
     private fun handleUserExit() {
-        Toast.makeText(requireContext(), "TODO - SAVE data or similar", Toast.LENGTH_SHORT).show()
+        activity!!.showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {

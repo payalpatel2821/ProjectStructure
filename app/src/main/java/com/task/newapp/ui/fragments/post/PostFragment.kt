@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -46,9 +47,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.*
 import lv.chi.photopicker.MediaPickerFragment
+import java.lang.Runnable
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.system.measureTimeMillis
 
 
 class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, MediaPickerFragment.Callback,
@@ -112,7 +116,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         setHasOptionsMenu(true)
 
         initView()
-//        initBottomSheet()
+        //testCode()
     }
 
     private fun initPaging() {
@@ -593,11 +597,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
+                            showLog("testCode", "onComplete done")
 //                            hideProgressDialog()
                         }
 
                         override fun onComplete() {
 //                            hideProgressDialog()
+                            showLog("testCode", "onComplete done")
                         }
                     })
             )
@@ -1052,4 +1058,35 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
+    suspend fun testCode() {
+
+        //Handler().postDelayed(Runnable { count = 15 }, 5000)
+
+//        val time = measureTimeMillis {
+//            runBlocking {
+//                for (i in 1..5) {
+//                    launch {
+//                        //work(i)
+//
+//                        Thread.sleep(2000)
+//
+//                        showLog("testCode", "Work $i done")
+////                        callAPIPostSave(saveType = "save", postId = post_id.toString())
+//                    }
+//                }
+//            }
+//        }
+//        showLog("testCode", "Done in $time ms")
+
+        val jobs = mutableListOf<Job>()
+        for (i in 1..2) {
+            jobs += GlobalScope.launch {
+//                work(i)
+
+                Thread.sleep(2000)
+                showLog("testCode", "Work $i done")
+            }
+        }
+        jobs.forEach { it.join() }
+    }
 }

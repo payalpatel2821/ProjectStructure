@@ -61,6 +61,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
         <activity
+            android:hardwareAccelerated="false"
             android:name="com.luck.picture.lib.ucrop.UCropActivity"
             android:theme="@style/Base.Theme.NoActionBar" />
         <activity
