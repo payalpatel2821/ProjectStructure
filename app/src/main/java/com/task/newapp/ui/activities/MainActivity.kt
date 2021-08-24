@@ -7,26 +7,25 @@ import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.App
 import com.task.newapp.R
-import com.task.newapp.contact.ContactActivity
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
-import com.task.newapp.ui.activities.profile.GroupProfileActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
-import io.reactivex.disposables.CompositeDisposable
 import com.task.newapp.workmanager.WorkManagerScheduler
+import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment.OnHideShowBottomSheet {
 
@@ -36,7 +35,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
     private val mCompositeDisposable = CompositeDisposable()
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -172,6 +170,18 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
             }
 
             R.id.action_secret_chat, R.id.action_emergency_alert -> showToast("Coming soon...")
+
+            R.id.action_search -> {
+                if (binding.bottomBar.getActiveItem() == 0) {
+                    if (chatsFragment.isShowSearchBar) {
+                        chatsFragment.showHideSearchView(false)
+                        item.icon = ContextCompat.getDrawable(this, R.drawable.ic_search_chat)
+                    } else {
+                        chatsFragment.showHideSearchView(true)
+                        item.icon = ContextCompat.getDrawable(this, R.drawable.ic_close_contact)
+                    }
+                }
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -238,7 +248,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
                 launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
-               // launchActivity<ContactActivity> {  }
+                // launchActivity<ContactActivity> {  }
             }
         }
     }

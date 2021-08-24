@@ -50,6 +50,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     private lateinit var chats: ArrayList<ChatsWrapperModel>
     private lateinit var chatsAdapter: ChatListAdapter
     private var archiveCount: Int = 0
+    var isShowSearchBar = false
 
     //private lateinit var socket: Socket
     private val mCompositeDisposable = CompositeDisposable()
@@ -236,7 +237,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
                     }
                     messageObj.isBroadcastChat == 1 -> {
-                        
+
                     }
                     else -> {
                         val singleUser = getSingleChat(messageObj.userId)
@@ -337,13 +338,24 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             binding.llEmptyChat.visibility = VISIBLE
             binding.rvChats.visibility = GONE
             binding.divider.visibility = GONE
-            binding.searchLayout.llSearch.visibility = GONE
+            // binding.searchLayout.llSearch.visibility = GONE
         } else {
             binding.llEmptyChat.visibility = GONE
             binding.rvChats.visibility = VISIBLE
             binding.divider.visibility = VISIBLE
-            binding.searchLayout.llSearch.visibility = VISIBLE
+            //   binding.searchLayout.llSearch.visibility = VISIBLE
         }
+    }
+
+    fun showHideSearchView(show: Boolean) {
+        if (show) {
+            binding.searchLayout.llSearch.visibility = VISIBLE
+            isShowSearchBar = true
+        } else {
+            binding.searchLayout.llSearch.visibility = GONE
+            isShowSearchBar = false
+        }
+
     }
 
     private fun showHideArchiveCountLabel() {
