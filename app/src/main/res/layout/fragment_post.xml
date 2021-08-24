@@ -43,7 +43,8 @@
                             android:id="@+id/img_user"
                             android:layout_width="@dimen/_25sdp"
                             android:layout_height="@dimen/_25sdp"
-                            android:src="@drawable/default_dp" />
+                            android:src="@drawable/logo"
+                            android:elevation="@dimen/_5sdp"/>
 
                         <TextView
                             style="@style/styleTextViewSmallBold"
@@ -354,7 +355,7 @@
                                     android:layout_height="@dimen/_27sdp"
                                     android:layout_centerInParent="true"
                                     android:scaleType="centerCrop"
-                                    android:src="@drawable/default_dp" />
+                                    android:src="@drawable/logo" />
 
                             </LinearLayout>
 

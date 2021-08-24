@@ -479,14 +479,14 @@ fun ImageView.load(
     if (isProfile == true) {
         glide.placeholder(AvatarGenerator.avatarImage(context, 200, AvatarGenerator.RECTANGLE, name ?: "", color ?: ""))
     } else {
-        glide.placeholder(R.drawable.default_profile)
+        glide.placeholder(R.drawable.logo)
     }
-    //glide.placeholder(R.drawable.default_dp)
+    //glide.placeholder(R.drawable.logo)
     glide.let {
         // Apply request options
         if (requestOptions != null) {
             it.apply(requestOptions)
-//            it.placeholder(R.drawable.default_dp)
+//            it.placeholder(R.drawable.logo)
         } else {
             it
         }

@@ -126,8 +126,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
-                            android:layout_marginTop="@dimen/_5sdp"
                             android:textColor="@color/gray2"
+                            android:layout_marginTop="@dimen/_5sdp"
                             tools:text="Good morning..." />
 
                     </LinearLayout>

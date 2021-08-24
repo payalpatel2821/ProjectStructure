@@ -282,7 +282,7 @@ class PostCommentAdapter(
             val profileImg: String = allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
             Glide.with(context)
                 .load(profileImg)
-                .placeholder(R.drawable.default_dp)
+                .placeholder(R.drawable.logo)
                 .skipMemoryCache(!isCaching)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(layoutBinding.imgView)

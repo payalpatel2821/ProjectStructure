@@ -21,7 +21,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:gravity="center_vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardBackgroundColor="@color/gray5"
                 app:cardCornerRadius="@dimen/_7sdp">
 
@@ -69,7 +69,7 @@
                 android:layout_centerInParent="true"
                 android:fontFamily="@font/lato_regular"
                 android:text="@string/page_list"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/iv_back"

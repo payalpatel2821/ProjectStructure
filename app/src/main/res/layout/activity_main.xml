@@ -46,7 +46,7 @@
                         android:layout_marginStart="@dimen/_5sdp"
                         android:foregroundGravity="left"
                         android:onClick="onClick"
-                        android:src="@drawable/default_dp" />
+                        android:src="@drawable/logo" />
 
                 </androidx.appcompat.widget.Toolbar>
 

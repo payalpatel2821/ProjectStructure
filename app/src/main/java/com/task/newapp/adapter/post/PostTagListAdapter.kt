@@ -41,7 +41,7 @@ class PostTagListAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         with(viewHolder) {
             with(arrayList[position]) {
-                Glide.with(context).load(this.profileImage).placeholder(R.drawable.default_dp).into(layoutBinding.imgProfile)
+                Glide.with(context).load(this.profileImage).placeholder(R.drawable.logo).into(layoutBinding.imgProfile)
                 layoutBinding.txtName.text = (this.firstName ?: "") + " " + (this.lastName ?: "")
 
                 //viewHolder.layoutBinding.imgCheck.isSelected = this.isSelected

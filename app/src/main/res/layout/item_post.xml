@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,75 +26,89 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    >
 
+<!--                    <de.hdodenhof.circleimageview.CircleImageView-->
+<!--                        android:id="@+id/img_view"-->
+<!--                        android:layout_width="@dimen/_40sdp"-->
+<!--                        android:layout_height="@dimen/_40sdp"-->
+<!--                        android:layout_margin="@dimen/_3sdp"-->
+<!--                        android:elevation="@dimen/_5sdp"-->
+<!--                        android:src="@drawable/logo" />-->
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/img_view"
-                        android:layout_width="@dimen/_35sdp"
-                        android:layout_height="@dimen/_35sdp"
-                        android:padding="3dp"
-                        android:src="@drawable/default_dp" />
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:elevation="@dimen/_3sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:paddingVertical="@dimen/_3sdp"
+                        tools:src="@drawable/logo" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/_2sdp"
                         android:orientation="vertical">
 
-                        <!--                        <TextView-->
+                        <TextView
+                            android:id="@+id/name_txt"
+                            style="@style/styleTextViewSmall"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_2sdp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:text=""
+                            android:textSize="@dimen/_11ssp"
+                            android:textColor="@color/black"
+                             />
+
+                        <!--                        <com.task.newapp.utils.SeeMoreTextView-->
                         <!--                            android:id="@+id/name_txt"-->
                         <!--                            android:layout_width="match_parent"-->
                         <!--                            android:layout_height="wrap_content"-->
                         <!--                            android:layout_marginLeft="@dimen/_2sdp"-->
-                        <!--                            android:ellipsize="end"-->
                         <!--                            android:fontFamily="@font/bogleregular"-->
-                        <!--                            android:text=""-->
-                        <!--                            android:maxLines="2"-->
+                        <!--                            android:lineSpacingExtra="@dimen/_1sdp"-->
                         <!--                            android:textColor="@color/black"-->
+                        <!--                            android:text=""-->
                         <!--                            android:textSize="@dimen/_12ssp" />-->
-
-                        <com.task.newapp.utils.SeeMoreTextView
-                            android:id="@+id/name_txt"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_2sdp"
-                            android:fontFamily="@font/bogleregular"
-                            android:lineSpacingExtra="@dimen/_1sdp"
-                            android:textColor="@color/black"
-                            android:text=""
-                            android:textSize="@dimen/_12ssp" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:layout_marginTop="@dimen/_2sdp">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txtTime"
+                                style="@style/styleTextViewSmall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/_3sdp"
-                                android:fontFamily="@font/bogleregular"
                                 android:singleLine="true"
                                 android:text="10 min"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_10ssp" />
+                                android:textSize="@dimen/_8ssp"
+                                android:textColor="@color/gray4"
+                                />
 
                             <TextView
                                 android:id="@+id/txtLocation"
+                                style="@style/styleTextViewSmall"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:layout_marginLeft="@dimen/_5sdp"
                                 android:drawableLeft="@drawable/ic_dot"
                                 android:drawablePadding="@dimen/_5sdp"
-                                android:fontFamily="@font/bogleregular"
                                 android:gravity="left|center"
                                 android:singleLine="true"
                                 android:text="Location"
                                 android:textColor="@color/gray4"
-                                android:textSize="@dimen/_10ssp"
+                                android:textSize="@dimen/_8ssp"
                                 android:visibility="visible" />
 
                         </LinearLayout>
@@ -102,10 +117,10 @@
 
                     <ImageView
                         android:id="@+id/more_iv"
-                        android:layout_width="@dimen/_30sdp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_width="@dimen/_25sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_gravity="center"
-                        android:padding="5dp"
+                        android:padding="@dimen/_5sdp"
                         android:rotation="90"
                         android:src="@drawable/more"
                         android:visibility="visible"
@@ -117,7 +132,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginBottom="@dimen/_5sdp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -125,12 +139,13 @@
                         android:id="@+id/title_txt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="2pt"
+                        android:layout_marginLeft="4pt"
                         android:layout_weight="1"
                         android:fontFamily="@font/bogleregular"
                         android:singleLine="true"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10ssp"
+                        android:layout_marginVertical="@dimen/_5sdp"
                         android:visibility="gone" />
 
                     <!--                <androidx.appcompat.widget.AppCompatTextView-->

@@ -14,9 +14,9 @@
     </integer-array>
 
     <integer-array name="patternArrayThoughts">
-        <item>@drawable/default_dp</item>
-        <item>@drawable/default_dp</item>
-        <item>@drawable/default_dp</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
+        <item>@drawable/logo</item>
     </integer-array>
 
     <string-array name="fontArrayThoughts">

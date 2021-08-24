@@ -130,7 +130,7 @@
                             android:elevation="@dimen/_5sdp"
                             android:minWidth="@dimen/_50sdp"
                             android:minHeight="@dimen/_50sdp"
-                            tools:src="@drawable/default_profile" />
+                            tools:src="@drawable/logo" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:id="@+id/img_online"
@@ -171,9 +171,9 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_5sdp"
                             android:ellipsize="end"
                             android:maxLines="1"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:textColor="@color/gray2"
                             tools:text="hello, Are you there?" />
 

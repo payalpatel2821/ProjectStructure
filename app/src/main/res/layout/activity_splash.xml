@@ -19,8 +19,9 @@
                 android:layout_height="@dimen/_70sdp"
                 android:background="@drawable/btn_rect_rounded_bg"
                 android:padding="@dimen/_10sdp"
-                android:src="@drawable/logo"
-                android:tint="@color/white" />
+                android:src="@drawable/logo1"
+                android:tint="@color/white"
+                />
 
             <!--    <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/animationView"
