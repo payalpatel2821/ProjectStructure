@@ -164,7 +164,6 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_14ssp"
                             tools:text="Payal Adbiz" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -172,6 +171,7 @@
                             style="@style/styleTextViewSmall"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/gray2"

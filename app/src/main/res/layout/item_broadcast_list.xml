@@ -117,7 +117,6 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textColor="@color/black"
-                            android:textSize="@dimen/_12ssp"
                             tools:text="My BroadcastList 1" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -127,8 +126,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:maxLines="1"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:textColor="@color/gray2"
-                            android:textSize="@dimen/_10sdp"
                             tools:text="Good morning..." />
 
                     </LinearLayout>
