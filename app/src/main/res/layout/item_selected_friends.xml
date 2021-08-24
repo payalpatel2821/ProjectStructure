@@ -23,7 +23,7 @@
                 android:layout_height="@dimen/_45sdp"
                 android:background="@drawable/profile_bg_gray_ring"
                 android:padding="@dimen/_3sdp"
-                android:src="@drawable/default_dp" />
+                android:src="@drawable/logo" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_delete_friend"

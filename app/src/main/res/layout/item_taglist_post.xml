@@ -27,7 +27,7 @@
                     android:layout_margin="@dimen/_10sdp"
                     android:minWidth="@dimen/_40sdp"
                     android:minHeight="@dimen/_40sdp"
-                    tools:src="@drawable/default_dp" />
+                    tools:src="@drawable/logo" />
 
                 <LinearLayout
                     android:layout_width="0dp"

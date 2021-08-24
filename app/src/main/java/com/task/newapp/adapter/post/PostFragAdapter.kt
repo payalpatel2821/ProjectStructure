@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -27,7 +26,6 @@ import com.task.newapp.R
 import com.task.newapp.databinding.ItemPostBinding
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
 import com.task.newapp.models.post.ResponsePostComment
-import com.task.newapp.utils.dpToPx
 
 
 class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>() {
@@ -397,7 +395,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                     layoutBinding.txtLikeCount.text = all_post_data.likesCount.toString()
                     layoutBinding.txtCommentCount.text = all_post_data.commentsCount.toString()
 
-                    layoutBinding.nameTxt.setTextMaxLength(100)
+//                    layoutBinding.nameTxt.setTextMaxLength(100)
 
                     if (all_post_data.isPostForPage == 1) {
                         if (all_post_data.page.isNotEmpty()) {
@@ -408,27 +406,34 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             } else {
                                 layoutBinding.titleTxt.visibility = View.GONE
                             }
-//                            layoutBinding.nameTxt.text = all_post_data.page[0].name
-                            layoutBinding.nameTxt.setContent(all_post_data.page[0].name)
+                            layoutBinding.nameTxt.text = all_post_data.page[0].name
+//                            layoutBinding.nameTxt.setContent(all_post_data.page[0].name)
                         }
                     } else {
                         var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
 
                         //Check User Tag and add with name
                         if (all_post_data.tagged.isEmpty()) {
-//                            layoutBinding.nameTxt.text = fullName
-                            layoutBinding.nameTxt.setContent(fullName)
+                            layoutBinding.nameTxt.text = fullName
+//                            layoutBinding.nameTxt.setContent(fullName)
                         } else {
-                            val commaSeperatedTagsNames = all_post_data.tagged.joinToString { it ->
-                                "${
-                                    (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
-                                }"
+//                            val commaSeperatedTagsNames = all_post_data.tagged.joinToString { it ->
+//                                "${
+//                                    (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
+//                                }"
+//                            }
+                            var commaSeperatedTagsNames = all_post_data.tagged[0].let {
+                                (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
+                            }
+                            if (all_post_data.tagged.size > 1) {
+                                commaSeperatedTagsNames = commaSeperatedTagsNames.plus("<font color='#AAA1A1'> and </font>").plus(all_post_data.tagged.size - 1).plus(" others.")
                             }
 
+
 //                            val styledText = "This is <font color='red'>simple</font>."
-                            val styledText = "$fullName <font color='#AAA1A1'> was with </font>$commaSeperatedTagsNames"
-//                            layoutBinding.nameTxt.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
-                            layoutBinding.nameTxt.setContent(Html.fromHtml(styledText).toString()) //, TextView.BufferType.SPANNABLE)
+                            val styledText = "$fullName <font color='#AAA1A1'> is with </font>$commaSeperatedTagsNames"
+                            layoutBinding.nameTxt.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
+//                            layoutBinding.nameTxt.setContent(Html.fromHtml(styledText).toString()) //, TextView.BufferType.SPANNABLE)
                             Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
                         }
                     }
@@ -445,7 +450,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                         .thumbnail(0.25f)
                         .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
                         .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
-                        .error(R.drawable.gallery_post)
+                        .error(R.drawable.logo)
                         .into(layoutBinding.imgView)
 
                     val requestOptions = RequestOptions()
@@ -606,7 +611,6 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                     layoutBinding.txtMore.visibility = View.GONE
                 }
             }
-
 
 
         }

@@ -179,7 +179,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     private fun setProfilePic() {
         Glide.with(requireActivity()).load(fastSave.getString(Constants.profile_image, ""))
-            .error(R.drawable.default_dp).into(binding.imgUser)
+            .error(R.drawable.logo).into(binding.imgUser)
     }
 
     override fun onClick(v: View) {
