@@ -3,13 +3,13 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="@dimen/_200sdp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/ll_content"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/_200sdp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_margin="@dimen/_5sdp"
@@ -25,7 +25,7 @@
                 android:background="@drawable/rect_rounded_bg_white"
                 android:padding="@dimen/_5sdp"
                 android:tint="@color/chat_icon_color"
-                app:srcCompat="@drawable/ic_audio_call" />
+                app:srcCompat="@drawable/ic_attachment_audio" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -33,15 +33,15 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txt_message"
+                        android:id="@+id/txt_title"
                         style="@style/styleTextViewNormal"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_5sdp"
                         android:layout_weight="1"
@@ -49,7 +49,7 @@
                         android:maxLines="1"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10ssp"
-                        tools:text="myMusic_134534335435.mp3" />
+                        tools:text="m.mp3" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt_duration"

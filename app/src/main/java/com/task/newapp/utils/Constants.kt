@@ -103,6 +103,16 @@ class Constants {
         const val icon = "icon"
         const val local_id = "local_id"
         const val message_text = "message_text"
+        const val is_group_chat = "is_group_chat"
+        const val broadcast_chat_id = "broadcast_chat_id"
+        const val is_broadcast_chat = "is_broadcast_chat"
+        const val is_reply = "is_reply"
+        const val chat_id = "chat_id"
+        const val contents = "contents"
+        const val caption = "caption"
+        const val thumb = "thumb"
+        const val file = "file"
+        const val duration = "duration"
 
 
         // bundle value
@@ -187,8 +197,18 @@ class Constants {
             CURRENT("current"),
             PDF("pdf"),
             DOCUMENT("document"),
-            LOCATION("location")
+            LOCATION("location");
 
+            companion object {
+                fun getChatContentTypeFromText(text: String): ChatContentType {
+                    for (obj in values()) {
+                        if (obj.contentType == text) {
+                            return obj
+                        }
+                    }
+                    return IMAGE
+                }
+            }
         }
 
         enum class ProfileNavigation(val fromname: String, val title: Int) {

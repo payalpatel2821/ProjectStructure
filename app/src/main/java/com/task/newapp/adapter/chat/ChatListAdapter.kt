@@ -18,6 +18,7 @@ import com.task.newapp.realmDB.getHookCount
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.utils.*
+import com.task.newapp.utils.swipelayout.SwipeLayout
 import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 
 
@@ -87,7 +88,6 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payload: List<Any>) {
         val item = listData[position]
-        /*holder.setData(item)*/
         holder.populateItemRows(item, position, payload)
     }
 
@@ -116,7 +116,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
                 R.id.txt_hook_unhook -> {
                     listData[bindingAdapterPosition].let { listener.onHookChatClick(bindingAdapterPosition, it.chats) }
                 }
-                R.id.txt_clear_chat -> {
+                R.id.txt_delete_chat -> {
                     listData[bindingAdapterPosition].let { listener.onClearChatClick(bindingAdapterPosition, it.chats) }
                 }
                 R.id.txt_archive -> {
@@ -130,6 +130,8 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
         }
 
         fun setData(obj: ChatsWrapperModel) {
+
+
             layoutBinding.txtChatTitle.text = obj.chats.name
             layoutBinding.txtTime.text = DateTimeUtils.instance?.formatDateTime(obj.chats.currentTime, DateTimeUtils.DateFormats.yyyyMMddHHmmss.label)?.let {
                 DateTimeUtils.instance?.getConversationTimestamp(
@@ -243,7 +245,8 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
                     }
                 }
             }
-
+            layoutBinding.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, layoutBinding.swipeLayout.findViewById(R.id.ll_right_swipe))
+            layoutBinding.swipeLayout.addDrag(SwipeLayout.DragEdge.Left, layoutBinding.swipeLayout.findViewById(R.id.ll_left_swipe))
             mItemManger.bind(layoutBinding.root, bindingAdapterPosition)
         }
 
@@ -251,7 +254,7 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
             layoutBinding.contentLayout.setOnClickListener(this)
             layoutBinding.txtBlock.setOnClickListener(this)
             layoutBinding.txtHookUnhook.setOnClickListener(this)
-            layoutBinding.txtClearChat.setOnClickListener(this)
+            layoutBinding.txtDeleteChat.setOnClickListener(this)
             layoutBinding.txtArchive.setOnClickListener(this)
 
         }

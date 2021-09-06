@@ -2,6 +2,7 @@ package com.task.newapp.utils
 
 import android.text.TextUtils
 import android.text.format.DateFormat
+import android.text.format.DateUtils
 import android.text.format.Time
 import android.util.Log
 import com.task.newapp.App
@@ -597,6 +598,21 @@ class DateTimeUtils private constructor() {
         val milliseconds = parseDate.time
         return milliseconds
     }
+/*
+   class func formatSecondsToString(_ seconds: TimeInterval) -> String {
+        if seconds.isNaN {
+            return "00:00"
+        }
+        let Min = Int(seconds / 60)
+        let Sec = Int(seconds.truncatingRemainder(dividingBy: 60))
+        return String(format: "%02d:%02d", Min, Sec)
+    }*/
 
+    fun formatDurationFromSeconds(seconds: Double): String {
+        return if (seconds == 0.0) {
+            "00:00"
+        } else
+            DateUtils.formatElapsedTime(seconds.toLong())
 
+    }
 }

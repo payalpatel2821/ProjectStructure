@@ -121,7 +121,7 @@ class BroadcastChatListAdapter(private val mActivity: Activity, private val list
 
         init {
             layoutBinding.contentLayout.setOnClickListener(this)
-            layoutBinding.txtClearChat.setOnClickListener(this)
+            //layoutBinding.txtClearChat.setOnClickListener(this)
             layoutBinding.txtDeleteBroadcast.setOnClickListener(this)
 
         }

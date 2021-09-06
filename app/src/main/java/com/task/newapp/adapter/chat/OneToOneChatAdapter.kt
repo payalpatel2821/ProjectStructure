@@ -14,14 +14,27 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.task.newapp.R
+import com.task.newapp.databinding.ItemChatAudioLeftBinding
+import com.task.newapp.databinding.ItemChatAudioRightBinding
 import com.task.newapp.databinding.ItemChatDateLabelBinding
 import com.task.newapp.databinding.ItemChatTextLeftBinding
 import com.task.newapp.databinding.ItemChatTextRightBinding
 import com.task.newapp.databinding.ItemChatTypingIndicatorLeftBinding
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.utils.Constants
+import com.task.newapp.utils.Constants.Companion.ChatContentType
+import com.task.newapp.utils.Constants.Companion.ChatContentType.AUDIO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.CONTACT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.DOCUMENT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.IMAGE
+import com.task.newapp.utils.Constants.Companion.ChatContentType.LOCATION
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VIDEO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VOICE
 import com.task.newapp.utils.Constants.Companion.MessageStatus
-import com.task.newapp.utils.Constants.Companion.MessageStatus.*
+import com.task.newapp.utils.Constants.Companion.MessageStatus.DELIVERED
+import com.task.newapp.utils.Constants.Companion.MessageStatus.READ
+import com.task.newapp.utils.Constants.Companion.MessageStatus.SENT
+import com.task.newapp.utils.DateTimeUtils
 import com.task.newapp.utils.isIncoming
 
 
@@ -41,14 +54,14 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         TYPE_TEXT_RIGHT(R.layout.item_chat_text_right),
         TYPE_IMAGE_LEFT(R.layout.item_chat_text_left),
         TYPE_IMAGE_RIGHT(R.layout.item_chat_text_right),
-        TYPE_AUDIO_LEFT(R.layout.item_chat_text_left),
-        TYPE_AUDIO_RIGHT(R.layout.item_chat_text_right),
+        TYPE_AUDIO_LEFT(R.layout.item_chat_audio_left),
+        TYPE_AUDIO_RIGHT(R.layout.item_chat_audio_right),
         TYPE_VIDEO_LEFT(R.layout.item_chat_text_left),
         TYPE_VIDEO_RIGHT(R.layout.item_chat_text_right),
         TYPE_DOCUMENT_LEFT(R.layout.item_chat_text_left),
         TYPE_DOCUMENT_RIGHT(R.layout.item_chat_text_right),
-        TYPE_VOICE_LEFT(R.layout.item_chat_text_left),
-        TYPE_VOICE_RIGHT(R.layout.item_chat_text_right),
+        TYPE_VOICE_LEFT(R.layout.item_chat_audio_left),
+        TYPE_VOICE_RIGHT(R.layout.item_chat_audio_right),
         TYPE_STORY_LEFT(R.layout.item_chat_text_left),
         TYPE_STORY_RIGHT(R.layout.item_chat_text_right),
         TYPE_CONTACT_LEFT(R.layout.item_chat_text_left),
@@ -109,12 +122,12 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_AUDIO_LEFT -> {
-                val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
+                val layoutBinding: ItemChatAudioLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_audio_left, parent, false)
+                RecyclerViewHolder.AudioViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_AUDIO_RIGHT -> {
-                val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
+                val layoutBinding: ItemChatAudioRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_audio_right, parent, false)
+                RecyclerViewHolder.AudioViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VIDEO_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
@@ -133,12 +146,12 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VOICE_LEFT -> {
-                val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
-                RecyclerViewHolder.TextViewHolderLeft(mActivity, layoutBinding)
+                val layoutBinding: ItemChatAudioLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_audio_left, parent, false)
+                RecyclerViewHolder.AudioViewHolderLeft(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_VOICE_RIGHT -> {
-                val layoutBinding: ItemChatTextRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_right, parent, false)
-                RecyclerViewHolder.TextViewHolderRight(mActivity, layoutBinding)
+                val layoutBinding: ItemChatAudioRightBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_audio_right, parent, false)
+                RecyclerViewHolder.AudioViewHolderRight(mActivity, layoutBinding)
             }
             ChatItemViewType.TYPE_STORY_LEFT -> {
                 val layoutBinding: ItemChatTextLeftBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_chat_text_left, parent, false)
@@ -226,16 +239,24 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
             Constants.Companion.MessageType.TYPE_INDICATOR -> ChatItemViewType.TYPE_TYPING_INDICATOR.layoutResourceId
             Constants.Companion.MessageType.LABEL -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.TEXT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.MIX -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.LOCATION -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.CONTACT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.AUDIO -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.VOICE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.DOCUMENT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+            Constants.Companion.MessageType.MIX -> {
+
+                when (ChatContentType.getChatContentTypeFromText(chatMessage.chatContents?.type ?: "")) {
+                    IMAGE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+                    VIDEO -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+                    AUDIO -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_AUDIO_LEFT.layoutResourceId else ChatItemViewType.TYPE_AUDIO_RIGHT.layoutResourceId
+                    VOICE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_AUDIO_LEFT.layoutResourceId else ChatItemViewType.TYPE_AUDIO_RIGHT.layoutResourceId
+                    CONTACT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+                    DOCUMENT -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+                    LOCATION -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+                    else -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
+
+                }
+            }
             Constants.Companion.MessageType.STORY -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
-            Constants.Companion.MessageType.VIDEO -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.LINK -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
             Constants.Companion.MessageType.DATE -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_DATE_LABEL.layoutResourceId else ChatItemViewType.TYPE_DATE_LABEL.layoutResourceId
+            else -> if (isIncoming(chatMessage)) ChatItemViewType.TYPE_TEXT_LEFT.layoutResourceId else ChatItemViewType.TYPE_TEXT_RIGHT.layoutResourceId
         }
 
 
@@ -278,6 +299,28 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         class TypingIndicatorViewHolder(private val binding: ItemChatTypingIndicatorLeftBinding) : RecyclerViewHolder(binding) {
             override fun bind(chats: ChatList, listPayload: List<Any>?) {
                 binding.typing.startAnimation()
+            }
+
+        }
+
+        class AudioViewHolderLeft(private val mActivity: Activity, private val binding: ItemChatAudioLeftBinding) : RecyclerViewHolder(binding) {
+            override fun bind(chats: ChatList, listPayload: List<Any>?) {
+                chats.chatContents?.let {
+                    binding.txtTitle.text = it.title
+                    binding.txtDuration.text = DateTimeUtils.instance?.formatDurationFromSeconds(it.duration)
+
+                }
+            }
+
+        }
+
+        class AudioViewHolderRight(private val mActivity: Activity, private val binding: ItemChatAudioRightBinding) : RecyclerViewHolder(binding) {
+            override fun bind(chats: ChatList, listPayload: List<Any>?) {
+                chats.chatContents?.let {
+                    binding.txtTitle.text = it.title
+                    binding.txtDuration.text = DateTimeUtils.instance?.formatDurationFromSeconds(it.duration)
+
+                }
             }
 
         }

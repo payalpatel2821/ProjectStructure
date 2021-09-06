@@ -139,7 +139,6 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         showLog(Constants.socket_tag, "onIsOnlineResponse--" + Gson().toJson(data))
         val status = data.getString(Constants.status).equals(Constants.online)
         val userId = data.getInt(Constants.receiver_id)
-        showLog(Constants.socket_tag, "IsOnline userID : $userId")
         runOnUiThread {
             // updateUserOnlineStatus(userId, status)
             onSocketEventsListener.onOnlineOfflineSocketEvent(userId, status)
@@ -152,7 +151,6 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         showLog(Constants.socket_tag, "onUserDisconnect..." + Gson().toJson(data))
         val status = data.getString(Constants.status).equals(Constants.online)
         val userId = data.getInt(Constants.user_id)
-        showLog(Constants.socket_tag, "Disconnect userID : $userId")
         runOnUiThread {
             onSocketEventsListener.onOnlineOfflineSocketEvent(userId, false)
         }

@@ -19,11 +19,16 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.opengl.GLES10
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.os.Environment
 import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.provider.MediaStore.Audio
+import android.provider.MediaStore.Images
+import android.provider.MediaStore.Video
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -78,6 +83,8 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
+
+
 import androidx.core.content.ContextCompat.getSystemService
 
 
@@ -427,16 +434,15 @@ fun getFileNameFromURLString(URLString: String): String {
 }
 
 fun convertDurationStringToSeconds(duration: String): String {
-    var duration = "0"
-    val arrDuration = duration?.split(":")
+    val arrDuration = duration.split(":")
     var totalSec = 0
-    if (arrDuration.isNotEmpty()) {
+    return if (arrDuration.isNotEmpty()) {
         val min = arrDuration[0].toInt()
         val sec = arrDuration[1].toInt()
         totalSec = (min * 60) + sec
-        return totalSec.toString()
+        totalSec.toString()
     } else {
-        return duration
+        duration
     }
 }
 
@@ -1497,6 +1503,65 @@ fun Context.isScreenLocked(): Boolean {
     val locked = keyguardManager != null && keyguardManager.isKeyguardLocked
     val interactive = powerManager != null && powerManager.isInteractive
     return locked || !interactive
+}
+
+fun getPathFromURI(context: Context, uri: Uri): String? {
+    val isKitKat = VERSION.SDK_INT >= VERSION_CODES.KITKAT
+
+    // DocumentProvider
+    if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+        // ExternalStorageProvider
+        if (isExternalStorageDocument(uri)) {
+            val docId: String = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":").toTypedArray()
+            val type = split[0]
+            if ("primary".equals(type, ignoreCase = true)) {
+                return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
+            }
+        } else if (isDownloadsDocument(uri)) {
+            val id: String = DocumentsContract.getDocumentId(uri)
+            val contentUri: Uri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+            return getDataColumns(context, contentUri, null, null)
+        } else if (isMediaDocument(uri)) {
+            val docId: String = DocumentsContract.getDocumentId(uri)
+            val split = docId.split(":").toTypedArray()
+            val type = split[0]
+            var contentUri: Uri? = null
+            if ("image" == type) {
+                contentUri = Images.Media.EXTERNAL_CONTENT_URI
+            } else if ("video" == type) {
+                contentUri = Video.Media.EXTERNAL_CONTENT_URI
+            } else if ("audio" == type) {
+                contentUri = Audio.Media.EXTERNAL_CONTENT_URI
+            }
+            val selection = "_id=?"
+            val selectionArgs = arrayOf(
+                split[1]
+            )
+            return getDataColumns(context, contentUri, selection, selectionArgs)
+        }
+    } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+        return getDataColumns(context, uri, null, null)
+    } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+        return uri.path
+    }
+    return null
+}
+
+fun getDataColumns(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
+    var cursor: Cursor? = null
+    val column = "_data"
+    val projection = arrayOf(column)
+    try {
+        cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs, null)
+        if (cursor != null && cursor.moveToFirst()) {
+            val column_index: Int = cursor.getColumnIndexOrThrow(column)
+            return cursor.getString(column_index)
+        }
+    } finally {
+        if (cursor != null) cursor.close()
+    }
+    return null
 }
 
 fun getRandomColor(): Int {

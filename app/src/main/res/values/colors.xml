@@ -38,13 +38,21 @@
 
     <!--Chat module-->
     <color name="chat_input_bg_color">#EEF1F6</color>
-    <color name="archive_chat">#FF8080</color>
-    <color name="block_chat">#9FA6EC</color>
-    <color name="clear_chat">#ECC99F</color>
-    <color name="delete_chat">#B22225</color>
-    <color name="hook_chat">#ECA89F</color>
-    <color name="delete_broadcast_chat">#B22225</color>
-    <color name="clear_broadcast_chat">#ECC99F</color>
+    <!-- <color name="archive_chat">#FF8080</color>-->
+    <color name="archive_chat">#5E7A8D</color>
+    <!--<color name="block_chat">#9FA6EC</color>-->
+    <color name="block_chat">#28475C</color>
+    <!--<color name="clear_chat">#ECC99F</color>-->
+    <color name="clear_chat">#D83A56</color>
+    <!-- <color name="delete_chat">#B22225</color>-->
+    <color name="delete_chat">#91091E</color>
+    <!-- <color name="hook_chat">#ECA89F</color>-->
+    <color name="hook_chat">#426FB6</color>
+    <!--<color name="delete_broadcast_chat">#B22225</color>-->
+    <color name="delete_broadcast_chat">#91091E</color>
+    <!-- <color name="clear_broadcast_chat">#ECC99F</color>-->
+    <color name="clear_broadcast_chat">#D83A56</color>
+    <color name="mute_chat">#AEAEB2</color>
     <color name="change_color">#ededed</color>
     <color name="graybg">#F7F7F7</color>
     <color name="chat_left_bg_color">#ECECEC</color>
@@ -84,7 +92,7 @@
     <color name="divider">#333333</color>
     <color name="textColorPrimary">#FFFFFB</color>
 
-<!--    Insta Photo Picker-->
+    <!--    Insta Photo Picker-->
     <color name="app_color_grey">#393a3e</color>
     <color name="app_color_black">#000000</color>
     <color name="app_color_fa">#fafafa</color>
