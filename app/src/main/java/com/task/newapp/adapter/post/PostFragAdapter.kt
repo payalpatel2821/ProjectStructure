@@ -1,31 +1,37 @@
 package com.task.newapp.adapter.post
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.os.StrictMode
 import android.text.Html
 import android.text.InputFilter
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.*
+import com.aghajari.zoomhelper.ZoomHelper
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemPostBinding
+import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
+import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data.Tagged
 import com.task.newapp.models.post.ResponsePostComment
+import com.task.newapp.utils.load
+import com.task.newapp.utils.showLog
 
 
 class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>() {
@@ -117,7 +123,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //        //ProgressBar would be displayed
 //    }
 
-    fun setdata(all_postNew: ArrayList<All_Post_Data>, isRefresh: Boolean) {
+    fun setdata(all_postNew: ArrayList<All_Post_Data>) {
 //        if (isRefresh) {
 //            this.all_post.clear()
 //            this.all_post = ArrayList()
@@ -142,10 +148,9 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 
     fun updateLikesCount(count: Int, position: Int, isLike: Int) {
         Log.e("updateLikesCount: ", count.toString())
-
         this.all_post[position].likesCount = count
-        this.all_post[position].isLike = isLike
-//        notifyDataSetChanged()
+        if (isLike >= 0) this.all_post[position].isLike = isLike
+
         notifyItemChanged(position, "likePayload")
     }
 
@@ -153,15 +158,18 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
         Log.e("updateSave: ", isSave.toString())
 
         this.all_post[position].isSave = isSave
-//        notifyDataSetChanged()
         notifyItemChanged(position, "savePayload")
     }
 
     fun updateComment(data: ResponsePostComment.Data, position: Int) {
         this.all_post[position].latest_comment = data
         this.all_post[position].commentsCount = data.totalComment
-//        notifyDataSetChanged()
         notifyItemChanged(position, "commentPayload")
+    }
+
+    fun updateTurnOnOffComment(turnOffComment: Int, position: Int) {
+        this.all_post[position].turnOffComment = turnOffComment
+        notifyItemChanged(position, "turnOnOffCommentPayload")
     }
 
     fun postComment() {
@@ -173,9 +181,9 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
         notifyDataSetChanged()
     }
 
-    fun removedata(position: Int) {
+    fun removePost(position: Int) {
         all_post!!.removeAt(position)
-        notifyItemRangeRemoved(position, all_post!!.size)
+        notifyItemRemoved(position)
     }
 
     override fun getItemCount(): Int = all_post!!.size  //if (all_post.isEmpty()) 0 else 1
@@ -218,6 +226,10 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                                 layoutBinding.txtComment.visibility = View.VISIBLE
                             }
                             layoutBinding.txtCommentCount.text = all_post_data.commentsCount.toString()
+                        }
+                        "turnOnOffCommentPayload" -> {
+                            //last Comment show
+                            layoutBinding.layoutComment.visibility = if (all_post_data.turnOffComment == 0) View.VISIBLE else View.GONE
                         }
                     }
                 }
@@ -301,6 +313,10 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             var mLayoutManager = LinearLayoutManager(context)
                             mLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
 
+                            //-------------------------Add New-------------------------
+                            ZoomHelper.getInstance().addOnZoomStateChangedListener(adapter)
+
+
                             layoutBinding.recyclerView.layoutManager = mLayoutManager
                             layoutBinding.recyclerView.itemAnimator = DefaultItemAnimator()
 
@@ -370,6 +386,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                     }
 
                     //-----------------------------Common---------------------------------
+                    layoutBinding.layoutComment.visibility = if (all_post_data.turnOffComment == 0) View.VISIBLE else View.GONE
 
                     //-------------------------last Comment show--------------------------
                     if (all_post_data.latest_comment?.commentText.isNullOrEmpty()) {
@@ -397,6 +414,9 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 
 //                    layoutBinding.nameTxt.setTextMaxLength(100)
 
+                    //-----------------------------Turn on/off comment layout hide/show---------------------------------
+
+
                     if (all_post_data.isPostForPage == 1) {
                         if (all_post_data.page.isNotEmpty()) {
 
@@ -406,22 +426,21 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             } else {
                                 layoutBinding.titleTxt.visibility = View.GONE
                             }
-                            layoutBinding.nameTxt.text = all_post_data.page[0].name
-//                            layoutBinding.nameTxt.setContent(all_post_data.page[0].name)
+                            layoutBinding.txtUsername.text = all_post_data.page[0].name
+//                            layoutBinding.txtUsername.setContent(all_post_data.page[0].name)
                         }
                     } else {
                         var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
 
                         //Check User Tag and add with name
                         if (all_post_data.tagged.isEmpty()) {
-                            layoutBinding.nameTxt.text = fullName
-//                            layoutBinding.nameTxt.setContent(fullName)
+                            layoutBinding.txtTagUsername.visibility = View.GONE
+                            layoutBinding.txtUsername.visibility = View.VISIBLE
+                            layoutBinding.txtUsername.text = fullName
                         } else {
-//                            val commaSeperatedTagsNames = all_post_data.tagged.joinToString { it ->
-//                                "${
-//                                    (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
-//                                }"
-//                            }
+                            layoutBinding.txtTagUsername.visibility = View.VISIBLE
+                            layoutBinding.txtUsername.visibility = View.GONE
+
                             var commaSeperatedTagsNames = all_post_data.tagged[0].let {
                                 (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
                             }
@@ -429,12 +448,15 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                                 commaSeperatedTagsNames = commaSeperatedTagsNames.plus("<font color='#AAA1A1'> and </font>").plus(all_post_data.tagged.size - 1).plus(" others.")
                             }
 
-
-//                            val styledText = "This is <font color='red'>simple</font>."
                             val styledText = "$fullName <font color='#AAA1A1'> is with </font>$commaSeperatedTagsNames"
-                            layoutBinding.nameTxt.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
-//                            layoutBinding.nameTxt.setContent(Html.fromHtml(styledText).toString()) //, TextView.BufferType.SPANNABLE)
+                            layoutBinding.txtTagUsername.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
                             Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
+
+                            layoutBinding.txtTagUsername.setOnClickListener {
+                                showLog("txtTagUsername", Gson().toJson(all_post_data.tagged))
+                                showAppUserDialog(context, all_post_data.tagged)
+                            }
+
                         }
                     }
 
@@ -445,16 +467,19 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                         layoutBinding.titleTxt.text = all_post_data.title
                     }
 
-                    Glide.with(context)
-                        .load(all_post_data!!.user.profileImage)
-                        .thumbnail(0.25f)
-                        .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
-                        .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
-                        .error(R.drawable.logo)
-                        .into(layoutBinding.imgView)
+//                    Glide.with(context)
+//                        .load(all_post_data!!.user.profileImage)
+//                        .thumbnail(0.25f)
+//                        .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
+//                        .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
+//                        .error(R.drawable.logo)
+//                        .into(layoutBinding.imgView)
+//
+//                    val requestOptions = RequestOptions()
+//                    requestOptions.isMemoryCacheable
 
-                    val requestOptions = RequestOptions()
-                    requestOptions.isMemoryCacheable
+                    var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
+                    layoutBinding.imgView.load(all_post_data!!.user.profileImage, true, fullName, all_post_data!!.user.profileColor)
 
 //                    layoutBinding.imgPlaypause.visibility = View.VISIBLE
 //
@@ -779,4 +804,21 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //            )
 //        }
 //    }
+
+    fun showAppUserDialog(activity: Activity, data: List<Tagged>) {
+        val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_app_user)
+        val rvAppUser: RecyclerView = dialog.findViewById(R.id.rv_app_user)!!
+
+        var mLayoutManager = LinearLayoutManager(activity)
+        rvAppUser.layoutManager = mLayoutManager
+
+        val adapter = MoreUserAdapter(activity, data)
+        rvAppUser.adapter = adapter
+
+        dialog.show()
+    }
+
 }

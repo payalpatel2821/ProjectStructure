@@ -30,6 +30,8 @@ data class ResponseFriendsList(
         val mobile: String,
         @SerializedName("profile_image")
         val profileImage: String,
+        @SerializedName("profile_color")
+        val profileColor: String,
 
         //Add New
         var isSelected: Boolean = false

@@ -8,6 +8,7 @@ import com.task.newapp.BuildConfig
 import com.task.newapp.models.socket.SendUserDetailSocket
 import com.task.newapp.models.User
 import com.task.newapp.models.chat.ResponseChatMessage
+import com.task.newapp.models.socket.PostSocket
 import java.net.URI
 
 fun joinSocket() {
@@ -76,4 +77,34 @@ fun userStopTypingEmitEvent(userId: Int, receiverId: Int, userName: String) {
     val userStopTypingPayload = Gson().toJson(sendUserDetailSocket)
     App.getSocketInstance().emit(SocketConstant.user_stop_typing, userStopTypingPayload)
 
+}
+
+fun postLikeDislikeEmitEvent(postSocket: PostSocket) {
+    val postLikeDislikePayload = Gson().toJson(postSocket)
+    showLog(Constants.socket_tag, "postLikeDislikeEmitEvent :$postLikeDislikePayload")
+    App.getSocketInstance().emit(SocketConstant.post_like_dislike, postLikeDislikePayload)
+}
+
+fun addPostCommentEmitEvent(postSocket: PostSocket) {
+    val addPostCommentPayload = Gson().toJson(postSocket)
+    showLog(Constants.socket_tag, "addPostCommentEmitEvent :$addPostCommentPayload")
+    App.getSocketInstance().emit(SocketConstant.add_post_comment, addPostCommentPayload)
+}
+
+fun deletePostCommentEmitEvent(postSocket: PostSocket) {
+    val deletePostCommentPayload = Gson().toJson(postSocket)
+    showLog(Constants.socket_tag, "deletePostCommentEmitEvent :$deletePostCommentPayload")
+    App.getSocketInstance().emit(SocketConstant.delete_post_comment, deletePostCommentPayload)
+}
+
+fun addPostCommentReplyEmitEvent(postSocket: PostSocket) {
+    val addPostCommentReplyPayload = Gson().toJson(postSocket)
+    showLog(Constants.socket_tag, "addPostCommentReplyEmitEvent :$addPostCommentReplyPayload")
+    App.getSocketInstance().emit(SocketConstant.add_post_comment_reply, addPostCommentReplyPayload)
+}
+
+fun addPostDeleteEmitEvent(postSocket: PostSocket) {
+    val addPostDeletePayload = Gson().toJson(postSocket)
+    showLog(Constants.socket_tag, "addPostDeleteEmitEvent :$addPostDeletePayload")
+    App.getSocketInstance().emit(SocketConstant.add_post_delete, addPostDeletePayload)
 }

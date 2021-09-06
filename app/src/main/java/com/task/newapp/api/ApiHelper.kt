@@ -228,6 +228,15 @@ interface ApiHelper {
     @GET(updated_all_group)
     fun getUpdatedAllGroup(): Observable<ResponseGroupData>
 
+    @GET(post_data_count)
+    fun postDataCount(@Path("id") postId: String): Observable<ResponsePostLikeDataCount>
+
+    @POST(post_comment_onoff)
+    fun postCommentOnOff(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
+    @DELETE(post_delete)
+    fun postDelete(@Path("id") postId: String): Observable<CommonResponse>
+
     @POST(is_how_user)
     fun getIsAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
 

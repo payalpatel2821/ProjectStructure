@@ -81,9 +81,6 @@ import kotlin.math.absoluteValue
 import androidx.core.content.ContextCompat.getSystemService
 
 
-
-
-
 /**
  * check network
  */
@@ -1258,7 +1255,7 @@ fun Activity.callAPIGetAllNotification(mCompositeDisposable: CompositeDisposable
                         Log.v("onNext: ", responseNotification.toString())
                         if (responseNotification.success == 1) {
                             insertNotificationToneData(prepareNotificationToneData(responseNotification.data))
-                        }else{
+                        } else {
                             showToast(responseNotification.message)
                         }
                     }

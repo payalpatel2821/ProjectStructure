@@ -88,7 +88,7 @@ data class ResponseGetAllPost(
         @SerializedName("title")
         val title: String,
         @SerializedName("turn_off_comment")
-        val turnOffComment: Int,
+        var turnOffComment: Int,
         @SerializedName("type")
         val type: String,
         @SerializedName("updated_at")
@@ -155,7 +155,9 @@ data class ResponseGetAllPost(
             @SerializedName("id") val id: Int,
             @SerializedName("first_name") val first_name: String?,
             @SerializedName("last_name") val last_name: String?,
-            @SerializedName("profile_image") val profile_image: String
+            @SerializedName("profile_image") val profile_image: String? = "",
+            @SerializedName("profile_color") val profileColor: String? = "",
+            @SerializedName("account_id") val accountId: String? = ""
         )
 
         data class Latest_comment(
@@ -205,7 +207,9 @@ data class ResponseGetAllPost(
             @SerializedName("last_name")
             val lastName: String?,
             @SerializedName("profile_image")
-            val profileImage: String
+            val profileImage: String,
+            @SerializedName("profile_color")
+            val profileColor: String
         )
     }
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -278,7 +278,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:layout_weight="1"
-                                    android:nestedScrollingEnabled="false"
+                                    android:nestedScrollingEnabled="true"
                                     tools:listitem="@layout/post_comment_adpter" />
 
                                 <ImageView
@@ -292,28 +292,26 @@
                                     android:visibility="gone" />
 
                                 <LinearLayout
+                                    android:id="@+id/llAddComment"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="@dimen/_35sdp"
                                     android:layout_gravity="bottom"
-                                    android:layout_marginTop="@dimen/_10sdp"
                                     android:background="@color/white"
-                                    android:elevation="@dimen/_20sdp"
                                     android:gravity="bottom"
                                     android:orientation="horizontal"
-                                    android:padding="@dimen/_5sdp">
+                                    android:padding="@dimen/_1sdp">
 
                                     <RelativeLayout
                                         android:id="@+id/layout_comment"
                                         android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
+                                        android:layout_height="match_parent"
                                         android:layout_weight="1">
 
-                                        <com.vanniktech.emoji.EmojiEditText
+                                        <!--                                        <com.vanniktech.emoji.EmojiEditText-->
+                                        <androidx.appcompat.widget.AppCompatEditText
                                             android:id="@+id/edt_comment"
                                             android:layout_width="match_parent"
-                                            android:layout_height="@dimen/_30sdp"
-                                            android:layout_marginLeft="@dimen/_3sdp"
-                                            android:layout_marginRight="@dimen/_3sdp"
+                                            android:layout_height="match_parent"
                                             android:background="@color/white"
                                             android:fontFamily="@font/bogleregular"
                                             android:hint="Add a comment.."
@@ -346,15 +344,17 @@
                                     <androidx.appcompat.widget.AppCompatTextView
                                         android:id="@+id/txtPost"
                                         android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_alignParentRight="true"
+                                        android:layout_height="match_parent"
+                                        android:layout_gravity="center"
                                         android:layout_marginLeft="@dimen/_8sdp"
                                         android:layout_marginRight="@dimen/_8sdp"
                                         android:fontFamily="@font/bogleregular"
+                                        android:gravity="center"
                                         android:padding="@dimen/_5sdp"
                                         android:text="Post"
-                                        android:textColor="@color/black"
-                                        android:textSize="@dimen/_12ssp" />
+                                        android:textColor="@color/theme_color"
+                                        android:textSize="@dimen/_12ssp"
+                                        android:textStyle="bold" />
 
                                 </LinearLayout>
 

@@ -17,7 +17,7 @@ import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.PostCommentAdpterBinding
-import com.task.newapp.models.post.PostSocket
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.post.ResponseAddPostComment
 import com.task.newapp.models.post.ResponseGetAllPostComments.AllPostCommentData
 import com.task.newapp.ui.fragments.post.PostFragment
@@ -30,6 +30,7 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PostCommentAdapter(
     context: AppCompatActivity,
@@ -80,9 +81,43 @@ class PostCommentAdapter(
 
         this.allPostCommentDataList.clear()
         this.allPostCommentDataList.addAll(allPostCommentDataList)
-//        notifyDataSetChanged()
 
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setData1(allPostCommentDataList: AllPostCommentData, post_by_me: Int) {
+//        this.allPostCommentDataList = allPostCommentDataList
+        this.post_by_me = post_by_me
+//        notifyDataSetChanged()
+
+        //-----------------Add New-----------------------
+//        var allPostCommentDataListTemp: ArrayList<AllPostCommentData> = ArrayList()
+//        allPostCommentDataListTemp.add(0, allPostCommentDataList)
+//        allPostCommentDataListTemp.addAll(this.allPostCommentDataList)
+//
+//
+//        val diffCallback = CommentDiffCallback(this.allPostCommentDataList, allPostCommentDataListTemp)
+//        val diffResult = DiffUtil.calculateDiff(diffCallback)
+//
+//        this.allPostCommentDataList.clear()
+//        this.allPostCommentDataList.addAll(allPostCommentDataListTemp)
+
+//        this.allPostCommentDataList.clear()
+//        this.allPostCommentDataList.addAll(allPostCommentDataList)
+
+//        var allPostCommentDataListTemp: ArrayList<AllPostCommentData> = ArrayList()
+////        allPostCommentDataListTemp.add(0, allPostCommentDataList)
+//        allPostCommentDataListTemp.addAll(this.allPostCommentDataList)
+////
+//        this.allPostCommentDataList.clear()
+////        this.allPostCommentDataList.addAll(allPostCommentDataListTemp)
+//
+        this.allPostCommentDataList.add(0, allPostCommentDataList)
+//        this.allPostCommentDataList.addAll(allPostCommentDataListTemp)
+        notifyItemChanged(0)
+////        notifyDatasetChanged()
+
+//        diffResult.dispatchUpdatesTo(this)
     }
 
     fun getData(): ArrayList<AllPostCommentData> = this.allPostCommentDataList
@@ -270,9 +305,10 @@ class PostCommentAdapter(
 //            text.setSeeMoreText("Show More", "Show Less")
 //            text.setTextMaxLength(200)
 
-            layoutBinding.deleteReply.setOnClickListener(this)
+//            layoutBinding.deleteReply.setOnClickListener(this)
             layoutBinding.imgDeleteSwipe.setOnClickListener(this)
             layoutBinding.sendReply.setOnClickListener(this)
+            layoutBinding.txtDelete.setOnClickListener(this)
         }
 
         fun populateItemRows(allPostCommentData: AllPostCommentData) {
@@ -280,12 +316,14 @@ class PostCommentAdapter(
             layoutBinding.username.text = userName
 
             val profileImg: String = allPostCommentData.user!!.profileImage + "?q=" + System.currentTimeMillis()
-            Glide.with(context)
-                .load(profileImg)
-                .placeholder(R.drawable.logo)
-                .skipMemoryCache(!isCaching)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(layoutBinding.imgView)
+//            Glide.with(context)
+//                .load(profileImg)
+//                .placeholder(R.drawable.logo)
+//                .skipMemoryCache(!isCaching)
+//                .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                .into(layoutBinding.imgView)
+
+            layoutBinding.imgView.load(profileImg, true, layoutBinding.username.text.toString(), allPostCommentData.user!!.profileColor)
 
 //        holder.comment.setContent(dataList!![position].commentText)
             layoutBinding.comment.text = allPostCommentData.commentText
@@ -294,7 +332,7 @@ class PostCommentAdapter(
 //                Add New
                 layoutBinding.edittxt.setText("")
 
-                layoutBinding.replyBox.visibility = View.GONE
+                layoutBinding.cvReplyBox.visibility = View.GONE
                 PostFragment.instance.isreplybox = false
             } else {
                 if (checkedPosition == adapterPosition) {
@@ -302,14 +340,14 @@ class PostCommentAdapter(
                     //Add New
 //                    layoutBinding.edittxt.setText("")
 
-                    layoutBinding.replyBox.visibility = View.VISIBLE
+                    layoutBinding.cvReplyBox.visibility = View.VISIBLE
                     PostFragment.instance.isreplybox = true
                 } else {
 
                     //Add New
                     layoutBinding.edittxt.setText("")
 
-                    layoutBinding.replyBox.visibility = View.GONE
+                    layoutBinding.cvReplyBox.visibility = View.GONE
                     PostFragment.instance.isreplybox = false
                 }
             }
@@ -345,16 +383,65 @@ class PostCommentAdapter(
 //                    ?: "" + " " + allPostCommentData.commentReply?.user!!.lastName ?: ""
 //            }
 
+            if (allPostCommentData.commentReplyList.isEmpty()) {
+
+                //----------------------Hide Comment Recyclerview-----------------------
+                layoutBinding.recyclerViewReply.visibility = View.GONE
+            } else {
+
+                //----------------------Show Comment Recyclerview-----------------------
+                layoutBinding.recyclerViewReply.visibility = View.VISIBLE
+
+                //bind recyclerview
+                val postCommentReplyListAdapter = PostCommentReplyListAdapter(
+                    context,
+                    allPostCommentData.commentReplyList as ArrayList<AllPostCommentData.CommentReply>,
+                    post_by_me,
+                    adapterPosition
+                )
+                layoutBinding.recyclerViewReply.adapter = postCommentReplyListAdapter
+                postCommentReplyListAdapter.setOnItemClickListener(object : OnCommentItemClickListener {
+                    override fun onDeleteCommentClick(positionMain: Int, positionSub: Int) {
+                        onCommentItemClickListener!!.onDeleteCommentClick(positionMain, positionSub)
+                    }
+
+                    override fun onDeleteCommentReplyClick(positionMain: Int, positionSub: Int) {
+                        onCommentItemClickListener!!.onDeleteCommentReplyClick(positionMain, positionSub)
+                    }
+
+                    override fun onCommentReplyClick(positionMain: Int, positionSub: Int, commentId: Int, replyText: String, mainCommentId: Int) {
+                        onCommentItemClickListener!!.onCommentReplyClick(
+                            positionMain,
+                            positionSub,
+                            commentId,
+                            replyText.trim(),
+                            mainCommentId
+                        )
+                    }
+
+                })
+            }
+
             if (post_by_me == 0) {
                 if (App.fastSave.getInt(Constants.prefUserId, 0) == allPostCommentData.user!!.id) {
                     layoutBinding.swipeLayout.isSwipeEnabled = true
-                    layoutBinding.deleteReply.visibility = View.VISIBLE
+//                    layoutBinding.deleteReply.visibility = View.VISIBLE
+
+                    layoutBinding.txtDelete.visibility = View.VISIBLE
+
                 } else {
                     layoutBinding.swipeLayout.isSwipeEnabled = false
-                    layoutBinding.deleteReply.visibility = View.GONE
+//                    layoutBinding.deleteReply.visibility = View.GONE
+
+                    layoutBinding.txtDelete.visibility = View.GONE
                 }
+
             } else {
-                layoutBinding.deleteReply.visibility = View.VISIBLE
+                //----------------------My Post------------------------
+
+                layoutBinding.txtDelete.visibility = View.VISIBLE
+
+//                layoutBinding.deleteReply.visibility = View.VISIBLE
                 layoutBinding.swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
 
                 layoutBinding.swipeLayout.addDrag(
@@ -366,47 +453,12 @@ class PostCommentAdapter(
                     layoutBinding.swipeLayout.findViewById(R.id.bottom_wraperDelete)
                 )
 
+                layoutBinding.swipeLayout.isLeftSwipeEnabled = true
+                layoutBinding.swipeLayout.isRightSwipeEnabled = true
+
 //                layoutBinding.swipeLayout.isLeftSwipeEnabled = allPostCommentData.commentReply == null
                 layoutBinding.swipeLayout.surfaceView.setOnClickListener {
                     comment_id = allPostCommentData.id
-                }
-                layoutBinding.imgReplySwipe.setOnClickListener {
-                    if (layoutBinding.replyBox.visibility == View.VISIBLE) {
-                        layoutBinding.replyBox.visibility = View.GONE
-                        PostFragment.instance.isreplybox = false
-                        layoutBinding.swipeLayout.close(true)
-                    } else {
-                        layoutBinding.replyBox.visibility = View.VISIBLE
-                        PostFragment.instance.isreplybox = true
-                        layoutBinding.swipeLayout.close(true)
-                        layoutBinding.edittxt.isFocusableInTouchMode = true
-                        layoutBinding.edittxt.requestFocus()
-                        if (checkedPosition != adapterPosition) {
-                            notifyItemChanged(checkedPosition)
-                            checkedPosition = adapterPosition
-                            //                            ((Show_Post) context).rec_comments.setFocusable(true);
-//                            ((Show_Post) context).rec_comments.focusableViewAvailable(v);
-                        }
-                    }
-                }
-                layoutBinding.edittxt.setOnTouchListener(object : View.OnTouchListener {
-                    override fun onTouch(v: View, event: MotionEvent): Boolean {
-                        if (layoutBinding.edittxt.hasFocus()) {
-                            v.parent.requestDisallowInterceptTouchEvent(true)
-                            when (event.action and MotionEvent.ACTION_MASK) {
-                                MotionEvent.ACTION_SCROLL -> {
-                                    v.parent.requestDisallowInterceptTouchEvent(false)
-                                    return true
-                                }
-                            }
-                        }
-                        return false
-                    }
-                })
-                layoutBinding.cancel.setOnClickListener {
-                    layoutBinding.replyBox.visibility = View.GONE
-                    PostFragment.instance.isreplybox = false
-                    layoutBinding.edittxt.setText("")
                 }
 //                layoutBinding.sendReply.setOnClickListener {
 //                    sendReply(
@@ -419,6 +471,47 @@ class PostCommentAdapter(
 //                    )
 //                }
             }
+
+            //                layoutBinding.imgReplySwipe.setOnClickListener {
+            layoutBinding.txtReply.setOnClickListener {
+                if (layoutBinding.cvReplyBox.visibility == View.VISIBLE) {
+                    layoutBinding.cvReplyBox.visibility = View.GONE
+                    PostFragment.instance.isreplybox = false
+                    layoutBinding.swipeLayout.close(true)
+                } else {
+                    layoutBinding.cvReplyBox.visibility = View.VISIBLE
+                    PostFragment.instance.isreplybox = true
+                    layoutBinding.swipeLayout.close(true)
+                    layoutBinding.edittxt.isFocusableInTouchMode = true
+                    layoutBinding.edittxt.requestFocus()
+                    if (checkedPosition != adapterPosition) {
+                        notifyItemChanged(checkedPosition)
+                        checkedPosition = adapterPosition
+                        //                            ((Show_Post) context).rec_comments.setFocusable(true);
+//                            ((Show_Post) context).rec_comments.focusableViewAvailable(v);
+                    }
+                }
+            }
+            layoutBinding.edittxt.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(v: View, event: MotionEvent): Boolean {
+                    if (layoutBinding.edittxt.hasFocus()) {
+                        v.parent.requestDisallowInterceptTouchEvent(true)
+                        when (event.action and MotionEvent.ACTION_MASK) {
+                            MotionEvent.ACTION_SCROLL -> {
+                                v.parent.requestDisallowInterceptTouchEvent(false)
+                                return true
+                            }
+                        }
+                    }
+                    return false
+                }
+            })
+            layoutBinding.cancel.setOnClickListener {
+                layoutBinding.cvReplyBox.visibility = View.GONE
+                PostFragment.instance.isreplybox = false
+                layoutBinding.edittxt.setText("")
+            }
+
 //            layoutBinding.deleteReply.setOnClickListener {
 //                layoutBinding.swipeLayout.close(true)
 //                onCommentItemClickListener!!.onDeleteCommentReplyClick(adapterPosition)
@@ -536,21 +629,28 @@ class PostCommentAdapter(
 
         override fun onClick(v: View) {
             when (v.id) {
-                R.id.imgDeleteSwipe -> {
+//                R.id.imgDeleteSwipe -> {
+//                    layoutBinding.swipeLayout.close(true)
+//                    onCommentItemClickListener!!.onDeleteCommentClick(adapterPosition, 0)
+//                }
+                R.id.txtDelete -> {
                     layoutBinding.swipeLayout.close(true)
-                    onCommentItemClickListener!!.onDeleteCommentClick(adapterPosition)
+                    onCommentItemClickListener!!.onDeleteCommentClick(adapterPosition, 0)
                 }
-                R.id.delete_reply -> {
-                    layoutBinding.swipeLayout.close(true)
-                    onCommentItemClickListener!!.onDeleteCommentReplyClick(adapterPosition)
-                }
+//               R.id.delete_reply -> {
+//                    layoutBinding.swipeLayout.close(true)
+//                    onCommentItemClickListener!!.onDeleteCommentReplyClick(adapterPosition)
+//                }
                 R.id.sendReply -> {
+
                     comment_id = allPostCommentDataList[adapterPosition].id
 
                     onCommentItemClickListener!!.onCommentReplyClick(
                         adapterPosition,
+                        0,
                         comment_id,
-                        layoutBinding.edittxt.text.toString().trim()
+                        layoutBinding.edittxt.text.toString().trim(),
+                        allPostCommentDataList[adapterPosition].mainCommentId
                     )
                 }
             }
@@ -561,14 +661,8 @@ class PostCommentAdapter(
 
     //-----------------------------------Click Interface-----------------------------------------
 
-    fun setOnItemClickListener(onItemClickListener: OnCommentItemClickListener?) {
+    fun setOnItemClickListener(onItemClickListener: OnCommentItemClickListener) {
         this.onCommentItemClickListener = onItemClickListener
-    }
-
-    interface OnCommentItemClickListener {
-        fun onDeleteCommentClick(position: Int)
-        fun onDeleteCommentReplyClick(position: Int)
-        fun onCommentReplyClick(position: Int, commentId: Int, replyText: String)
     }
 
     //-----------------------------------DiffUtil Class-----------------------------------------
@@ -587,14 +681,11 @@ class PostCommentAdapter(
         }
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return mOldCommentList[oldItemPosition].id === mNewCommentList[newItemPosition].id
+            return mOldCommentList[oldItemPosition].id == mNewCommentList[newItemPosition].id
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldPostData: AllPostCommentData = mOldCommentList[oldItemPosition]
-            val newPostData: AllPostCommentData = mNewCommentList[newItemPosition]
-
-            return oldPostData == newPostData
+            return mOldCommentList[oldItemPosition] == mNewCommentList[newItemPosition]
         }
 
         override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {

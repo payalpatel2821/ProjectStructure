@@ -70,7 +70,7 @@ data class User(
     @SerializedName("profile_views")
     val profileViews: Int,
     @SerializedName("profile_image")
-    var profileImage: String,
+    var profileImage: String = "",
     @SerializedName("device_arn")
     val deviceArn: String,
     @SerializedName("device_token")

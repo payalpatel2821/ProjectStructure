@@ -16,6 +16,7 @@ import com.task.newapp.adapter.post.SelectFriendsListAdapter
 import com.task.newapp.adapter.post.SelectedFriendsListAdapter
 import com.task.newapp.databinding.ActivitySelectFriendsBinding
 import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.realmDB.getAllFriends
 import com.task.newapp.realmDB.models.FriendRequest
 import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList
@@ -236,4 +237,5 @@ class SelectFriendsActivity : BaseAppCompatActivity(), SearchView.OnQueryTextLis
         }
         return super.onOptionsItemSelected(item)
     }
+
 }

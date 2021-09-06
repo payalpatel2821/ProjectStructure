@@ -26,5 +26,8 @@ data class OtherUserModel(
     @SerializedName("follow_id")
     var follow_id: Int,
     @SerializedName("view_date")
-    val view_date: String
+    val view_date: String,
+
+    //Add New
+    var isSelected: Boolean = false
 )

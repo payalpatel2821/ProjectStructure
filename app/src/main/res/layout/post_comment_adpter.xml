@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/_5sdp"
+        android:layout_marginVertical="@dimen/_2sdp"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <com.task.newapp.utils.swipelayout.SwipeLayout
             android:id="@+id/swipeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:leftEdgeSwipeOffset="0dp"
             app:rightEdgeSwipeOffset="0dp">
 
+            <!--Bottom View For Right to Left-->
             <LinearLayout
                 android:id="@+id/bottom_wrapperReply"
                 android:layout_width="@dimen/_45sdp"
@@ -24,280 +27,278 @@
                 android:background="@color/gray"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="1">
 
                 <ImageView
                     android:id="@+id/imgReplySwipe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
+                    android:padding="@dimen/_10sdp"
                     android:scaleX="-1"
                     android:src="@drawable/ic_forward" />
 
             </LinearLayout>
 
+            <!-- Another Bottom View For Left to Right -->
             <LinearLayout
                 android:id="@+id/bottom_wraperDelete"
                 android:layout_width="@dimen/_45sdp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="@color/red"
+                android:background="@color/red_color_picker"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="1">
 
                 <ImageView
                     android:id="@+id/imgDeleteSwipe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:gravity="center"
-                    android:src="@drawable/ic_delete" />
+                    android:padding="@dimen/_10sdp"
+                    android:src="@drawable/ic_delete_chat" />
 
             </LinearLayout>
 
-            <LinearLayout
+            <!-- Top View,  Row itemView of RecyclerView -->
+
+        </com.task.newapp.utils.swipelayout.SwipeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:id="@+id/image_layout"
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_45sdp"
+                    android:layout_marginHorizontal="@dimen/_5sdp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/img_view"
+                        android:layout_width="@dimen/_35sdp"
+                        android:layout_height="@dimen/_35sdp"
+                        android:elevation="@dimen/_5sdp"
+                        android:minWidth="@dimen/_40sdp"
+                        android:minHeight="@dimen/_40sdp"
+                        android:padding="@dimen/_2sdp"
+                        tools:src="@drawable/logo" />
+
+                </RelativeLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_6sdp"
+                    android:layout_toEndOf="@+id/image_layout"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
 
                     <RelativeLayout
-                        android:id="@+id/image_layout"
-                        android:layout_width="@dimen/_40sdp"
-                        android:layout_height="@dimen/_40sdp"
-                        android:layout_marginLeft="@dimen/_5sdp"
-                        android:layout_marginTop="@dimen/_5sdp">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/img_view"
+                        <TextView
+                            android:id="@+id/username"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="@dimen/_2sdp"
-                            android:src="@drawable/logo" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_6sdp"
+                            android:layout_toStartOf="@+id/lin"
+                            android:fontFamily="@font/bogleregular"
+                            android:singleLine="true"
+                            android:text="@string/username"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_12ssp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/lin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/block_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:fontFamily="@font/bogleregular"
+                                android:gravity="center"
+                                android:paddingHorizontal="@dimen/_5sdp"
+                                android:paddingVertical="@dimen/_2sdp"
+                                android:textColor="@color/gray"
+                                android:textSize="@dimen/_8ssp"
+                                tools:text="31 May, 2020" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
+
+                    <!--                    <com.task.newapp.utils.SeeMoreTextView-->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/comment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/_2sdp"
+                        android:fontFamily="@font/bogleregular"
+                        android:lineSpacingExtra="1pt"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_11ssp"
+                        tools:text="Great! You should start modelling. That’s a perfect gentlemen pic." />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="@dimen/_4sdp"
-                        android:layout_marginTop="@dimen/_4sdp"
-                        android:layout_marginEnd="@dimen/_6sdp"
-                        android:layout_toEndOf="@+id/image_layout"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical">
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:orientation="horizontal">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/username"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="@dimen/_6sdp"
-                                android:layout_toStartOf="@+id/lin"
-                                android:fontFamily="@font/bogleregular"
-                                android:singleLine="true"
-                                android:text="@string/username"
-                                android:textColor="@color/black"
-                                android:textSize="@dimen/_12ssp" />
-
-                            <LinearLayout
-                                android:id="@+id/lin"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:id="@+id/block_date"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_vertical"
-                                    android:fontFamily="@font/bogleregular"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="@dimen/_5sdp"
-                                    android:paddingVertical="@dimen/_2sdp"
-                                    android:textColor="@color/gray"
-                                    android:textSize="@dimen/_10ssp"
-                                    tools:text="31 May, 2020" />
-
-                            </LinearLayout>
-
-                        </RelativeLayout>
-
-                        <!--                    <com.task.newapp.utils.SeeMoreTextView-->
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/comment"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginVertical="@dimen/_2sdp"
+                        <TextView
+                            android:id="@+id/txtReply"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
                             android:fontFamily="@font/bogleregular"
-                            android:lineSpacingExtra="1pt"
+                            android:text="@string/reply"
                             android:textColor="@color/gray"
-                            android:textSize="@dimen/_11ssp"
-                            tools:text="Great! You should start modelling. That’s a perfect gentlemen pic." />
+                            android:textSize="@dimen/_9ssp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtDelete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:fontFamily="@font/bogleregular"
+                            android:text="@string/delete"
+                            android:textColor="@color/gray"
+                            android:textSize="@dimen/_9ssp"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
-                </RelativeLayout>
-
-            </LinearLayout>
-
-        </com.task.newapp.utils.swipelayout.SwipeLayout>
-
-        <RelativeLayout
-            android:id="@+id/reply_box"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            android:background="@drawable/pop_bg"
-            android:visibility="visible">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_5sdp"
-                android:layout_marginVertical="@dimen/_7sdp"
-                android:background="@drawable/bg_rectangle"
-                android:backgroundTint="@color/white">
-
-                <EditText
-                    android:id="@+id/edittxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:fontFamily="@font/bogleregular"
-                    android:hint="@string/enter_your_comment"
-                    android:maxLines="8"
-                    android:minLines="4"
-                    android:overScrollMode="always"
-                    android:paddingHorizontal="@dimen/_6sdp"
-                    android:scrollbarStyle="insideInset"
-                    android:scrollbars="vertical"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11ssp" />
-
-                <LinearLayout
-                    android:id="@+id/ll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/edittxt"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginTop="5pt"
-                    android:layout_marginEnd="5pt"
-                    android:layout_marginBottom="5pt">
-
-                    <TextView
-                        android:id="@+id/sendReply"
-                        android:layout_width="wrap_content"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_reply_box"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_6sdp"
-                        android:background="@drawable/bg_rectangle"
-                        android:backgroundTint="@color/theme_color"
-                        android:fontFamily="@font/bogleregular"
-                        android:gravity="center"
-                        android:paddingHorizontal="@dimen/_8sdp"
-                        android:paddingVertical="@dimen/_5sdp"
-                        android:text="@string/send"
-                        android:textAllCaps="true"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_11ssp" />
+                        android:layout_marginVertical="@dimen/_2sdp"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="@dimen/_5sdp"
+                        app:cardElevation="@dimen/_1sdp"
+                        android:visibility="gone"
+                        app:cardUseCompatPadding="false">
 
-                    <TextView
-                        android:id="@+id/cancel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_rectangle"
-                        android:fontFamily="@font/bogleregular"
-                        android:gravity="center"
-                        android:paddingHorizontal="@dimen/_7sdp"
-                        android:paddingVertical="@dimen/_5sdp"
-                        android:text="@string/cancel"
-                        android:textColor="@color/white"
-                        android:textSize="@dimen/_11ssp" />
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="@dimen/_3sdp"
+                                android:layout_marginVertical="@dimen/_5sdp">
+
+                                <EditText
+                                    android:id="@+id/edittxt"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="@null"
+                                    android:fontFamily="@font/bogleregular"
+                                    android:hint="@string/enter_your_comment"
+                                    android:maxLines="8"
+                                    android:minLines="2"
+                                    android:overScrollMode="always"
+                                    android:paddingHorizontal="@dimen/_6sdp"
+                                    android:scrollbarStyle="insideInset"
+                                    android:scrollbars="vertical"
+                                    android:textColor="@color/black"
+                                    android:textSize="@dimen/_11ssp" />
+
+                                <LinearLayout
+                                    android:id="@+id/ll"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/edittxt"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="bottom|end"
+                                    android:layout_marginTop="@dimen/_5sdp"
+                                    android:layout_marginEnd="@dimen/_3sdp"
+                                    android:gravity="center">
+
+                                    <TextView
+                                        android:id="@+id/sendReply"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="@dimen/_3sdp"
+                                        android:backgroundTint="@color/theme_color"
+                                        android:fontFamily="@font/bogleregular"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_3sdp"
+                                        android:text="@string/send"
+                                        android:textColor="@color/theme_color"
+                                        android:textSize="@dimen/_11ssp"
+                                        android:textStyle="bold" />
+
+                                    <!--                                    <TextView-->
+                                    <androidx.appcompat.widget.AppCompatImageView
+                                        android:id="@+id/cancel"
+                                        android:layout_width="@dimen/_25sdp"
+                                        android:layout_height="@dimen/_25sdp"
+                                        android:layout_gravity="center"
+                                        android:gravity="center"
+                                        android:padding="@dimen/_8sdp"
+                                        android:src="@drawable/ic_close"
+                                        app:tint="@color/black" />
+
+                                </LinearLayout>
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
 
             </RelativeLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/show_reply_box"
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginVertical="@dimen/_5sdp"
+            android:layout_marginLeft="@dimen/_50sdp"
+            android:layout_marginRight="@dimen/_20sdp"
+            android:background="@color/gray1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewReply"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            android:background="@drawable/pop_bg"
-            android:padding="@dimen/_5sdp"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/usernm"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
-                android:layout_marginVertical="@dimen/_10sdp"
-                android:layout_toStartOf="@+id/delete_reply"
-                android:fontFamily="@font/bogleregular"
-                android:text="@string/you"
-                android:textAllCaps="true"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_11ssp" />
-
-            <TextView
-                android:id="@+id/delete_reply"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginVertical="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_toStartOf="@+id/edit_reply"
-                android:fontFamily="@font/bogleregular"
-                android:text="@string/delete"
-                android:textColor="@color/red"
-                android:textSize="@dimen/_9ssp" />
-
-            <TextView
-                android:id="@+id/edit_reply"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginVertical="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:fontFamily="@font/bogleregular"
-                android:text="@string/edit"
-                android:textColor="@color/red"
-                android:textSize="@dimen/_9ssp"
-                android:visibility="gone" />
-
-            <!--        <com.task.newapp.utils.SeeMoreTextView-->
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textReply"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_35sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
-                android:fontFamily="@font/bogleregular"
-                android:lineSpacingExtra="@dimen/_1sdp"
-                android:padding="@dimen/_8sdp"
-                android:textColor="@color/gray"
-                android:textSize="@dimen/_11ssp"
-                tools:text="Thank You So much for Good Review ! I Hope You Very Like This Application." />
-
-        </RelativeLayout>
+            android:layout_marginVertical="@dimen/_3sdp"
+            android:layout_marginLeft="@dimen/_45sdp"
+            android:layout_marginRight="@dimen/_5sdp"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_comment_reply" />
 
     </LinearLayout>
+
 
 </layout>

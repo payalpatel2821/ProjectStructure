@@ -22,29 +22,30 @@
         android:layout_centerInParent="true"
         android:gravity="center">
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/ivInfo"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:scaleType="centerCrop" />-->
-
-        <com.jsibbold.zoomage.ZoomageView
+        <ImageView
             android:id="@+id/ivInfo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
-            android:adjustViewBounds="true"
-            app:zoomage_animateOnReset="true"
-            app:zoomage_autoCenter="true"
-            app:zoomage_autoResetMode="ALWAYS"
-            app:zoomage_doubleTapToZoom="true"
-            app:zoomage_maxScale="8"
-            android:scaleType="centerCrop"
-            app:zoomage_minScale="0"
-            app:zoomage_restrictBounds="false"
-            app:zoomage_translatable="true"
-            app:zoomage_zoomable="true" />
-        <!--        android:scaleType="centerCrop"-->
+            android:scaleType="centerCrop" />
+
+        <!--        <com.jsibbold.zoomage.ZoomageView-->
+        <!--            android:id="@+id/ivInfo"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_centerInParent="true"-->
+        <!--            android:adjustViewBounds="true"-->
+        <!--            android:scaleType="centerCrop"-->
+        <!--            app:zoomage_animateOnReset="true"-->
+        <!--            app:zoomage_autoCenter="true"-->
+        <!--            app:zoomage_autoResetMode="ALWAYS"-->
+        <!--            app:zoomage_doubleTapToZoom="false"-->
+        <!--            app:zoomage_maxScale="8"-->
+        <!--            app:zoomage_minScale="0"-->
+        <!--            app:zoomage_restrictBounds="false"-->
+        <!--            app:zoomage_translatable="true"-->
+        <!--            app:zoomage_zoomable="true" />-->
+        <!--        &lt;!&ndash;        android:scaleType="centerCrop"&ndash;&gt;-->
 
     </RelativeLayout>
 

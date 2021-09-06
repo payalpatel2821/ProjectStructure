@@ -10,11 +10,14 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
+import com.aghajari.zoomhelper.ZoomHelper
 import com.allattentionhere.autoplayvideos.AAH_CustomViewHolder
 import com.allattentionhere.autoplayvideos.AAH_VideosAdapter
 import com.bumptech.glide.Glide
@@ -48,7 +51,8 @@ import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ui.PlayerView
 
 
-class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<All_Post_Data.PostContent>, p: Picasso) : AAH_VideosAdapter() {
+class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<All_Post_Data.PostContent>, p: Picasso) : AAH_VideosAdapter(),
+    ZoomHelper.OnZoomStateChangedListener {
     private val VIEW_TYPE_IMAGE = 0
     private val VIEW_TYPE_VIDEO = 1
 
@@ -71,7 +75,8 @@ class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<
 
 
     inner class PhotoViewHolder(itemView: View) : AAH_CustomViewHolder(itemView) {
-        val ivInfo: ZoomageView = itemView.findViewById<ZoomageView>(R.id.ivInfo)
+//        val ivInfo: ZoomageView = itemView.findViewById<ZoomageView>(R.id.ivInfo)
+        val ivInfo: ImageView = itemView.findViewById<ImageView>(R.id.ivInfo)
         val rlMainPhoto: RelativeLayout = itemView.findViewById<RelativeLayout>(R.id.rlMainPhoto)
         val imgShadow: ImageView = itemView.findViewById<ImageView>(R.id.imgShadow)
     }
@@ -121,6 +126,10 @@ class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<
         if (holder.itemViewType == VIEW_TYPE_IMAGE) {
 
             var holderPhoto = PhotoViewHolder(holder.itemView)
+
+            //-------------------------Add New-----------------------
+            ZoomHelper.addZoomableView(holderPhoto.ivInfo, postContent)
+
 
             if (position == 0) {
                 width = postContent!!.width
@@ -502,9 +511,10 @@ class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<
         }
     }
 
-//    override fun onViewRecycled(holder: AAH_CustomViewHolder) {
-//        super.onViewRecycled(holder)
-//        holder?.pauseVideo()
-//    }
-
+    override fun onZoomStateChanged(zoomHelper: ZoomHelper, zoomableView: View, isZooming: Boolean) {
+        if (isZooming) {
+            val model = ZoomHelper.getZoomableViewTag(zoomableView) as All_Post_Data.PostContent
+            //Toast.makeText(zoomableView.context, model.content + "'s post started zooming!", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

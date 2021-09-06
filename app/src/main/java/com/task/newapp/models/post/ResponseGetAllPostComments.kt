@@ -42,22 +42,22 @@ data class ResponseGetAllPostComments(
         val user: CommentUser? = null,
 
         @SerializedName("comment_reply")
-        val commentReply: List<CommentReply> = ArrayList()
+        var commentReplyList: ArrayList<CommentReply> = ArrayList()
     ) {
         data class CommentReply(
 
-            @SerializedName("id") val id: Int,
-            @SerializedName("post_id") val post_id: Int,
-            @SerializedName("user_id") val user_id: Int,
-            @SerializedName("is_comment_reply") val is_comment_reply: Int,
-            @SerializedName("comment_id") val comment_id: Int,
-            @SerializedName("main_comment_id") val main_comment_id: Int,
-            @SerializedName("comment_text") val comment_text: String,
-            @SerializedName("status") val status: String,
-            @SerializedName("is_deleted") val is_deleted: Int,
-            @SerializedName("created_at") val created_at: String,
-            @SerializedName("updated_at") val updated_at: String,
-            @SerializedName("user") val user: User
+            @SerializedName("id") val id: Int = 0,
+            @SerializedName("post_id") val post_id: Int = 0,
+            @SerializedName("user_id") val user_id: Int = 0,
+            @SerializedName("is_comment_reply") val is_comment_reply: Int = 0,
+            @SerializedName("comment_id") val comment_id: Int = 0,
+            @SerializedName("main_comment_id") val main_comment_id: Int = 0,
+            @SerializedName("comment_text") val comment_text: String = "",
+            @SerializedName("status") val status: String = "",
+            @SerializedName("is_deleted") val is_deleted: Int = 0,
+            @SerializedName("created_at") val created_at: String = "",
+            @SerializedName("updated_at") val updated_at: String = "",
+            @SerializedName("user") val user: User? = null
         ) {
             data class User(
                 @SerializedName("id") val id: Int,
@@ -66,8 +66,8 @@ data class ResponseGetAllPostComments(
                 @SerializedName("account_id") val account_id: String,
                 @SerializedName("profile_image") val profile_image: String,
                 @SerializedName("profile_color") val profile_color: String,
-                @SerializedName("is_visible") val is_visible: Int,
-                @SerializedName("flag") val flag: String
+                @SerializedName("is_visible") val is_visible: Int = 0,
+                @SerializedName("flag") val flag: String = ""
             )
         }
 

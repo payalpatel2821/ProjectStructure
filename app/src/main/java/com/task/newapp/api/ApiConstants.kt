@@ -15,6 +15,8 @@ const val archive_chat = "api_v1/archive-chat"
 const val delete_chat = "api_v1/delete_chat"
 const val get_all_posts = "/api_v1/get-all-posts/{limit}/{offset}"
 const val add_postlikeunlike = "/api_v1/post_like"
+const val post_comment_onoff = "/api_v1/post-comment-on-off"
+const val post_delete = "/api_v1/post/{id}"
 const val post_comment = "/api_v1/post_comment"
 const val postSaveUnsave = "/api_v1/post-save"
 const val allpostcomment = "/api_v1/post-comment-detail"
@@ -51,6 +53,8 @@ const val delete_broadcast = "/api_v1/broadcast/{id}";
 const val send_chat_message = "/api_v1/chat";
 const val updated_all_group = "/api_v1/updated-all-group"
 const val get_post_detail = "/api_v1/post-details/{id}"
+const val post_data_count = "/api_v1/post-data-count/{id}"
+
 
 const val is_how_user = "/api_v1/is-how-user"
 

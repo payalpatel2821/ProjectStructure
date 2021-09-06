@@ -9,6 +9,8 @@
     <!--    <color name="purple_700">#FF3700B3</color>-->
     <!--    <color name="teal_200">#FF03DAC5</color>-->
     <!--    <color name="teal_700">#FF018786</color>-->
+    <color name="pressed_item_foreground">#08000000</color>
+    <color name="activated_item_foreground">#44888888</color>
     <color name="black">#FF000000</color>
     <color name="blue_opacity">#80041B33</color>
     <color name="black_opacity">#CC000000</color>

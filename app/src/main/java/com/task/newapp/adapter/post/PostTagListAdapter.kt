@@ -9,23 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemTaglistPostBinding
+import com.task.newapp.models.OtherUserModel
 import com.task.newapp.models.post.ResponseFriendsList
+import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
 import kotlin.collections.ArrayList
 
 
 class PostTagListAdapter(
     context: FragmentActivity,
-    arrayListPattern: ArrayList<ResponseFriendsList.Data>
+    arrayListPattern: ArrayList<OtherUserModel>
 
 ) : RecyclerView.Adapter<PostTagListAdapter.ViewHolder>() {
     var context: FragmentActivity = context as FragmentActivity
-    var arrayList: ArrayList<ResponseFriendsList.Data> = arrayListPattern as ArrayList<ResponseFriendsList.Data>
+    var arrayList: ArrayList<OtherUserModel> = arrayListPattern as ArrayList<OtherUserModel>
     var onItemClick: ((String, String) -> Unit)? = null
 
     var commaSeperatedIds: String = ""
     var commaSeperatedNames: String = ""
-    var arrayListTemp: ArrayList<ResponseFriendsList.Data> = ArrayList()
+    var arrayListTemp: ArrayList<OtherUserModel> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostTagListAdapter.ViewHolder {
         val layoutBinding: ItemTaglistPostBinding = DataBindingUtil.inflate(
@@ -41,14 +43,20 @@ class PostTagListAdapter(
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         with(viewHolder) {
             with(arrayList[position]) {
-                Glide.with(context).load(this.profileImage).placeholder(R.drawable.logo).into(layoutBinding.imgProfile)
+
+//                Glide.with(context).load(this.profileImage).placeholder(R.drawable.logo).into(layoutBinding.imgProfile)
+
                 layoutBinding.txtName.text = (this.firstName ?: "") + " " + (this.lastName ?: "")
+
+                //this.profileImage?.let {
+                layoutBinding.imgProfile.load(this.profileImage, true, layoutBinding.txtName.text.trim().toString(), this.profileColor)
+                // }
 
                 //viewHolder.layoutBinding.imgCheck.isSelected = this.isSelected
 
                 if (arrayListTemp.contains(arrayList[position])) {
                     viewHolder.layoutBinding.imgCheck.isSelected = true
-                }else{
+                } else {
                     viewHolder.layoutBinding.imgCheck.isSelected = arrayList[position].isSelected
                 }
 
@@ -89,7 +97,7 @@ class PostTagListAdapter(
 
     inner class ViewHolder(val layoutBinding: ItemTaglistPostBinding) : RecyclerView.ViewHolder(layoutBinding.root)
 
-    fun setData(data: ArrayList<ResponseFriendsList.Data>, isRefresh: Boolean) {
+    fun setData(data: ArrayList<OtherUserModel>, isRefresh: Boolean) {
 
         if (isRefresh) {
             arrayList.clear()
@@ -106,10 +114,10 @@ class PostTagListAdapter(
 
     fun setSelectedName() {
         try {
-            commaSeperatedNames = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
+            commaSeperatedNames = arrayListTemp.filter(OtherUserModel::isSelected)
                 .joinToString(separator = ", ") { if (it.isSelected) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
 
-            commaSeperatedIds = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
+            commaSeperatedIds = arrayListTemp.filter(OtherUserModel::isSelected)
                 .joinToString(separator = ",") { if (it.isSelected) it.id.toString() else "" }
 
             onItemClick?.invoke(commaSeperatedNames, commaSeperatedIds)
