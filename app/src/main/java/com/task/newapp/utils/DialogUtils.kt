@@ -158,6 +158,11 @@ class DialogUtils {
             balloon.dismiss()
             anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
         }
+        binding.actionAudio.setOnClickListener {
+            listener.onDefaultButtonClick(ChatAttachmentActionsName.AUDIO.value)
+            balloon.dismiss()
+            anchor.setColorFilter(ContextCompat.getColor(activity, R.color.gray2), android.graphics.PorterDuff.Mode.MULTIPLY);
+        }
         binding.actionDocument.setOnClickListener {
             listener.onDefaultButtonClick(ChatAttachmentActionsName.DOCUMENTS.value)
             balloon.dismiss()
@@ -453,6 +458,7 @@ class DialogUtils {
     enum class ChatAttachmentActionsName(val value: String, val resouceId: Int) {
         CAMERA("Camera", R.drawable.ic_camera),
         PHOTOS("Photos", R.drawable.ic_photo),
+        AUDIO("Audio", R.drawable.ic_attachment_music),
         DOCUMENTS("Documents", R.drawable.ic_document),
         CONTACTS("Contacts", R.drawable.ic_contact),
         LOCATION("Location", R.drawable.ic_location_chat);

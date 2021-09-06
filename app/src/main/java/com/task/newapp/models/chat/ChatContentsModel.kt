@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class ChatContentsModel(
     @SerializedName("id")
-    var id: Int? = null,
+    var id: Long? = null,
     @SerializedName("chat_id")
-    var chatId: Int? = null,
+    var chatId: Long? = null,
     @SerializedName("content")
     var content: String? = null,
     @SerializedName("type")

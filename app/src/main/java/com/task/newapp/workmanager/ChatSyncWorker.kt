@@ -14,12 +14,27 @@ import com.task.newapp.realmDB.models.ChatContents
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.ChatContentType
+import com.task.newapp.utils.Constants.Companion.ChatContentType.AUDIO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.CONTACT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.CURRENT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.DOCUMENT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.IMAGE
+import com.task.newapp.utils.Constants.Companion.ChatContentType.LOCATION
+import com.task.newapp.utils.Constants.Companion.ChatContentType.PDF
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VIDEO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VOICE
+import com.task.newapp.utils.Constants.Companion.ChatTypeFlag
 import com.task.newapp.utils.Constants.Companion.MessageType
 import com.task.newapp.utils.Constants.Companion.MessageType.LABEL
+import com.task.newapp.utils.Constants.Companion.MessageType.MIX
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -95,7 +110,6 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
     }
 
-
     private fun callAPISendChatMessage(callback: ((Boolean) -> Unit)? = null) {
 
         val chatList: ChatList = chatListArray[syncOneToOneChatCount]
@@ -107,32 +121,111 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                 applicationContext.showToast(applicationContext.getString(R.string.no_internet))
                 return
             }
-            //openProgressDialog(activity)
-            val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.local_id to chatList.localChatId,
-                Constants.message_text to chatList.messageText!!,
-                Constants.is_secret to 0,
-                Constants.type to MessageType.TEXT.type
-            )
 
-            hashMap[Constants.receiver_id] = chatList.receiverId
-            showLog(TAG, hashMap.toString())
+            val parameters = MultipartBody.Builder().setType(MultipartBody.FORM)
+            parameters.addFormDataPart(Constants.local_id, chatList.localChatId.toString())
+                .addFormDataPart(Constants.message_text, chatList.messageText ?: "")
+                .addFormDataPart(Constants.is_secret, "0")
+                .addFormDataPart(Constants.type, chatList.type ?: "")
+
+
+            var flag = ChatTypeFlag.PRIVATE
+
+            when {
+                chatList.isGroupChat == 1 -> {
+                    flag = ChatTypeFlag.GROUPS
+
+                    parameters.addFormDataPart(Constants.group_id, chatList.groupId.toString()).addFormDataPart(Constants.is_group_chat, "1")
+                }
+                chatList.isBroadcastChat == 1 -> {
+                    flag = ChatTypeFlag.BROADCAST
+                    if (chatList.receiverId != 0) {
+
+                        parameters.addFormDataPart(Constants.receiver_id, chatList.receiverId.toString())
+                            .addFormDataPart(Constants.broadcast_chat_id, chatList.broadcastChatId.toString())
+                    }
+
+                    parameters.addFormDataPart(Constants.broadcast_id, chatList.broadcastId.toString())
+                        .addFormDataPart(Constants.is_broadcast_chat, "1")
+                }
+                chatList.isSecret == 1 -> {
+                    flag = ChatTypeFlag.SECRET
+                }
+                else -> {
+                    flag = ChatTypeFlag.PRIVATE
+                    parameters.addFormDataPart(Constants.receiver_id, chatList.receiverId.toString())
+                }
+
+
+            }
+            if (chatList.isReply == 1) {
+
+                parameters.addFormDataPart(Constants.is_reply, chatList.isReply.toString())
+                    .addFormDataPart(Constants.chat_id, chatList.chatId.toString())
+
+            }
+
+            if (MessageType.getMessageTypeFromText(chatList.type ?: "") == MIX) {
+
+                chatList.chatContents?.let { chatContent ->
+                    when (ChatContentType.getChatContentTypeFromText(chatContent.type)) {
+                        IMAGE, VIDEO -> {
+                            val captionKey = "${Constants.contents}[${Constants.caption}]"
+                            val typeKey = "${Constants.contents}[${Constants.type}]"
+                            val thumbKey = "${Constants.contents}[${Constants.thumb}]"
+                            val fileKey = "${Constants.contents}[${Constants.file}]"
+                            val titleKey = "${Constants.contents}[${Constants.title}]"
+
+                            val requestBody: RequestBody = RequestBody.create(chatContent.type.toMediaTypeOrNull(), chatContent.data!!)
+                            parameters.addFormDataPart(captionKey, chatContent.caption ?: "")
+                                .addFormDataPart(fileKey, chatContent.title, requestBody)
+                                .addFormDataPart(titleKey, chatContent.title)
+                                .addFormDataPart(typeKey, chatContent.type)
+
+
+                        }
+                        AUDIO, VOICE -> {
+                            val typeKey = "${Constants.contents}[${Constants.type}]"
+                            val fileKey = "${Constants.contents}[${Constants.file}]"
+                            val durationKey = "${Constants.contents}[${Constants.duration}]"
+                            val titleKey = "${Constants.contents}[${Constants.title}]"
+
+                            val requestBody: RequestBody = RequestBody.create(chatContent.type.toMediaTypeOrNull(), chatContent.data!!)
+                            parameters.addFormDataPart(durationKey, chatContent.duration.toString())
+                                .addFormDataPart(fileKey, chatContent.title, requestBody)
+                                .addFormDataPart(titleKey, chatContent.title)
+                                .addFormDataPart(typeKey, chatContent.type)
+                        }
+                        CONTACT -> {
+                        }
+                        CURRENT -> {
+                        }
+                        PDF -> {
+                        }
+                        DOCUMENT -> {
+                        }
+                        LOCATION -> {
+                        }
+                    }
+                }
+            } else if (MessageType.getMessageTypeFromText(chatList.type ?: "") == MessageType.CONTACT) {
+            }
+            val requestBody: RequestBody = parameters.build()
+            showLog(TAG, parameters.toString())
 
             //------------------------Call API-------------------------
-
             mCompositeDisposable.add(
                 ApiClient.create()
-                    .sendChatMessage(hashMap)
+                    .sendChatMessage(requestBody)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseChatMessage>() {
                         override fun onNext(responseChatMessage: ResponseChatMessage) {
-                            hideProgressDialog()
 
                             if (responseChatMessage.success == 1) {
 
 
-                                updateChatList(responseChatMessage) { success ->
+                                updateChatList(chatList.id, responseChatMessage) { success ->
                                     if (success)
                                         callback?.invoke(true)
                                     else
@@ -144,24 +237,22 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
-                            hideProgressDialog()
                             callback?.invoke(false)
                         }
 
                         override fun onComplete() {
-                            hideProgressDialog()
                             callback?.invoke(false)
                         }
                     })
             )
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
     }
 
-
-    private fun updateChatList(responseChatMessage: ResponseChatMessage, callback: ((Boolean) -> Unit)? = null) {
+    private fun updateChatList(localId: Long, responseChatMessage: ResponseChatMessage, callback: ((Boolean) -> Unit)? = null) {
 
         responseChatMessage.createRequest?.let { friendRequestModel ->
             insertFriendRequestData(createFriendRequest(friendRequestModel))
@@ -184,9 +275,7 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
             when (MessageType.getMessageTypeFromText(chatModel.type)) {
                 LABEL -> {
-                    updateChatListIdData(chatModel.localId, chatModel, true) {
-
-                    }
+                    updateChatListIdData(localId, chatModel, true)
                 }
                 else -> {
                     var chatContent: ChatContents? = null
@@ -194,7 +283,7 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                         chatContent = ChatContents()
                         createChatContent(chatModel.chatContents)?.let {
                             chatContent = it
-                            updateChatContent(chatModel.localId, it)
+                            updateChatContent(localId, it)
                         }
                     }
 
@@ -202,7 +291,7 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                         contactsList.forEach { contact ->
                             createChatContent(contact)?.let {
                                 chatContent = it
-                                updateChatContent(chatModel.localId, it)
+                                updateChatContent(localId, it)
                             }
                         }
                     }
@@ -230,8 +319,21 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                 }
             }
         }
+        responseChatMessage.data?.let { objectData ->
+            if (objectData.isGroupChat == 1) {
 
-        sendOneToOneMessageEmitEvent(responseChatMessage)
+            } else if (objectData.isBroadcastChat == 1) {
+                if (objectData.otherUserId.isNullOrBlank()) {
+
+                } else {
+                    if (objectData.otherUserId.isNotEmpty()) {
+
+                    }
+                }
+            } else
+                sendOneToOneMessageEmitEvent(responseChatMessage)
+
+        }
         callback?.invoke(true)
     }
 

@@ -5,9 +5,9 @@ import com.github.nkzawa.socketio.client.IO
 import com.google.gson.Gson
 import com.task.newapp.App
 import com.task.newapp.BuildConfig
-import com.task.newapp.models.socket.SendUserDetailSocket
 import com.task.newapp.models.User
 import com.task.newapp.models.chat.ResponseChatMessage
+import com.task.newapp.models.socket.SendUserDetailSocket
 import com.task.newapp.models.socket.PostSocket
 import java.net.URI
 
@@ -61,7 +61,9 @@ fun getUserStatusEmitEvent(user_id: Int, receiver_id: Int) {
 }
 
 fun sendOneToOneMessageEmitEvent(message: ResponseChatMessage) {
-    App.getSocketInstance().emit(SocketConstant.new_message_private, Gson().toJson(message))
+    val messagePayload = Gson().toJson(message)
+    showLog(Constants.socket_tag, "userTypingEmitEvent :$messagePayload")
+    App.getSocketInstance().emit(SocketConstant.new_message_private, messagePayload)
 
 }
 

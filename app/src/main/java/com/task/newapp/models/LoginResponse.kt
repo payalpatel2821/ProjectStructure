@@ -70,7 +70,7 @@ data class LoginResponse(
         @SerializedName("name")
         val name: String,
         @SerializedName("icon")
-        val icon: String,
+        val icon: String? = "",
         @SerializedName("total_users")
         val totalUsers: Int,
         @SerializedName("other_user_id")
@@ -91,10 +91,6 @@ data class LoginResponse(
         @SerializedName("user")
         val user: User
     )
-
-
-
-
 
 
 }

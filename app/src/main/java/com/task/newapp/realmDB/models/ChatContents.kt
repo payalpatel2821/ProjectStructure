@@ -2,13 +2,15 @@
 package com.task.newapp.realmDB.models
 
 import io.realm.RealmObject
+import io.realm.RealmResults
+import io.realm.annotations.LinkingObjects
 import io.realm.annotations.PrimaryKey
 
 open class ChatContents : RealmObject() {
     @PrimaryKey
     var contentId: Long = 0
-    var id: Int = 0
-    var chatId: Int = 0
+    var id: Long = 0
+    var chatId: Long = 0
     var content: String = ""
     var type: String = ""
     var caption: String? = ""
@@ -31,11 +33,19 @@ open class ChatContents : RealmObject() {
     var localPath: String = ""
     var isDownload: Boolean = false
     var data: ByteArray? = null
+    //val chatcontents = @LinkingObjects(CHAT_LIST.self, property: "chatcontents")
+    //val chatcontacts = LinkingObjects(fromType: CHAT_LIST. self, property: "contacts")
+
+    @LinkingObjects("chatContents")
+    val chatContents: RealmResults<ChatList>? = null
+
+    @LinkingObjects("contacts")
+    val chatContacts: RealmResults<ChatList>? = null
 
     //var assets: UploadDataObject? = null
     companion object {
         fun create(
-            contentId: Long, id: Int, chatId: Int, content: String, type: String, caption: String, size: Double, duration: Double,
+            contentId: Long, id: Long, chatId: Long, content: String, type: String, caption: String, size: Double, duration: Double,
             title: String, name: String, number: String, email: String, profileImage: String, location: String, latitude: Double, longitude: Double, endTime: String,
             sharingTime: String, locationType: String, deleteFor: String, createdAt: String, updatedAt: String, localPath: String, isDownload: Boolean, data: ByteArray
         ): ChatContents {

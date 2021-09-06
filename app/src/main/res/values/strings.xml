@@ -274,6 +274,8 @@
     <string name="tab_text_1">My Contact</string>
     <string name="tab_text_2">Explore</string>
     <string name="delete_post_item">Are you want to delete it ?</string>
+    <string name="slide_to_cancel">Slide to Cancel</string>
+    <string name="hold_to_record_audio">Hold to record, release to send</string>
 
 
 <!--    contact-->

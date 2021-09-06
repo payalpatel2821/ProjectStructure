@@ -204,26 +204,10 @@ interface ApiHelper {
 
     @POST(set_group_setting_url)
     fun setGroupSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseGroupSetting>
-    @Multipart
-    @POST(send_chat_message)
-    fun sendChatMessage(
-        @Part("type") type: RequestBody?,
-        @Part("receiver_id") receiver_id: Int?,
-        @Part("message_text") message_text: RequestBody?,
-        @Part("is_reply_to_message") is_reply_to_message: Int?,
-        @Part("chat_id") chat_id: Int?,
-        @Part("content_id") content_id: Int?,
-        @Part("is_secret") is_secret: Int?,
-        @Part("local_id") local_id: Int?,
-        @Part("is_group_chat") is_group_chat: Int?,
-        @Part("group_id") group_id: Int?,
-        @Part("is_content_reply") is_content_reply: Int?,
-        @Part("broadcast_id") broadcast_id: Int?,
-        @Part("is_broadcast_chat") is_broadcast_chat: Int?,
-    ): Call<ResponseChatMessage>
+
 
     @POST(send_chat_message)
-    fun sendChatMessage(@Body hashMap: HashMap<String, Any>): Observable<ResponseChatMessage>
+    fun sendChatMessage( @Body data: RequestBody): Observable<ResponseChatMessage>
 
     @GET(updated_all_group)
     fun getUpdatedAllGroup(): Observable<ResponseGroupData>

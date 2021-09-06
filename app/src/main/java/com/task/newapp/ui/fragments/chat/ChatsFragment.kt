@@ -25,17 +25,45 @@ import com.task.newapp.models.CommonResponse
 import com.task.newapp.models.chat.ChatModel
 import com.task.newapp.models.chat.ResponseGetUnreadMessage
 import com.task.newapp.models.chat.ResponseGroupData
-import com.task.newapp.realmDB.*
+import com.task.newapp.realmDB.clearAllChatList
+import com.task.newapp.realmDB.createFriendRequest
+import com.task.newapp.realmDB.deleteArchive
+import com.task.newapp.realmDB.deleteHook
+import com.task.newapp.realmDB.getAllChats
+import com.task.newapp.realmDB.getArchivedChatCount
+import com.task.newapp.realmDB.getChatPosition
+import com.task.newapp.realmDB.getHookCount
+import com.task.newapp.realmDB.getSingleChat
+import com.task.newapp.realmDB.getSingleChatList
+import com.task.newapp.realmDB.insertArchiveData
+import com.task.newapp.realmDB.insertChatData
+import com.task.newapp.realmDB.insertChatListData
+import com.task.newapp.realmDB.insertFriendRequestData
+import com.task.newapp.realmDB.insertHookData
+import com.task.newapp.realmDB.insertUserData
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.models.UserArchive
 import com.task.newapp.realmDB.models.UserHook
+import com.task.newapp.realmDB.prepareChatLabelData
+import com.task.newapp.realmDB.prepareOtherUserData
+import com.task.newapp.realmDB.updateChatListAndUserData
+import com.task.newapp.realmDB.updateChatsIsArchive
+import com.task.newapp.realmDB.updateChatsIsHook
+import com.task.newapp.realmDB.updateChatsList
+import com.task.newapp.realmDB.updateUserOnlineStatus
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.ui.activities.chat.ArchivedChatsListActivity
 import com.task.newapp.ui.activities.chat.OneToOneChatActivity
-import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.GROUPS
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.PRIVATE
+import com.task.newapp.utils.DateTimeUtils
+import com.task.newapp.utils.hideProgressDialog
+import com.task.newapp.utils.isNetworkConnected
+import com.task.newapp.utils.openProgressDialog
+import com.task.newapp.utils.showLog
+import com.task.newapp.utils.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -191,7 +219,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         }
     }
 
-    private fun insertUnreadMessagedToDB(data: List<ChatModel>, callback: (Boolean) -> Unit) {
+    private fun insertUnreadMessagedToDB(data: List<ChatModel>, callback: ((Boolean) -> Unit)? = null) {
         for (messageObj in data) {
             val checkChatExist = getSingleChatList(messageObj.id)
             if (checkChatExist != null) {
@@ -230,7 +258,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                             chat.currentTime = messageObj.createdAt
                         }*/
                         if (isUpdate)
-                            updateChatsList(messageObj.groupId, chatList) {}
+                            updateChatsList(messageObj.groupId, chatList)
 
                     }
                     messageObj.isSecret == 1 -> {
@@ -263,7 +291,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                         }*/
 
                         if (isUpdate) {
-                            updateChatsList(chatList.userId, chatList) {}
+                            updateChatsList(chatList.userId, chatList)
                         }
                     }
                 }
@@ -290,7 +318,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             }
 
         }
-        callback.invoke(true)
+        callback?.invoke(true)
     }
 
     override fun onBlockChatClick(position: Int, chats: Chats) {
@@ -306,12 +334,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     override fun onClearChatClick(position: Int, chats: Chats) {
-        callClearChatAPI(chats) { isSuccess ->
-            if (isSuccess) {
-                setAdapter(false)
-            }
+         callClearChatAPI(chats) { isSuccess ->
+             if (isSuccess) {
+                 setAdapter(false)
+             }
 
-        }
+         }
     }
 
     override fun onArchiveChatClick(position: Int, chats: Chats) {
