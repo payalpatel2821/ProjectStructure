@@ -135,4 +135,23 @@
         <attr name="dotsClickable" />
     </declare-styleable>
 
+
+    <declare-styleable name="SectionPicker">
+        <attr name="SectionPicker_textSize" format="dimension" />
+        <attr name="SectionPicker_textColor" format="color" />
+        <attr name="SectionPicker_textStyle" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+        </attr>
+        <attr name="SectionPicker_chosenSize" format="dimension" />
+        <attr name="SectionPicker_chosenColor" format="color" />
+        <attr name="SectionPicker_chosenStyle" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="bold" value="1" />
+            <enum name="italic" value="2" />
+        </attr>
+        <attr name="SectionPicker_indicatorEnabled" format="boolean" />
+    </declare-styleable>
+
 </resources>

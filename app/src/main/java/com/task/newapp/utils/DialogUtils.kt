@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.AdapterView
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -26,11 +25,12 @@ import com.irozon.alertview.enums.AlertActionStyle
 import com.irozon.alertview.enums.AlertStyle
 import com.irozon.alertview.objects.AlertAction
 import com.skydoves.balloon.*
-import com.skydoves.balloon.extensions.dp
 import com.task.newapp.R
+import com.task.newapp.adapter.AppUserAdapter
 import com.task.newapp.adapter.profile.NotificationListAdapter
 import com.task.newapp.databinding.LayoutAttachmentPopupBinding
 import com.task.newapp.models.NotificationToneWrapper
+import com.task.newapp.models.ResponseIsAppUser
 import com.task.newapp.realmDB.getAllNotificationTune
 import java.util.*
 import kotlin.collections.ArrayList
@@ -90,7 +90,7 @@ class DialogUtils {
     fun showConfirmationIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
         alert.show(activity)
-        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.black))
+        alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.black))
         alert.addAction(AlertAction(PostDialogActionName.REPORT.value, AlertActionStyle.NEGATIVE) {
             listener.onNegativeButtonClick()
         })
@@ -154,7 +154,7 @@ class DialogUtils {
 
     fun showVibrationStatusDialog(activity: AppCompatActivity, checkedOption: String, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS_RADIO)
-        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.red))
+        alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.red))
         for (value in VibrationDialogActionName.values()) {
             alert.addAction(AlertAction(value.value, value.value == checkedOption, AlertActionStyle.DEFAULT) {
                 listener.onDefaultButtonClick(value.value)
@@ -310,7 +310,7 @@ class DialogUtils {
 
     fun showMemberClickIOSDialogIfAdmin(activity: AppCompatActivity, title: String, message: String, is_admin: Int, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
-        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.black))
+        alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.black))
 
         alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
@@ -335,7 +335,7 @@ class DialogUtils {
 
     fun showMemberClickIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
         val alert = AlertView(title, message, AlertStyle.IOS)
-        alert.setCancelButtonText(activity.getString(R.string.cancel),activity.resources.getColor(com.irozon.alertview.R.color.red))
+        alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.red))
 
         alert.addAction(AlertAction(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(MemberClickIfAdminDialogActionName.VIEW_PROFILE.value)
@@ -346,6 +346,23 @@ class DialogUtils {
         alert.show(activity)
 
     }
+
+    fun showAppUserDialog(activity: AppCompatActivity, data: List<ResponseIsAppUser.Data>) {
+        val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_app_user)
+        val rvAppUser: RecyclerView = dialog.findViewById(R.id.rv_app_user)!!
+
+        var mLayoutManager = LinearLayoutManager(activity)
+        rvAppUser.layoutManager = mLayoutManager
+
+        val adapter = AppUserAdapter(activity,data)
+        rvAppUser.adapter = adapter
+
+        dialog.show()
+    }
+
 
     interface DialogCallbacks {
         fun onPositiveButtonClick()

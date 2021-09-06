@@ -52,3 +52,5 @@ const val send_chat_message = "/api_v1/chat";
 const val updated_all_group = "/api_v1/updated-all-group"
 const val get_post_detail = "/api_v1/post-details/{id}"
 
+const val is_how_user = "/api_v1/is-how-user"
+

@@ -17,13 +17,13 @@ open class FriendSettings : RealmObject() {
     var useHighPriorityNotification: Int = 0
     var callRingtone: String = ""
     var callVibrate: String = ""
-    var sound: String = ""
+    var toneName: String = ""
     var user: Users? = null
 
     companion object {
         fun create(
             id: Int, userId: Int, friendId: Int, notificationToneId: Int, muteNotification: Int, isCustomNotificationEnable: Int, vibrateStatus: String,
-            isPopupNotification: Int, useHighPriorityNotification: Int, callRingtone: String, callVibrate: String, sound: String, user: Users
+            isPopupNotification: Int, useHighPriorityNotification: Int, callRingtone: String, callVibrate: String, toneName: String, user: Users
         ): FriendSettings {
             val friendSettings = FriendSettings()
             friendSettings.id = id
@@ -37,7 +37,7 @@ open class FriendSettings : RealmObject() {
             friendSettings.useHighPriorityNotification = useHighPriorityNotification
             friendSettings.callRingtone = callRingtone
             friendSettings.callVibrate = callVibrate
-            friendSettings.sound = sound
+            friendSettings.toneName = toneName
             friendSettings.user = user
             return friendSettings
 

@@ -16,10 +16,6 @@ data class ResponseNotification(
         val createdAt: String,
         @SerializedName("id")
         val id: Int,
-        @SerializedName("is_follow")
-        val isFollow: String,
-        @SerializedName("name")
-        val name: String,
         @SerializedName("sound")
         val sound: String,
         @SerializedName("status")

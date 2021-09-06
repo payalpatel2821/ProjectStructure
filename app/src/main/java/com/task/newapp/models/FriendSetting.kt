@@ -25,6 +25,6 @@ data class FriendSetting(
         val callRingtone: String,
         @SerializedName("call_vibrate")
         val callVibrate: String,
-        @SerializedName("sound")
-        val sound: String,
+        @SerializedName("tone_name")
+        val toneName: String,
     )

@@ -560,7 +560,7 @@ fun getAllNotificationTune(): List<NotificationTone> {
 }
 
 fun getSelectedNotificationTuneName(friendId: Int): String {
-    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friendId.name, friendId).findFirst()?.sound ?: ""
+    return App.getRealmInstance().where(FriendSettings::class.java).equalTo(FriendSettings::friendId.name, friendId).findFirst()?.toneName ?: ""
 }
 
 fun getGroupDetail(grpID: Int): Chats {
@@ -1238,7 +1238,7 @@ fun prepareLoggedInUserSettings(loginResponse: LoginResponse): UserSettings {
     userSettingsObj.groupUseHighPriorityNotification = userSetting.groupUseHighPriorityNotification
     userSettingsObj.groupNotificationToneId = userSetting.groupNotificationToneId
     userSettingsObj.nearLocation = userSetting.nearLocation
-    userSettingsObj.sound = userSetting.sound
+    userSettingsObj.toneName = userSetting.toneName
     userSettingsObj.user = loggedInUser
     userSettingsObj.updatedAt = userSetting.updatedAt
     return userSettingsObj
@@ -1452,7 +1452,7 @@ fun prepareSingleFriendSettingData(objUserSetting: FriendSetting): FriendSetting
         friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
         friendSettingObj.callRingtone = objUserSetting.callRingtone
         friendSettingObj.callVibrate = objUserSetting.callVibrate
-        friendSettingObj.sound = objUserSetting.sound
+        friendSettingObj.toneName = objUserSetting.toneName
         friendSettingObj.user = usersObj
         return friendSettingObj
     }
@@ -1475,7 +1475,7 @@ fun prepareSingleFriendSettingData(objUserSetting: ResponseFriendSetting.Data): 
         friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
         friendSettingObj.callRingtone = objUserSetting.callRigtone
         friendSettingObj.callVibrate = objUserSetting.callVibrate
-        friendSettingObj.sound = objUserSetting.sound
+        friendSettingObj.toneName = objUserSetting.toneName
         friendSettingObj.user = usersObj
         return friendSettingObj
     }
@@ -1526,9 +1526,9 @@ fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification
         for (notificationObj in notificationList) {
             val notificationTone = NotificationTone()
             notificationTone.id = notificationObj.id
-            notificationTone.displayName = notificationObj.name
-            notificationTone.notificationUrl = notificationObj.toneName
-            notificationTone.soundName = notificationObj.sound
+            notificationTone.displayName = notificationObj.toneName
+            notificationTone.notificationUrl = notificationObj.sound
+           // notificationTone.soundName = notificationObj.sound
 
             notificationToneList.add(notificationTone)
 

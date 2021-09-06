@@ -52,8 +52,8 @@ data class ResponseFriendSetting(
         var notificationToneId: Int,
         @SerializedName("relationship")
         val relationship: String,
-        @SerializedName("sound")
-        val sound: String,
+        @SerializedName("tone_name")
+        val toneName: String,
         @SerializedName("status")
         val status: String,
         @SerializedName("updated_at")

@@ -9,16 +9,16 @@ open class NotificationTone : RealmObject() {
     @PrimaryKey
     var id: Int = 0
     var displayName: String = ""
-    var soundName: String = ""
+    //var soundName: String = ""
     var isSet: Boolean = false
     var notificationUrl: String = ""
 
     companion object {
-        fun create(id: Int, displayName: String, soundName: String, isSet: Boolean = false, notificationUrl: String): NotificationTone {
+        fun create(id: Int, displayName: String,/* soundName: String,*/ isSet: Boolean = false, notificationUrl: String): NotificationTone {
             val notificationTone = NotificationTone()
             notificationTone.id = id
             notificationTone.displayName = displayName
-            notificationTone.soundName = soundName
+         //   notificationTone.soundName = soundName
             notificationTone.isSet = isSet
             notificationTone.notificationUrl = notificationUrl
 

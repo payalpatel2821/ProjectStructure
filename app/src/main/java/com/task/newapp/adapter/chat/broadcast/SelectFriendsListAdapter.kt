@@ -126,8 +126,8 @@ class SelectFriendsListAdapter(private val mActivity: Activity) : RecyclerView.A
         return object : Filter() {
             override fun performFiltering(charSequence: CharSequence): FilterResults {
                 val charString = charSequence.toString()
-                if (charString.isEmpty()) {
-                    filteredListData = listData
+                filteredListData = if (charString.isEmpty()) {
+                    listData
                 } else {
                     val filteredList: MutableList<SelectFriendWrapperModel> = ArrayList()
                     for (row in listData) {
@@ -138,7 +138,7 @@ class SelectFriendsListAdapter(private val mActivity: Activity) : RecyclerView.A
                             filteredList.add(row)
                         }
                     }
-                    filteredListData = filteredList as ArrayList<SelectFriendWrapperModel>
+                    filteredList as ArrayList<SelectFriendWrapperModel>
                 }
                 val filterResults = FilterResults()
                 filterResults.values = filteredListData

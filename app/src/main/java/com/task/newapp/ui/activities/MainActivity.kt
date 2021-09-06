@@ -12,8 +12,11 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.appizona.yehiahd.fastsave.FastSave
+import com.google.gson.Gson
 import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.ui.fragments.contact.ContactBottomSheet
+import com.task.newapp.utils.contactUtils.ContactsHelper
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.realmDB.models.ChatList
@@ -29,6 +32,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment.OnHideShowBottomSheet {
 
+    private lateinit var contactBottomSheetFragment: ContactBottomSheet
     lateinit var binding: ActivityMainBinding
 
     val chatsFragment = ChatsFragment()
@@ -248,7 +252,10 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
                 launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
-                // launchActivity<ContactActivity> {  }
+                contactBottomSheetFragment = ContactBottomSheet()
+                contactBottomSheetFragment!!.show(supportFragmentManager, "Dialog")
+
+//                launchActivity<ContactActivity> { }
             }
         }
     }
@@ -329,5 +336,14 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        ContactsHelper(this).getContacts { contacts ->
+            val gson = Gson()
+            val json :String = gson.toJson(contacts)
+            FastSave.getInstance().saveString(Constants.contact, json)
+//            setAdapter(contacts)
+        }
+    }
 
 }

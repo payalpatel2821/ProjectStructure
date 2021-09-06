@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +22,6 @@ import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
-import com.luck.picture.lib.instagram.InsGallery
 import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.App.Companion.fastSave
@@ -41,8 +39,6 @@ import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.ShowPostActivity
 import com.task.newapp.utils.*
-import com.task.newapp.utils.instapicker.GlideCacheEngine
-import com.task.newapp.utils.instapicker.GlideEngine
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -52,7 +48,6 @@ import lv.chi.photopicker.MediaPickerFragment
 import java.lang.Runnable
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.system.measureTimeMillis
 
 
 class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, MediaPickerFragment.Callback,
@@ -223,7 +218,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                 mCompositeDisposable.add(
                     ApiClient.create()
-                        .get_all_posts(resources.getString(R.string.get_all_post).toInt(), currentpos)
+                        .get_all_posts(resources.getString(R.string.limit_20).toInt(), currentpos)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(object : DisposableObserver<ResponseGetAllPost>() {

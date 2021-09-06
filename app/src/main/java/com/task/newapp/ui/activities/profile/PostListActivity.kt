@@ -90,7 +90,7 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
     override fun onLoadMore() {
         isloading = true
         val scrollPosition: Int = postListAdapter.itemCount
-        callAPIGetPostList(type, 20, scrollPosition)
+        callAPIGetPostList(type, R.string.limit_20, scrollPosition)
     }
 
     override fun isLoading(): Boolean {

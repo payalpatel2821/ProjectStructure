@@ -1501,3 +1501,8 @@ fun Context.isScreenLocked(): Boolean {
     val interactive = powerManager != null && powerManager.isInteractive
     return locked || !interactive
 }
+
+fun getRandomColor(): Int {
+    val rnd = Random()
+    return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+}

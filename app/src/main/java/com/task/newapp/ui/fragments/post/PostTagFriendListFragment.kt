@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -192,7 +191,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                     val hashMap: HashMap<String, Any> = hashMapOf(
                         Constants.flag to "tag_post",
                         Constants.term to searchText,
-                        Constants.limit to requireActivity().getString(R.string.get_all_post),
+                        Constants.limit to requireActivity().getString(R.string.limit_20),
                         Constants.offset to currentSize.toString()
                     )
 
