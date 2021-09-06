@@ -2,48 +2,53 @@ package com.task.newapp.ui.fragments.post
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.adapter.post.PostCommentAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostCommentListBinding
+import com.task.newapp.models.ResponsePostList
 import com.task.newapp.models.User
-import com.task.newapp.models.post.PostSocket
 import com.task.newapp.models.post.ResponseAddPostComment
+import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.models.post.ResponseGetAllPostComments
+import com.task.newapp.models.post.ResponseGetAllPostComments.*
 import com.task.newapp.models.post.ResponseGetPostComment
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListener,
-    PostCommentAdapter.OnCommentItemClickListener {
+class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListener, Paginate.Callbacks,
+    OnCommentItemClickListener {
 
-    var postCommentList: ArrayList<ResponseGetAllPostComments.AllPostCommentData> = ArrayList()
+    var postCommentList: ArrayList<AllPostCommentData> = ArrayList()
     var postId: Int = 0
     lateinit var postCommentAdapter: PostCommentAdapter
     private lateinit var binding: FragmentPostCommentListBinding
@@ -56,14 +61,18 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
     var hasLoadedAllItemsComment = false
     var userId: Int = 0
     var adapterPositionPost: Int = 0
+    var allPostData: String = ""
     var onChangePostItem: OnChangePostItem? = null
+    var allPostDataModel: ResponseGetAllPost.All_Post_Data? = null
+    var flagAddPostClick: Boolean = false
 
-    fun newInstance(postId: Int, userId: Int, position: Int): PostCommentListFragment {
+    fun newInstance(postId: Int, userId: Int, position: Int, allPostData: String): PostCommentListFragment {
         val f = PostCommentListFragment()
         val args = Bundle()
         args.putInt("postId", postId)
         args.putInt("userId", userId)
         args.putInt("position", position)
+        args.putString("allPostData", allPostData)
         f.arguments = args
         Log.e("postId: ", postId.toString())
         return f
@@ -74,6 +83,11 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
         postId = requireArguments().getInt("postId", 0)
         userId = requireArguments().getInt("userId", 0)
         adapterPositionPost = requireArguments().getInt("position", 0)
+        allPostData = requireArguments().getString("allPostData").toString()
+
+        val type: Type = object : TypeToken<ResponseGetAllPost.All_Post_Data>() {}.type
+        allPostDataModel = Gson().fromJson(allPostData, type)
+
     }
 
     override fun onCreateView(
@@ -101,70 +115,60 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
     }
 
     private fun initView() {
+        PostFragment.instance.isOpenCommentBottomSheet = true
+        postCommentList = ArrayList()
         binding.txtPost.setOnClickListener(this)
         binding.edtComment.setText("")
 
         //list
-        var manager = GridLayoutManager(activity, 1, GridLayoutManager.VERTICAL, false)
-        postCommentAdapter =
-            PostCommentAdapter(activity as AppCompatActivity, postId, ArrayList(), 0)
+        var manager = LinearLayoutManager(activity) //, 1, GridLayoutManager.VERTICAL, false)
+        postCommentAdapter = PostCommentAdapter(activity as AppCompatActivity, postId, ArrayList(), 0)
 
-        binding.recComments.setHasFixedSize(true)
+        binding.recComments.adapter = null
+
+//        manager.stackFromEnd = true
+        manager.reverseLayout = true
+
         binding.recComments.layoutManager = manager
         binding.recComments.adapter = postCommentAdapter
         postCommentAdapter.setOnItemClickListener(this)
 
-        binding.recComments.setOnTouchListener(View.OnTouchListener { v, event ->
-            val imm =
-                requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(v.windowToken, 0)
-            false
-        })
+//        binding.recComments.setOnTouchListener(View.OnTouchListener { v, event ->
+//            val imm =
+//                requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//            imm.hideSoftInputFromWindow(v.windowToken, 0)
+//            false
+//        })
+
+        //----------------------------Show/Hide Add Comment Layout as Turn on/off comment-----------------------------------
+        binding.llAddComment.visibility = if (allPostDataModel!!.turnOffComment == 0) View.VISIBLE else View.GONE
 
         //init paging
-        if (paginateComment != null) {
-            paginateComment!!.unbind()
-        }
-
-        paginateComment = Paginate.with(binding.recComments, object : Paginate.Callbacks {
-            override fun onLoadMore() {
-                isloadingComment = true
-
-                val scrollPosition: Int = postCommentAdapter.allPostCommentDataList.size
-                if (scrollPosition > 0) {
-                    showLog("loadmore", scrollPosition.toString())
-                    val currentSize = scrollPosition - 1
-
-                    if (currentSize > 0) {
-                        callAllPostComment(
-                            postCommentAdapter.allPostCommentDataList[currentSize].id,
-                            postId
-                        )
-                    }
-                }
-            }
-
-            override fun isLoading(): Boolean {
-                return isloadingComment
-            }
-
-            override fun hasLoadedAllItems(): Boolean {
-                return hasLoadedAllItemsComment
-            }
-
-        })
-            .setLoadingTriggerThreshold(17)
-            .addLoadingListItem(false)
-            .setLoadingListItemCreator(null)
-            .build()
+        initPaging()
 
         openProgressDialog(activity)
-
         callAllPostComment(0, postId = postId)
+
+        binding.edtComment.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                hideKeyboard(getActivity())
+            } else {
+                showKeyboard(getActivity())
+            }
+        }
+    }
+
+    fun showKeyboard(activity: Activity?) {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+    }
+
+    fun hideKeyboard(activity: Activity?) {
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     private fun handleUserExit() {
-        activity!!.showToast("Dialog Close")
+        PostFragment.instance.isOpenCommentBottomSheet = false
+        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -215,7 +219,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.post_id to postId,
                 Constants.offset to offset,
-                Constants.limit to resources.getString(R.string.get_comments).toInt()
+                Constants.limit to resources.getString(R.string.limit_20).toInt()
             )
             //openProgressDialog(activity)
 
@@ -229,56 +233,51 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                             if (responseGetAllPostComments.success == 1) {
                                 Log.v("responsePostComment", "responsePostCommentDetails")
 
-//                                if (responseGetAllPostComments.success == 1) {
-//
-//                                    if (responseGetAllPostComments.data.isNotEmpty()) {
-                                var postByMe = 0
-                                postByMe =
-                                    if (App.fastSave.getInt(Constants.prefUserId, 0) == userId) {
-                                        1
-                                    } else {
-                                        0
-                                    }
-
                                 if (responseGetAllPostComments.success == 1) {
+                                    var postByMe = 0
+                                    postByMe =
+                                        if (getCurrentUserId() == userId) {
+                                            1
+                                        } else {
+                                            0
+                                        }
 
-                                    if (responseGetAllPostComments.data.isEmpty()) {
-                                        hasLoadedAllItemsComment = true
-                                        hideShowEmptyView(postCommentList)
-                                    } else {
-                                        postCommentList.addAll(responseGetAllPostComments.data)
-//                                    postCommentAdapter.setData(responseGetAllPostComments.data as ArrayList<ResponseGetAllPostComments.AllPostCommentData>, postByMe)
-                                        postCommentAdapter.setData(postCommentList, postByMe)
-                                        isloadingComment = false
-                                        hasLoadedAllItemsComment = false
-                                    }
-
+                                    postCommentList.addAll(responseGetAllPostComments.data)
+                                    postCommentAdapter.setData(postCommentList, postByMe)
+                                    isloadingComment = false
+                                    hasLoadedAllItemsComment = false
+                                } else {
+                                    hasLoadedAllItemsComment = true
+                                    hideShowEmptyView(postCommentList)
                                 }
 
-
-//                                        postCommentAdapter.setData(
-//                                            responseGetAllPostComments.data as ArrayList<AllPostCommentData>, postByMe
-//                                        )
+                                //--------------------------------------------------------------------------------------
+//                                if (responseGetAllPostComments.data.isNotEmpty()) {
+//                                    var postByMe = 0
+//                                    postByMe =
+//                                        if (App.fastSave.getInt(Constants.prefUserId, 0) == userId) {
+//                                            1
+//                                        } else {
+//                                            0
+//                                        }
 //
-//                                        postCommentAdapter = PostCommentAdapter(
-//                                            activity as AppCompatActivity, postId,
-//                                            responseGetAllPostComments.data as ArrayList<ResponseGetAllPostComments.AllPostCommentData>, postByMe
-//                                        )
+//                                    if (responseGetAllPostComments.success == 1) {
 //
-//                                        binding.recComments.adapter = postCommentAdapter
+//                                        if (responseGetAllPostComments.data.isEmpty()) {
+//                                            showLog("loadmore", "finish")
 //
-//                                        isloadingComment = false
-//                                        hasLoadedAllItemsComment = false
-//                                    } else {
-//                                        isloadingComment = true
-//                                        hasLoadedAllItemsComment = true
+//                                            hasLoadedAllItemsComment = true
+//                                            hideShowEmptyView(postCommentList)
+//
+//                                        } else {
+//                                            postCommentList.addAll(responseGetAllPostComments.data)
+//                                            postCommentAdapter.setData(postCommentList, postByMe)
+//                                            isloadingComment = false
+//                                            hasLoadedAllItemsComment = false
+//
+//                                        }
 //                                    }
-
-//                                showHideEmptyView()
-
-//                            } else {
-//                                hasLoadedAllItemsComment = true
-//                            }
+//                                }
                             }
                         }
 
@@ -297,7 +296,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
         }
     }
 
-    private fun hideShowEmptyView(postCommentList: ArrayList<ResponseGetAllPostComments.AllPostCommentData>) {
+    private fun hideShowEmptyView(postCommentList: ArrayList<AllPostCommentData>) {
         if (postCommentList.isEmpty()) {
             binding.recComments.visibility = View.GONE
             binding.imgNoComments.visibility = View.VISIBLE
@@ -310,15 +309,15 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
     private fun callAPIAddPostComment(commentText: String) {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.comment_id to 0,
+//                Constants.comment_id to 0,  // if reply then only send comment id
                 Constants.is_comment_reply to 0,
-                Constants.type to "comment",
+//                Constants.type to "comment",
                 Constants.comment_text to commentText,
                 Constants.post_id to postId,
                 Constants.main_comment_id to 0
             )
 
-            openProgressDialog(activity)
+//            openProgressDialog(activity)
 
             mCompositeDisposable.add(
                 ApiClient.create()
@@ -337,11 +336,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 
                                     responseAddPostComment?.data.run {
                                         var postByMe = 0
-                                        postByMe = if (App.fastSave.getInt(
-                                                Constants.prefUserId,
-                                                0
-                                            ) == userId
-                                        ) {
+                                        postByMe = if (getCurrentUserId() == userId) {
                                             1
                                         } else {
                                             0
@@ -351,23 +346,21 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                                         val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                         val formattedDate = df.format(c.time)
 
-                                        val tempArrayList: ArrayList<ResponseGetAllPostComments.AllPostCommentData> =
-                                            ArrayList<ResponseGetAllPostComments.AllPostCommentData>()
-                                        val prefUser = App.fastSave.getObject(
-                                            Constants.prefUser,
-                                            User::class.java
-                                        )
+                                        val tempArrayList: ArrayList<AllPostCommentData> = ArrayList()
+                                        val prefUser = App.fastSave.getObject(Constants.prefUser, User::class.java)
 
                                         val commentUser =
-                                            ResponseGetAllPostComments.AllPostCommentData.CommentUser(
+                                            AllPostCommentData.CommentUser(
                                                 id = prefUser.id,
-                                                profileImage = prefUser.profileImage,
-                                                firstName = prefUser.firstName,
-                                                lastName = prefUser.lastName
+                                                profileImage = (prefUser.profileImage ?: ""),
+                                                firstName = (prefUser.firstName ?: ""),
+                                                lastName = (prefUser.lastName ?: ""),
+                                                profileColor = (prefUser.profileColor ?: ""),
+                                                accountId = (prefUser.accountId ?: "")
                                             )
 
                                         var postDataModel =
-                                            ResponseGetAllPostComments.AllPostCommentData(
+                                            AllPostCommentData(
                                                 id = this!!.id,
                                                 postId = this!!.post_id!!.toInt(),
                                                 commentText = comment_text.toString(),
@@ -376,27 +369,46 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                                                 mainCommentId = 0
                                             )
 
-                                        tempArrayList.add(postDataModel)
-                                        tempArrayList.addAll(postCommentAdapter.getData())
+//                                        tempArrayList.add(0, postDataModel)
+//                                        tempArrayList.addAll(postCommentAdapter.getData())
+
+//                                        flagAddPostClick = true
+
+                                        postCommentList.add(0, postDataModel)
 
                                         postCommentAdapter.setData(
-                                            allPostCommentDataList = tempArrayList,
+                                            allPostCommentDataList = postCommentList,
                                             post_by_me = postByMe
                                         )
+//                                        postCommentAdapter.setData1(
+//                                            allPostCommentDataList = postDataModel,
+//                                            post_by_me = postByMe
+//                                        )
                                         hideShowEmptyView(postCommentAdapter.getData())
 
                                         activity.runOnUiThread(Runnable {
-                                            binding.recComments.smoothScrollToPosition(
+                                            binding.recComments.scrollToPosition(
                                                 0
                                             )
                                         })
 
                                         //Update Post
                                         onChangePostItem!!.onChangePostItem(
-                                            this.comment_text!!.toString(),
-                                            this.total_comment,
+                                            responseAddPostComment.data!!.comment_text!!.toString(),
+                                            responseAddPostComment.total_comment,
                                             adapterPositionPost
                                         )
+
+                                        //------------------Add socket event-------------------
+                                        val postSocket = PostSocket(
+                                            user_id = getCurrentUserId(),
+                                            post_id = postId,
+                                            isDeleteComment = false,
+                                            commentModel = postDataModel,
+                                            totalComments = responseAddPostComment.total_comment
+                                        )
+
+                                        addPostCommentEmitEvent(postSocket)
                                     }
                                 }
                             }
@@ -418,7 +430,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
         }
     }
 
-    override fun onDeleteCommentClick(position: Int) {
+    override fun onDeleteCommentClick(positionMain: Int, positionSub: Int) {
         DialogUtils().showConfirmationYesNoDialog(
             activity as AppCompatActivity,
             "",
@@ -426,9 +438,9 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
             object : DialogUtils.DialogCallbacks {
                 override fun onPositiveButtonClick() {
                     if (activity!!.isNetworkConnected()) {
-                        if (position < postCommentAdapter.getData()!!.size) {
-                            var commentId = postCommentAdapter.getData()[position].id
-                            deleteComment(position, "main", commentId)
+                        if (positionMain < postCommentAdapter.getData()!!.size) {
+                            var commentId = postCommentAdapter.getData()[positionMain].id
+                            deleteComment(positionMain, positionSub, "main", commentId)
                         }
                     } else {
                         Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
@@ -445,16 +457,16 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
             })
     }
 
-    override fun onDeleteCommentReplyClick(position: Int) {
+    override fun onDeleteCommentReplyClick(positionMain: Int, positionSub: Int) {
         DialogUtils().showConfirmationYesNoDialog(activity as AppCompatActivity,
             "",
             requireContext().resources.getString(R.string.delete_replay),
             object : DialogUtils.DialogCallbacks {
                 override fun onPositiveButtonClick() {
                     if (activity!!.isNetworkConnected()) {
-                        if (position < postCommentAdapter.getData()!!.size) {
-//                            var commentId = postCommentAdapter.getData()[position].commentReply!!.id
-//                            deleteComment(position, "reply", commentId)
+                        if (positionMain < postCommentAdapter.getData()!!.size) {
+                            var commentId = postCommentAdapter.getData()[positionMain].commentReplyList[positionSub]!!.id
+                            deleteComment(positionMain, positionSub, "reply", commentId)
                         }
                     } else {
                         Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()
@@ -471,7 +483,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
             })
     }
 
-    fun deleteComment(position: Int, reply: String, comment_id: Int) {
+    fun deleteComment(positionMain: Int, positionSub: Int, reply: String, comment_id: Int) {
         try {
             openProgressDialog(activity)
 
@@ -488,40 +500,54 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                         override fun onNext(responseGetPostComment: ResponseGetPostComment) {
                             Log.v("onNext: ", responseGetPostComment.toString())
 
+                            var mainCommentId = postCommentAdapter.getData()[positionMain].id
+                            var replyCommentId = 0
+                            replyCommentId = if (postCommentAdapter.getData()[positionMain].commentReplyList.isNotEmpty()) {
+                                postCommentAdapter.getData()[positionMain].commentReplyList[positionSub].id
+                            } else {
+                                0
+                            }
+
                             if (responseGetPostComment.success == 1) {
                                 if (reply == "reply") {
-//                                    val view: View = Show_Post.getInstance().manager.findViewByPosition(position)
-//                                    if (view != null) {
-//                                    postCommentAdapter.getData()[position].commentReply = null
-//                                    postCommentAdapter.notifyItemChanged(position)
 
-                                    onChangePostItem!!.onChangePostItem(
-                                        responseGetPostComment.data?.commentText ?: "",
-                                        responseGetPostComment.totalComment, adapterPositionPost
-                                    )
+                                    //Reply Delete
+                                    postCommentAdapter.getData()[positionMain].commentReplyList.removeAt(positionSub)
+                                    postCommentAdapter.notifyItemChanged(positionMain)
+
+//                                    postCommentList[positionMain].commentReplyList.removeAt(positionSub)
 
                                 } else {
                                     //Normal Delete
-                                    postCommentAdapter.allPostCommentDataList!!.removeAt(position)
-//                                    comments.setText(responseGetPostComment.data.toString() + " Comments")
-                                    postCommentAdapter.notifyItemRemoved(position)
+                                    postCommentAdapter.allPostCommentDataList!!.removeAt(positionMain)
+                                    postCommentAdapter.notifyItemRemoved(positionMain)
                                     postCommentAdapter.notifyItemRangeChanged(
-                                        position,
+                                        positionMain,
                                         postCommentAdapter.getData().size
                                     )
 
-                                    hideShowEmptyView(postCommentAdapter.allPostCommentDataList)
+                                    postCommentList.removeAt(positionMain)
 
-                                    onChangePostItem!!.onChangePostItem(
-                                        responseGetPostComment.data?.commentText ?: "",
-                                        responseGetPostComment.totalComment,
-                                        adapterPositionPost
-                                    )
+                                    hideShowEmptyView(postCommentAdapter.allPostCommentDataList)
                                 }
 
-                                val postSocket = PostSocket(getCurrentUserId(), postId)
-                                val json: String = Gson().toJson(postSocket)
-                                App.socket!!.emit(Constants.post_comment, json)
+                                onChangePostItem!!.onChangePostItem(
+                                    responseGetPostComment.data?.commentText ?: "",
+                                    responseGetPostComment.totalComment,
+                                    adapterPositionPost
+                                )
+
+                                //------------------------Socket Event----------------------------
+                                val postSocket = PostSocket(
+                                    user_id = getCurrentUserId(),
+                                    post_id = postId,
+                                    isDeleteComment = true,
+                                    mainCommentId = mainCommentId,
+                                    replyCommentId = replyCommentId,
+                                    isReplyDelete = reply == "reply",
+                                    totalComments = responseGetPostComment.totalComment
+                                )
+                                deletePostCommentEmitEvent(postSocket)
                             }
                         }
 
@@ -549,16 +575,16 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
         this.onChangePostItem = onChangePostItem
     }
 
-    override fun onCommentReplyClick(position: Int, commentId: Int, replyText: String) {
+    override fun onCommentReplyClick(positionMain: Int, positionSub: Int, commentId: Int, replyText: String, main_comment_id: Int) {
         try {
             openProgressDialog(activity)
 
             val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.post_id to postId,
+                Constants.comment_text to replyText,
                 Constants.comment_id to commentId,
                 Constants.is_comment_reply to 1,
-                Constants.type to "comment",
-                Constants.comment_text to replyText,
-                Constants.post_id to postId
+                Constants.main_comment_id to if (main_comment_id == 0) commentId else main_comment_id
             )
 
             mCompositeDisposable.add(
@@ -573,13 +599,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 
                             if (responseAddPostComment != null) {
                                 if (responseAddPostComment.success == 1) {
-                                    val postSocket = PostSocket(
-                                        App.fastSave.getInt(Constants.prefUserId, 0),
-                                        postId
-                                    )
-                                    val json: String = Gson().toJson(postSocket)
 
-                                    App.socket!!.emit(Constants.post_comment, json)
 //                                    replytxt.setContent(replytext)
 
                                     //Set reply in TextView
@@ -594,35 +614,81 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 //                                    postCommentAdapter.allPostCommentDataList[position].commentReply?.commentText = replyText
 //                                    postCommentAdapter.notifyItemChanged(position)
 
+                                    //--------------------------Uncomment---------------------------------
+
                                     val data = responseAddPostComment.data
 
-//                                    val commentReplyUser =
-//                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply.User(
-//                                            data!!.first_name!!,
-//                                            "",
-//                                            0,
-//                                            data!!.last_name!!,
-//                                            ""
-//                                        )
-//
-//                                    val comment_reply =
-//                                        ResponseGetAllPostComments.AllPostCommentData.CommentReply(
-//                                            0,
-//                                            data!!.comment_text!!,
-//                                            "",
-//                                            data!!.id,
-//                                            0,
-//                                            0,
-//                                            0,
-//                                            "",
-//                                            data!!.updated_at!!,
-//                                            commentReplyUser,
-//                                            0
-//                                        )
-//
-//                                    postCommentAdapter.allPostCommentDataList!![position].commentReply = comment_reply
-////                                    comments.setText(response.body().getData().getTotal_comment().toString() + " Comments")
-//                                    postCommentAdapter.notifyDataSetChanged()
+                                    val prefUser = App.fastSave.getObject(Constants.prefUser, User::class.java)
+
+                                    val commentReplyUser = AllPostCommentData.CommentReply.User(
+                                        id = data!!.user_id!!,
+                                        first_name = (prefUser.firstName ?: ""),
+                                        last_name = (prefUser.lastName ?: ""),
+                                        account_id = (prefUser.accountId ?: ""),
+                                        profile_image = (prefUser.profileImage ?: ""),
+                                        profile_color = (prefUser.profileColor ?: "")
+                                    )
+
+                                    val commentReply =
+                                        AllPostCommentData.CommentReply(
+                                            data!!.id!!,
+                                            data!!.post_id!!,
+                                            data!!.user_id!!,
+                                            data!!.is_comment_reply!!,
+                                            data!!.user_id!!,
+                                            data!!.main_comment_id!!,
+                                            data!!.comment_text!!,
+                                            data!!.status!!,
+                                            0,
+                                            data!!.created_at!!,
+                                            data!!.updated_at!!,
+                                            commentReplyUser
+                                        )
+
+                                    val arraylistMainCopy: MutableList<AllPostCommentData> = ArrayList()
+                                    arraylistMainCopy.addAll(postCommentAdapter.getData())
+
+                                    //Set data in first position
+                                    val tempArrayListReply: ArrayList<AllPostCommentData.CommentReply> = ArrayList()
+                                    tempArrayListReply.add(commentReply)
+
+                                    arraylistMainCopy[positionMain].commentReplyList.addAll(tempArrayListReply)
+
+                                    var postByMe = 0
+                                    postByMe = if (App.fastSave.getInt(Constants.prefUserId, 0) == userId) {
+                                        1
+                                    } else {
+                                        0
+                                    }
+
+                                    //Add New
+//                                    postCommentList[positionMain].commentReplyList.add(commentReply)
+
+                                    postCommentAdapter.setData(
+                                        allPostCommentDataList = arraylistMainCopy!! as ArrayList<AllPostCommentData>,
+//                                        allPostCommentDataList = postCommentList,
+                                        post_by_me = postByMe
+                                    )
+
+//                                    postCommentAdapter.notifyDatasetChanged()
+                                    postCommentAdapter.notifyItemChanged(positionMain)
+
+                                    //Update Post
+                                    onChangePostItem!!.onChangePostItem(
+                                        responseAddPostComment.data!!.comment_text!!,
+                                        responseAddPostComment.total_comment,
+                                        adapterPositionPost
+                                    )
+
+                                    //-----------------------Socket Event-------------------------
+                                    val postSocket = PostSocket(
+                                        user_id = getCurrentUserId(),
+                                        post_id = postId,
+                                        mainCommentId = arraylistMainCopy[positionMain].id,
+                                        commentReplyModel = commentReply,
+                                        totalComments = responseAddPostComment.total_comment
+                                    )
+                                    addPostCommentReplyEmitEvent(postSocket)
                                 }
                             }
                         }
@@ -643,5 +709,250 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
         }
     }
 
+    fun addPostComment(postSocket: PostSocket) {
+        Log.e("addPostComment", "addPostComment: $postSocket")
+
+        try {
+            if (App.fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id && postId == postSocket.post_id) {
+                var postByMe = if (getCurrentUserId() == userId) {
+                    1
+                } else {
+                    0
+                }
+                postCommentList.add(0, postSocket.commentModel!!)
+
+                postCommentAdapter.setData(
+                    allPostCommentDataList = postCommentList,
+                    post_by_me = postByMe
+                )
+//                }
+
+                activity.runOnUiThread(Runnable {
+                    binding.recComments.smoothScrollToPosition(0)
+                })
+
+//                var totalComments = 0
+//                if (postSocket.isDeleteComment) {
+//                    if (allPostDataModel!!.commentsCount > 0) {
+//                        totalComments = allPostDataModel!!.commentsCount - 1
+//                    }
+//                } else {
+//                    totalComments = allPostDataModel!!.commentsCount + 1
+//                }
+
+                //Update Post
+                onChangePostItem!!.onChangePostItem(
+                    lastComment = allPostDataModel!!.latest_comment!!.commentText,
+                    totalComments = postSocket.totalComments!!,  //totalComments,
+                    adapterPositionPost
+                )
+
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    override fun onLoadMore() {
+//        if (this.flagAddPostClick) {
+//            return
+//        }
+
+        isloadingComment = true
+
+        val scrollPosition: Int = postCommentAdapter.allPostCommentDataList.size
+        if (scrollPosition > 0) {
+            showLog("loadmore", scrollPosition.toString())
+            val currentSize = scrollPosition - 1
+
+            if (currentSize > 0) {
+                callAllPostComment(
+                    postCommentAdapter.allPostCommentDataList[currentSize].id,
+                    postId
+                )
+            }
+        }
+    }
+
+    override fun isLoading(): Boolean {
+        return isloadingComment
+    }
+
+    override fun hasLoadedAllItems(): Boolean {
+        return hasLoadedAllItemsComment
+    }
+
+    private fun initPaging() {
+        if (paginateComment != null) {
+            paginateComment!!.unbind()
+        }
+
+        paginateComment = Paginate.with(binding.recComments, this)
+            .setLoadingTriggerThreshold(17)
+            .addLoadingListItem(false)
+            .setLoadingListItemCreator(null)
+            .build()
+
+
+        binding.recComments.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (dy > 0) {
+                    // Scrolling up
+                    showLog("onScrolled", "up")
+                } else {
+                    // Scrolling down
+                    showLog("onScrolled", "down")
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (!recyclerView.canScrollVertically(1)) {
+                    flagAddPostClick = false
+
+                    Toast.makeText(activity, "Last", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        })
+    }
+
+    fun deletePostComment(postSocket: PostSocket) {
+        Log.e("deletePostComment", "deletePostComment: $postSocket")
+
+        try {
+            if (App.fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id && postId == postSocket.post_id) {
+                var postByMe = if (getCurrentUserId() == userId) {
+                    1
+                } else {
+                    0
+                }
+
+                //Get index of deleted comment id and remove from the array
+                val findedModel = postCommentList?.find {
+                    it.id == postSocket.mainCommentId
+                }
+
+                var positionOfMainCommentId = 0
+
+                if (postSocket.isReplyDelete!!) {
+                    //Reply Delete
+                    //Get Reply Comment Id
+
+                    //Get main position of adapter
+                    positionOfMainCommentId = postCommentList?.indexOf(findedModel)
+
+                    if (positionOfMainCommentId >= 0) {
+                        val findedModel = postCommentList[positionOfMainCommentId].commentReplyList?.find {
+                            it.id == postSocket.replyCommentId
+                        }
+
+                        findedModel?.let {
+                            val positionOfReplyCommentId = postCommentList[positionOfMainCommentId].commentReplyList?.indexOf(findedModel)
+                            postCommentList[positionOfMainCommentId].commentReplyList.removeAt(positionOfReplyCommentId)
+
+                            showLog("positionOfMainCommentId", "$positionOfMainCommentId,$positionOfReplyCommentId")
+                        }
+                    }
+
+                } else {
+                    //Get main position of adapter
+                    val positionOfMainCommentId = postCommentList?.indexOf(findedModel)
+                    showLog("positionOfMainCommentId", positionOfMainCommentId.toString())
+
+                    postCommentList.removeAt(positionOfMainCommentId)
+                }
+
+                postCommentAdapter.setData(
+                    allPostCommentDataList = postCommentList,
+                    post_by_me = postByMe
+                )
+
+                postCommentAdapter.notifyItemChanged(positionOfMainCommentId)
+
+//                var totalComments = 0
+//                if (postSocket.isDeleteComment) {
+//                    if (allPostDataModel!!.commentsCount > 0) {
+//                        totalComments = allPostDataModel!!.commentsCount - 1
+//                    }
+//                } else {
+//                    totalComments = allPostDataModel!!.commentsCount + 1
+//                }
+
+                //Update Post
+                onChangePostItem!!.onChangePostItem(
+                    lastComment = allPostDataModel!!.latest_comment!!.commentText,
+                    totalComments = postSocket.totalComments!!, //totalComments,
+                    adapterPositionPost
+                )
+
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun addPostCommentReply(postSocket: PostSocket) {
+        Log.e("addPostCommentReply", "addPostCommentReply: $postSocket")
+
+        try {
+            if (App.fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id && postId == postSocket.post_id) {
+
+                val findedModel = postCommentList?.find {
+                    it.id == postSocket.mainCommentId
+                }
+                val positionOfMainCommentId = postCommentList?.indexOf(findedModel)
+
+                val arraylistMainCopy: MutableList<AllPostCommentData> = ArrayList()
+                arraylistMainCopy.addAll(postCommentAdapter.getData())
+
+                //Set data in first position
+                val tempArrayListReply: ArrayList<AllPostCommentData.CommentReply> = ArrayList()
+                tempArrayListReply.add(postSocket.commentReplyModel!!)
+
+                arraylistMainCopy[positionOfMainCommentId].commentReplyList.addAll(tempArrayListReply)
+
+                var postByMe = if (App.fastSave.getInt(Constants.prefUserId, 0) == userId) {
+                    1
+                } else {
+                    0
+                }
+
+                postCommentAdapter.setData(
+                    allPostCommentDataList = arraylistMainCopy!! as ArrayList<AllPostCommentData>,
+//                                        allPostCommentDataList = postCommentList,
+                    post_by_me = postByMe
+                )
+
+                postCommentAdapter.notifyItemChanged(positionOfMainCommentId)
+
+
+//                var totalComments = 0
+//                if (postSocket.isDeleteComment) {
+//                    if (allPostDataModel!!.commentsCount > 0) {
+//                        totalComments = allPostDataModel!!.commentsCount - 1
+//                    }
+//                } else {
+//                    totalComments = allPostDataModel!!.commentsCount + 1
+//                }
+
+                //Update Post
+                onChangePostItem!!.onChangePostItem(
+                    lastComment = allPostDataModel!!.latest_comment!!.commentText,
+                    totalComments = postSocket.totalComments!!,  //totalComments,
+                    adapterPositionPost
+                )
+
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
 }
- 

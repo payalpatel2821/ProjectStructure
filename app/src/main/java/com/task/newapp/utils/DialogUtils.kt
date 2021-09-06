@@ -87,7 +87,14 @@ class DialogUtils {
         dialog.show()
     }
 
-    fun showConfirmationIOSDialog(activity: AppCompatActivity, title: String, message: String, listener: DialogCallbacks) {
+    fun showConfirmationIOSDialog(
+        activity: AppCompatActivity,
+        title: String,
+        message: String,
+        turnOffComment: Int,
+        postByMe: Boolean,
+        listener: DialogCallbacks
+    ) {
         val alert = AlertView(title, message, AlertStyle.IOS)
         alert.show(activity)
         alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.black))
@@ -103,6 +110,23 @@ class DialogUtils {
         alert.addAction(AlertAction(PostDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(PostDialogActionName.UNFOLLOW.value)
         })
+
+        if (postByMe) {
+            if (turnOffComment == 1) {
+                // Show On Message
+                alert.addAction(AlertAction(PostDialogActionName.TURNONCOMMENT.value, AlertActionStyle.DEFAULT) {
+                    listener.onDefaultButtonClick(PostDialogActionName.TURNONCOMMENT.value)
+                })
+            } else {
+                // Show Off Message
+                alert.addAction(AlertAction(PostDialogActionName.TURNOFFCOMMENT.value, AlertActionStyle.DEFAULT) {
+                    listener.onDefaultButtonClick(PostDialogActionName.TURNOFFCOMMENT.value)
+                })
+            }
+            alert.addAction(AlertAction(PostDialogActionName.DELETEPOST.value, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(PostDialogActionName.DELETEPOST.value)
+            })
+        }
     }
 
     fun showChatAttachmentIOSDialog(activity: AppCompatActivity, anchor: AppCompatImageView, listener: DialogCallbacks): Balloon {
@@ -393,7 +417,10 @@ class DialogUtils {
         COPYLINK("Copy Link"),
         TURNONPOST("Turn on Post Notification"),
         MUTE("Mute"),
-        UNFOLLOW("Unfollow")
+        UNFOLLOW("Unfollow"),
+        TURNOFFCOMMENT("Turn off commenting"),
+        TURNONCOMMENT("Turn on commenting"),
+        DELETEPOST("Delete Post")
     }
 
     enum class MemberClickIfAdminDialogActionName(val value: String) {

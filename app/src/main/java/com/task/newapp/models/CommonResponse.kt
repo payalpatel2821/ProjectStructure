@@ -9,9 +9,8 @@ data class CommonResponse(
     val message: String,
 
     @SerializedName("success")
-    val success: Int,
-
-    )
+    val success: Int
+)
 
 
 

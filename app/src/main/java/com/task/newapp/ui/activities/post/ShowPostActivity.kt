@@ -1,39 +1,22 @@
 package com.task.newapp.ui.activities.post
 
-import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.task.newapp.App
 import com.task.newapp.R
-import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityShowPostBinding
-import com.task.newapp.databinding.FragmentPostBinding
-import com.task.newapp.models.post.PostSocket
 import com.task.newapp.models.post.ResponseGetAllPost
-import com.task.newapp.utils.Constants
 import com.task.newapp.utils.exoplayer.MediaRecyclerAdapter
-import com.task.newapp.utils.hideProgressDialog
-import com.task.newapp.utils.openProgressDialog
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.observers.DisposableObserver
-import io.reactivex.schedulers.Schedulers
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.lang.reflect.Type
 
 class ShowPostActivity : AppCompatActivity() {

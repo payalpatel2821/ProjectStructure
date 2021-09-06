@@ -15,6 +15,7 @@ import com.task.newapp.App
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.models.chat.ChatModel
 import com.task.newapp.models.chat.ResponseChatMessage
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.socket.SendUserDetailSocket
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.ChatList
@@ -107,22 +108,29 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
     private fun initSocketListeners() {
         socket.on(SocketConstant.is_online_response, onIsOnlineResponse)
         socket.on(SocketConstant.disconnect_response, onDisconnectResponse)
-        socket.on(SocketConstant.post_like_response, onPostLikeResponse)
+        socket.on(SocketConstant.post_like_dislike_response, onPostLikeResponse)
         socket.on(SocketConstant.join_response, onJoinResponse)
         socket.on(SocketConstant.new_message_response_private + getCurrentUserId(), onNewMessageResponsePrivate)
         socket.on(SocketConstant.user_typing_response + getCurrentUserId(), onUserTypingResponse)
         socket.on(SocketConstant.user_stop_typing_response + getCurrentUserId(), onUserStopTypingResponse)
-
+        socket.on(SocketConstant.add_post_comment_response, onAddPostCommentResponse)
+        socket.on(SocketConstant.delete_post_comment_response, onDeletePostCommentResponse)
+        socket.on(SocketConstant.add_post_comment_reply_response, onAddPostCommentReplyResponse)
+        socket.on(SocketConstant.add_post_delete_response, onDeletePostResponse)
     }
 
     private fun destroySocketListeners() {
         socket.off(SocketConstant.is_online_response, onIsOnlineResponse)
         socket.off(SocketConstant.disconnect_response, onDisconnectResponse)
-        socket.off(SocketConstant.post_like_response, onPostLikeResponse)
+        socket.off(SocketConstant.post_like_dislike_response, onPostLikeResponse)
         socket.off(SocketConstant.join_response, onJoinResponse)
         socket.off(SocketConstant.new_message_response_private + getCurrentUserId(), onNewMessageResponsePrivate)
         socket.off(SocketConstant.user_typing_response + getCurrentUserId(), onUserTypingResponse)
         socket.off(SocketConstant.user_stop_typing_response + getCurrentUserId(), onUserStopTypingResponse)
+        socket.off(SocketConstant.add_post_comment_response, onAddPostCommentResponse)
+        socket.off(SocketConstant.delete_post_comment_response, onDeletePostCommentResponse)
+        socket.off(SocketConstant.add_post_comment_reply_response, onAddPostCommentReplyResponse)
+        socket.on(SocketConstant.add_post_delete_response, onDeletePostResponse)
     }
 
 
@@ -151,19 +159,42 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
     }
 
     private val onPostLikeResponse = Emitter.Listener { args ->
-        val data = args[0] as String
-
         runOnUiThread {
-            onSocketEventsListener.onPostLikeDislikeSocketEvent()
-            /*  val data = args[0] as String
-              if (data != null) {
-                  val postSocket = Gson().fromJson(data, PostSocket::class.java)
-                  if (fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id
-                      && post_id == postSocket.post_id
-                  ) {
-                      //post_data_count(postSocket.getPost_id())
-                  }
-              }*/
+            val data = args[0] as String
+            val postSocket: PostSocket = Gson().fromJson(data, PostSocket::class.java)
+            onSocketEventsListener.onPostLikeDislikeSocketEvent(postSocket)
+        }
+    }
+
+    private val onAddPostCommentResponse = Emitter.Listener { args ->
+        runOnUiThread {
+            val data = args[0] as String
+            val postSocket: PostSocket = Gson().fromJson(data, PostSocket::class.java)
+            onSocketEventsListener.onAddPostCommentSocketEvent(postSocket)
+        }
+    }
+
+    private val onDeletePostCommentResponse = Emitter.Listener { args ->
+        runOnUiThread {
+            val data = args[0] as String
+            val postSocket: PostSocket = Gson().fromJson(data, PostSocket::class.java)
+            onSocketEventsListener.onDeletePostCommentSocketEvent(postSocket)
+        }
+    }
+
+    private val onAddPostCommentReplyResponse = Emitter.Listener { args ->
+        runOnUiThread {
+            val data = args[0] as String
+            val postSocket: PostSocket = Gson().fromJson(data, PostSocket::class.java)
+            onSocketEventsListener.onAddPostCommentReplySocketEvent(postSocket)
+        }
+    }
+
+    private val onDeletePostResponse = Emitter.Listener { args ->
+        runOnUiThread {
+            val data = args[0] as String
+            val postSocket: PostSocket = Gson().fromJson(data, PostSocket::class.java)
+            onSocketEventsListener.onDeletePostSocketEvent(postSocket)
         }
     }
 
@@ -211,8 +242,8 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         updateUserOnlineStatus(userId, status)
     }
 
-    override fun onPostLikeDislikeSocketEvent() {
-
+    override fun onPostLikeDislikeSocketEvent(postSocket: PostSocket) {
+        showLog("onPostLikeDislikeSocketEvent", "onPostLikeDislikeSocketEvent")
     }
 
     override fun onNewMessagePrivateSocketEvent(chatList: ChatList) {
@@ -224,6 +255,22 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
     }
 
     override fun onUserStopTypingSocketEvent(receiverId: Int) {
+
+    }
+
+    override fun onAddPostCommentSocketEvent(postSocket: PostSocket) {
+
+    }
+
+    override fun onDeletePostCommentSocketEvent(postSocket: PostSocket) {
+
+    }
+
+    override fun onAddPostCommentReplySocketEvent(postSocket: PostSocket) {
+
+    }
+
+    override fun onDeletePostSocketEvent(postSocket: PostSocket) {
 
     }
 

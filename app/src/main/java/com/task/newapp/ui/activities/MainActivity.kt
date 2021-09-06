@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.aghajari.zoomhelper.ZoomHelper
 import com.appizona.yehiahd.fastsave.FastSave
 import com.google.gson.Gson
 import com.task.newapp.App
@@ -18,6 +19,7 @@ import com.task.newapp.R
 import com.task.newapp.ui.fragments.contact.ContactBottomSheet
 import com.task.newapp.utils.contactUtils.ContactsHelper
 import com.task.newapp.databinding.ActivityMainBinding
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.realmDB.clearDatabase
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
@@ -48,6 +50,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         WorkManagerScheduler.refreshPeriodicWork(App.getAppInstance())
         callAPIGetAllNotification(mCompositeDisposable)
         initView()
+
+        //Add New
+        ZoomHelper.getInstance().minScale = 1f
     }
 
     override fun onDestroy() {
@@ -204,7 +209,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         }
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -283,10 +287,55 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     }
 
 
-    override fun onPostLikeDislikeSocketEvent() {
-        super.onPostLikeDislikeSocketEvent()
+    override fun onPostLikeDislikeSocketEvent(postSocket: PostSocket) {
+        super.onPostLikeDislikeSocketEvent(postSocket)
+        showLog("MainActivity", "Post like Dislike")
         if (binding.bottomBar.getActiveItem() == 1) {
-            postFragment.postLikeDislike()
+            postFragment.postLikeDislike(postSocket)
+        }
+    }
+
+    override fun onAddPostCommentSocketEvent(postSocket: PostSocket) {
+        showLog("MainActivity", "onAddPostCommentSocketEvent")
+        if (binding.bottomBar.getActiveItem() == 1) {
+            if (postFragment.isOpenCommentBottomSheet) {
+                postFragment.myBottomSheetPostCommentListFragment!!.addPostComment(postSocket)
+            } else {
+                postFragment.addPostComment(postSocket)
+            }
+        }
+    }
+
+    override fun onAddPostCommentReplySocketEvent(postSocket: PostSocket) {
+        showLog("MainActivity", "onAddPostCommentReplySocketEvent")
+        if (binding.bottomBar.getActiveItem() == 1) {
+            if (postFragment.isOpenCommentBottomSheet) {
+                postFragment.myBottomSheetPostCommentListFragment!!.addPostCommentReply(postSocket)
+            } else {
+                postFragment.addPostCommentReply(postSocket)
+            }
+        }
+    }
+
+    override fun onDeletePostCommentSocketEvent(postSocket: PostSocket) {
+        showLog("MainActivity", "onAddPostCommentSocketEvent")
+        if (binding.bottomBar.getActiveItem() == 1) {
+            if (postFragment.isOpenCommentBottomSheet) {
+                postFragment.myBottomSheetPostCommentListFragment!!.deletePostComment(postSocket)
+            } else {
+                postFragment.deletePostComment(postSocket)
+            }
+        }
+    }
+
+    override fun onDeletePostSocketEvent(postSocket: PostSocket) {
+        showLog("MainActivity", "onAddPostCommentSocketEvent")
+        if (binding.bottomBar.getActiveItem() == 1) {
+//            if (postFragment.isOpenCommentBottomSheet) {
+////                postFragment.myBottomSheetPostCommentListFragment!!.deletePostComment(postSocket)
+//            } else {
+            postFragment.deletePost(postSocket)
+//            }
         }
     }
 
@@ -336,6 +385,9 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         }
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        return ZoomHelper.getInstance().dispatchTouchEvent(ev!!, this) || super.dispatchTouchEvent(ev)
+    }
     override fun onResume() {
         super.onResume()
         ContactsHelper(this).getContacts { contacts ->

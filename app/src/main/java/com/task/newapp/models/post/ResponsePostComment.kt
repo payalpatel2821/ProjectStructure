@@ -31,7 +31,7 @@ data class ResponsePostComment(
         @SerializedName("status")
         val status: String = "",
         @SerializedName("total_comment")
-        val totalComment: Int = 0,
+        var totalComment: Int = 0,
         @SerializedName("updated_at")
         val updatedAt: String = "",
         @SerializedName("user_id")

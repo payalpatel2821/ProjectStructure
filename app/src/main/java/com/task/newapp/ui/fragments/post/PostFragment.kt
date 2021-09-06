@@ -31,11 +31,9 @@ import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
-import com.task.newapp.models.post.PostSocket
-import com.task.newapp.models.post.ResponseGetAllPost
+import com.task.newapp.models.post.*
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
-import com.task.newapp.models.post.ResponseGetPostLikeUnlike
-import com.task.newapp.models.post.ResponsePostComment
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.ShowPostActivity
 import com.task.newapp.utils.*
@@ -43,7 +41,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
 import lv.chi.photopicker.MediaPickerFragment
 import java.lang.Runnable
 import java.util.*
@@ -59,7 +56,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
     var myBottomSheetMoment: MomentsFragment? = null
     var myBottomSheetThought: ThoughtFragment? = null
-    lateinit var myBottomSheetPostCommentListFragment: PostCommentListFragment
+    var myBottomSheetPostCommentListFragment: PostCommentListFragment? = null
+    var isOpenCommentBottomSheet: Boolean = false
 
     private var onHideShowBottomSheet: OnHideShowBottomSheet? = null
 
@@ -80,6 +78,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
     var hasLoadedAllItemsComment = false
     private var paginate: Paginate? = null
     private var paginateComment: Paginate? = null
+    var positionAdapter: Int = 0
     var post_id: Int = 0
     var user_id: Int = 0
     private lateinit var sheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -149,10 +148,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             binding.swipeContainer.isRefreshing = true
             if (!isAPICallRunning) {
                 showLog("initView", "get_all_post")
-                getAllPost(0)
+                getAllPost(0, false)
             }
         }
-        getAllPost(0)
+        getAllPost(0, true)
 
 //        binding.swipeContainer.post {
 //            binding.swipeContainer.isRefreshing = true
@@ -210,11 +209,13 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    fun getAllPost(currentpos: Int) {
+    private fun getAllPost(currentpos: Int, isShowProgress: Boolean) {
         isAPICallRunning = true
         if (activity != null) {
             try {
-                openProgressDialog(activity)
+                if (isShowProgress) {
+                    openProgressDialog(activity)
+                }
 
                 mCompositeDisposable.add(
                     ApiClient.create()
@@ -243,7 +244,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //                                            allPostArrayList = responseGetAllPost.data as ArrayList<All_Post_Data>
                                             allPostArrayList.addAll(responseGetAllPost.data as ArrayList<All_Post_Data>)
 
-                                            postFragAdapter.setdata(allPostArrayList, currentpos == 0)
+                                            postFragAdapter.setdata(allPostArrayList)  //, currentpos == 0
                                             isloading = false
                                             hasLoadedAllItems = false
 
@@ -259,6 +260,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                         postFragAdapter.onItemClick = { view, position, comment ->
                                             if (postFragAdapter.getdata().isNotEmpty()) {
 
+                                                positionAdapter = position
                                                 val allPostData = postFragAdapter.getdata()[position]
                                                 post_id = allPostData.id
                                                 user_id = allPostData.userId
@@ -299,7 +301,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         }
 
                                                         Log.e("onNext: ", Gson().toJson(postSocket))
-                                                        socket.emit(SocketConstant.post_like, Gson().toJson(postSocket))
+                                                        postLikeDislikeEmitEvent(postSocket)
 
                                                         //Call API for like
                                                         callAPIPostLikeDislike(likeType = likeType, postId = post_id.toString())
@@ -347,9 +349,11 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         }
                                                     }
 
-                                                    R.id.llComment -> openCommentBottomSheet(position)
+                                                    R.id.llComment -> openCommentBottomSheet(position, allPostData)
 
-                                                    R.id.more_iv -> showPostDialog()
+                                                    R.id.more_iv -> {
+                                                        showPostSettingDialog(allPostData.turnOffComment, getCurrentUserId() == allPostData.userId)
+                                                    }
 
                                                     R.id.rlMain -> showPostDetails(position)
                                                 }
@@ -408,7 +412,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                             }
 
                             override fun onComplete() {
-                                hideProgressDialog()
+                                binding.swipeContainer.isRefreshing = false
+                                if (isShowProgress) {
+                                    hideProgressDialog()
+                                }
                             }
                         })
                 )
@@ -420,16 +427,18 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                 binding.noPosts.visibility = View.VISIBLE
                 binding.noPosts.visibility = View.GONE
 
-                hideProgressDialog()
+                if (isShowProgress) {
+                    hideProgressDialog()
+                }
             }
         }
     }
 
-    private fun openCommentBottomSheet(position: Int) {
+    private fun openCommentBottomSheet(position: Int, allPostData: All_Post_Data) {
         try {
-            myBottomSheetPostCommentListFragment = PostCommentListFragment().newInstance(post_id, user_id, position)
-            myBottomSheetPostCommentListFragment.setListener(this)
-            myBottomSheetPostCommentListFragment.show(childFragmentManager, myBottomSheetPostCommentListFragment.tag)
+            myBottomSheetPostCommentListFragment = PostCommentListFragment().newInstance(post_id, user_id, position, Gson().toJson(allPostData))
+            myBottomSheetPostCommentListFragment!!.setListener(this)
+            myBottomSheetPostCommentListFragment!!.show(childFragmentManager, myBottomSheetPostCommentListFragment!!.tag)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -495,7 +504,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                 val currentSize = scrollPosition - 1
 
                 if (currentSize > 0) {
-                    getAllPost(postFragAdapter.getdata()[currentSize].id)
+                    getAllPost(postFragAdapter.getdata()[currentSize].id, false)
                 }
             }
         }
@@ -592,13 +601,15 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                         override fun onError(e: Throwable) {
                             Log.v("onError: ", e.toString())
-                            showLog("testCode", "onComplete done")
+//                            showLog("testCode", "onComplete done $position")
+//                            position++
 //                            hideProgressDialog()
                         }
 
                         override fun onComplete() {
 //                            hideProgressDialog()
-                            showLog("testCode", "onComplete done")
+//                            showLog("testCode", "onComplete done $position")
+//                            position++
                         }
                     })
             )
@@ -762,8 +773,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    private fun showPostDialog() {
-        DialogUtils().showConfirmationIOSDialog(activity as AppCompatActivity, "", "", object : DialogUtils.DialogCallbacks {
+    private fun showPostSettingDialog(turnOffComment: Int, postByMe: Boolean) {
+        DialogUtils().showConfirmationIOSDialog(activity as AppCompatActivity, "", "", turnOffComment, postByMe, object : DialogUtils.DialogCallbacks {
             override fun onPositiveButtonClick() {
 
             }
@@ -773,9 +784,19 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             }
 
             override fun onDefaultButtonClick(actionName: String) {
+                showLog("onDefaultButtonClick", actionName)
                 when (actionName) {
-                    DialogUtils.PostDialogActionName.REPORT.value -> {
-
+                    DialogUtils.PostDialogActionName.TURNONCOMMENT.value -> {
+                        //Call API for Turn on/off comment
+                        callAPITurnOnOffComment(0)
+                    }
+                    DialogUtils.PostDialogActionName.TURNOFFCOMMENT.value -> {
+                        //Call API for Turn on/off comment
+                        callAPITurnOnOffComment(1)
+                    }
+                    DialogUtils.PostDialogActionName.DELETEPOST.value -> {
+                        //Call API for Delete
+                        callAPIPostDelete()
                     }
                 }
             }
@@ -809,14 +830,14 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         showLog("onPostClickService", "Refresh_Post_List")
         //Refresh Post List
         mCompositeDisposable?.clear()
-        getAllPost(0)
+        getAllPost(0, true)
     }
 
     override fun onPostClick() {
         showLog("onPostClick", "Refresh_Post_List")
         //Refresh Post List
         mCompositeDisposable?.clear()
-        getAllPost(0)
+        getAllPost(0, true)
     }
 
     /*  private fun initSocketListeners() {
@@ -844,8 +865,37 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         })*//*
     }*/
 
-    fun postLikeDislike() {
-        Log.e("onPostLikeResponse", "postLikeDislike")
+    fun postLikeDislike(postSocket: PostSocket) {
+        Log.e("onPostLikeResponse", "postLikeDislike: $postSocket")
+
+        //Check in adapter that exist
+        postFragAdapter?.let {
+            postFragAdapter.getdata()?.let { it ->
+                val findedModel = it?.find {
+                    it.id == postSocket.post_id
+                }
+
+                //Get position of adapter
+                val currPosition = it?.indexOf(findedModel)
+                showLog("indexOf", currPosition.toString())
+
+                if (currPosition >= 0 && fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id) {
+                    callAPIPostDataCount(findedModel, postSocket.post_id, currPosition)
+                }
+
+//                val isExist = it.any { it.id == postSocket.post_id }
+//                if (isExist && fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id) {
+//                    callAPIPostDataCount(postSocket.post_id)
+//                }
+            }
+        }
+
+//        if (fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id
+//            && post_id == postSocket.post_id
+//        ) {
+//            callAPIPostDataCount(postSocket.post_id)
+//        }
+//        }
     }
 
     override fun onPause() {
@@ -884,7 +934,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 
                 //Refresh Post List
                 mCompositeDisposable?.clear()
-                getAllPost(0)
+
+                getAllPost(0, true)
             }
         }
     }
@@ -1005,8 +1056,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //    }
 
     fun expandCommentSheet() {
-        if (this::myBottomSheetPostCommentListFragment.isInitialized)
-            myBottomSheetPostCommentListFragment.dismiss()
+//        if (this::myBottomSheetPostCommentListFragment.isInitialized)
+        myBottomSheetPostCommentListFragment!!.dismiss()
+
+        myBottomSheetPostCommentListFragment = null
     }
 
     override fun onResume() {
@@ -1053,35 +1106,349 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    suspend fun testCode() {
+//    var position = 0
 
-        //Handler().postDelayed(Runnable { count = 15 }, 5000)
-
+//    suspend fun testCode() {
+//
 //        val time = measureTimeMillis {
 //            runBlocking {
-//                for (i in 1..5) {
-//                    launch {
-//                        //work(i)
+////                for (i in 1..5) {
+//                launch {
+//                    //work(i)
 //
-//                        Thread.sleep(2000)
+////                async {
+////                    Thread.sleep(1000)
+//                    delay(2000)
 //
-//                        showLog("testCode", "Work $i done")
+//                    // position++
+//
+//                    //showLog("testCode", "Work $position done")
+//                    callAPIPostSave(saveType = "save", postId = post_id.toString())
+//
+////                }.await()
 ////                        callAPIPostSave(saveType = "save", postId = post_id.toString())
-//                    }
 //                }
+////                }
 //            }
 //        }
-//        showLog("testCode", "Done in $time ms")
+//        //showLog("testCode", "Done in $time ms")
+//    }
 
-        val jobs = mutableListOf<Job>()
-        for (i in 1..2) {
-            jobs += GlobalScope.launch {
-//                work(i)
+    private fun callAPIPostDataCount(findedModel: All_Post_Data?, postId: Int, currPosition: Int) {
+        try {
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .postDataCount(postId.toString())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponsePostLikeDataCount>() {
+                        override fun onNext(responsePostLikeDataCount: ResponsePostLikeDataCount) {
+                            Log.v("onNext: ", responsePostLikeDataCount.toString())
 
-                Thread.sleep(2000)
-                showLog("testCode", "Work $i done")
+                            if (responsePostLikeDataCount != null) {
+                                if (responsePostLikeDataCount.success == 1) {
+
+                                    responsePostLikeDataCount.data?.let {
+
+                                        if (it.postLike?.toInt() >= 0) {
+
+                                            postFragAdapter.updateLikesCount(it.postLike?.toInt(), currPosition, -1)
+
+//                                            findedModel!!.latest_comment.totalComment = it.commentCount.toInt()
+//                                            postFragAdapter.updateComment(findedModel!!.latest_comment, currPosition)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                        }
+
+                        override fun onComplete() {
+                            Log.v("onComplete: ", "onComplete")
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+//    fun isInitializedPostListFragment(): Boolean {
+//        myBottomSheetPostCommentListFragment?.let {
+////            return this::myBottomSheetPostCommentListFragment.isInitialized
+//
+////            if(this::myBottomSheetPostCommentListFragment.isInitialized){
+////
+////            }
+//
+//        }
+//        return false
+//    }
+
+    fun addPostComment(postSocket: PostSocket) {
+        Log.e("addPostComment", "addPostComment: $postSocket")
+
+        try {
+            //Check in adapter that exist
+            postFragAdapter?.let {
+                postFragAdapter.getdata()?.let { it ->
+                    val findedModel = it?.find {
+                        it.id == postSocket.post_id
+                    }
+
+                    //Get position of adapter
+                    val currPosition = it?.indexOf(findedModel)
+                    showLog("indexOf", currPosition.toString())
+
+                    if (currPosition >= 0 && fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id) {
+
+//                        var totalComments = 0
+//                        if (postSocket.isDeleteComment) {
+//                            if (findedModel!!.commentsCount > 0) {
+//                                totalComments = findedModel!!.commentsCount - 1
+//                            }
+//                        } else {
+//                            totalComments = findedModel!!.commentsCount + 1
+//                        }
+
+                        //update comment count
+                        var dataComment = ResponsePostComment.Data(
+                            commentText = findedModel!!.latest_comment.commentText,
+                            totalComment = postSocket.totalComments!! //totalComments
+                        )
+                        postFragAdapter.updateComment(dataComment, currPosition)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun deletePostComment(postSocket: PostSocket) {
+        Log.e("addPostComment", "addPostComment: $postSocket")
+
+        try {
+            //Check in adapter that exist
+            postFragAdapter?.let {
+                postFragAdapter.getdata()?.let { it ->
+                    val findedModel = it?.find {
+                        it.id == postSocket.post_id
+                    }
+
+                    //Get position of adapter
+                    val currPosition = it?.indexOf(findedModel)
+                    showLog("indexOf", currPosition.toString())
+
+                    if (currPosition >= 0 && fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id) {
+
+//                        var totalComments = 0
+//                        if (postSocket.isDeleteComment) {
+//                            if (findedModel!!.commentsCount > 0) {
+//                                totalComments = findedModel!!.commentsCount - 1
+//                            }
+//                        } else {
+//                            totalComments = findedModel!!.commentsCount + 1
+//                        }
+
+                        //update comment count
+                        var dataComment = ResponsePostComment.Data(
+                            commentText = findedModel!!.latest_comment.commentText,
+                            totalComment = postSocket.totalComments!!  //totalComments
+                        )
+                        postFragAdapter.updateComment(dataComment, currPosition)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun addPostCommentReply(postSocket: PostSocket) {
+        Log.e("addPostComment", "addPostComment: $postSocket")
+
+        try {
+            //Check in adapter that exist
+            postFragAdapter?.let {
+                postFragAdapter.getdata()?.let { it ->
+                    val findedModel = it?.find {
+                        it.id == postSocket.post_id
+                    }
+
+                    //Get position of adapter
+                    val currPosition = it?.indexOf(findedModel)
+                    showLog("indexOf", currPosition.toString())
+
+                    if (currPosition >= 0 && fastSave.getInt(Constants.prefUserId, 0) != postSocket.user_id) {
+
+//                        var totalComments = 0
+//                        if (postSocket.isDeleteComment) {
+//                            if (findedModel!!.commentsCount > 0) {
+//                                totalComments = findedModel!!.commentsCount - 1
+//                            }
+//                        } else {
+//                            totalComments = findedModel!!.commentsCount + 1
+//                        }
+
+                        //update comment count
+                        var dataComment = ResponsePostComment.Data(
+                            commentText = findedModel!!.latest_comment.commentText,
+                            totalComment = postSocket.totalComments!! // totalComments
+                        )
+                        postFragAdapter.updateComment(dataComment, currPosition)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callAPITurnOnOffComment(turn_off_comment: Int) {
+        isAPICallRunning = true
+        if (activity != null) {
+            try {
+                val hashMap: HashMap<String, Any> = hashMapOf(
+                    Constants.post_id to post_id,
+                    Constants.turn_off_comment to turn_off_comment
+                )
+
+                openProgressDialog(activity)
+
+                mCompositeDisposable.add(
+                    ApiClient.create()
+                        .postCommentOnOff(hashMap)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(object : DisposableObserver<CommonResponse>() {
+                            override fun onNext(commonResponse: CommonResponse) {
+                                Log.v("onNext: ", commonResponse.toString())
+
+                                commonResponse?.let {
+                                    if (commonResponse.success == 1) {
+                                        //activity!!.showToast("")
+                                        postFragAdapter?.let {
+                                            postFragAdapter.updateTurnOnOffComment(turn_off_comment, positionAdapter)
+                                        }
+                                    }
+                                }
+                            }
+
+                            override fun onError(e: Throwable) {
+                                Log.v("onError: ", e.toString())
+                                hideProgressDialog()
+                            }
+
+                            override fun onComplete() {
+                                hideProgressDialog()
+                            }
+                        })
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                hideProgressDialog()
             }
         }
-        jobs.forEach { it.join() }
     }
+
+    private fun callAPIPostDelete() {
+        try {
+            DialogUtils().showConfirmationYesNoDialog(requireActivity() as AppCompatActivity, "Delete Post", "Are you sure you want to delete this post?", object : DialogUtils.DialogCallbacks {
+                override fun onPositiveButtonClick() {
+                    openProgressDialog(activity)
+
+                    mCompositeDisposable.add(
+                        ApiClient.create()
+                            .postDelete(post_id.toString())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(object : DisposableObserver<CommonResponse>() {
+                                override fun onNext(commonResponse: CommonResponse) {
+                                    Log.v("onNext: ", commonResponse.toString())
+
+                                    commonResponse?.let {
+                                        if (commonResponse.success == 1) {
+                                            activity!!.showToast(commonResponse.message)
+
+                                            postFragAdapter?.let {
+
+                                                if (allPostArrayList.isNotEmpty()) {
+                                                    allPostArrayList.removeAt(positionAdapter)
+                                                    postFragAdapter.setdata(allPostArrayList)
+
+//                                                    postFragAdapter.removePost(positionAdapter)
+                                                }
+
+                                                //---------------Socket for Delete Post-----------------------
+                                                val postSocket = PostSocket(
+                                                    user_id = getCurrentUserId(),
+                                                    post_id = post_id
+                                                )
+                                                addPostDeleteEmitEvent(postSocket)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    Log.v("onError: ", e.toString())
+                                    hideProgressDialog()
+                                }
+
+                                override fun onComplete() {
+                                    hideProgressDialog()
+                                }
+                            })
+                    )
+                }
+
+                override fun onNegativeButtonClick() {
+                }
+
+                override fun onDefaultButtonClick(actionName: String) {
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+        }
+    }
+
+    fun deletePost(postSocket: PostSocket) {
+        Log.e("deletePost_Socket", "deletePost: $postSocket")
+
+        try {
+            if (getCurrentUserId() != postSocket.user_id) {
+                //Check in adapter that exist
+                postFragAdapter?.let {
+                    postFragAdapter.getdata()?.let { it ->
+                        val findedModel = it?.find {
+                            it.id == postSocket.post_id
+                        }
+
+                        //Get position of adapter
+                        findedModel?.let { model ->
+                            val currPosition = it?.indexOf(model)
+                            showLog("indexOf", currPosition.toString())
+
+                            if (allPostArrayList.isNotEmpty()) {
+
+                                allPostArrayList.removeAt(currPosition)
+                                postFragAdapter.setdata(allPostArrayList)
+                                Log.e("deletePost_Socket", "currPosition: $currPosition")
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

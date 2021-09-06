@@ -177,7 +177,6 @@ dependencies {
 
     //Emoji KeyBoard
     implementation 'com.vanniktech:emoji-ios:0.7.0'
-    implementation 'com.github.markomilos:paginate:1.0.0'
     implementation 'io.github.florent37:shapeofview:1.4.7'
 
     //parceler
@@ -191,7 +190,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3")
 
     //ZoomHelper
-    implementation 'com.aghajari.zoomhelper:ZoomHelper:1.0.1'
+//    implementation 'com.aghajari.zoomhelper:ZoomHelper:1.0.1'
+    implementation 'io.github.aghajari:ZoomHelper:1.1.0'
 
 
     //balloon dialog

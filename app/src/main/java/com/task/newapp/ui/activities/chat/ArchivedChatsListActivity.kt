@@ -16,6 +16,7 @@ import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityArchivedChatsListBinding
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.models.UserArchive
@@ -246,7 +247,7 @@ class ArchivedChatsListActivity : BaseAppCompatActivity(), View.OnClickListener,
         updateOnlineUser(userId, status)
     }
 
-    override fun onPostLikeDislikeSocketEvent() {
-
+    override fun onPostLikeDislikeSocketEvent(postSocket: PostSocket) {
+        showLog("onPostLikeDislikeSocketEvent", "onPostLikeDislikeSocketEvent")
     }
 }

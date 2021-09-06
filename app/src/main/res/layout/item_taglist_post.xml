@@ -25,6 +25,7 @@
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_margin="@dimen/_10sdp"
+                    android:elevation="@dimen/_5sdp"
                     android:minWidth="@dimen/_40sdp"
                     android:minHeight="@dimen/_40sdp"
                     tools:src="@drawable/logo" />

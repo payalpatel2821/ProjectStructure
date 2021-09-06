@@ -254,7 +254,6 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //                mItemTouchHelper.startDrag(holder)
 //            }
 //        }
-
     }
 
     fun spanRecyclerView(data: List<LocalMedia?>?) {

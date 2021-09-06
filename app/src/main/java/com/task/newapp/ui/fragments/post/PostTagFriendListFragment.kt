@@ -20,6 +20,8 @@ import com.task.newapp.R
 import com.task.newapp.adapter.post.PostTagListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostTagListBinding
+import com.task.newapp.models.OtherUserModel
+import com.task.newapp.models.ResponseUserFollowingFollower
 import com.task.newapp.models.post.ResponseFriendsList
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -42,8 +44,13 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
     private var isAPICallRunning = false
     private lateinit var postTagListAdapter: PostTagListAdapter
     var onPostTagDoneClickListener: OnPostTagDoneClickListener? = null
-    private lateinit var allfriendList: ArrayList<ResponseFriendsList.Data>
-    private lateinit var allfriendListTemp: ArrayList<ResponseFriendsList.Data>
+
+//    private lateinit var allfriendList: ArrayList<ResponseFriendsList.Data>
+//    private lateinit var allfriendListTemp: ArrayList<ResponseFriendsList.Data>
+
+    private lateinit var allfriendList: ArrayList<OtherUserModel>
+    private lateinit var allfriendListTemp: ArrayList<OtherUserModel>
+
     private lateinit var commaSeperatedIds: String
     private lateinit var commaSeperatedNames: String
     private var searchtxt: String = ""
@@ -185,31 +192,112 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
         try {
             isAPICallRunning = true
             if (activity != null) {
+//                try {
+//                    //openProgressDialog(activity)
+//
+//                    val hashMap: HashMap<String, Any> = hashMapOf(
+//                        Constants.flag to "tag_post",
+//                        Constants.term to searchText,
+//                        Constants.limit to requireActivity().getString(R.string.get_all_post),
+//                        Constants.offset to currentSize.toString()
+//                    )
+//
+//                    mCompositeDisposable.add(
+//                        ApiClient.create()
+//                            .search_contacts(hashMap)
+//                            .subscribeOn(Schedulers.io())
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribeWith(object : DisposableObserver<ResponseFriendsList>() {
+//                                override fun onNext(responseFriendsList: ResponseFriendsList) {
+//                                    Log.v("onNext: ", responseFriendsList.toString())
+//                                    if (responseFriendsList != null) {
+//                                        if (responseFriendsList.success == 1) {
+//
+//                                            if (responseFriendsList.data.isNotEmpty()) {
+//
+//                                                //allfriendList = ArrayList()
+//                                                allfriendList.addAll(responseFriendsList.data as ArrayList<ResponseFriendsList.Data>)
+//
+//                                                //Set checked items
+//                                                if (commaSeperatedIds.isNotEmpty()) {
+//
+//                                                    val commaArray = commaSeperatedIds.split(",")
+//
+//                                                    allfriendList.forEachIndexed { index, data ->
+//                                                        data.isSelected = commaArray.contains(data.id.toString())
+//                                                    }
+//
+//                                                    //Set name list in textview
+//                                                    commaSeperatedNames = allfriendList.filter(ResponseFriendsList.Data::isSelected)
+//                                                        .joinToString(separator = ", ") { if (it.isSelected) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
+//                                                    binding.txtFriendList.text = commaSeperatedNames
+//
+//                                                    binding.txtFriendList.visibility = View.VISIBLE
+//                                                    checkAndEnable(true)
+//                                                } else {
+//                                                    //
+//                                                }
+//
+////                                                postTagListAdapter.setData(allfriendList, false)
+//                                                postTagListAdapter.notifyDataSetChanged()
+//
+//                                                isloading = false
+//                                                hasLoadedAllItems = false
+//
+//                                            } else {
+//                                                isloading = true
+//                                                hasLoadedAllItems = true
+//                                            }
+//
+//                                        } else {
+//                                            hasLoadedAllItems = true
+//                                        }
+//                                    }
+//                                    isAPICallRunning = false
+//                                }
+//
+//                                override fun onError(e: Throwable) {
+//                                    hideProgressDialog()
+//                                    Log.v("onError: ", e.toString())
+//                                    isAPICallRunning = false
+//                                }
+//
+//                                override fun onComplete() {
+//                                    hideProgressDialog()
+//                                }
+//                            })
+//                    )
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                    isAPICallRunning = false
+//                    hideProgressDialog()
+//                }
+
                 try {
                     //openProgressDialog(activity)
 
                     val hashMap: HashMap<String, Any> = hashMapOf(
-                        Constants.flag to "tag_post",
-                        Constants.term to searchText,
+                        Constants.keyword to searchText,
+                        Constants.type to "follower",
                         Constants.limit to requireActivity().getString(R.string.limit_20),
-                        Constants.offset to currentSize.toString()
+                        Constants.offset to currentSize
                     )
 
                     mCompositeDisposable.add(
                         ApiClient.create()
-                            .search_contacts(hashMap)
+                            .getUserFollowerFollowing(hashMap)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeWith(object : DisposableObserver<ResponseFriendsList>() {
-                                override fun onNext(responseFriendsList: ResponseFriendsList) {
-                                    Log.v("onNext: ", responseFriendsList.toString())
-                                    if (responseFriendsList != null) {
-                                        if (responseFriendsList.success == 1) {
+                            .subscribeWith(object : DisposableObserver<ResponseUserFollowingFollower>() {
+                                override fun onNext(responseUserFollowingFollower: ResponseUserFollowingFollower) {
+                                    Log.v("onNext: ", responseUserFollowingFollower.toString())
+                                    if (responseUserFollowingFollower != null) {
+                                        if (responseUserFollowingFollower.success == 1) {
 
-                                            if (responseFriendsList.data.isNotEmpty()) {
+                                            if (responseUserFollowingFollower.data.isNotEmpty()) {
 
                                                 //allfriendList = ArrayList()
-                                                allfriendList.addAll(responseFriendsList.data as ArrayList<ResponseFriendsList.Data>)
+                                                allfriendList.addAll(responseUserFollowingFollower.data as ArrayList<OtherUserModel>)
 
                                                 //Set checked items
                                                 if (commaSeperatedIds.isNotEmpty()) {
@@ -221,7 +309,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                                                     }
 
                                                     //Set name list in textview
-                                                    commaSeperatedNames = allfriendList.filter(ResponseFriendsList.Data::isSelected)
+                                                    commaSeperatedNames = allfriendList.filter(OtherUserModel::isSelected)
                                                         .joinToString(separator = ", ") { if (it.isSelected) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
                                                     binding.txtFriendList.text = commaSeperatedNames
 
@@ -265,6 +353,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                     isAPICallRunning = false
                     hideProgressDialog()
                 }
+
             }
         } catch (e: Exception) {
             e.printStackTrace()

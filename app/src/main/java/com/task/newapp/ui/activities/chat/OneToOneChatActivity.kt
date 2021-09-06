@@ -18,6 +18,7 @@ import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.adapter.chat.OneToOneChatAdapter
 import com.task.newapp.databinding.ActivityOneToOneChatBinding
+import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.realmDB.getOneToOneChat
 import com.task.newapp.realmDB.getSingleChat
 import com.task.newapp.realmDB.insertChatListData
