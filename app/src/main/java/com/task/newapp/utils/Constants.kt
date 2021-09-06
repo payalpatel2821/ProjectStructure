@@ -1,5 +1,7 @@
 package com.task.newapp.utils
 
+import android.os.Build
+import android.os.Looper
 import com.task.newapp.R
 import java.io.Serializable
 
@@ -55,6 +57,7 @@ class Constants {
         const val receiver_id = "receiver_id"
         const val broadcast_id = "broadcast_id"
         const val is_secret = "is_secret"
+        const val contact = "contact"
         const val MAX_IMAGE_COUNT_IF_VIDEO_SELECTED = 15
         const val MAX_IMAGE_COUNT = 30
         const val MAX_VIDEO_COUNT = 5
@@ -294,6 +297,80 @@ class SocketConstant {
         const val manage_tick_group = "manage_tick_group"
 
 
+
+
+
     }
 
+
+}
+//======================================Contact======================================//
+class ContactsConstants {
+    companion object {
+        const val SD_OTG_PATTERN = "^/storage/[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$"
+        const val SD_OTG_SHORT = "^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$"
+
+        // shared preferences
+        const val PREFS_KEY = "Prefs"
+        const val OTG_TREE_URI = "otg_tree_uri_2"
+        const val SD_CARD_PATH = "sd_card_path_2"
+        const val OTG_REAL_PATH = "otg_real_path_2"
+        const val OTG_PARTITION = "otg_partition_2"
+        const val START_NAME_WITH_SURNAME = "start_name_with_surname"
+
+        // sorting
+        const val SORT_ORDER = "sort_order"
+        const val SORT_BY_FIRST_NAME = 128
+        const val SORT_BY_MIDDLE_NAME = 256
+        const val SORT_BY_SURNAME = 512
+        const val SORT_DESCENDING = 1024
+        const val SORT_BY_FULL_NAME = 65536
+
+        // permissions
+      /*  const val PERMISSION_READ_STORAGE = 1
+        const val PERMISSION_WRITE_STORAGE = 2
+        const val PERMISSION_CAMERA = 3
+        const val PERMISSION_RECORD_AUDIO = 4*/
+        const val PERMISSION_READ_CONTACTS = 5
+        const val PERMISSION_WRITE_CONTACTS = 6
+       /* const val PERMISSION_READ_CALENDAR = 7
+        const val PERMISSION_WRITE_CALENDAR = 8
+        const val PERMISSION_CALL_PHONE = 9
+        const val PERMISSION_READ_CALL_LOG = 10
+        const val PERMISSION_WRITE_CALL_LOG = 11
+        const val PERMISSION_GET_ACCOUNTS = 12
+        const val PERMISSION_READ_SMS = 13
+        const val PERMISSION_SEND_SMS = 14
+        const val PERMISSION_READ_PHONE_STATE = 15*/
+
+
+        // shared prefs
+        const val SHOW_ONLY_CONTACTS_WITH_NUMBERS = "show_only_contacts_with_numbers"
+        const val IGNORED_CONTACT_SOURCES = "ignored_contact_sources_2"
+        const val WAS_LOCAL_ACCOUNT_INITIALIZED = "was_local_account_initialized"
+
+        const val SMT_PRIVATE =
+            "smt_private"   // used at the contact source of local contacts hidden from other apps
+
+
+        // apps with special handling
+        const val TELEGRAM_PACKAGE = "org.telegram.messenger"
+        const val VIBER_PACKAGE = "com.viber.voip"
+
+        fun isOnMainThread() = Looper.myLooper() == Looper.getMainLooper()
+
+        fun ensureBackgroundThread(callback: () -> Unit) {
+            if (isOnMainThread()) {
+                Thread {
+                    callback()
+                }.start()
+            } else {
+                callback()
+            }
+        }
+
+        fun isMarshmallowPlus() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+
+        val normalizeRegex = "\\p{InCombiningDiacriticalMarks}+".toRegex()
+    }
 }

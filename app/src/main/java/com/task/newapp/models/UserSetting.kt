@@ -119,8 +119,8 @@ data class UserSetting(
     val groupNotificationToneId: Int,
     @SerializedName("near_location")
     val nearLocation: Int,
-    @SerializedName("sound")
-    val sound: String,
+    @SerializedName("tone_name")
+    val toneName: String,
     @SerializedName("profile_color")
     val profileColor: String
 )

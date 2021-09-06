@@ -227,4 +227,10 @@ interface ApiHelper {
 
     @GET(updated_all_group)
     fun getUpdatedAllGroup(): Observable<ResponseGroupData>
+
+    @POST(is_how_user)
+    fun getIsAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
+
+    @POST(search_contacts)
+    fun searchAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
 }

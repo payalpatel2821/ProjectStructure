@@ -398,4 +398,7 @@
     <!--        <item name="picture.folder_checked_dot">@drawable/picture_orange_oval</item>-->
     <!--    </style>-->
 
+    <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+    </style>
 </resources>

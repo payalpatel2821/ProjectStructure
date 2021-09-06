@@ -21,7 +21,7 @@ class AvatarGenerator {
             return avatarImageGenerate(context, size, shape, name, color)
         }
 
-        private fun avatarImageGenerate(context: Context, size: Int, shape: Int, name: String, color: String): BitmapDrawable {
+        private fun avatarImageGenerate(context: Context, size: Int, shape: Int, name: String, colorStr: String): BitmapDrawable {
             uiContext = context
 
             texSize = calTextSize(size)
@@ -36,7 +36,7 @@ class AvatarGenerator {
 //                val r = firstLetter[0]
                 //Random rnd = new Random();
                 //int color = generateRandomColor();// Color.argb(255, rnd.nextInt(100), rnd.nextInt(150), rnd.nextInt(256));
-                val color = Color.parseColor(color)//RandomColors(colorModel).getColor()
+                val color = if (!colorStr.isNullOrEmpty()) Color.parseColor(colorStr) else RandomColors().getColor()
 
                 painter.color = color
                 painter.shader = LinearGradient(size.toFloat() / 3, size.toFloat() / 4, 0F, size.toFloat(), color, Color.WHITE, Shader.TileMode.CLAMP)
@@ -58,7 +58,7 @@ class AvatarGenerator {
 //                val r = firstLetter[0]
                 // painter.color = RandomColors(colorModel).getColor()
 
-                val color = Color.parseColor(color)//RandomColors(colorModel).getColor()
+                val color = if (!colorStr.isNullOrEmpty()) Color.parseColor(colorStr) else RandomColors().getColor()
                 painter.color = color;
                 painter.shader = LinearGradient(size.toFloat() / 3, size.toFloat() / 4, 0F, size.toFloat(), color, Color.WHITE, Shader.TileMode.CLAMP);
             }
@@ -88,10 +88,10 @@ class AvatarGenerator {
             var first: String = ""
             var last: String = ""
             if (splitArray.isNotEmpty()) {
-                if(splitArray[0]!="") {
+                if (splitArray[0] != "") {
                     first = splitArray[0].first().toString().toUpperCase(Locale.ROOT)
                 }
-                if (splitArray.size>1) {
+                if (splitArray.size > 1) {
                     if (splitArray[1] != "") {
                         last = splitArray[1].first().toString().toUpperCase(Locale.ROOT)
                     }
@@ -113,7 +113,7 @@ class AvatarGenerator {
         }
 
         private fun calTextSize(size: Int): Float {
-            return (size / 6.125).toFloat()
+            return (size / 8.125).toFloat()
         }
     }
 }

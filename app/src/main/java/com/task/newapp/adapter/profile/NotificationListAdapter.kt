@@ -36,7 +36,7 @@ class NotificationListAdapter(
         }
 
         fun setData(applicationContext: Context, obj: NotificationToneWrapper) {
-            layoutBinding.rbNotification.text = obj.notificationTone.soundName
+            layoutBinding.rbNotification.text = obj.notificationTone.displayName
             if (obj.isChecked) {
                 layoutBinding.ivIsCheck.visibility = VISIBLE
                 layoutBinding.rbNotification.setTextColor(ContextCompat.getColor(applicationContext, R.color.theme_color))

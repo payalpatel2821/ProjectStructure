@@ -63,7 +63,7 @@ open class UserSettings : RealmObject() {
     var groupUseHighPriorityNotification: Int = 0
     var groupNotificationToneId: Int = 0
     var nearLocation: Int = 0
-    var sound: String = ""
+    var toneName: String = ""
     var user: Users? = null
     var createdAt: String = ""
     var updatedAt: String = ""
@@ -79,7 +79,7 @@ open class UserSettings : RealmObject() {
             vibrateStatus: String, isPopupNotification: Int, useHighPriorityNotification: Int, lastSeen: String, isVisible: Int, profileSeen: String, callRingtone: String,
             callVibrate: String, aboutSeen: String, whoCanAddMeInGroup: String, liveLocationSharing: Int, isFingerprintLockEnabled: Int, isShowSecurityNotification: Int,
             isTwoStepVerificationEnabled: Int, groupVibrateStatus: String, groupIsPopupNotification: Int, groupUseHighPriorityNotification: Int, groupNotificationToneId: Int,
-            nearLocation: Int, sound: String, user: Users, createdAt: String, updatedAt: String,
+            nearLocation: Int, toneName: String, user: Users, createdAt: String, updatedAt: String,
         ): UserSettings {
             val userSettings = UserSettings()
             userSettings.id = id
@@ -139,7 +139,7 @@ open class UserSettings : RealmObject() {
             userSettings.groupUseHighPriorityNotification = groupUseHighPriorityNotification
             userSettings.groupNotificationToneId = groupNotificationToneId
             userSettings.nearLocation = nearLocation
-            userSettings.sound = sound
+            userSettings.toneName = toneName
             userSettings.user = user
             userSettings.createdAt = createdAt
             userSettings.updatedAt = updatedAt

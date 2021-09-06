@@ -117,13 +117,13 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         showLog("loadmore", scrollPosition.toString())
         when (from) {
             "profile_view" -> {
-                callAPIGetProfileViewer(20, scrollPosition)
+                callAPIGetProfileViewer(R.string.limit_20, scrollPosition)
             }
             "friend" -> {
-                callAPIGetFriendList(from, 20, scrollPosition)
+                callAPIGetFriendList(from, R.string.limit_20, scrollPosition)
             }
             else -> {
-                callAPIGetFollower(from, 20, scrollPosition)
+                callAPIGetFollower(from, R.string.limit_20, scrollPosition)
             }
         }
     }
@@ -144,23 +144,23 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         }
     }
 
-    fun manageBlankResponse(){
+    fun manageBlankResponse() {
         if (alldata.isEmpty()) {
-            binding.rvFollowlist.visibility=GONE
+            binding.rvFollowlist.visibility = GONE
             binding.llEmptyData.visibility = VISIBLE
             when (from) {
                 "profile_view" -> {
-                    binding.txtEmptyData.text=resources.getString(R.string.blank_profile_viewers)
+                    binding.txtEmptyData.text = resources.getString(R.string.blank_profile_viewers)
                 }
                 "friend" -> {
-                    binding.txtEmptyData.text=resources.getString(R.string.blank_friends)
+                    binding.txtEmptyData.text = resources.getString(R.string.blank_friends)
                 }
                 else -> {
-                    binding.txtEmptyData.text=resources.getString(R.string.blank_follow)
+                    binding.txtEmptyData.text = resources.getString(R.string.blank_follow)
                 }
             }
         } else {
-            binding.rvFollowlist.visibility=VISIBLE
+            binding.rvFollowlist.visibility = VISIBLE
             binding.llEmptyData.visibility = GONE
         }
     }
@@ -359,7 +359,7 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
             e.printStackTrace()
         }
     }
-    
+
     override fun onBackPressed() {
         val intent = Intent().putExtra("change", change1)
         setResult(RESULT_OK, intent)
