@@ -4,11 +4,14 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
@@ -156,6 +159,19 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                 showKeyboard(getActivity())
             }
         }
+
+        //-------------------------set Post Button enable/diable --------------------------
+        binding.edtComment.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                enableOrDisableImageViewTint(activity, s.toString().trim().isNotEmpty(), binding.txtPost)
+            }
+        })
     }
 
     fun showKeyboard(activity: Activity?) {
@@ -168,7 +184,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 
     private fun handleUserExit() {
         PostFragment.instance.isOpenCommentBottomSheet = false
-        requireActivity().showToast("Dialog Close")
+//        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -230,28 +246,28 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseGetAllPostComments>() {
                         override fun onNext(responseGetAllPostComments: ResponseGetAllPostComments) {
+//                            if (responseGetAllPostComments.success == 1) {
+                            Log.v("responsePostComment", "responsePostCommentDetails")
+
                             if (responseGetAllPostComments.success == 1) {
-                                Log.v("responsePostComment", "responsePostCommentDetails")
+                                var postByMe = 0
+                                postByMe =
+                                    if (getCurrentUserId() == userId) {
+                                        1
+                                    } else {
+                                        0
+                                    }
 
-                                if (responseGetAllPostComments.success == 1) {
-                                    var postByMe = 0
-                                    postByMe =
-                                        if (getCurrentUserId() == userId) {
-                                            1
-                                        } else {
-                                            0
-                                        }
+                                postCommentList.addAll(responseGetAllPostComments.data)
+                                postCommentAdapter.setData(postCommentList, postByMe)
+                                isloadingComment = false
+                                hasLoadedAllItemsComment = false
+                            } else {
+                                hasLoadedAllItemsComment = true
+                                hideShowEmptyView(postCommentList)
+                            }
 
-                                    postCommentList.addAll(responseGetAllPostComments.data)
-                                    postCommentAdapter.setData(postCommentList, postByMe)
-                                    isloadingComment = false
-                                    hasLoadedAllItemsComment = false
-                                } else {
-                                    hasLoadedAllItemsComment = true
-                                    hideShowEmptyView(postCommentList)
-                                }
-
-                                //--------------------------------------------------------------------------------------
+                            //--------------------------------------------------------------------------------------
 //                                if (responseGetAllPostComments.data.isNotEmpty()) {
 //                                    var postByMe = 0
 //                                    postByMe =
@@ -278,7 +294,7 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
 //                                        }
 //                                    }
 //                                }
-                            }
+//                            }
                         }
 
                         override fun onError(e: Throwable) {

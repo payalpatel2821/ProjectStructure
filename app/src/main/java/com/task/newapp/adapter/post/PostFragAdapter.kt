@@ -7,8 +7,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.StrictMode
+import android.text.Editable
 import android.text.Html
 import android.text.InputFilter
+import android.text.TextWatcher
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
@@ -30,6 +32,7 @@ import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data.Tagged
 import com.task.newapp.models.post.ResponsePostComment
+import com.task.newapp.utils.enableOrDisableImageViewTint
 import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
 
@@ -161,6 +164,13 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
         notifyItemChanged(position, "savePayload")
     }
 
+    fun updateFollowUnFollow(isFollow: Int, position: Int) {
+        Log.e("updateFollow: ", isFollow.toString())
+
+        this.all_post[position].isFollow = isFollow
+        notifyItemChanged(position, "followPayload")
+    }
+
     fun updateComment(data: ResponsePostComment.Data, position: Int) {
         this.all_post[position].latest_comment = data
         this.all_post[position].commentsCount = data.totalComment
@@ -214,6 +224,12 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                                 1 -> layoutBinding.imgSave.setImageResource(R.drawable.ic_save)
                             }
                         }
+//                        "followPayload" -> {
+//                            when (all_post_data!!.isFollow) {
+//                                0 -> layoutBinding.imgSave.setImageResource(R.drawable.ic_nonsave)
+//                                1 -> layoutBinding.imgSave.setImageResource(R.drawable.ic_save)
+//                            }
+//                        }
                         "commentPayload" -> {
                             //last Comment show
                             layoutBinding.edtComment.setText("")
@@ -346,11 +362,15 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //                            }
                             // layoutBinding.recyclerView.preDownload(urls)
 
+                            if (all_post_data?.postContents.size > 1) View.VISIBLE else View.GONE
+
                             layoutBinding.recyclerView.adapter = adapter
 
                             //call this functions when u want to start autoplay on loading async lists (eg firebase)
                             layoutBinding.recyclerView.smoothScrollBy(0, 1)
                             layoutBinding.recyclerView.smoothScrollBy(0, -1)
+
+                            layoutBinding.pageIndicator.attachToRecyclerView(layoutBinding.recyclerView)
 
                             //---------------------set normal layout--------------------------
                             layoutBinding.postImg.visibility = View.GONE
@@ -414,8 +434,26 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 
 //                    layoutBinding.nameTxt.setTextMaxLength(100)
 
-                    //-----------------------------Turn on/off comment layout hide/show---------------------------------
+                    //-------------------------set Post Button enable/diable --------------------------
+                    layoutBinding.edtComment.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        }
 
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            if (s.toString().trim().isEmpty()) {
+                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray3))
+//                                enableOrDisableImageViewTint(context, s.toString().trim().isNotEmpty(), layoutBinding.txtPost)
+                            } else {
+                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray4))
+//                                enableOrDisableImageViewTint(context, true, layoutBinding.txtPost)
+                            }
+                        }
+                    })
+
+                    //-----------------------------Turn on/off comment layout hide/show---------------------------------
 
                     if (all_post_data.isPostForPage == 1) {
                         if (all_post_data.page.isNotEmpty()) {
@@ -451,12 +489,6 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             val styledText = "$fullName <font color='#AAA1A1'> is with </font>$commaSeperatedTagsNames"
                             layoutBinding.txtTagUsername.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
                             Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
-
-                            layoutBinding.txtTagUsername.setOnClickListener {
-                                showLog("txtTagUsername", Gson().toJson(all_post_data.tagged))
-                                showAppUserDialog(context, all_post_data.tagged)
-                            }
-
                         }
                     }
 
@@ -491,11 +523,11 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 
                     layoutBinding.root.post { layoutBinding.root.requestLayout() }
 
-                    if (all_post_data!!.postContents.size > 1) {
-                        layoutBinding.imgMulti.visibility = View.VISIBLE
-                    } else {
-                        layoutBinding.imgMulti.visibility = View.INVISIBLE
-                    }
+//                    if (all_post_data!!.postContents.size > 1) {
+//                        layoutBinding.imgMulti.visibility = View.VISIBLE
+//                    } else {
+//                        layoutBinding.imgMulti.visibility = View.INVISIBLE
+//                    }
 
                     layoutBinding.txtTime.text = all_post_data.createdAt
                 }
@@ -647,6 +679,9 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
             layoutBinding.llComment.setOnClickListener(this)
             layoutBinding.moreIv.setOnClickListener(this)
             layoutBinding.rlMain.setOnClickListener(this)
+            layoutBinding.imgView.setOnClickListener(this)
+            layoutBinding.txtTagUsername.setOnClickListener(this)
+//            layoutBinding.txtUsername.setOnClickListener(this)
         }
 
         fun setEditTextMaxLength(length: Int) {
@@ -657,7 +692,14 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 
         override fun onClick(v: View?) {
             when (v?.id) {
-                R.id.imgLike, R.id.imgSave, R.id.llComment, R.id.more_iv, R.id.rlMain -> {
+                R.id.imgLike,
+                R.id.imgSave,
+                R.id.llComment,
+                R.id.more_iv,
+                R.id.rlMain,
+                R.id.img_view,
+                R.id.txt_tag_username
+                    /*R.id.txt_username*/ -> {
                     if (onItemClick != null) {
                         onItemClick?.invoke(v, adapterPosition, "")
                     }
@@ -805,20 +847,20 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //        }
 //    }
 
-    fun showAppUserDialog(activity: Activity, data: List<Tagged>) {
-        val dialog = Dialog(activity)
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_app_user)
-        val rvAppUser: RecyclerView = dialog.findViewById(R.id.rv_app_user)!!
-
-        var mLayoutManager = LinearLayoutManager(activity)
-        rvAppUser.layoutManager = mLayoutManager
-
-        val adapter = MoreUserAdapter(activity, data)
-        rvAppUser.adapter = adapter
-
-        dialog.show()
-    }
+//    fun showAppUserDialog(activity: Activity, data: List<Tagged>) {
+//        val dialog = Dialog(activity)
+//        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        dialog.setContentView(R.layout.dialog_app_user)
+//        val rvAppUser: RecyclerView = dialog.findViewById(R.id.rv_app_user)!!
+//
+//        var mLayoutManager = LinearLayoutManager(activity)
+//        rvAppUser.layoutManager = mLayoutManager
+//
+//        val adapter = MoreUserAdapter(activity, data)
+//        rvAppUser.adapter = adapter
+//
+//        dialog.show()
+//    }
 
 }

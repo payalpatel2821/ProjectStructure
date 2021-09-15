@@ -1,6 +1,7 @@
 package com.vincent.videocompressor;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * Created by Vincent Woo
@@ -53,6 +54,12 @@ public class VideoCompress {
                 public void onProgress(float percent) {
                     publishProgress(percent);
                 }
+
+                @Override
+                public void onFail() {
+                    Log.e(TAG, "onFail: ");
+                    mListener.onFail();
+                }
             });
         }
 
@@ -86,4 +93,5 @@ public class VideoCompress {
 
         void onProgress(float percent);
     }
+
 }

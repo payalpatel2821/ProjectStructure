@@ -375,6 +375,16 @@ fun enableOrDisableButtonBgColor(context: Activity, isEnable: Boolean, button: F
     }
 }
 
+fun enableOrDisableImageViewTint(context: Context, isEnable: Boolean, imgView: ImageView) {
+    if (isEnable) {
+        imgView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.theme_color))
+        imgView.isEnabled = true
+    } else {
+        imgView.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.disableColor))
+        imgView.isEnabled = false
+    }
+}
+
 fun requestFocus(context: Context, view: View) {
     if (view.requestFocus()) {
         // open the soft keyboard

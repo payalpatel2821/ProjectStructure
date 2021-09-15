@@ -297,6 +297,7 @@
                                     android:layout_height="@dimen/_35sdp"
                                     android:layout_gravity="bottom"
                                     android:background="@color/white"
+                                    android:elevation="@dimen/_3sdp"
                                     android:gravity="bottom"
                                     android:orientation="horizontal"
                                     android:padding="@dimen/_1sdp">
@@ -341,20 +342,32 @@
                                     <!--                                    android:layout_height="wrap_content"-->
                                     <!--                                    android:src="@drawable/send_post" />-->
 
-                                    <androidx.appcompat.widget.AppCompatTextView
+                                    <!--                                    <androidx.appcompat.widget.AppCompatTextView-->
+                                    <!--                                        android:id="@+id/txtPost"-->
+                                    <!--                                        android:layout_width="wrap_content"-->
+                                    <!--                                        android:layout_height="match_parent"-->
+                                    <!--                                        android:layout_gravity="center"-->
+                                    <!--                                        android:layout_marginLeft="@dimen/_8sdp"-->
+                                    <!--                                        android:layout_marginRight="@dimen/_8sdp"-->
+                                    <!--                                        android:fontFamily="@font/bogleregular"-->
+                                    <!--                                        android:gravity="center"-->
+                                    <!--                                        android:padding="@dimen/_5sdp"-->
+                                    <!--                                        android:text="Post"-->
+                                    <!--                                        android:textColor="@color/theme_color"-->
+                                    <!--                                        android:textSize="@dimen/_12ssp"-->
+                                    <!--                                        android:textStyle="bold" />-->
+
+                                    <androidx.appcompat.widget.AppCompatImageView
                                         android:id="@+id/txtPost"
                                         android:layout_width="wrap_content"
                                         android:layout_height="match_parent"
                                         android:layout_gravity="center"
                                         android:layout_marginLeft="@dimen/_8sdp"
                                         android:layout_marginRight="@dimen/_8sdp"
-                                        android:fontFamily="@font/bogleregular"
                                         android:gravity="center"
                                         android:padding="@dimen/_5sdp"
-                                        android:text="Post"
-                                        android:textColor="@color/theme_color"
-                                        android:textSize="@dimen/_12ssp"
-                                        android:textStyle="bold" />
+                                        android:src="@drawable/ic_send"
+                                        app:tint="@color/disableColor" />
 
                                 </LinearLayout>
 

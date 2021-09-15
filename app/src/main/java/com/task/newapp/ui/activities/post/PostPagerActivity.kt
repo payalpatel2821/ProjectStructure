@@ -1,12 +1,9 @@
 package com.task.newapp.ui.activities.post
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager.widget.ViewPager
@@ -15,16 +12,10 @@ import com.google.gson.reflect.TypeToken
 import com.luck.picture.lib.entity.LocalMedia
 import com.task.newapp.R
 import com.task.newapp.adapter.post.PostPagerAdapter
-import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityPostPagerBinding
-import com.task.newapp.models.ResponseBlockReportUser
-import com.task.newapp.models.post.Post_Uri_Model
 import com.task.newapp.utils.*
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.observers.DisposableObserver
-import io.reactivex.schedulers.Schedulers
+import com.task.newapp.utils.photoediting.EditImageActivity
 import java.lang.reflect.Type
-import java.util.HashMap
 
 
 class PostPagerActivity : AppCompatActivity() {
@@ -86,7 +77,7 @@ class PostPagerActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_edit -> {
                 //Open Edit Activity
-                //editImageClick(arrayListMedia[currPosition].file_path, currPosition, arrayListMedia[currPosition].type)
+                openEditImageActivity(arrayListMedia[currPosition].path, currPosition/*, arrayListMedia[currPosition].type*/)
             }
             R.id.action_delete -> {
                 //Show Delete Dialog
@@ -133,14 +124,14 @@ class PostPagerActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    fun editImageClick(path: String?, position: Int, type: String) {
+    private fun openEditImageActivity(path: String?, position: Int/*, type: String*/) {
 //        flag_pos = position
 //        flag_type = type
 //        val outputFile: File = FileUtils.genEditFile()
 
-//        var intent: Intent = Intent(this, EditImageActivity::class.java)
-//        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-//        intent.putExtra("filepath", path)
-//        startActivityForResult(intent, ACTION_REQUEST_EDITIMAGE)
+        var intent = Intent(this, EditImageActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        intent.putExtra("filepath", path)
+        startActivityForResult(intent, ACTION_REQUEST_EDITIMAGE)
     }
 }

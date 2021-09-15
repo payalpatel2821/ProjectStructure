@@ -167,7 +167,7 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
     }
 
     private fun handleUserExit() {
-        requireActivity().showToast("Dialog Close")
+//        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -320,7 +320,10 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                                                 }
 
 //                                                postTagListAdapter.setData(allfriendList, false)
-                                                postTagListAdapter.notifyDataSetChanged()
+
+                                                requireActivity().runOnUiThread {
+                                                    postTagListAdapter.notifyDataSetChanged()
+                                                }
 
                                                 isloading = false
                                                 hasLoadedAllItems = false
@@ -328,10 +331,19 @@ class PostTagFriendListFragment : BottomSheetDialogFragment(), View.OnClickListe
                                             } else {
                                                 isloading = true
                                                 hasLoadedAllItems = true
+
+                                                //---------------Check for data not found---------------------
+//                                                allfriendList.clear()
+//                                                postTagListAdapter.notifyDataSetChanged()
                                             }
 
                                         } else {
                                             hasLoadedAllItems = true
+
+                                            //---------------Check for data not found---------------------
+                                            requireActivity().runOnUiThread {
+                                                postTagListAdapter.notifyDataSetChanged()
+                                            }
                                         }
                                     }
                                     isAPICallRunning = false

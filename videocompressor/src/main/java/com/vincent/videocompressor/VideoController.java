@@ -42,6 +42,7 @@ public class VideoController {
 
     interface CompressProgressListener {
         void onProgress(float percent);
+        void onFail();
     }
 
     public static VideoController getInstance() {
@@ -693,6 +694,7 @@ public class VideoController {
             } catch (Exception e) {
                 error = true;
                 Log.e("tmessages", e.getMessage());
+                listener.onFail();
             } finally {
                 if (extractor != null) {
                     extractor.release();

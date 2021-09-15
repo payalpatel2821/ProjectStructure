@@ -43,8 +43,8 @@
                             android:id="@+id/img_user"
                             android:layout_width="@dimen/_25sdp"
                             android:layout_height="@dimen/_25sdp"
-                            android:src="@drawable/logo"
-                            android:elevation="@dimen/_5sdp"/>
+                            android:elevation="@dimen/_5sdp"
+                            android:src="@drawable/logo" />
 
                         <TextView
                             style="@style/styleTextViewSmallBold"
@@ -52,8 +52,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_8sdp"
                             android:gravity="center_vertical"
-                            android:text="TIMELINE"
-                            />
+                            android:text="TIMELINE" />
 
                     </LinearLayout>
 
@@ -368,13 +367,13 @@
                                 android:layout_marginLeft="@dimen/_10sdp"
                                 android:layout_marginTop="@dimen/_5sdp"
                                 android:layout_marginRight="@dimen/_5sdp"
-                                android:layout_toLeftOf="@+id/close_iv"
+                                android:layout_toLeftOf="@+id/imgCloseService"
                                 android:layout_toRightOf="@+id/image_layout1"
                                 android:indeterminateDrawable="@drawable/add_post_progress"
                                 android:indeterminateOnly="true" />
 
                             <ImageView
-                                android:id="@+id/close_iv"
+                                android:id="@+id/imgCloseService"
                                 android:layout_width="@dimen/_27sdp"
                                 android:layout_height="@dimen/_27sdp"
                                 android:layout_alignParentRight="true"

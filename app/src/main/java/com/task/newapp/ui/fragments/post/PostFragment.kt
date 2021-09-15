@@ -1,22 +1,32 @@
 package com.task.newapp.ui.fragments.post
 
+import android.app.Activity
+import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.webkit.PermissionRequest
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.Socket
@@ -26,16 +36,20 @@ import com.paginate.Paginate
 import com.task.newapp.App
 import com.task.newapp.App.Companion.fastSave
 import com.task.newapp.R
+import com.task.newapp.adapter.post.MoreUserAdapter
 import com.task.newapp.adapter.post.PostCommentAdapter
 import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.ResponseFollowUnfollow
 import com.task.newapp.models.post.*
 import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
 import com.task.newapp.service.FileUploadService
 import com.task.newapp.ui.activities.post.ShowPostActivity
+import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -131,6 +145,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         binding.llMomentsPhotos.setOnClickListener(this)
         binding.llMomentsVideos.setOnClickListener(this)
         binding.llThoughts.setOnClickListener(this)
+        binding.imgCloseService.setOnClickListener(this)
 
         binding.recPost.setHasFixedSize(true)
         binding.recPost.setItemViewCacheSize(20)
@@ -204,6 +219,10 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                 myBottomSheetThought = ThoughtFragment().newInstance(post_id.toString())
                 myBottomSheetThought!!.setListener(this)
                 myBottomSheetThought!!.show(childFragmentManager, myBottomSheetThought!!.tag)
+            }
+            R.id.imgCloseService -> {
+                FileUploadService.shouldContinue = false
+                binding.progressLay.visibility = View.GONE
             }
 
         }
@@ -349,13 +368,43 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         }
                                                     }
 
-                                                    R.id.llComment -> openCommentBottomSheet(position, allPostData)
+                                                    R.id.llComment -> {
+                                                        if (allPostData.turnOffComment == 1) {
+                                                            //Show Dialog
+                                                            showTurnOffDialog((allPostData.user.firstName ?: "") + " " + (allPostData.user.lastName ?: ""))
+                                                        } else {
+                                                            openCommentBottomSheet(position, allPostData)
+                                                        }
+                                                    }
 
                                                     R.id.more_iv -> {
-                                                        showPostSettingDialog(allPostData.turnOffComment, getCurrentUserId() == allPostData.userId)
+                                                        showPostSettingDialog(
+                                                            allPostData.turnOffComment,
+                                                            getCurrentUserId() == allPostData.userId,
+                                                            allPostData.isFollow
+                                                        )
                                                     }
 
                                                     R.id.rlMain -> showPostDetails(position)
+
+                                                    R.id.img_view -> {
+
+                                                        if (user_id == getCurrentUserId()) {
+                                                            activity!!.launchActivity<MyProfileActivity> {
+                                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                            }
+                                                        } else {
+                                                            activity!!.launchActivity<OtherUserProfileActivity> {
+                                                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                                                putExtra(Constants.user_id, user_id)
+                                                            }
+                                                        }
+                                                    }
+
+                                                    R.id.txt_tag_username /*, R.id.txt_username*/ -> {
+                                                        showLog("txtTagUsername", Gson().toJson(allPostData.tagged))
+                                                        showAppUserDialog(activity!!, allPostData.tagged)
+                                                    }
                                                 }
 
                                                 //val contents: List<All_Post_contents?> = post_Frag_adapter.getdata()[position].contents
@@ -773,8 +822,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
-    private fun showPostSettingDialog(turnOffComment: Int, postByMe: Boolean) {
-        DialogUtils().showConfirmationIOSDialog(activity as AppCompatActivity, "", "", turnOffComment, postByMe, object : DialogUtils.DialogCallbacks {
+    private fun showPostSettingDialog(turnOffComment: Int, postByMe: Boolean, isFollow: Int) {
+        DialogUtils().showConfirmationIOSDialog(activity as AppCompatActivity, "", "", turnOffComment, postByMe, isFollow == 1, object : DialogUtils.DialogCallbacks {
             override fun onPositiveButtonClick() {
 
             }
@@ -786,17 +835,17 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
             override fun onDefaultButtonClick(actionName: String) {
                 showLog("onDefaultButtonClick", actionName)
                 when (actionName) {
-                    DialogUtils.PostDialogActionName.TURNONCOMMENT.value -> {
+                    DialogUtils.PostDialogActionName.TURNONCOMMENT.value, DialogUtils.PostDialogActionName.TURNOFFCOMMENT.value -> {
                         //Call API for Turn on/off comment
-                        callAPITurnOnOffComment(0)
-                    }
-                    DialogUtils.PostDialogActionName.TURNOFFCOMMENT.value -> {
-                        //Call API for Turn on/off comment
-                        callAPITurnOnOffComment(1)
+                        callAPITurnOnOffComment(if (turnOffComment == 1) 0 else 1)
                     }
                     DialogUtils.PostDialogActionName.DELETEPOST.value -> {
                         //Call API for Delete
                         callAPIPostDelete()
+                    }
+                    DialogUtils.PostDialogActionName.FOLLOW.value, DialogUtils.PostDialogActionName.UNFOLLOW.value -> {
+                        //Call API for follow
+                        callAPIFollowUnFollow(if (isFollow == 1) "unfollow" else "follow", isFollow)
                     }
                 }
             }
@@ -1385,11 +1434,11 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                 }
 
                                                 //---------------Socket for Delete Post-----------------------
-                                                val postSocket = PostSocket(
-                                                    user_id = getCurrentUserId(),
-                                                    post_id = post_id
-                                                )
-                                                addPostDeleteEmitEvent(postSocket)
+//                                                val postSocket = PostSocket(
+//                                                    user_id = getCurrentUserId(),
+//                                                    post_id = post_id
+//                                                )
+//                                                addPostDeleteEmitEvent(postSocket)
                                             }
                                         }
                                     }
@@ -1451,4 +1500,80 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         }
     }
 
+    fun showAppUserDialog(activity: Activity, data: List<All_Post_Data.Tagged>) {
+        val dialog = Dialog(activity)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_app_user)
+        val rvAppUser: RecyclerView = dialog.findViewById(R.id.rv_app_user)!!
+
+        var mLayoutManager = LinearLayoutManager(activity)
+        rvAppUser.layoutManager = mLayoutManager
+
+        val adapter = MoreUserAdapter(activity, data)
+        rvAppUser.adapter = adapter
+
+        dialog.show()
+    }
+
+    private fun callAPIFollowUnFollow(likeType: String, isFollow: Int) {
+        try {
+//            DialogUtils().showConfirmationYesNoDialog(requireActivity() as AppCompatActivity, "Delete Post", "Are you sure you want to delete this post?", object : DialogUtils.DialogCallbacks {
+//                override fun onPositiveButtonClick() {
+            openProgressDialog(activity)
+
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.type to likeType,
+                Constants.follow_id to user_id
+            )
+
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .setUserFollowUnfollow(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponseFollowUnfollow>() {
+                        override fun onNext(responseFollowUnfollow: ResponseFollowUnfollow) {
+                            postFragAdapter?.let {
+                                postFragAdapter.updateFollowUnFollow(if (isFollow == 1) 0 else 1, positionAdapter)
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+//                }
+//
+//                override fun onNegativeButtonClick() {
+//                }
+//
+//                override fun onDefaultButtonClick(actionName: String) {
+//                }
+//            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+        }
+    }
+
+    private fun showTurnOffDialog(name: String) {
+        val dialog = Dialog(requireActivity())
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_turn_off_comment)
+
+        val txt_ok: TextView = dialog.findViewById(R.id.txt_ok)!!
+        val txt_description: TextView = dialog.findViewById(R.id.txt_description)!!
+
+        txt_description.text = String.format(getString(R.string.turn_off_comment_detail), name)
+        txt_ok.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
+    }
 }

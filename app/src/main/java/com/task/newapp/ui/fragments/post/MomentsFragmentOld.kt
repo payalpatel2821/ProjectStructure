@@ -204,7 +204,7 @@ class MomentsFragmentOld : BottomSheetDialogFragment(), View.OnClickListener, Me
 //    }
 
     private fun handleUserExit() {
-        activity!!.showToast("Dialog Close")
+//        activity!!.showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {

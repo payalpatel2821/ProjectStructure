@@ -37,6 +37,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileNotFoundException
 import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
@@ -85,6 +86,8 @@ class FileUploadService : JobIntentService() {
 
         // Notify notification
         mNotificationHelper?.notify(NOTIFICATION_RETRY_ID, mBuilder)
+
+        sendBroadcast(Intent(Constants.INTENT_SERVICE_COMPLETE))
     }
 
 //    private fun onErrors(Throwable throwable) {
@@ -149,7 +152,7 @@ class FileUploadService : JobIntentService() {
 
         progressIntent.putExtra("progress", progressVal)
 
-        sendBroadcast(progressIntent)
+        //sendBroadcast(progressIntent)
 
         //Add New for showing progress
         sendBroadcast(Intent(Constants.INTENT_SERVICE_PROGRESS))
@@ -201,6 +204,7 @@ class FileUploadService : JobIntentService() {
         private const val TAG = "FileUploadService"
         const val NOTIFICATION_ID = 1
         const val NOTIFICATION_RETRY_ID = 2
+        var shouldContinue = true
         lateinit var context: Activity
 
         /**
@@ -285,6 +289,15 @@ class FileUploadService : JobIntentService() {
 
                 arrayListMedia.forEachIndexed { index, postUriModel ->
                     try {
+
+                        //--------------------------------stop service------------------------------
+                        if (!shouldContinue) {
+                            showLog("FileUploadService:Stop", shouldContinue.toString())
+                            onErrors()
+                            stopSelf()
+                            return
+                        }
+
                         val cap_name = "contents[$index][caption]"
                         val type_name = "contents[$index][type]"
                         val thumb_name = "contents[$index][thumb]"
@@ -423,6 +436,11 @@ class FileUploadService : JobIntentService() {
 //                                        Util.writeFile(this@MainActivity)
 
                                         //---------------------------New added-----------------------------
+                                        if (!File(destPath).exists()) {
+                                            onErrors()
+                                            //showToast("Something went wrong")
+                                            return
+                                        }
                                         val retriever = MediaMetadataRetriever()
                                         retriever.setDataSource(destPath)
                                         val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
@@ -455,10 +473,13 @@ class FileUploadService : JobIntentService() {
                                         onProgress(count)
                                         showLog("VideoCompress", "onFail")
 
-                                        if (count == arrayListMedia.size) {
-                                            showLog("VideoCompress", "callAPIPost_$count")
-                                            callAPIPost(caption)
-                                        }
+                                        onErrors()
+                                        //showToast("Something went wrong")
+
+//                                        if (count == arrayListMedia.size) {
+//                                            showLog("VideoCompress", "callAPIPost_$count")
+//                                            callAPIPost(caption)
+//                                        }
 
 //                                        tv_indicator.setText("Compress Failed!")
 //                                        pb_compress.setVisibility(View.INVISIBLE)
@@ -512,9 +533,10 @@ class FileUploadService : JobIntentService() {
 
                                 val destPath: String = outputFile
 
-                                VideoCompress.compressVideoLow(filePath, destPath, object : VideoCompress.CompressListener {
-                                    override fun onStart() {
-                                        showLog("VideoCompress", "onStart")
+                                try {
+                                    VideoCompress.compressVideoLow(filePath, destPath, object : VideoCompress.CompressListener {
+                                        override fun onStart() {
+                                            showLog("VideoCompress", "onStart")
 //                                        tv_indicator.setText(
 //                                            "Compressing..." + "\n"
 //                                                    + "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date())
@@ -522,9 +544,9 @@ class FileUploadService : JobIntentService() {
 //                                        pb_compress.setVisibility(View.VISIBLE)
 //                                        startTime = System.currentTimeMillis()
 //                                        Util.writeFile(this@MainActivity, "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()) + "\n")
-                                    }
+                                        }
 
-                                    override fun onSuccess() {
+                                        override fun onSuccess() {
 //                                        val previous: String = tv_indicator.getText().toString()
 //                                        tv_indicator.setText(
 //                                            (previous + "\n"
@@ -537,74 +559,115 @@ class FileUploadService : JobIntentService() {
 //                                        Util.writeFile(this@MainActivity, "Total: " + ((endTime - startTime) / 1000) + "s" + "\n")
 //                                        Util.writeFile(this@MainActivity)
 
-                                        //---------------------------New added-----------------------------
-                                        val retriever = MediaMetadataRetriever()
-                                        retriever.setDataSource(destPath)
-                                        val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                                        val bitmap: Bitmap = if (extractedImage!!.height > 500 && extractedImage.width > 500) {
-                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width / 3, extractedImage.height / 3, true)
-                                        } else {
-                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
+                                            //---------------------------New added-----------------------------
+                                            if (!File(destPath).exists()) {
+                                                onErrors()
+                                                //showToast("Something went wrong")
+                                                return
+                                            }
+
+                                            val retriever = MediaMetadataRetriever()
+                                            retriever.setDataSource(destPath)
+                                            val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                                            val bitmap: Bitmap = if (extractedImage!!.height > 500 && extractedImage.width > 500) {
+                                                Bitmap.createScaledBitmap(extractedImage, extractedImage.width / 3, extractedImage.height / 3, true)
+                                            } else {
+                                                Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
+                                            }
+
+                                            //------------------------------thumb------------------------------
+                                            if (storeImage(bitmap, storedThumbPath)) {
+                                                thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
+                                            }
+
+                                            //Original
+                                            imagearray.add(prepareFilePart(image_name, filePath, "video/*"))
+
+                                            count++
+                                            onProgress(count)
+                                            showLog("VideoCompress", "onSuccess")
+
+                                            if (count == arrayListMedia.size) {
+                                                showLog("VideoCompress", "callAPIPost_$count")
+                                                callAPIPost(caption)
+                                            }
                                         }
 
-                                        //------------------------------thumb------------------------------
-                                        if (storeImage(bitmap, storedThumbPath)) {
-                                            thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
-                                        }
+                                        override fun onFail() {
+                                            count++
+                                            onProgress(count)
+                                            showLog("VideoCompress", "onFail")
 
-                                        //Original
-                                        imagearray.add(prepareFilePart(image_name, filePath, "video/*"))
+                                            onErrors()
+                                            ////showToast("Something went wrong")
 
-                                        count++
-                                        onProgress(count)
-                                        showLog("VideoCompress", "onSuccess")
+//                                            if (count == arrayListMedia.size) {
+//                                                showLog("VideoCompress", "callAPIPost_$count")
+//                                                callAPIPost(caption)
+//                                            }
 
-                                        if (count == arrayListMedia.size) {
-                                            showLog("VideoCompress", "callAPIPost_$count")
-                                            callAPIPost(caption)
-                                        }
-                                    }
-
-                                    override fun onFail() {
-                                        count++
-                                        onProgress(count)
-                                        showLog("VideoCompress", "onFail")
-
-                                        if (count == arrayListMedia.size) {
-                                            showLog("VideoCompress", "callAPIPost_$count")
-                                            callAPIPost(caption)
-                                        }
 //                                        tv_indicator.setText("Compress Failed!")
 //                                        pb_compress.setVisibility(View.INVISIBLE)
 //                                        endTime = System.currentTimeMillis()
 //                                        Util.writeFile(this@MainActivity, "Failed Compress!!!" + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()))
-                                    }
+                                        }
 
-                                    override fun onProgress(percent: Float) {
-                                        showLog("VideoCompress", "onProgress_$percent")
+                                        override fun onProgress(percent: Float) {
+                                            showLog("VideoCompress", "onProgress_$percent")
 //                                        tv_progress.setText("$percent%")
-                                    }
-                                })
+                                        }
+                                    })
 
 //                                thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
 //
 ////                                //Original
 //                                imagearray.add(prepareFilePart(image_name, filePath, "video/*"))
+                                } catch (e: IllegalArgumentException) {
+                                    e.printStackTrace()
+                                    Log.e("uploadPost:Error ", e.toString())
+
+                                    onErrors()
+                                } catch (e: FileNotFoundException) {
+                                    e.printStackTrace()
+                                    Log.e("uploadPost:Error ", e.toString())
+
+                                    onErrors()
+                                }
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (e: IllegalArgumentException) {
                         e.printStackTrace()
-                        Log.e("uploadPost: ", e.toString())
-                        count++
-                        onProgress(count)
+                        Log.e("uploadPost:Error ", e.toString())
 
-                        if (count == arrayListMedia.size) {
-                            showLog("VideoCompress", "callAPIPost_$count")
-                            callAPIPost(caption)
-                        }
+                        onErrors()
+                        //showToast("Something went wrong")
+
+//                        Log.e("uploadPost: ", e.toString())
+//                        count++
+//                        onProgress(count)
+//
+//                        if (count == arrayListMedia.size) {
+//                            showLog("VideoCompress", "callAPIPost_$count")
+//                            callAPIPost(caption)
+//                        }
+
+                    } catch (e: FileNotFoundException) {
+                        e.printStackTrace()
+                        Log.e("uploadPost:Error ", e.toString())
+
+                        onErrors()
+                        //showToast("Something went wrong")
+
+//                        Log.e("uploadPost: ", e.toString())
+//                        count++
+//                        onProgress(count)
+//
+//                        if (count == arrayListMedia.size) {
+//                            showLog("VideoCompress", "callAPIPost_$count")
+//                            callAPIPost(caption)
+//                        }
                     }
                 }
-
             }
 
         } catch (e: Exception) {

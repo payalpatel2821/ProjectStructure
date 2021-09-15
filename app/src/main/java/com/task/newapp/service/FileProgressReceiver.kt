@@ -38,7 +38,22 @@ class FileProgressReceiver : BroadcastReceiver() {
                 )
                 mNotificationHelper!!.notify(NOTIFICATION_ID, notification)
             }
-            ACTION_CLEAR_NOTIFICATION -> mNotificationHelper!!.cancelNotification(notificationId)
+            ACTION_CLEAR_NOTIFICATION -> {
+                mNotificationHelper!!.cancelNotification(notificationId)
+
+//                val resultIntent = Intent(mContext, MainActivity::class.java)
+//                val resultPendingIntent = PendingIntent.getActivity(
+//                    mContext,
+//                    0 /* Request code */, resultIntent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT
+//                )
+//                notification = mNotificationHelper!!.getNotification(
+//                    mContext.getString(R.string.message_upload_success),
+//                    mContext.getString(R.string.file_upload_successful), resultPendingIntent
+//                )
+//                mNotificationHelper!!.notify(NOTIFICATION_ID, notification)
+
+            }
             ACTION_UPLOADED -> {
                 val resultIntent = Intent(mContext, MainActivity::class.java)
                 val resultPendingIntent = PendingIntent.getActivity(
