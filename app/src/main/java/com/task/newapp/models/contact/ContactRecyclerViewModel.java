@@ -2,6 +2,7 @@ package com.task.newapp.models.contact;
 
 import androidx.annotation.Nullable;
 
+import com.task.newapp.models.ResponseIsAppUser;
 import com.task.newapp.models.contact.Contact;
 
 /**
@@ -9,18 +10,18 @@ import com.task.newapp.models.contact.Contact;
  */
 
 public class ContactRecyclerViewModel {
-    private Contact contact;
+    private ResponseIsAppUser.Data contact;
     private String letter;
     private int type;
 
-    public ContactRecyclerViewModel(@Nullable Contact contact, String letter, int type) {
+    public ContactRecyclerViewModel(@Nullable ResponseIsAppUser.Data contact, String letter, int type) {
         this.contact = contact;
         this.letter = letter;
         this.type = type;
     }
 
     @Nullable
-    public Contact getContact() {
+    public ResponseIsAppUser.Data getContact() {
         return contact;
     }
 

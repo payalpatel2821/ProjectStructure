@@ -85,7 +85,7 @@ import java.util.*
 import kotlin.math.absoluteValue
 
 
-import androidx.core.content.ContextCompat.getSystemService
+import com.task.newapp.BuildConfig
 
 
 /**
@@ -1283,6 +1283,7 @@ fun Activity.callAPIGetAllNotification(mCompositeDisposable: CompositeDisposable
 }
 
 
+
 fun createEventWiseLabel(chatModel: ChatModel, msgText: String): String {
     var strMessage = ""
     strMessage = when (MessageEvents.getMessageEventFromName((chatModel.event!!))) {
@@ -1567,4 +1568,46 @@ fun getDataColumns(context: Context, uri: Uri?, selection: String?, selectionArg
 fun getRandomColor(): Int {
     val rnd = Random()
     return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+}
+
+fun convertMillieToHMmSs(millie: Long): String? {
+    val seconds = millie / 1000
+    val second = seconds % 60
+    val minute = seconds / 60 % 60
+    val hour = seconds / (60 * 60) % 24
+    val result = ""
+    return if (hour > 0) {
+        String.format("%02d:%02d:%02d", hour, minute, second)
+    } else {
+        String.format("%02d:%02d", minute, second)
+    }
+}
+
+fun checkTrimFolder(): String? {
+    val root = Environment.getExternalStorageDirectory()
+    val file = File(root.absolutePath + "/HOW/.trimvideo")
+    //        File file = new File(context.getCacheDir() + "/HOW/.trimvideo");
+    var isDirectoryCreated = file.exists()
+    if (!isDirectoryCreated) {
+        isDirectoryCreated = file.mkdir()
+    }
+    return if (isDirectoryCreated) {
+        file.absolutePath
+    } else file.absolutePath
+}
+
+fun onShareClicked(context: Activity) {
+    try {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "My application name")
+        var shareMessage = "\nLet me recommend you this application\n\n"
+        shareMessage = """
+                ${shareMessage}https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}
+                """.trimIndent()
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+        context.startActivity(Intent.createChooser(shareIntent, "choose one"))
+    } catch (e: java.lang.Exception) {
+        //e.toString();
+    }
 }

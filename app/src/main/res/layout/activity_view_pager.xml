@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.task.newapp.utils.exo_video.Sel_Media_RecyclerView
+        android:id="@+id/exoPlayerRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:dividerHeight="8dp" />
+
+    <RelativeLayout
+        android:id="@+id/toolbar_lay"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="#66000000">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/white" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_back"
+            android:padding="5dp"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:id="@+id/trim_time"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/aaaa"
+            android:layout_toRightOf="@+id/profile_iv"
+            android:gravity="center"
+            android:textColor="@color/white"
+            tools:text="00dfdsf" />
+
+        <LinearLayout
+            android:id="@+id/aaaa"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/iv_delete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/white" />
+
+            <ImageView
+                android:id="@+id/iv_crop"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ucrop_ic_crop"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/iv_edit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ic_edit" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#66000000"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/receiver_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_back"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/white"
+            android:padding="10dp"
+            android:textColor="@android:color/white"
+            android:visibility="visible"
+            tools:text="Arzoo" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/img_rv"
+            android:layout_width="match_parent"
+            android:layout_height="65dp" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageSend"
+        android:layout_width="22pt"
+        android:layout_height="22pt"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="10pt"
+        android:layout_marginBottom="137dp"
+        android:background="@drawable/btn_rounded_bg"
+        android:clickable="true"
+        android:elevation="10pt"
+        android:padding="6pt"
+        android:src="@drawable/ic_send"
+        android:translationZ="2dp" />
+
+
+    <LinearLayout
+        android:id="@+id/progreelay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/compressprogress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </LinearLayout>
+</RelativeLayout>

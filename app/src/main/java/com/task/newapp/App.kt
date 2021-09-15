@@ -3,6 +3,7 @@ package com.task.newapp
 import android.content.Context
 import android.graphics.Typeface
 import android.net.TrafficStats
+import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -22,9 +23,11 @@ import com.task.newapp.utils.joinSocket
 import com.testfairy.TestFairy
 import com.vanniktech.emoji.EmojiManager
 import com.vanniktech.emoji.ios.IosEmojiProvider
+import iknow.android.utils.BaseUtils
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import lv.chi.photopicker.ChiliPhotoPicker
+import java.io.File
 
 
 class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
@@ -81,8 +84,9 @@ class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
         appInstance = this
         TrafficStats.setThreadStatsTag(1000)
 
+        BaseUtils.init(this)
         //testfairy initialization
-        TestFairy.begin(this, "SDK-ZhTY4p68");
+        TestFairy.begin(this, "SDK-ZhTY4p68")
         //FastSave pref lib initialization
         FastSave.init(this)
         fastSave = FastSave.getInstance()

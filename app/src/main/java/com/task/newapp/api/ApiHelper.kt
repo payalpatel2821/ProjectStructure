@@ -6,11 +6,11 @@ import com.task.newapp.models.chat.CreateBroadcastResponse
 import com.task.newapp.models.chat.ResponseChatMessage
 import com.task.newapp.models.chat.ResponseGetUnreadMessage
 import com.task.newapp.models.chat.ResponseGroupData
+import com.task.newapp.models.contact.ContactSyncAPIModel
 import com.task.newapp.models.post.*
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiHelper {
@@ -207,7 +207,7 @@ interface ApiHelper {
 
 
     @POST(send_chat_message)
-    fun sendChatMessage( @Body data: RequestBody): Observable<ResponseChatMessage>
+    fun sendChatMessage(@Body data: RequestBody): Observable<ResponseChatMessage>
 
     @GET(updated_all_group)
     fun getUpdatedAllGroup(): Observable<ResponseGroupData>
@@ -221,9 +221,12 @@ interface ApiHelper {
     @DELETE(post_delete)
     fun postDelete(@Path("id") postId: String): Observable<CommonResponse>
 
-    @POST(is_how_user)
-    fun getIsAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
-
     @POST(search_contacts)
     fun searchAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
+
+    @POST(contact_sync)
+    fun contactSync(@Body contactSyncAPIModel: List<ContactSyncAPIModel>): Observable<CommonResponse>
+
+    @POST(search_sync_contact)
+    fun searchContactSync(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
 }

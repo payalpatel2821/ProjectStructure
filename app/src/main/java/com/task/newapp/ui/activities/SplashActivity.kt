@@ -5,6 +5,7 @@ import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
+import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.databinding.ActivitySplashBinding
 import com.task.newapp.utils.Constants
@@ -18,7 +19,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
-
+        showToast(App.fastSave.getBoolean("is_sync", false).toString()+":::")
         Handler().postDelayed({
             if (FastSave.getInstance().getBoolean(Constants.isFirstTime, true)) {
                 launchActivity<WelcomeActivity> {}

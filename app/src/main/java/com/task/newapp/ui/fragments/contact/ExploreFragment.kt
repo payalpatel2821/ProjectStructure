@@ -3,19 +3,19 @@ package com.task.newapp.ui.fragments.contact
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.paginate.Paginate
 import com.task.newapp.R
 import com.task.newapp.adapter.contact.ExploreAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentExploreBinding
 import com.task.newapp.models.ResponseIsAppUser
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.hideProgressDialog
-import com.task.newapp.utils.isNetworkConnected
-import com.task.newapp.utils.showToast
+import com.task.newapp.realmDB.deleteContactHistory
+import com.task.newapp.realmDB.getAllContactHistory
+import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -25,18 +25,16 @@ import java.util.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class ExploreFragment : Fragment(), Paginate.Callbacks {
+class ExploreFragment : Fragment(),View.OnClickListener {
 
+    private lateinit var disposable: DisposableObserver<ResponseIsAppUser>
     private var _binding: FragmentExploreBinding? = null
     lateinit var linearLayoutManager: LinearLayoutManager
     private val binding get() = _binding!!
     private lateinit var adapter: ExploreAdapter
     private val mCompositeDisposable = CompositeDisposable()
-    private val allUser: ArrayList<ResponseIsAppUser.Data> = ArrayList<ResponseIsAppUser.Data>()
-    var isloading = false
-    var hasLoadedAllItems = false
-    private var paginate: Paginate? = null
-    var query: String=""
+    private var allUser: ArrayList<ResponseIsAppUser.Data> = ArrayList<ResponseIsAppUser.Data>()
+    var query: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +44,6 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
         initView()
         return binding.root
@@ -57,6 +54,42 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
         _binding!!.rvList.layoutManager = linearLayoutManager
         adapter = ExploreAdapter(requireActivity())
         _binding!!.rvList.adapter = adapter
+        getAllContactHistoryFromDB()
+        binding.txtClearAll.setOnClickListener(this)
+    }
+
+    private fun getAllContactHistoryFromDB() {
+        allUser.clear()
+        getAllContactHistory().forEach {
+            val contactHistory: ResponseIsAppUser.Data = ResponseIsAppUser.Data()
+            contactHistory.id = it.id
+            contactHistory.firstName = it.firstName
+            contactHistory.lastName = it.lastName
+            contactHistory.accountId = it.accountId
+            contactHistory.profileImage = it.profileImage
+            contactHistory.profileColor = it.profileColor
+            contactHistory.isVisible = it.isVisible
+            contactHistory.email = it.email
+            contactHistory.mobile = it.mobile
+            contactHistory.about = it.about
+            allUser.add(contactHistory)
+        }
+        adapter.setData(allUser, true)
+        if (allUser.isNullOrEmpty()) {
+            binding.txtClearAll.visibility = GONE
+        } else {
+            binding.txtClearAll.visibility = VISIBLE
+        }
+    }
+
+    override fun onClick(view: View){
+        when(view.id){
+            R.id.txt_clear_all->{
+                deleteContactHistory()
+                allUser.clear()
+                adapter.setData(allUser, true)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -65,9 +98,14 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
     }
 
     fun filter(query: String) {
-        initPaginate()
-        this.query = query
-        callAPISearchUser(query, 0)
+        allUser.clear()
+        if (query == "") {
+            getAllContactHistoryFromDB()
+        } else {
+            this.query = query
+            showLog("filter", "call")
+            callAPISearchUser(query, 0)
+        }
     }
 
     private fun callAPISearchUser(query: String, offset: Int) {
@@ -78,8 +116,6 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.term to query,
-                Constants.limit to R.string.limit_20,
-                Constants.offset to offset,
             )
             mCompositeDisposable.add(
                 ApiClient.create()
@@ -90,16 +126,7 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
                         override fun onNext(responseIsAppUser: ResponseIsAppUser) {
                             if (responseIsAppUser.success == 1) {
                                 allUser.addAll(responseIsAppUser.data)
-                                adapter.setData(responseIsAppUser.data as ArrayList<ResponseIsAppUser.Data>)
-                                isloading = false
-                                hasLoadedAllItems = false
-                            } else {
-                                hasLoadedAllItems = true
-//                                if (allpost.isEmpty()) {
-//                                    binding.llEmptyPost.visibility = View.VISIBLE
-//                                } else {
-//                                    binding.llEmptyPost.visibility = View.GONE
-//                                }
+                                adapter.setData(allUser, false)
                             }
                         }
 
@@ -117,25 +144,4 @@ class ExploreFragment : Fragment(), Paginate.Callbacks {
         }
     }
 
-    private fun initPaginate() {
-        paginate = Paginate.with(_binding!!.rvList, this)
-            .setLoadingTriggerThreshold(17)
-            .addLoadingListItem(false)
-            .setLoadingListItemCreator(null)
-            .build()
-    }
-
-    override fun onLoadMore() {
-        isloading = true
-        val scrollPosition: Int = adapter.itemCount
-        callAPISearchUser(query, scrollPosition)
-    }
-
-    override fun isLoading(): Boolean {
-        return isloading
-    }
-
-    override fun hasLoadedAllItems(): Boolean {
-        return hasLoadedAllItems
-    }
 }

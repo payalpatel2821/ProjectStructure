@@ -7,17 +7,21 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.contact.MyContactFragment">
 
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:layout_height="match_parent">
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/sectionpicker_countries"
+            android:nestedScrollingEnabled="true"
             android:padding="10sp"
             android:visibility="gone" />
+
 
         <com.task.newapp.sectionpicker.SectionPicker
             android:id="@+id/sectionpicker_countries"
@@ -28,16 +32,15 @@
             app:SectionPicker_chosenColor="#A16CAEC4"
             app:SectionPicker_chosenStyle="bold"
             app:SectionPicker_textColor="@color/gray"
-            app:SectionPicker_textSize="12sp"
-           />
+            app:SectionPicker_textSize="12sp" />
 
         <TextView
             android:id="@+id/textview_section"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_centerInParent="true"
-            android:gravity="center"
             android:background="@drawable/section_txt_bg"
+            android:gravity="center"
             android:textColor="@android:color/black"
             android:textSize="30sp"
             android:visibility="gone" />
@@ -51,5 +54,4 @@
             android:textAllCaps="false" />
 
     </RelativeLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

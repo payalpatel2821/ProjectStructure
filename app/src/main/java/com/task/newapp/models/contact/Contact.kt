@@ -17,27 +17,44 @@ data class Contact(
     var suffix: String,
     var nickname: String,
     var photoUri: String,
-    var phoneNumbers: ArrayList<PhoneNumber>,
-    var emails: ArrayList<Email>,
-    var addresses: ArrayList<Address>,
-    var events: ArrayList<Event>,
+    var phoneNumbers: ArrayList<String>,
+    var emails: ArrayList<String>,
+    var fullName:String,
+//    var addresses: ArrayList<Address>,
+ //   var events: ArrayList<Event>,
     var source: String,
-    var starred: Int,
-    var contactId: Int,
-    var thumbnailUri: String,
-    var photo: Bitmap?,
-    var notes: String,
+//    var starred: Int,
+//    var contactId: Int,
+ //   var thumbnailUri: String,
+ //   var photo: Bitmap?,
+//    var notes: String,
 //    var groups: ArrayList<Group>,
-    var organization: Organization,
-    var websites: ArrayList<String>,
-    var IMs: ArrayList<IM>,
-    var mimetype: String,
-    var ringtone: String?
+//    var organization: Organization,
+//    var websites: ArrayList<String>,
+ //   var IMs: ArrayList<IM>,
+//    var mimetype: String,
+//    var ringtone: String?
 ) :
     Comparable<Contact> {
     companion object {
         var sorting = 0
         var startWithSurname = false
+        fun getNameToDisplay(firstName: String,middleName: String,surname: String,prefix: String,suffix: String,startWithSurname:Boolean,emails: ArrayList<String>): String {
+            val firstMiddle = "$firstName $middleName".trim()
+            val firstPart = if (startWithSurname) surname else firstMiddle
+            val lastPart = if (startWithSurname) firstMiddle else surname
+            val suffixComma = if (suffix.isEmpty()) "" else ", $suffix"
+            val fullName = "$prefix $firstPart $lastPart$suffixComma".trim()
+            return if (fullName.isEmpty()) {
+//            if (organization.isNotEmpty()) {
+//                getFullCompany()
+//            } else {
+                emails.firstOrNull()?.trim() ?: ""
+//            }
+            } else {
+                fullName
+            }
+        }
     }
 
     override fun compareTo(other: Contact): Int {
@@ -58,8 +75,8 @@ data class Contact(
                 compareUsingStrings(firstString, secondString, other)
             }
             sorting and ContactsConstants.SORT_BY_FULL_NAME != 0 -> {
-                val firstString = getNameToDisplay().normalizeString()
-                val secondString = other.getNameToDisplay().normalizeString()
+                val firstString = getNameToDisplay(firstName,middleName,surname,prefix,suffix, startWithSurname,emails).normalizeString()
+                val secondString = getNameToDisplay(firstName,middleName,surname,prefix,suffix, startWithSurname,emails).normalizeString()
                 compareUsingStrings(firstString, secondString, other)
             }
             else -> compareUsingIds(other)
@@ -81,20 +98,22 @@ data class Contact(
         var secondValue = secondString
 
         if (firstValue.isEmpty() && firstName.isEmpty() && middleName.isEmpty() && surname.isEmpty()) {
-            val fullCompany = getFullCompany()
+          /*  val fullCompany = getFullCompany()
             if (fullCompany.isNotEmpty()) {
                 firstValue = fullCompany.normalizeString()
-            } else if (emails.isNotEmpty()) {
-                firstValue = emails.first().value
+            } else*/
+                if (emails.isNotEmpty()) {
+                firstValue = emails.first()
             }
         }
 
         if (secondValue.isEmpty() && other.firstName.isEmpty() && other.middleName.isEmpty() && other.surname.isEmpty()) {
-            val otherFullCompany = other.getFullCompany()
+           /* val otherFullCompany = other.getFullCompany()
             if (otherFullCompany.isNotEmpty()) {
                 secondValue = otherFullCompany.normalizeString()
-            } else if (other.emails.isNotEmpty()) {
-                secondValue = other.emails.first().value
+            } else*/
+                if (other.emails.isNotEmpty()) {
+                secondValue = other.emails.first()
             }
         }
 
@@ -113,7 +132,7 @@ data class Contact(
                 -1
             } else {
                 if (firstValue.equals(secondValue, ignoreCase = true)) {
-                    getNameToDisplay().compareTo(other.getNameToDisplay(), true)
+                    getNameToDisplay(firstName,middleName,surname,prefix,suffix, startWithSurname,emails).compareTo(getNameToDisplay(firstName,middleName,surname,prefix,suffix, startWithSurname,emails), true)
                 } else {
                     firstValue.compareTo(secondValue, true)
                 }
@@ -128,28 +147,13 @@ data class Contact(
         return firstId.compareTo(secondId)
     }
 
-    fun getNameToDisplay(): String {
-        val firstMiddle = "$firstName $middleName".trim()
-        val firstPart = if (startWithSurname) surname else firstMiddle
-        val lastPart = if (startWithSurname) firstMiddle else surname
-        val suffixComma = if (suffix.isEmpty()) "" else ", $suffix"
-        val fullName = "$prefix $firstPart $lastPart$suffixComma".trim()
-        return if (fullName.isEmpty()) {
-            if (organization.isNotEmpty()) {
-                getFullCompany()
-            } else {
-                emails.firstOrNull()?.value?.trim() ?: ""
-            }
-        } else {
-            fullName
-        }
-    }
+
 
     fun getStringToCompare(): String {
         return copy(
             id = 0,
             prefix = "",
-            firstName = getNameToDisplay().toLowerCase(),
+            firstName = getNameToDisplay(firstName,middleName,surname,prefix,suffix, startWithSurname,emails).toLowerCase(),
             middleName = "",
             surname = "",
             suffix = "",
@@ -157,27 +161,27 @@ data class Contact(
             photoUri = "",
             phoneNumbers = ArrayList(),
             emails = ArrayList(),
-            events = ArrayList(),
+//            events = ArrayList(),
             source = "",
-            addresses = ArrayList(),
-            starred = 0,
-            contactId = 0,
-            thumbnailUri = "",
-            notes = "",
+//            addresses = ArrayList(),
+//            starred = 0,
+//            contactId = 0,
+//            thumbnailUri = "",
+//            notes = "",
 //            groups = ArrayList(),
-            websites = ArrayList(),
-            organization = Organization("", ""),
-            IMs = ArrayList(),
-            ringtone = ""
+//            websites = ArrayList(),
+//            organization = Organization("", ""),
+//            IMs = ArrayList(),
+//            ringtone = ""
         ).toString()
     }
 
 
-    private fun getFullCompany(): String {
+  /*  private fun getFullCompany(): String {
         var fullOrganization =
             if (organization.company.isEmpty()) "" else "${organization.company}, "
         fullOrganization += organization.jobPosition
         return fullOrganization.trim().trimEnd(',')
-    }
+    }*/
 
 }

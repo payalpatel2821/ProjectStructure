@@ -13,24 +13,34 @@ data class ResponseIsAppUser(
 ) {
     data class Data(
         @SerializedName("account_id")
-        var accountId: String,
+        var accountId: String = "",
+        @SerializedName("app_user_id")
+        var appUserId: String = "",
+        @SerializedName("is_app_user")
+        var isAppUser: Int = 0,
         @SerializedName("email")
-        var email: String,
+        var email: String = "",
         @SerializedName("first_name")
-        var firstName: String,
+        var firstName: String = "",
+        @SerializedName("fullname")
+        var fullname: String = "",
         @SerializedName("flag")
-        var flag: String,
+        var flag: String = "",
         @SerializedName("id")
-        var id: Int,
+        var id: Int = 0,
         @SerializedName("is_visible")
-        var isVisible: Int,
+        var isVisible: Int = 0,
         @SerializedName("last_name")
-        var lastName: String,
+        var lastName: String = "",
         @SerializedName("mobile")
-        var mobile: String,
+        var mobile: String = "",
+        @SerializedName("number")
+        var number: String = "",
         @SerializedName("profile_color")
-        var profileColor: String,
+        var profileColor: String = "",
         @SerializedName("profile_image")
-        var profileImage: String
+        var profileImage: String = "",
+        @SerializedName("about")
+        var about: String = ""
     )
 }

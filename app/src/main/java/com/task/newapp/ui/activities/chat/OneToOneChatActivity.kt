@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
-import android.provider.MediaStore.Images.Media
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -51,6 +50,7 @@ import com.task.newapp.utils.recorderview.toast
 import com.task.newapp.workmanager.WorkManagerScheduler
 import io.reactivex.disposables.CompositeDisposable
 import io.realm.RealmList
+import lv.chi.photopicker.MediaPickerFragment
 import java.io.File
 import java.io.PrintWriter
 import java.util.*
@@ -58,11 +58,15 @@ import kotlin.collections.ArrayList
 
 
 class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
-    OneToOneChatAdapter.OnChatItemClickListener, OnItemClickListener, AudioRecordView.Callback {
+    OneToOneChatAdapter.OnChatItemClickListener, OnItemClickListener, AudioRecordView.Callback, MediaPickerFragment.Callback {
     companion object {
         const val REQUEST_CAMERA_PERMISSION_RESULT = 123
     }
 
+    var select_captions = java.util.ArrayList<String>()
+    var select_time = java.util.ArrayList<String>()
+    var targetList = java.util.ArrayList<String>()
+    var return_mediatype = java.util.ArrayList<Int>()
     lateinit var binding: ActivityOneToOneChatBinding
     private val mCompositeDisposable = CompositeDisposable()
     private var opponentId: Int = 0
@@ -80,7 +84,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         }
         f
     }
-
     private val tmpFile: File by lazy {
         val f = File("$externalCacheDir${File.separator}tmp.pcm")
         if (!f.exists()) {
@@ -88,7 +91,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         }
         f
     }
-
     private var audioRecord: AudioRecorder? = null
     private var audioPlayer: AudioPlayer? = null
     private var audioResultLauncher =
@@ -140,10 +142,10 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                     val selectedMediaUri: Uri? = resultData?.data
                     if (selectedMediaUri.toString().contains("image")) {
                         //handle image
-                        showLog("path=====", selectedMediaUri?.path.toString())
+                        showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
                     } else if (selectedMediaUri.toString().contains("video")) {
                         //handle video
-                        showLog("path=====", selectedMediaUri?.path.toString())
+                        showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
                     }
                 } else {
                     resultData?.clipData?.let { data ->
@@ -151,15 +153,32 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                             val selectedMediaUri: Uri? = data.getItemAt(i).uri
                             if (selectedMediaUri.toString().contains("image")) {
                                 //handle image
-                                showLog("path=====", selectedMediaUri?.path.toString())
+                                showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
                             } else if (selectedMediaUri.toString().contains("video")) {
                                 //handle video
-                                showLog("path=====", selectedMediaUri?.path.toString())
+                                showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
 
                             }
                         }
                     }
                 }
+            }
+        }
+
+
+    private var viewPagerResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                targetList = ArrayList()
+                select_captions = ArrayList()
+                select_time = ArrayList()
+                return_mediatype = ArrayList()
+                targetList = result.data!!.getStringArrayListExtra("select_urls")!!
+                select_captions = result.data!!.getStringArrayListExtra("select_captions")!!
+                select_time = result.data!!.getStringArrayListExtra("select_time")!!
+                return_mediatype = result.data!!.getIntegerArrayListExtra("urls_mediatype")!!
+
+                showLog("data", targetList.toString() + " " + select_captions.toString() + " " + select_time.toString() + " " + return_mediatype.toString())
             }
         }
 
@@ -169,7 +188,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         setSupportActionBar(binding.toolbarLayout.activityMainToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         initView()
-
     }
 
     private fun initView() {
@@ -200,12 +218,14 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     private fun refreshToolbar(chatObj: Chats?) {
         chatObj?.let {
             binding.toolbarLayout.txtTitle.text = it.name
-            binding.toolbarLayout.imgProfile.load(
-                it.userData?.profileImage ?: "",
-                true,
-                it.name,
-                it.userData?.profileColor
-            )
+            if (!this.isFinishing) {
+                binding.toolbarLayout.imgProfile.load(
+                    it.userData?.profileImage ?: "",
+                    true,
+                    it.name,
+                    it.userData?.profileColor
+                )
+            }
             binding.toolbarLayout.imgOnline.visibility = if (it.isOnline) VISIBLE else GONE
         }
     }
@@ -373,7 +393,14 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                             takePhoto()
                         }
                         PHOTOS -> {
-                            openGallery()
+//                            openGallery()
+                            MediaPickerFragment.newInstance(
+                                multiple = true,
+                                allowCamera = true,
+                                pickerType = MediaPickerFragment.PickerType.ANY,
+                                maxSelection = 30,
+                                theme = R.style.ChiliPhotoPicker_Light,
+                            ).show(supportFragmentManager, "picker")
                         }
                         DOCUMENTS -> showToast(actionName)
                         CONTACTS -> showToast(actionName)
@@ -409,10 +436,13 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     }
 
     fun openGallery() {
-        val pickIntent = Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI)
-        pickIntent.type = "image/* video/*"
-        pickIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        galleryResultLauncher.launch(pickIntent)
+//        val pickIntent = Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI)
+//        pickIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        val intent = Intent()
+        intent.type = "image/* video/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        intent.action = Intent.ACTION_GET_CONTENT
+        galleryResultLauncher.launch(intent)
     }
 
     private fun prepareNewMessage(messageText: String, type: String, chat_contents: ChatContents?, contacts: RealmList<ChatContents>) {
@@ -457,8 +487,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                 binding.rvChatMessages.scrollToPosition(chatsAdapter.itemCount - 1)
             }
         }
-
-
     }
 
     private fun removeTypeIndicator() {
@@ -509,7 +537,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         //  updateUserOnlineStatus(userId, status)
         if (userId == opponentId)
             getChatObj(userId)
-
     }
 
     override fun onResume() {
@@ -596,7 +623,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
             val voiceInfo = VoiceInfo(file.readBytes(), file.absolutePath, duration.toDouble(), file.name, file.length().toDouble())
             saveVoiceChatLocalAndSendToServer(voiceInfo)
         }
-
     }
 
     private fun saveVoiceChatLocalAndSendToServer(voiceInfo: VoiceInfo) {
@@ -666,5 +692,35 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
         showLog("Chat content data:", voiceInfo.voicedata.toString())
         prepareNewMessage(messageText = "", type = MessageType.MIX.type, chat_contents = chatContents, contacts = RealmList())
+    }
+
+    override fun onMediaPicked(mediaItems: ArrayList<Uri>) {
+        showLog("item selected: ", mediaItems.toString())
+
+        mediaItems.forEach { uri ->
+            targetList.add(uri.toString())
+
+            if (isImageFile(uri.toString())) {
+                return_mediatype.add(1)
+            } else {
+                return_mediatype.add(0)
+            }
+        }
+
+        val captionarr = Array(mediaItems.size) { "" }
+        select_captions.addAll(captionarr)
+
+        var timearr = Array(mediaItems.size) { "" }
+        select_time.addAll(timearr)
+
+
+        val intent = Intent(this@OneToOneChatActivity, ViewPagerActivity::class.java)
+        intent.putStringArrayListExtra("select_urls", targetList/*Gson().toJson(mediaItems)*/)
+        intent.putStringArrayListExtra("select_captions", select_captions)
+        intent.putStringArrayListExtra("select_time", select_time)
+        intent.putIntegerArrayListExtra("urls_mediatype", return_mediatype)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        viewPagerResultLauncher.launch(intent)
+
     }
 }

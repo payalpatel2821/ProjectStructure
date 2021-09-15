@@ -37,6 +37,7 @@ allprojects {
         }
         maven { url 'https://maven.testfairy.com' }
         jcenter() // Warning: this repository is going to shut down soon
+        maven { url "https://raw.github.com/laenger/maven-releases/master/releases" }
     }
 }
 

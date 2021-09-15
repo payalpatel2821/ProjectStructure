@@ -1,5 +1,6 @@
 package com.task.newapp.adapter.contact
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,10 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.task.newapp.R
-import com.task.newapp.models.contact.Contact
+import com.task.newapp.models.ResponseIsAppUser
 import com.task.newapp.models.contact.ContactRecyclerViewModel
 import com.task.newapp.utils.load
+import com.task.newapp.utils.onShareClicked
 import com.task.newapp.utils.showLog
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -27,7 +29,7 @@ class ContactAdapter(
     val TYPE_COUNTRY = 0
     val TYPE_LETTER = 1
     private var allContact: ArrayList<ContactRecyclerViewModel> = ArrayList()
-    var onItemClick: ((String, String) -> Unit)? = null
+    var onItemClick: ((Int) -> Unit)? = null
     private var totalSize = 0
 
 
@@ -66,7 +68,7 @@ class ContactAdapter(
         val contactRecyclerViewModel: ContactRecyclerViewModel = allContact[position]
         when (getItemViewType(position)) {
             TYPE_COUNTRY -> {
-                val contact: Contact = contactRecyclerViewModel.contact!!
+                val contact: ResponseIsAppUser.Data = contactRecyclerViewModel.contact!!
                 if (contact != null) {
                     (holder as ContactViewHolder).bindTo(
                         holder,
@@ -117,7 +119,6 @@ class ContactAdapter(
             i++
         }
 
-
         return -1
     }
 
@@ -135,9 +136,9 @@ class ContactAdapter(
         var letter = ""
         when (contactRecyclerViewModel.type) {
             TYPE_COUNTRY -> {
-                val country: Contact = contactRecyclerViewModel.contact!!
+                val country: ResponseIsAppUser.Data = contactRecyclerViewModel.contact!!
                 if (country != null) {
-                    letter = country.firstName.substring(0, 1)
+                    letter = country.fullname.substring(0, 1)
                 }
             }
             TYPE_LETTER -> {
@@ -165,34 +166,42 @@ class ContactAdapter(
         private val textViewName: TextView = itemView.findViewById(R.id.item_contact_name)
         private val textViewNumber: TextView = itemView.findViewById(R.id.item_contact_number)
         private val divider: View = itemView.findViewById(R.id.divider)
+        private val btnInvite: View = itemView.findViewById(R.id.btn_invite)
 
-        fun bindTo(holder: ContactViewHolder, contact: Contact, context: Context, onItemClick: ((String, String) -> Unit)?, position: Int, totalSize: Int) {
-            textViewName.text = contact.getNameToDisplay()
-            if (contact.phoneNumbers.isNotEmpty()) {
-                textViewNumber.text = contact.phoneNumbers[0].normalizedNumber
-                mobileNumber = contact.phoneNumbers.joinToString(separator = ",") { it.normalizedNumber!!.replace("+91", "") ?: "" }
+        fun bindTo(holder: ContactViewHolder, contact: ResponseIsAppUser.Data, context: Context, onItemClick: ((Int) -> Unit)?, position: Int, totalSize: Int) {
+            textViewName.text = contact.fullname
+            if (!contact.number.isNullOrEmpty()) {
+                textViewNumber.text = contact.number
                 textViewNumber.visibility = VISIBLE
             } else {
-                mobileNumber = ""
                 textViewNumber.visibility = GONE
             }
-            emailId = if (contact.emails.isNotEmpty()) {
-                contact.emails.joinToString(separator = ", ") { it.label ?: "" }
-            } else {
-                ""
-            }
-            imageView.load(contact.photoUri, true, textViewName.text.toString().trim(), "#6CAEC4")
+            imageView.load(contact.profileImage, true, textViewName.text.toString().trim(), "#6CAEC4")
 
             showLog("size===", "$position $totalSize")
-            if (position == totalSize-1) {
+            if (position == totalSize - 1) {
                 holder.divider.visibility = GONE
             } else {
                 holder.divider.visibility = VISIBLE
             }
 
+            if (contact.isAppUser == 1) {
+                holder.btnInvite.visibility = GONE
+            } else {
+                holder.btnInvite.visibility = VISIBLE
+            }
+
+            holder.btnInvite.setOnClickListener {
+                onShareClicked(context as Activity)
+            }
+
             holder.itemView.setOnClickListener {
-                if (onItemClick != null) {
-                    onItemClick!!.invoke(mobileNumber, emailId)
+                if (contact.isAppUser == 1) {
+                    if (onItemClick != null) {
+                        onItemClick!!.invoke(contact.appUserId.toInt())
+                    }
+                } else {
+                    onShareClicked(context as Activity)
                 }
             }
         }

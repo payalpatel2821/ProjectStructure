@@ -431,6 +431,17 @@ fun insertGroupTickData(groupManageTick: GroupManageTick) {
     }
 }
 
+fun insertContactHistoryData(contactHistory: ContactHistory) {
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(contactHistory)
+        })
+    } else {
+        realm.copyToRealmOrUpdate(contactHistory)
+    }
+}
+
 /**  ------------------------------------ INSERT END ---------------------------------------------------------------  */
 
 /**   ------------------------------------ READ BEGIN ---------------------------------------------------------------  */
@@ -670,6 +681,10 @@ fun getAllOneToOneChatListForSync(isSync: Boolean): List<ChatList> {
 fun getSelectedNotificationTuneNameBYID(notificationId: Int): String {
     return App.getRealmInstance().where(NotificationTone::class.java)
         .equalTo(NotificationTone::id.name, notificationId).findFirst()?.displayName ?: ""
+}
+
+fun getAllContactHistory(): List<ContactHistory> {
+    return App.getRealmInstance().where(ContactHistory::class.java).findAll()
 }
 
 //fun getSelectedGroupNotificationTuneName(friendId: Int,groupId: Int): String {
@@ -925,6 +940,20 @@ fun deleteBroadcast(broadcastId: Int) {
             .equalTo(BroadcastTable::broadcastId.name, broadcastId).findAll().deleteAllFromRealm()
     })
 
+}
+
+fun deleteContactHistory() {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(ContactHistory::class.java).findAll().deleteAllFromRealm()
+
+    })
+}
+
+fun deleteOneContactHistory(id: Int) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(ContactHistory::class.java).equalTo(ContactHistory::id.name, id).findAll().deleteAllFromRealm()
+
+    })
 }
 
 fun clearDatabase() {
@@ -1622,7 +1651,7 @@ fun prepareNotificationToneData(notificationList: ArrayList<ResponseNotification
             notificationTone.id = notificationObj.id
             notificationTone.displayName = notificationObj.toneName
             notificationTone.notificationUrl = notificationObj.sound
-           // notificationTone.soundName = notificationObj.sound
+            // notificationTone.soundName = notificationObj.sound
 
             notificationToneList.add(notificationTone)
 
@@ -1753,9 +1782,25 @@ fun prepareSingleGroupUsersData(groupUserWithSetting: GetAllGroup.GroupUserWithS
     return groupUserObj
 }
 
+fun prepareContactHistoryData(exploreContact: ResponseIsAppUser.Data): ContactHistory {
+    val contactHistory = ContactHistory()
+    exploreContact.let {
+        contactHistory.id = exploreContact.id
+        contactHistory.firstName = exploreContact.firstName
+        contactHistory.lastName = exploreContact.lastName
+        contactHistory.accountId = exploreContact.accountId
+        contactHistory.profileImage = exploreContact.profileImage ?: ""
+        contactHistory.profileColor = exploreContact.profileColor
+        contactHistory.isVisible = exploreContact.isVisible
+        contactHistory.email = exploreContact.email ?: ""
+        contactHistory.mobile = exploreContact.mobile ?: ""
+        contactHistory.about = exploreContact.about ?: ""
+    }
+    return contactHistory
+}
+
 interface OnRealmTransactionResult {
 
     fun onSuccess(obj: Any)
-    // fun onError()
 
 }
