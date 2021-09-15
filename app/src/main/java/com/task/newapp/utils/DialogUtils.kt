@@ -93,6 +93,7 @@ class DialogUtils {
         message: String,
         turnOffComment: Int,
         postByMe: Boolean,
+        isFollow: Boolean,
         listener: DialogCallbacks
     ) {
         val alert = AlertView(title, message, AlertStyle.IOS)
@@ -107,9 +108,16 @@ class DialogUtils {
         alert.addAction(AlertAction(PostDialogActionName.TURNONPOST.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(PostDialogActionName.TURNONPOST.value)
         })
-        alert.addAction(AlertAction(PostDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
-            listener.onDefaultButtonClick(PostDialogActionName.UNFOLLOW.value)
-        })
+
+        if (isFollow) {
+            alert.addAction(AlertAction(PostDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(PostDialogActionName.UNFOLLOW.value)
+            })
+        } else {
+            alert.addAction(AlertAction(PostDialogActionName.FOLLOW.value, AlertActionStyle.DEFAULT) {
+                listener.onDefaultButtonClick(PostDialogActionName.FOLLOW.value)
+            })
+        }
 
         if (postByMe) {
             if (turnOffComment == 1) {
@@ -386,7 +394,7 @@ class DialogUtils {
         var mLayoutManager = LinearLayoutManager(activity)
         rvAppUser.layoutManager = mLayoutManager
 
-        val adapter = AppUserAdapter(activity,data)
+        val adapter = AppUserAdapter(activity, data)
         rvAppUser.adapter = adapter
 
         dialog.show()
@@ -422,6 +430,7 @@ class DialogUtils {
         COPYLINK("Copy Link"),
         TURNONPOST("Turn on Post Notification"),
         MUTE("Mute"),
+        FOLLOW("Follow"),
         UNFOLLOW("Unfollow"),
         TURNOFFCOMMENT("Turn off commenting"),
         TURNONCOMMENT("Turn on commenting"),

@@ -167,7 +167,10 @@
     <string name="block_confirm_msg">Do you want to block this user?</string>
     <string name="unblock_confirm_msg">Do you want to unblock this user?</string>
     <string name="conform_report">Do you want to report this user?</string>
+    <string name="tunr_off_comment_title">Commenting is Off</string>
+    <string name="turn_off_comment_detail">%s has turned off comment for this post.</string>
     <string name="yes">Yes</string>
+    <string name="ok">Ok, I got it.</string>
     <string name="no">No</string>
     <string name="email_id">Email ID</string>
     <string name="enter_new_password">Enter new password</string>
@@ -194,12 +197,16 @@
     <string name="error_msg_cannot_select_more_images">You cannot select more than 30 images</string>
     <string name="error_msg_cannot_select_more_image_and_videos"><![CDATA[You cannot select more than 5 video\n & \nmore than 15 images]]></string>
     <string name="error_msg_cannot_select_more_videos">You cannot select more than 5 videos</string>
-    <string name="error_upload_failed">Uploading failed</string>
-    <string name="message_upload_failed">File is not uploaded. Please TRY AGAIN</string>
+    <string name="error_upload_failed">Post Uploading failed</string>
+    <string name="message_upload_failed">Post has not uploaded. Please TRY AGAIN</string>
 
 
     <!--    photo editor-->
     <string name="label_brush">Brush</string>
+    <string name="label_oval">Oval</string>
+    <string name="label_rectangle">Rectangle</string>
+    <string name="label_line">Line</string>
+    <string name="label_shape">Shape</string>
     <string name="label_emoji">Emoji</string>
     <string name="label_sticker">Sticker</string>
     <string name="label_eraser">Eraser</string>
@@ -298,4 +305,5 @@
     <string name="finish">Finish</string>
     <string name="invite">Invite</string>
     <string name="clear_all">Clear All</string>
+
 </resources>

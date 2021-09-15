@@ -398,13 +398,14 @@ public class InstagramImageGridAdapter extends RecyclerView.Adapter<RecyclerView
                 }
             }
 
-            String errorMsg = getMediaValidationErrorMessage(imageSize, videoSize, videoSize > 0);
+            if (!isChecked) {
+                String errorMsg = getMediaValidationErrorMessage(imageSize, videoSize, videoSize > 0);
 
-            if (errorMsg.length() != 0) {
-                Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show();
-                return;
+                if (errorMsg.length() != 0) {
+                    Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
-
 //            if (PictureMimeType.isHasVideo(image.getMimeType())) {
 //                if (config.maxVideoSelectNum > 0
 //                        && videoSize >= config.maxVideoSelectNum && !isChecked) {

@@ -44,6 +44,7 @@ import com.task.newapp.ui.activities.post.PostPagerActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.instapicker.GlideCacheEngine
 import com.task.newapp.utils.instapicker.GlideEngine
+import com.task.newapp.utils.photoediting.EditImageActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -326,7 +327,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //    }
 
     private fun handleUserExit() {
-        requireActivity().showToast("Dialog Close")
+//        requireActivity().showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {
@@ -400,6 +401,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //                mIntent.putExtra("mediaItemsArray", Gson().toJson(arrayListMedia))
                 mIntent.putExtra("mediaItemsArray", Gson().toJson(createPostAdapter.getData() as ArrayList<LocalMedia>))
                 mIntent.putExtra("switchTurnOff", if (binding.switchTurnOff.isChecked) "1" else "0")
+                FileUploadService.shouldContinue = true
 
                 dismiss()
                 FileUploadService.enqueueWork(activity, mIntent)
@@ -971,6 +973,16 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
     private fun itemClick() {
         createPostAdapter?.let {
             createPostAdapter.onItemClick = { position ->
+
+//                val path = "/storage/emulated/0/DCIM/Camera/PXL_20210814_053234516.PORTRAIT.jpg"
+//                val path = "/storage/emulated/0/1611831077734.png"
+//                val path = createPostAdapter.getData()!![position]!!.path
+//
+//                val intent = Intent(activity, EditImageActivity::class.java)
+//                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+//                intent.putExtra("filepath", path)
+//                startActivity(intent)
+
                 val intent = Intent(activity, PostPagerActivity::class.java)
 //                intent.putExtra("arraylist", Gson().toJson(arrayListMedia))
                 intent.putExtra("arraylist", Gson().toJson(createPostAdapter.getData()))

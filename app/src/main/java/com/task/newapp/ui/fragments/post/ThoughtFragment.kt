@@ -289,7 +289,7 @@ class ThoughtFragment : BottomSheetDialogFragment(), View.OnClickListener, Pagin
 //    }
 
     private fun handleUserExit() {
-        activity!!.showToast("Dialog Close")
+//        activity!!.showToast("Dialog Close")
     }
 
     override fun onClick(v: View) {

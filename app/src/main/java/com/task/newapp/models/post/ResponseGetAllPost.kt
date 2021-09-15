@@ -89,6 +89,8 @@ data class ResponseGetAllPost(
         val title: String,
         @SerializedName("turn_off_comment")
         var turnOffComment: Int,
+        @SerializedName("is_follow")
+        var isFollow: Int,
         @SerializedName("type")
         val type: String,
         @SerializedName("updated_at")

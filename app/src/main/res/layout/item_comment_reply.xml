@@ -89,8 +89,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/img_view"
-                    android:layout_width="@dimen/_35sdp"
-                    android:layout_height="@dimen/_35sdp"
+                    android:layout_width="@dimen/_32sdp"
+                    android:layout_height="@dimen/_32sdp"
                     android:elevation="@dimen/_5sdp"
                     android:minWidth="@dimen/_40sdp"
                     android:minHeight="@dimen/_40sdp"
@@ -208,7 +208,7 @@
                         android:id="@+id/txtDelete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_marginLeft="@dimen/_8sdp"
                         android:fontFamily="@font/bogleregular"
                         android:text="@string/delete"
                         android:textColor="@color/gray"

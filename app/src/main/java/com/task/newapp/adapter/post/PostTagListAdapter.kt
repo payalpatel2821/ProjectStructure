@@ -6,14 +6,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemTaglistPostBinding
 import com.task.newapp.models.OtherUserModel
-import com.task.newapp.models.post.ResponseFriendsList
+import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
-import kotlin.collections.ArrayList
 
 
 class PostTagListAdapter(
@@ -41,48 +39,8 @@ class PostTagListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        with(viewHolder) {
-            with(arrayList[position]) {
-
-//                Glide.with(context).load(this.profileImage).placeholder(R.drawable.logo).into(layoutBinding.imgProfile)
-
-                layoutBinding.txtName.text = (this.firstName ?: "") + " " + (this.lastName ?: "")
-
-                //this.profileImage?.let {
-                layoutBinding.imgProfile.load(this.profileImage, true, layoutBinding.txtName.text.trim().toString(), this.profileColor)
-                // }
-
-                //viewHolder.layoutBinding.imgCheck.isSelected = this.isSelected
-
-                if (arrayListTemp.contains(arrayList[position])) {
-                    viewHolder.layoutBinding.imgCheck.isSelected = true
-                } else {
-                    viewHolder.layoutBinding.imgCheck.isSelected = arrayList[position].isSelected
-                }
-
-                //Add New
-                if (arrayList[position].isSelected) {
-                    arrayListTemp.add(arrayList[position])
-                } else {
-                    arrayListTemp.remove(arrayList[position])
-                }
-
-            }
-        }
-
-        viewHolder.itemView.setOnClickListener {
-            arrayList[position].isSelected = !arrayList[position].isSelected
-            viewHolder.layoutBinding.imgCheck.isSelected = !viewHolder.layoutBinding.imgCheck.isSelected
-
-            //Add New
-            if (arrayList[position].isSelected) {
-                arrayListTemp.add(arrayList[position])
-            } else {
-                arrayListTemp.remove(arrayList[position])
-            }
-
-            setSelectedName()
-        }
+        val otherUserModel: OtherUserModel = arrayList[position]
+        viewHolder.populateItemRows(otherUserModel)
     }
 
     override fun getItemId(position: Int): Long {
@@ -95,7 +53,64 @@ class PostTagListAdapter(
 //        var progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
     }
 
-    inner class ViewHolder(val layoutBinding: ItemTaglistPostBinding) : RecyclerView.ViewHolder(layoutBinding.root)
+    inner class ViewHolder(val layoutBinding: ItemTaglistPostBinding) : RecyclerView.ViewHolder(layoutBinding.root) {
+
+        fun populateItemRows(otherUserModel: OtherUserModel) {
+            layoutBinding.txtName.text = (otherUserModel.firstName ?: "") + " " + (otherUserModel.lastName ?: "")
+
+//            otherUserModel.profileImage?.let {
+            layoutBinding.imgProfile.load(otherUserModel.profileImage, true, layoutBinding.txtName.text.trim().toString(), otherUserModel.profileColor)
+//            }
+
+            if (arrayListTemp.contains(otherUserModel)) {
+                layoutBinding.imgCheck.isSelected = true
+            } else {
+                layoutBinding.imgCheck.isSelected = otherUserModel.isSelected
+            }
+
+            //Add New
+            if (otherUserModel.isSelected) {  // if not added in array then only add
+                if (!arrayListTemp.contains(otherUserModel)) {
+                    arrayListTemp.add(otherUserModel)
+                }
+            } else if (arrayListTemp.contains(otherUserModel)) {
+//                arrayListTemp.remove(otherUserModel)
+
+                val findedModel = arrayListTemp?.find {
+                    it.id == otherUserModel.id
+                }
+                findedModel?.let {
+                    val indexOfTemp = arrayListTemp?.indexOf(findedModel)
+                    arrayListTemp.removeAt(indexOfTemp)
+                }
+
+            }
+
+            itemView.setOnClickListener {
+                otherUserModel.isSelected = !otherUserModel.isSelected
+                layoutBinding.imgCheck.isSelected = !layoutBinding.imgCheck.isSelected
+
+                //Add New
+                if (otherUserModel.isSelected) {
+                    if (!arrayListTemp.contains(otherUserModel)) {
+                        arrayListTemp.add(otherUserModel)
+                    }
+                } else {
+//                    arrayListTemp.remove(otherUserModel)
+
+                    val findedModel = arrayListTemp?.find {
+                        it.id == otherUserModel.id
+                    }
+                    findedModel?.let {
+                        val indexOfTemp = arrayListTemp?.indexOf(findedModel)
+                        arrayListTemp.removeAt(indexOfTemp)
+                    }
+
+                }
+                setSelectedName()
+            }
+        }
+    }
 
     fun setData(data: ArrayList<OtherUserModel>, isRefresh: Boolean) {
 

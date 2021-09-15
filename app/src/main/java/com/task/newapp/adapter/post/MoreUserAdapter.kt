@@ -31,8 +31,8 @@ class MoreUserAdapter(
         fun populateItemRows(allTagData: Tagged) {
             layoutBinding.txtUsername.text = allTagData.first_name + " " + allTagData.last_name
 
-//            layoutBinding.itemContactImage.load(allTagData.profile_image, true, layoutBinding.txtUsername.text.trim().toString(), allTagData.profileColor)
-            layoutBinding.itemContactImage.load(allTagData.profile_image, false)
+            layoutBinding.itemContactImage.load(allTagData.profile_image, true, layoutBinding.txtUsername.text.trim().toString(), allTagData.profileColor)
+//            layoutBinding.itemContactImage.load(allTagData.profile_image, false)
 
             layoutBinding.txtAccountName.text = allTagData.accountId
 

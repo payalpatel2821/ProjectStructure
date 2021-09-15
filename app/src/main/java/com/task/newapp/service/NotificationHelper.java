@@ -40,6 +40,7 @@ public class NotificationHelper extends ContextWrapper {
         mBuilder.setContentTitle(title)
                 .setContentText(body)
                 .setOngoing(true)
+                .setAutoCancel(true)  //Add New
                 //.setContentIntent(resultPendingIntent)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -66,6 +67,8 @@ public class NotificationHelper extends ContextWrapper {
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
         mBuilder.setVibrate(new long[]{0L});
         mBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        mBuilder.setAutoCancel(true);  // Add New
+
         return mBuilder;
     }
 

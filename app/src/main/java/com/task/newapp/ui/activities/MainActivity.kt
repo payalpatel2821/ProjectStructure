@@ -39,7 +39,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
 
     private lateinit var contactBottomSheetFragment: ContactBottomSheet
     lateinit var binding: ActivityMainBinding
-
     val chatsFragment = ChatsFragment()
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
@@ -86,7 +85,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         binding.imgProfile.load(url = getCurrentUserProfilePicture(), isProfile = true, name = getCurrentUserFullName(), color = getCurrentUserProfileColor())
         setupNavigationDrawer()
         setupBottomNavigationBar()
-
     }
 
     private fun setupNavigationDrawer() {
@@ -407,6 +405,12 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     override fun onResume() {
         super.onResume()
 
+        ContactsHelper(this).getContacts { contacts ->
+            val gson = Gson()
+            val json: String = gson.toJson(contacts)
+            FastSave.getInstance().saveString(Constants.contact, json)
+//            setAdapter(contacts)
+        }
     }
 
 
