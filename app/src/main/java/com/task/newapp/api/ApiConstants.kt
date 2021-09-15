@@ -56,5 +56,6 @@ const val get_post_detail = "/api_v1/post-details/{id}"
 const val post_data_count = "/api_v1/post-data-count/{id}"
 
 
-const val is_how_user = "/api_v1/is-how-user"
+const val contact_sync = "/api_v2/contact-sync"
+const val search_sync_contact = "/api_v2/search-sync-contact"
 

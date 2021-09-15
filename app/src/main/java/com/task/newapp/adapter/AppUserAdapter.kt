@@ -39,24 +39,24 @@ class AppUserAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.textViewName.text = data[position].firstName + " " + data[position].lastName
-        holder.imageView.load(data[position].profileImage, true, holder.textViewName.text.trim().toString(), data[position].profileColor)
-        if (data[position].mobile.isNullOrEmpty()) {
-            holder.textViewNumber.text = data[position].email
-        } else {
-            holder.textViewNumber.text = data[position].mobile
-        }
-        holder.itemView.setOnClickListener{
-            val id=data[position].id
-            activity.launchActivity<OtherUserProfileActivity> {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                putExtra(Constants.user_id, id)
-            }
-        }
-        if (position == data.size - 1) {
-            holder.divider.visibility=View.GONE
-        }else
-            holder.divider.visibility=View.VISIBLE
+//        holder.textViewName.text = data[position].firstName + " " + data[position].lastName
+//        holder.imageView.load(data[position].profileImage, true, holder.textViewName.text.trim().toString(), data[position].profileColor)
+//        if (data[position].mobile.isNullOrEmpty()) {
+//            holder.textViewNumber.text = data[position].email
+//        } else {
+//            holder.textViewNumber.text = data[position].mobile
+//        }
+//        holder.itemView.setOnClickListener{
+//            val id=data[position].id
+//            activity.launchActivity<OtherUserProfileActivity> {
+//                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                putExtra(Constants.user_id, id)
+//            }
+//        }
+//        if (position == data.size - 1) {
+//            holder.divider.visibility=View.GONE
+//        }else
+//            holder.divider.visibility=View.VISIBLE
     }
 
     override fun getItemCount(): Int {

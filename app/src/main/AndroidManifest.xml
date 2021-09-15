@@ -206,11 +206,15 @@
         <!--                <data android:mimeType="image/*" />-->
         <!--            </intent-filter>-->
         <!--        </activity>-->
-        <receiver android:name=".ConnectionReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-            </intent-filter>
-        </receiver>
+<!--        <receiver android:name=".ConnectionReceiver">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
+        <activity
+        android:name=".ui.activities.chat.ViewPagerActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/NoActionBar" />
     </application>
 
 </manifest>

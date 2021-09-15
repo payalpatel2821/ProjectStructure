@@ -294,4 +294,8 @@
     <string name="updating">Updating…</string>
     <string name="telegram">Telegram</string>
     <string name="viber">Viber</string>
+    <string name="add_a_caption">Add Caption</string>
+    <string name="finish">Finish</string>
+    <string name="invite">Invite</string>
+    <string name="clear_all">Clear All</string>
 </resources>

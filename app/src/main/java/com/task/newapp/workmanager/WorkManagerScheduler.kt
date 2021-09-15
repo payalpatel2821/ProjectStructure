@@ -13,6 +13,7 @@ object WorkManagerScheduler {
 
     private val TAG: String = WorkManagerScheduler.javaClass.simpleName
     const val WORK_MANAGER_NAME = "ChatSyncWorkManager"
+    const val WORK_MANAGER_CONTACT = "ContactSyncWorkManager"
 
 
     fun refreshPeriodicWork(context: Context) {
@@ -49,6 +50,45 @@ object WorkManagerScheduler {
 
         if (!isWorkScheduled(WORK_MANAGER_NAME))
             WorkManager.getInstance(context).enqueueUniqueWork(WORK_MANAGER_NAME, ExistingWorkPolicy.REPLACE, refreshWork)
+//        WorkManager.getInstance(context).enqueue(refreshWork)
+
+
+    }
+
+    fun refreshPeriodicWorkContact(context: Context) {
+        showLog(TAG, "WORK START")
+
+/*
+        val currentDate = Calendar.getInstance()
+        val dueDate = Calendar.getInstance()
+
+        // Set Execution around 04:00:00 AM
+        dueDate.set(Calendar.HOUR_OF_DAY, 17)
+        dueDate.set(Calendar.MINUTE, 45)
+        dueDate.set(Calendar.SECOND, 0)
+        if (dueDate.before(currentDate)) {
+            dueDate.add(Calendar.HOUR_OF_DAY, 24)
+        }
+
+        val timeDiff = dueDate.timeInMillis - currentDate.timeInMillis
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(timeDiff)
+
+        Log.d("MyWorker", "time difference $minutes")
+*/
+
+        //define constraints
+        val myConstraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val refreshWork = OneTimeWorkRequest.Builder(ContactSyncWorker::class.java)
+            //.setInitialDelay(0, TimeUnit.MINUTES)
+            .setConstraints(myConstraints)
+            .addTag(WORK_MANAGER_CONTACT)
+            .build()
+
+        if (!isWorkScheduled(WORK_MANAGER_CONTACT))
+            WorkManager.getInstance(context).enqueueUniqueWork(WORK_MANAGER_CONTACT, ExistingWorkPolicy.REPLACE, refreshWork)
 //        WorkManager.getInstance(context).enqueue(refreshWork)
 
 

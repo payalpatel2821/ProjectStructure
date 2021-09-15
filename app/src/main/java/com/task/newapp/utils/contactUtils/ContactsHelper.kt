@@ -10,10 +10,10 @@ import android.provider.ContactsContract.*
 import android.provider.ContactsContract.CommonDataKinds.*
 import android.text.TextUtils
 import android.util.SparseArray
+import androidx.core.util.forEach
 import com.simplemobiletools.commons.overloads.times
 import com.task.newapp.R
 import com.task.newapp.models.contact.*
-import com.task.newapp.models.contact.Email
 import com.task.newapp.models.contact.Event
 import com.task.newapp.utils.ContactsConstants
 import com.task.newapp.utils.ContactsConstants.Companion.SORT_BY_FIRST_NAME
@@ -36,10 +36,11 @@ class ContactsHelper(val context: Context) {
         getAll: Boolean = false,
         gettingDuplicates: Boolean = false,
         ignoredContactSources: HashSet<String> = HashSet(),
-        callback: (ArrayList<Contact>) -> Unit
+        callback: (Array<Any>/*ArrayList<Contact>*/) -> Unit
     ) {
         ensureBackgroundThread {
             val contacts = SparseArray<Contact>()
+            /* val contactSync = SparseArray<ContactSyncAPIModel>()*/
             displayContactSources = context.getVisibleContactSources()
 
             if (getAll) {
@@ -53,7 +54,7 @@ class ContactsHelper(val context: Context) {
                 }
             }
 
-            getDeviceContacts(contacts, ignoredContactSources, gettingDuplicates)
+            getDeviceContacts(contacts, /*contactSync,*/ ignoredContactSources, gettingDuplicates)
 
             val contactsSize = contacts.size()
             val showOnlyContactsWithNumbers = context.config.showOnlyContactsWithNumbers
@@ -63,6 +64,7 @@ class ContactsHelper(val context: Context) {
             (0 until contactsSize).filter {
                 if (ignoredContactSources.isEmpty() && showOnlyContactsWithNumbers) {
                     contacts.valueAt(it).phoneNumbers.isNotEmpty()
+//                    contactSync.valueAt(it).phoneNumbers.isNotEmpty()
                 } else {
                     true
                 }
@@ -70,9 +72,11 @@ class ContactsHelper(val context: Context) {
                 contacts.valueAt(it)
             }
 
+
+
             if (ignoredContactSources.isEmpty() && !getAll) {
                 tempContacts.filter { displayContactSources.contains(it.source) }
-                    .groupBy { it.getNameToDisplay().toLowerCase() }.values.forEach { it ->
+                    .groupBy { Contact.getNameToDisplay(it.firstName, it.middleName, it.surname, it.prefix, it.suffix, Contact.startWithSurname, it.emails).toLowerCase() }.values.forEach { it ->
                         if (it.size == 1) {
                             resultContacts.add(it.first())
                         } else {
@@ -84,12 +88,17 @@ class ContactsHelper(val context: Context) {
                 resultContacts.addAll(tempContacts)
             }
 
+
+
             Contact.sorting = context.config.sorting
             Contact.startWithSurname = context.config.startNameWithSurname
             resultContacts.sort()
-
+            val contactSyncArrayList = ArrayList<ContactSyncAPIModel>()
+            resultContacts.forEach {
+                contactSyncArrayList.add(ContactSyncAPIModel(it.fullName, it.photoUri, it.phoneNumbers, it.emails))
+            }
             Handler(Looper.getMainLooper()).post {
-                callback(resultContacts)
+                callback(arrayOf(resultContacts, contactSyncArrayList))
             }
         }
     }
@@ -99,7 +108,6 @@ class ContactsHelper(val context: Context) {
         arrayOf(Groups.CONTENT_URI, Settings.CONTENT_URI, RawContacts.CONTENT_URI).forEach {
             fillSourcesFromUri(it, sources)
         }
-
         return sources
     }
 
@@ -108,7 +116,6 @@ class ContactsHelper(val context: Context) {
             RawContacts.ACCOUNT_NAME,
             RawContacts.ACCOUNT_TYPE
         )
-
         context.queryCursor(uri, projection) { cursor ->
             val name = cursor.getStringValue(RawContacts.ACCOUNT_NAME) ?: ""
             val type = cursor.getStringValue(RawContacts.ACCOUNT_TYPE) ?: ""
@@ -116,14 +123,13 @@ class ContactsHelper(val context: Context) {
             if (type == ContactsConstants.TELEGRAM_PACKAGE) {
                 publicName = context.getString(R.string.telegram)
             }
-
             val source = ContactSource(name, type, publicName)
             sources.add(source)
         }
     }
 
     private fun getDeviceContacts(
-        contacts: SparseArray<Contact>,
+        contacts: SparseArray<Contact>,/* contactsSync: SparseArray<ContactSyncAPIModel>,*/
         ignoredContactSources: HashSet<String>?,
         gettingDuplicates: Boolean
     ) {
@@ -189,14 +195,15 @@ class ContactsHelper(val context: Context) {
                 }
 
                 val nickname = ""
-                val numbers = ArrayList<PhoneNumber>()          // proper value is obtained below
-                val emails = ArrayList<Email>()
+                val numbers = ArrayList<String>()          // proper value is obtained below
+                val emails = ArrayList<String>()
                 val addresses = ArrayList<Address>()
                 val events = ArrayList<Event>()
                 val notes = ""
                 val organization = Organization("", "")
                 val websites = ArrayList<String>()
                 val ims = ArrayList<IM>()
+
                 val contact = Contact(
                     id,
                     prefix,
@@ -208,92 +215,125 @@ class ContactsHelper(val context: Context) {
                     photoUri,
                     numbers,
                     emails,
-                    addresses,
-                    events,
+                    Contact.getNameToDisplay(firstName, middleName, surname, prefix, suffix, startWithSurname = Contact.startWithSurname, emails),
+//                    addresses,
+//                    events,
                     accountName,
-                    starred,
-                    contactId,
-                    thumbnailUri,
-                    null,
-                    notes,
-                    organization,
-                    websites,
-                    ims,
-                    mimetype,
-                    ringtone
+//                    starred,
+//                    contactId,
+//                    thumbnailUri,
+//                    null,
+//                    notes,
+//                    organization,
+//                    websites,
+//                    ims,ll
+//                    mimetype,
+//                    ringtone
                 )
 
+//                val contactSyncAPIModel = ContactSyncAPIModel(
+//                    Contact.getNameToDisplay(firstName, middleName, surname, prefix, suffix, startWithSurname = Contact.startWithSurname, emails),
+//                    photoUri,
+//                    numbers,
+//                    emails
+//                )
                 contacts.put(id, contact)
+//                contactsSync.put(id,contactSyncAPIModel)
             }
         }
 
+
         val emails = getEmails()
         var size = emails.size()
-        for (i in 0 until size) {
-            val key = emails.keyAt(i)
-            contacts[key]?.emails = emails.valueAt(i)
+        emails.forEach { key, value ->
+            if (contacts[key] != null) {
+                contacts[key].emails = value
+//                contactsSync[key].emails = value
+//                showLog("CONTACTS : ", "KEY : $key  EMAIL : $value")
+            }
         }
 
-        val organizations = getOrganizations()
-        size = organizations.size()
-        for (i in 0 until size) {
-            val key = organizations.keyAt(i)
-            contacts[key]?.organization = organizations.valueAt(i)
-        }
-
-        // no need to fetch some fields if we are only getting duplicates of the current contact
         if (gettingDuplicates) {
             return
         }
 
+//        for (i in 0 until size) {
+//            val key = emails.keyAt(i)
+//            if (contacts[key] != null) {
+//                val email = emails.valueAt(i)
+//                contacts[key].emails = email
+//                contactsSync[i].emails = email
+//
+//            }
+//        }
+
+
+        /* val organizations = getOrganizations()
+         size = organizations.size()
+         for (i in 0 until size) {
+             val key = organizations.keyAt(i)
+             contacts[key]?.organization = organizations.valueAt(i)
+         }*/
+        // no need to fetch some fields if we are only getting duplicates of the current contact
+
+
         val phoneNumbers = getPhoneNumbers(null)
         size = phoneNumbers.size()
-        for (i in 0 until size) {
-            val key = phoneNumbers.keyAt(i)
+        phoneNumbers.forEach { key, value ->
             if (contacts[key] != null) {
-                val numbers = phoneNumbers.valueAt(i)
-                contacts[key].phoneNumbers = numbers
+                contacts[key].phoneNumbers = value
+//                contactsSync[key].phoneNumbers = value
             }
         }
 
-        val addresses = getAddresses()
-        size = addresses.size()
-        for (i in 0 until size) {
-            val key = addresses.keyAt(i)
-            contacts[key]?.addresses = addresses.valueAt(i)
-        }
+//        for (i in 0 until size) {
+//            val key = phoneNumbers.keyAt(i)
+//            if (contacts[key] != null) {
+//                val numbers = phoneNumbers.valueAt(i)
+//                contacts[key].phoneNumbers = numbers
+//                contactsSync[i].phoneNumbers = numbers
+//            }
+//        }
 
-        val IMs = getIMs()
-        size = IMs.size()
-        for (i in 0 until size) {
-            val key = IMs.keyAt(i)
-            contacts[key]?.IMs = IMs.valueAt(i)
-        }
 
-        val events = getEvents()
-        size = events.size()
-        for (i in 0 until size) {
-            val key = events.keyAt(i)
-            contacts[key]?.events = events.valueAt(i)
-        }
+        /*  val addresses = getAddresses()
+          size = addresses.size()
+          for (i in 0 until size) {
+              val key = addresses.keyAt(i)
+              contacts[key]?.addresses = addresses.valueAt(i)
+          }*/
 
-        val notes = getNotes()
-        size = notes.size()
-        for (i in 0 until size) {
-            val key = notes.keyAt(i)
-            contacts[key]?.notes = notes.valueAt(i)
-        }
+//        val IMs = getIMs()
+//        size = IMs.size()
+//        for (i in 0 until size) {
+//            val key = IMs.keyAt(i)
+//            contacts[key]?.IMs = IMs.valueAt(i)
+//        }
 
-        val websites = getWebsites()
-        size = websites.size()
-        for (i in 0 until size) {
-            val key = websites.keyAt(i)
-            contacts[key]?.websites = websites.valueAt(i)
-        }
+//        val events = getEvents()
+//        size = events.size()
+//        for (i in 0 until size) {
+//            val key = events.keyAt(i)
+//            contacts[key]?.events = events.valueAt(i)
+//        }
+
+//        val notes = getNotes()
+//        size = notes.size()
+//        for (i in 0 until size) {
+//            val key = notes.keyAt(i)
+//            contacts[key]?.notes = notes.valueAt(i)
+//        }
+
+        /*  val websites = getWebsites()
+          size = websites.size()
+          for (i in 0 until size) {
+              val key = websites.keyAt(i)
+              contacts[key]?.websites = websites.valueAt(i)
+          }*/
     }
 
-    private fun getPhoneNumbers(contactId: Int? = null): SparseArray<ArrayList<PhoneNumber>> {
-        val phoneNumbers = SparseArray<ArrayList<PhoneNumber>>()
+    private fun getPhoneNumbers(contactId: Int? = null): SparseArray<ArrayList<String>> {
+        val phoneNumbers = SparseArray<ArrayList<String>>()
         val uri = Phone.CONTENT_URI
         val projection = arrayOf(
             Data.RAW_CONTACT_ID,
@@ -326,15 +366,15 @@ class ContactsHelper(val context: Context) {
                 phoneNumbers.put(id, ArrayList())
             }
 
-            val phoneNumber = PhoneNumber(number, type, label, normalizedNumber)
-            phoneNumbers[id].add(phoneNumber)
+            //  val phoneNumber = PhoneNumber(number/*, type, label, normalizedNumber*/)
+            phoneNumbers[id].add(number)
         }
 
         return phoneNumbers
     }
 
-    private fun getEmails(contactId: Int? = null): SparseArray<ArrayList<Email>> {
-        val emails = SparseArray<ArrayList<Email>>()
+    private fun getEmails(contactId: Int? = null): SparseArray<ArrayList<String>> {
+        val emails = SparseArray<ArrayList<String>>()
         val uri = CommonDataKinds.Email.CONTENT_URI
         val projection = arrayOf(
             Data.RAW_CONTACT_ID,
@@ -364,7 +404,7 @@ class ContactsHelper(val context: Context) {
                 emails.put(id, ArrayList())
             }
 
-            emails[id]!!.add(Email(email, type, label))
+            emails[id]!!.add(email/*Email(email, type, label)*/)
         }
 
         return emails

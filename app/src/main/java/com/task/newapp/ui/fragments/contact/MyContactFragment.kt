@@ -1,55 +1,67 @@
 package com.task.newapp.ui.fragments.contact
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.appizona.yehiahd.fastsave.FastSave
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
+import com.paginate.Paginate
+import com.task.newapp.App
 import com.task.newapp.BuildConfig
 import com.task.newapp.R
-import com.task.newapp.api.ApiClient
-import com.task.newapp.models.contact.Contact
 import com.task.newapp.adapter.contact.ContactAdapter
-import com.task.newapp.models.contact.ContactRecyclerViewModel
-import com.task.newapp.utils.contactUtils.ContactsHelper
+import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentContactBinding
 import com.task.newapp.models.ResponseIsAppUser
+import com.task.newapp.models.contact.Contact
+import com.task.newapp.models.contact.ContactRecyclerViewModel
+import com.task.newapp.models.contact.ContactSyncAPIModel
 import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.utils.*
+import com.task.newapp.utils.contactUtils.ContactsHelper
+import com.task.newapp.workmanager.WorkManagerScheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import java.lang.reflect.Type
 import java.util.*
 import kotlin.collections.ArrayList
-import com.google.gson.reflect.TypeToken
-import com.task.newapp.App
-import java.lang.reflect.Type
 
 
 /**
  * A placeholder fragment containing a simple view.
  **/
-class MyContactFragment : Fragment() {
+class MyContactFragment : Fragment(), Paginate.Callbacks {
 
+    private var contacts: ArrayList<ContactSyncAPIModel> = ArrayList()
     private var _binding: FragmentContactBinding? = null
     private lateinit var countriesRecyclerViewModels: ArrayList<ContactRecyclerViewModel>
     private lateinit var adapter: ContactAdapter
-    private var allContact: ArrayList<Contact> = ArrayList()
+    private var allContact: ArrayList<ResponseIsAppUser.Data> = ArrayList()
     lateinit var linearLayoutManager: LinearLayoutManager
     private val mCompositeDisposable = CompositeDisposable()
-
     private val binding get() = _binding!!
     val gson = Gson()
+    var isloading = false
+    var hasLoadedAllItems = false
+    private var paginate: Paginate? = null
+    var offset: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,30 +84,32 @@ class MyContactFragment : Fragment() {
         _binding!!.rvList.layoutManager = linearLayoutManager
         adapter = ContactAdapter(requireActivity())
         _binding!!.rvList.adapter = adapter
-        adapter.onItemClick = { mobileNumber, emailId ->
-            if (mobileNumber.isNotEmpty() || emailId.isNotEmpty()) {
-                callAPICheckHowUser(mobileNumber, emailId)
-            } else {
-                requireActivity().showToast("This contact hase no mobile number or email Id")
-            }
-        }
-
-        _binding!!.btnGetContact.setOnClickListener {
-            activity.runWithPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS) {
-                _binding!!.btnGetContact.visibility = GONE
-                openProgressDialog(activity)
-                getContact()
+        adapter.onItemClick = { appUserId ->
+            requireActivity().launchActivity<OtherUserProfileActivity> {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(Constants.user_id, appUserId)
             }
         }
 
         _binding!!.sectionpickerCountries.visibility = GONE
+
         val contactList = App.fastSave.getString(Constants.contact, "")
         val type: Type = object : TypeToken<List<Contact?>?>() {}.type
-        val contacts: ArrayList<Contact> = gson.fromJson(contactList, type)
-        if (!contacts.isNullOrEmpty()) {
-            setAdapter(contacts)
-        } else {
-            activity.runWithPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS) {
+        contacts = gson.fromJson(contactList, type)
+
+        _binding!!.btnGetContact.setOnClickListener {
+            checkAndGetContact()
+        }
+
+        setAdapter(allContact)
+        checkAndGetContact()
+    }
+
+    private fun checkAndGetContact() {
+        activity.runWithPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS) {
+            if (!contacts.isNullOrEmpty()) {
+                initPaginate()
+            } else {
                 _binding!!.btnGetContact.visibility = GONE
                 openProgressDialog(activity)
                 getContact()
@@ -104,17 +118,23 @@ class MyContactFragment : Fragment() {
     }
 
     fun getContact() {
-        ContactsHelper(requireActivity()).getContacts { contacts ->
+        ContactsHelper(requireActivity()).getContacts { (contacts, contactSync) ->
             hideProgressDialog()
-            val json = gson.toJson(contacts)
-            App.fastSave.saveString(Constants.contact, json)
-            setAdapter(contacts)
+            val gson = Gson()
+            val json: String = gson.toJson(contactSync)
+            FastSave.getInstance().saveString(Constants.contact, json)
+            WorkManagerScheduler.refreshPeriodicWorkContact(App.getAppInstance())
+            initPaginate()
         }
     }
 
-    fun setAdapter(contacts: ArrayList<Contact>) {
+    fun setAdapter(contacts: ArrayList<ResponseIsAppUser.Data>) {
         allContact = contacts
-        (allContact as ArrayList<Contact>).sortBy { it.firstName }
+        (allContact).sortBy { it.fullname }
+        refreshAdapter()
+    }
+
+    private fun refreshAdapter() {
         adapter.filterList(transformCountriesForRecyclerView(allContact) as ArrayList<ContactRecyclerViewModel>)
         initSectionPicker()
         _binding!!.btnGetContact.isClickable = false
@@ -123,75 +143,23 @@ class MyContactFragment : Fragment() {
         _binding!!.sectionpickerCountries.visibility = VISIBLE
     }
 
-    fun filter(query: String) {
-        val filteredList: ArrayList<Contact> = ArrayList()
-        for (item in allContact) {
-            if (item.getNameToDisplay().lowercase().startsWith(query.lowercase())) {
-                filteredList.add(item)
-            }
-        }
-        adapter.filterList(transformCountriesForRecyclerView(filteredList) as ArrayList<ContactRecyclerViewModel>)
+    fun filter(query: String, isPaginate: Boolean) {
+        allContact.clear()
+        adapter.filterList(transformCountriesForRecyclerView(allContact) as ArrayList<ContactRecyclerViewModel>)
+        requireActivity().callAPISearchSyncContact(offset.toString(), query, isPaginate)
     }
 
-    private fun callAPICheckHowUser(mobileNumber: String, emailId: String) {
-        if (!requireActivity().isNetworkConnected()) {
-            requireActivity().showToast(getString(R.string.no_internet))
-            return
-        }
-        try {
-            val hashMap: HashMap<String, Any> = hashMapOf(
-                Constants.mobile to mobileNumber,
-                Constants.email to emailId,
-            )
-            mCompositeDisposable.add(
-                ApiClient.create()
-                    .getIsAppUser(hashMap)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<ResponseIsAppUser>() {
-                        override fun onNext(responseIsAppUser: ResponseIsAppUser) {
-                            if (responseIsAppUser.success == 1) {
-                                if (responseIsAppUser.data.size == 1) {
-                                    requireActivity().launchActivity<OtherUserProfileActivity> {
-                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        putExtra(Constants.user_id, responseIsAppUser.data[0].id)
-                                    }
-                                } else {
-                                    DialogUtils().showAppUserDialog(
-                                        activity as AppCompatActivity,
-                                        responseIsAppUser.data
-                                    )
-                                }
-                            } else {
-                                onShareClicked()
-                            }
-                        }
-
-                        override fun onError(e: Throwable) {
-                            hideProgressDialog()
-                        }
-
-                        override fun onComplete() {
-                            hideProgressDialog()
-                        }
-                    })
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun transformCountriesForRecyclerView(countries: List<Contact>?): List<ContactRecyclerViewModel?>? {
+    private fun transformCountriesForRecyclerView(contacts: List<ResponseIsAppUser.Data>): List<ContactRecyclerViewModel?>? {
         countriesRecyclerViewModels = ArrayList()
-        if (countries != null && countries.isNotEmpty()) {
+        if (!contacts.isNullOrEmpty() && contacts.isNotEmpty()) {
             var letter = ""
-            for (country in countries) {
+            for (contact in contacts) {
 
                 var countryLetter: String = ""
-                if (country.firstName.isNotEmpty()) {
-                    countryLetter = country.firstName.substring(0, 1)
+                countryLetter = if (contact.fullname.isNotEmpty()) {
+                    contact.fullname.substring(0, 1)
                 } else {
-                    countryLetter = "A".substring(0, 1)
+                    "A".substring(0, 1)
                 }
 
                 if (TextUtils.isEmpty(letter) || letter != countryLetter) {
@@ -206,7 +174,7 @@ class MyContactFragment : Fragment() {
                 }
                 countriesRecyclerViewModels.add(
                     ContactRecyclerViewModel(
-                        country,
+                        contact,
                         null,
                         adapter.TYPE_COUNTRY
                     )
@@ -230,6 +198,7 @@ class MyContactFragment : Fragment() {
                 linearLayoutManager.scrollToPositionWithOffset(position, 0)
             }
         }
+        _binding!!.sectionpickerCountries.visibility = VISIBLE
     }
 
     override fun onDestroyView() {
@@ -237,27 +206,114 @@ class MyContactFragment : Fragment() {
         _binding = null
     }
 
-    private fun onShareClicked() {
-        try {
-            val shareIntent = Intent(Intent.ACTION_SEND)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "My application name")
-            var shareMessage = "\nLet me recommend you this application\n\n"
-            shareMessage = """
-                ${shareMessage}https://play.google.com/store/apps/details?id=${BuildConfig.APPLICATION_ID}
-                
-                
-                """.trimIndent()
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
-            startActivity(Intent.createChooser(shareIntent, "choose one"))
-        } catch (e: java.lang.Exception) {
-            //e.toString();
-        }
-    }
-
     override fun onResume() {
         super.onResume()
 
     }
+
+    private fun Activity.callAPISearchSyncContact(offset: String, term: String, isPaginate: Boolean) {
+        if (!isNetworkConnected()) {
+            showToast(getString(R.string.no_internet))
+            return
+        }
+        val hashMap: HashMap<String, Any> = if (isPaginate) {
+            hashMapOf(
+                Constants.limit to requireActivity().resources.getString(R.string.limit_20),
+                Constants.offset to offset,
+                Constants.term to term,
+            )
+        } else {
+            hashMapOf(
+                Constants.term to term,
+            )
+        }
+//        openProgressDialog(this)
+
+        try {
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .searchContactSync(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<ResponseIsAppUser>() {
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onNext(response: ResponseIsAppUser) {
+                            if (isPaginate) {
+                                if (response.success == 1) {
+                                    allContact.addAll(response.data)
+                                    adapter.filterList(transformCountriesForRecyclerView(allContact) as ArrayList<ContactRecyclerViewModel>)
+                                    isloading = false
+                                    hasLoadedAllItems = false
+                                    initSectionPicker()
+                                    if (response.data.size < requireActivity().resources.getString(R.string.limit_20).toInt()) {
+                                        hasLoadedAllItems = true
+                                    }
+                                } else {
+                                    hasLoadedAllItems = true
+                                    if (allContact.isEmpty()) {
+                                        _binding!!.btnGetContact.isClickable = true
+                                        _binding!!.btnGetContact.visibility = VISIBLE
+                                        _binding!!.rvList.visibility = GONE
+                                        _binding!!.sectionpickerCountries.visibility = GONE
+                                    } else {
+                                        _binding!!.btnGetContact.isClickable = false
+                                        _binding!!.btnGetContact.visibility = GONE
+                                        _binding!!.rvList.visibility = VISIBLE
+                                        _binding!!.sectionpickerCountries.visibility = VISIBLE
+                                    }
+                                }
+                            } else {
+                                hasLoadedAllItems = true
+                                if (response.success == 1) {
+                                    allContact.addAll(response.data)
+                                    adapter.filterList(transformCountriesForRecyclerView(allContact) as ArrayList<ContactRecyclerViewModel>)
+                                    initSectionPicker()
+                                } else {
+                                    allContact.clear()
+                                    adapter.filterList(transformCountriesForRecyclerView(allContact) as ArrayList<ContactRecyclerViewModel>)
+                                    _binding!!.sectionpickerCountries.visibility = GONE
+                                }
+                            }
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun initPaginate() {
+        paginate = Paginate.with(_binding!!.rvList, this)
+            .setLoadingTriggerThreshold(17)
+            .addLoadingListItem(false)
+            .setLoadingListItemCreator(null)
+            .build()
+    }
+
+    override fun onLoadMore() {
+        isloading = true
+        val scrollPosition: Int = requireActivity().resources.getString(R.string.limit_20).toInt() * offset
+        showLog("position", scrollPosition.toString())
+        requireActivity().callAPISearchSyncContact(scrollPosition.toString(), "", true)
+    }
+
+    override fun isLoading(): Boolean {
+        return isloading
+    }
+
+    override fun hasLoadedAllItems(): Boolean {
+        return hasLoadedAllItems
+    }
+
 
 }

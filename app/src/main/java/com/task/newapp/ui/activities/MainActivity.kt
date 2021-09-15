@@ -1,5 +1,6 @@
 package com.task.newapp.ui.activities
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -14,10 +15,9 @@ import androidx.fragment.app.Fragment
 import com.aghajari.zoomhelper.ZoomHelper
 import com.appizona.yehiahd.fastsave.FastSave
 import com.google.gson.Gson
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import com.task.newapp.App
 import com.task.newapp.R
-import com.task.newapp.ui.fragments.contact.ContactBottomSheet
-import com.task.newapp.utils.contactUtils.ContactsHelper
 import com.task.newapp.databinding.ActivityMainBinding
 import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.realmDB.clearDatabase
@@ -26,11 +26,14 @@ import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
+import com.task.newapp.ui.fragments.contact.ContactBottomSheet
 import com.task.newapp.ui.fragments.post.PostFragment
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
+import com.task.newapp.utils.contactUtils.ContactsHelper
 import com.task.newapp.workmanager.WorkManagerScheduler
 import io.reactivex.disposables.CompositeDisposable
+
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment.OnHideShowBottomSheet {
 
@@ -43,6 +46,20 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     private val mCompositeDisposable = CompositeDisposable()
 
 
+    override fun onStart() {
+        super.onStart()
+        runWithPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS) {
+            ContactsHelper(this).getContacts { (contacts, contactSync) ->
+                val gson = Gson()
+                val json: String = gson.toJson(contactSync)
+                FastSave.getInstance().saveString(Constants.contact, json)
+//                callAPISyncContactToAPI(contactSync as ArrayList<ContactSyncAPIModel>, mCompositeDisposable)
+                WorkManagerScheduler.refreshPeriodicWorkContact(App.getAppInstance())
+
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -50,10 +67,10 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         WorkManagerScheduler.refreshPeriodicWork(App.getAppInstance())
         callAPIGetAllNotification(mCompositeDisposable)
         initView()
-
         //Add New
         ZoomHelper.getInstance().minScale = 1f
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -286,7 +303,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         }
     }
 
-
     override fun onPostLikeDislikeSocketEvent(postSocket: PostSocket) {
         super.onPostLikeDislikeSocketEvent(postSocket)
         showLog("MainActivity", "Post like Dislike")
@@ -360,7 +376,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         }
     }
 
-
     override fun hideShowBottomSheet(visibility: Int) {
         binding.blurView.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
     }
@@ -388,14 +403,11 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         return ZoomHelper.getInstance().dispatchTouchEvent(ev!!, this) || super.dispatchTouchEvent(ev)
     }
+
     override fun onResume() {
         super.onResume()
-        ContactsHelper(this).getContacts { contacts ->
-            val gson = Gson()
-            val json :String = gson.toJson(contacts)
-            FastSave.getInstance().saveString(Constants.contact, json)
-//            setAdapter(contacts)
-        }
+
     }
+
 
 }
