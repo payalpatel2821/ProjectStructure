@@ -29,7 +29,7 @@ import com.task.newapp.R
 import com.task.newapp.adapter.AppUserAdapter
 import com.task.newapp.adapter.profile.NotificationListAdapter
 import com.task.newapp.databinding.LayoutAttachmentPopupBinding
-import com.task.newapp.models.NotificationToneWrapper
+import com.task.newapp.realmDB.wrapper.NotificationToneWrapper
 import com.task.newapp.models.ResponseIsAppUser
 import com.task.newapp.realmDB.getAllNotificationTune
 import java.util.*
@@ -145,10 +145,11 @@ class DialogUtils {
         val balloon = Balloon.Builder(activity)
             .setLayout(binding.root)
             .setArrowSize(20)
+           // .setArrowElevation(5)
             .setArrowDrawableResource(R.drawable.ic_arrow_filled_white)
             .setArrowOrientation(ArrowOrientation.BOTTOM)
-            .setWidthRatio(0.55f)
-            .setArrowPosition(0.18f)
+            .setWidthRatio(0.60f)
+            .setArrowPosition(0.15f)
             .setCornerRadius(10f)
             .setMarginLeft(10)
             .setMarginBottom(3)

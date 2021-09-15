@@ -18,6 +18,16 @@ import com.task.newapp.realmDB.getHookCount
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.ChatContentType
+import com.task.newapp.utils.Constants.Companion.ChatContentType.AUDIO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.DOCUMENT
+import com.task.newapp.utils.Constants.Companion.ChatContentType.IMAGE
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VIDEO
+import com.task.newapp.utils.Constants.Companion.ChatContentType.VOICE
+import com.task.newapp.utils.Constants.Companion.MessageType
+import com.task.newapp.utils.Constants.Companion.MessageType.CONTACT
+import com.task.newapp.utils.Constants.Companion.MessageType.MIX
+import com.task.newapp.utils.Constants.Companion.MessageType.TEXT
 import com.task.newapp.utils.swipelayout.SwipeLayout
 import com.task.newapp.utils.swipelayout.adapters.RecyclerSwipeAdapter
 
@@ -138,7 +148,33 @@ class ChatListAdapter(private val mActivity: Activity, private val listener: OnC
                     it.time
                 )
             }
-            layoutBinding.txtChatMsg.text = obj.chats.chatList?.messageText
+            layoutBinding.txtChatMsg.text = obj.chats.chatList?.let { chatList ->
+                when (MessageType.getMessageTypeFromText(chatList.type ?: MessageType.TEXT.type)) {
+
+                    TEXT -> obj.chats.chatList?.messageText
+
+                    MIX -> {
+                        chatList.chatContents?.let { chatContents ->
+                            when (ChatContentType.getChatContentTypeFromText(chatContents.type)) {
+                                IMAGE -> "${getEmojiByUnicode(Constants.UnicodeImage)} Image"
+                                VIDEO -> "${getEmojiByUnicode(Constants.UnicodeVideo)} Video"
+                                AUDIO -> "${getEmojiByUnicode(Constants.UnicodeAudio)} Audio"
+                                VOICE -> "${getEmojiByUnicode(Constants.UnicodeVoice)} Voice"
+                                DOCUMENT -> "${getEmojiByUnicode(Constants.UnicodeDocument)} Document"
+                                ChatContentType.LOCATION -> "${getEmojiByUnicode(Constants.UnicodeLocation)} Location"
+                                else -> obj.chats.chatList?.messageText
+                            }
+
+                        }
+                    }
+
+                    CONTACT -> "${getEmojiByUnicode(Constants.UnicodeContact)} Contact"
+                    else -> obj.chats.chatList?.messageText
+
+                }
+
+            }
+            //
             //load profile picture
             if (obj.chats.isGroup) {
                 obj.chats.groupData?.let {

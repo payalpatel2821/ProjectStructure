@@ -8,6 +8,14 @@ import java.io.Serializable
 class Constants {
 
     companion object {
+        //UNICODE
+        const val UnicodeImage = 0x1F4F7
+        const val UnicodeVideo = 0x1F3A5
+        const val UnicodeAudio = 0x1F3B5
+        const val UnicodeVoice = 0x1F3A4
+        const val UnicodeDocument = 0x1F4C4
+        const val UnicodeContact = 0x1F464
+        const val UnicodeLocation = 0x1F4CC
         const val deviceToken = "c926RJ-JQS62C7bolZsMrq:APA91bF-_8V1mRc-cpuKlTmw2kL7iYIua9HI4uZye76jR1lII7gDZT8HOABpBIubisYO7bNnyDbYNNVYoiX47bwkRODU6vAWJjz9z3wNLBCSni5dyzTjc91xQ3FAWDalu4BwZvA4p0h0"
         const val user_name = "user_name"
         const val device_token = "device_token"
@@ -327,13 +335,11 @@ class SocketConstant {
         const val add_post_delete = "add_post_delete"
 
 
-
-
-
     }
 
 
 }
+
 //======================================Contact======================================//
 class ContactsConstants {
     companion object {
@@ -357,21 +363,21 @@ class ContactsConstants {
         const val SORT_BY_FULL_NAME = 65536
 
         // permissions
-      /*  const val PERMISSION_READ_STORAGE = 1
-        const val PERMISSION_WRITE_STORAGE = 2
-        const val PERMISSION_CAMERA = 3
-        const val PERMISSION_RECORD_AUDIO = 4*/
+        /*  const val PERMISSION_READ_STORAGE = 1
+          const val PERMISSION_WRITE_STORAGE = 2
+          const val PERMISSION_CAMERA = 3
+          const val PERMISSION_RECORD_AUDIO = 4*/
         const val PERMISSION_READ_CONTACTS = 5
         const val PERMISSION_WRITE_CONTACTS = 6
-       /* const val PERMISSION_READ_CALENDAR = 7
-        const val PERMISSION_WRITE_CALENDAR = 8
-        const val PERMISSION_CALL_PHONE = 9
-        const val PERMISSION_READ_CALL_LOG = 10
-        const val PERMISSION_WRITE_CALL_LOG = 11
-        const val PERMISSION_GET_ACCOUNTS = 12
-        const val PERMISSION_READ_SMS = 13
-        const val PERMISSION_SEND_SMS = 14
-        const val PERMISSION_READ_PHONE_STATE = 15*/
+        /* const val PERMISSION_READ_CALENDAR = 7
+         const val PERMISSION_WRITE_CALENDAR = 8
+         const val PERMISSION_CALL_PHONE = 9
+         const val PERMISSION_READ_CALL_LOG = 10
+         const val PERMISSION_WRITE_CALL_LOG = 11
+         const val PERMISSION_GET_ACCOUNTS = 12
+         const val PERMISSION_READ_SMS = 13
+         const val PERMISSION_SEND_SMS = 14
+         const val PERMISSION_READ_PHONE_STATE = 15*/
 
 
         // shared prefs

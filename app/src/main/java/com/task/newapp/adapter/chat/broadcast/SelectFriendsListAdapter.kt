@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemSelectFriendBinding
-import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
 import java.util.*

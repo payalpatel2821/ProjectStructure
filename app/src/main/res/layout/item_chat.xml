@@ -7,13 +7,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <com.task.newapp.utils.swipelayout.SwipeLayout
             android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:clickToClose="true"
             app:drag_edge="right"
-            app:show_mode="lay_down">
+            app:leftEdgeSwipeOffset="0dp"
+            app:rightEdgeSwipeOffset="0dp"
+            app:show_mode="pull_out">
 
             <LinearLayout
                 android:id="@+id/ll_right_swipe"
@@ -151,15 +154,15 @@
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/img_profile"
-                            android:layout_width="@dimen/_50sdp"
-                            android:layout_height="@dimen/_50sdp"
+                            android:layout_width="@dimen/_45sdp"
+                            android:layout_height="@dimen/_45sdp"
                             android:layout_marginStart="@dimen/_10sdp"
                             android:layout_marginTop="@dimen/_10sdp"
                             android:layout_marginEnd="@dimen/_10sdp"
                             android:layout_marginBottom="@dimen/_10sdp"
                             android:elevation="@dimen/_5sdp"
-                            android:minWidth="@dimen/_50sdp"
-                            android:minHeight="@dimen/_50sdp"
+                            android:minWidth="@dimen/_45sdp"
+                            android:minHeight="@dimen/_45sdp"
                             tools:src="@drawable/logo" />
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -229,6 +232,7 @@
                         android:gravity="center"
                         android:orientation="vertical"
                         android:padding="@dimen/_5sdp">
+
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txt_time"

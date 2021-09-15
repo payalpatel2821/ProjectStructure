@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class DateTimeUtils private constructor() {
+class DateTimeUtils {
     /**
      * enum - date & time formats
      */
@@ -614,5 +614,18 @@ class DateTimeUtils private constructor() {
         } else
             DateUtils.formatElapsedTime(seconds.toLong())
 
+    }
+
+    fun convertMillieToHMmSs(millie: Long): String? {
+        val seconds = millie / 1000
+        val second = seconds % 60
+        val minute = seconds / 60 % 60
+        val hour = seconds / (60 * 60) % 24
+        val result = ""
+        return if (hour > 0) {
+            String.format("%02d:%02d:%02d", hour, minute, second)
+        } else {
+            String.format("%02d:%02d", minute, second)
+        }
     }
 }

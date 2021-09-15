@@ -12,7 +12,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.AdapterView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import com.appizona.yehiahd.fastsave.FastSave
@@ -22,8 +21,7 @@ import com.task.newapp.adapter.post.SelectedFriendsListAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityCreateBroadcastBinding
 import com.task.newapp.models.chat.CreateBroadcastResponse
-import com.task.newapp.models.chat.SelectFriendWrapperModel
-import com.task.newapp.models.socket.PostSocket
+import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.realmDB.getSelectedFriends
 import com.task.newapp.realmDB.insertSingleBroadcastData
 import com.task.newapp.realmDB.models.FriendRequest

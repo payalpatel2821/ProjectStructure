@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemSelectedFriendsBinding
-import com.task.newapp.models.chat.SelectFriendWrapperModel
+import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.utils.load
 import java.util.*
 import kotlin.collections.ArrayList

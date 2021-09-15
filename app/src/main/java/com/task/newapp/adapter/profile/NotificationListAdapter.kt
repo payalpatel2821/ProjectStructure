@@ -1,7 +1,6 @@
 package com.task.newapp.adapter.profile
 
 import android.content.Context
-import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -13,7 +12,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemNotificationDialogBinding
-import com.task.newapp.models.NotificationToneWrapper
+import com.task.newapp.realmDB.wrapper.NotificationToneWrapper
 
 class NotificationListAdapter(
     private val applicationContext: Context,

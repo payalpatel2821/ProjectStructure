@@ -432,5 +432,59 @@
         <item>u+1f4cd</item>
         <item>u+1f6a9</item>
     </string-array>
+    <integer-array name="chat_list_rightColors">
+        <item>@color/block_chat</item>
+        <item>@color/mute_chat</item>
+        <item>@color/clear_chat</item>
+    </integer-array>
 
+    <integer-array name="chat_list_leftColors">
+        <item>@color/hook_chat</item>
+        <item>@color/archive_chat</item>
+    </integer-array>
+
+    <integer-array name="chat_list_rightTextColors">
+        <item>@color/white</item>
+        <item>@color/white</item>
+        <item>@color/white</item>
+    </integer-array>
+
+    <integer-array name="chat_list_leftTextColors">
+        <item>@color/white</item>
+        <item>@color/white</item>
+    </integer-array>
+
+    <integer-array name="chat_list_rightDrawables">
+        <item>@drawable/ic_block</item>
+        <item>@drawable/ic_mute_chat</item>
+        <item>@drawable/ic_delete_chat</item>
+    </integer-array>
+
+    <integer-array name="chat_list_leftDrawables">
+        <item>@drawable/ic_hook</item>
+        <item>@drawable/ic_archive_chat</item>
+    </integer-array>
+
+    <integer-array name="chat_list_rightDrawableColors">
+        <item>@color/white</item>
+        <item>@color/white</item>
+        <item>@color/white</item>
+    </integer-array>
+
+    <integer-array name="chat_list_leftDrawableColors">
+        <item>@color/white</item>
+        <item>@color/white</item>
+    </integer-array>
+
+
+    <string-array name="chat_list_rightTexts">
+        <item>@string/block</item>
+        <item>@string/mute</item>
+        <item>@string/delete</item>
+    </string-array>
+
+    <string-array name="chat_list_leftTexts">
+        <item>@string/hook</item>
+        <item>@string/archive</item>
+    </string-array>
 </resources>

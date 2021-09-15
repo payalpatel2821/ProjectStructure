@@ -1,7 +1,7 @@
 package com.task.newapp.utils.exo_video;
 
 
-import static com.task.newapp.utils.UtilsKt.convertMillieToHMmSs;
+
 
 import android.content.Context;
 import android.graphics.Point;
@@ -30,6 +30,7 @@ import com.bumptech.glide.RequestManager;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.task.newapp.R;
 import com.task.newapp.ui.activities.chat.ViewPagerActivity;
+import com.task.newapp.utils.DateTimeUtils;
 import com.task.newapp.utils.exo_video.video_trim.interfaces.VideoTrimListener;
 import com.task.newapp.utils.exo_video.video_trim.widget.VideoTrimmerView;
 
@@ -222,7 +223,7 @@ public class Sel_Media_RecyclerView extends RecyclerView {
             String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             long timeInMillisec = Long.parseLong(time);
             retriever.release();
-            String duration = convertMillieToHMmSs(timeInMillisec);
+            String duration = new DateTimeUtils().convertMillieToHMmSs(timeInMillisec);
             ((ViewPagerActivity) getContext()).trim_time.setText(duration);
             if (!duration.equals(""))
                 ((ViewPagerActivity) getContext()).time_arr.set(targetPosition, duration);
@@ -311,7 +312,7 @@ public class Sel_Media_RecyclerView extends RecyclerView {
                                 String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                                 long timeInMillisec = Long.parseLong(time);
                                 retriever.release();
-                                String duration = convertMillieToHMmSs(timeInMillisec);
+                                String duration = new DateTimeUtils().convertMillieToHMmSs(timeInMillisec);
                                 if (!duration.equals(""))
                                     ((ViewPagerActivity) getContext()).time_arr.set(targetPosition, duration);
                             } catch (Exception e) {
@@ -330,7 +331,7 @@ public class Sel_Media_RecyclerView extends RecyclerView {
                     String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
                     long timeInMillisec = Long.parseLong(time);
                     retriever.release();
-                    String duration = convertMillieToHMmSs(timeInMillisec);
+                    String duration = new DateTimeUtils().convertMillieToHMmSs(timeInMillisec);
 
 //                    Log.println(Log.ASSERT, "duration---", duration);
 //                    Log.println(Log.ASSERT, "timeInMillisec---", timeInMillisec + "");

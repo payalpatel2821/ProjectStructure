@@ -1,4 +1,4 @@
-package com.task.newapp.models.chat
+package com.task.newapp.realmDB.wrapper
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
