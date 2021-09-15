@@ -2,7 +2,12 @@ package com.task.newapp.utils.recorderview
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -29,8 +34,8 @@ class RecordCircleView : View {
          Paint(Paint.ANTI_ALIAS_FLAG).apply {
              color = colorOrange
          }
-     }
- */
+     }*/
+
     private val rect = RectF()
     private var sendClickBound = Rect()
     var scale = 0f
@@ -49,7 +54,8 @@ class RecordCircleView : View {
         }
     var startTranslation = 0f
     var sendButtonVisible = false
-    private var pressedEnd = false
+
+    //private var pressedEnd = false
     private var pressedSend = false
 
     lateinit var callback: Callback
@@ -73,8 +79,8 @@ class RecordCircleView : View {
         }
     }
     private val lockBackgroundDrawable: Drawable by lazy {
-        ResourcesCompat.getDrawable(resources, R.drawable.lock_round, null)!!.apply {
-            colorFilter = PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY)
+        ResourcesCompat.getDrawable(resources, R.drawable.bg_rectangle, null)!!.apply {
+            colorFilter = PorterDuffColorFilter(ResourcesCompat.getColor(resources, R.color.white, null), PorterDuff.Mode.SRC)
         }
     }
     private val lockShadowDrawable: Drawable by lazy {
@@ -129,19 +135,19 @@ class RecordCircleView : View {
             val x = event.x.toInt()
             val y = event.y.toInt()
             if (event.action == MotionEvent.ACTION_DOWN) {
-                  pressedEnd = lockBackgroundDrawable.bounds.contains(x, y)
+                //  pressedEnd = lockBackgroundDrawable.bounds.contains(x, y)
                 pressedSend = sendClickBound.contains(x, y)
-                if (pressedEnd || pressedSend) {
+                if (/*pressedEnd ||*/ pressedSend) {
                     return true
                 }
-            } else if (pressedEnd) {
+            }/* else if (pressedEnd) {
                 if (event.action == MotionEvent.ACTION_UP) {
                     if (lockBackgroundDrawable.bounds.contains(x, y)) {
                         callback.onCancel()
                     }
                 }
                 return true
-            } else if (pressedSend) {
+            }*/ else if (pressedSend) {
                 if (event.action == MotionEvent.ACTION_UP) {
                     if (sendClickBound.contains(x, y)) {
                         callback.onSend()
@@ -248,20 +254,23 @@ class RecordCircleView : View {
             lockArrowDrawable.alpha = (intAlpha * moveProgress2).toInt()
         }
 
-//        lockBackgroundDrawable.setBounds(cx - context.dipInt(15f), lockY, cx + context.dipInt(15f), lockY + lockSize)
-//        lockBackgroundDrawable.draw(canvas)
-        lockShadowDrawable.setBounds(cx - context.dipInt(16f), lockY - context.dipInt(1f), cx + context.dipInt(16f), lockY + lockSize + context.dipInt(1f))
-        lockShadowDrawable.draw(canvas)
-        lockTopDrawable.setBounds(cx - context.dipInt(6f), lockTopY, cx + context.dipInt(6f), lockTopY + context.dipInt(14f))
-        lockTopDrawable.draw(canvas)
-        lockDrawable.setBounds(cx - context.dipInt(7f), lockMiddleY, cx + context.dipInt(7f), lockMiddleY + context.dipInt(12f))
-        lockDrawable.draw(canvas)
-        lockArrowDrawable.setBounds(cx - context.dipInt(7.5f), lockArrowY, cx + context.dipInt(7.5f), lockArrowY + context.dipInt(9f))
-        lockArrowDrawable.draw(canvas)
-        /* if (sendButtonVisible) {
-             rect.set(cx - context.dipInt(6.5f).toFloat(), lockY + context.dipInt(9f).toFloat(), cx + context.dipInt(6.5f).toFloat(), lockY.toFloat() + context.dipInt((9 + 13).toFloat()))
-            // canvas.drawRoundRect(rect, context.dipInt(1f).toFloat(), context.dipInt(1f).toFloat(), cancelIconPaint)
-         }*/
+
+        if (!sendButtonVisible) {
+            // rect.set(cx - context.dipInt(6.5f).toFloat(), lockY + context.dipInt(9f).toFloat(), cx + context.dipInt(6.5f).toFloat(), lockY.toFloat() + context.dipInt((9 + 13).toFloat()))
+
+
+            //canvas.drawRoundRect(rect, context.dipInt(1f).toFloat(), context.dipInt(1f).toFloat(), cancelIconPaint)
+            lockBackgroundDrawable.setBounds(cx - context.dipInt(15f), lockY, cx + context.dipInt(15f), lockY + lockSize)
+            lockBackgroundDrawable.draw(canvas)
+            lockShadowDrawable.setBounds(cx - context.dipInt(16f), lockY - context.dipInt(1f), cx + context.dipInt(16f), lockY + lockSize + context.dipInt(1f))
+            lockShadowDrawable.draw(canvas)
+            lockTopDrawable.setBounds(cx - context.dipInt(6f), lockTopY, cx + context.dipInt(6f), lockTopY + context.dipInt(14f))
+            lockTopDrawable.draw(canvas)
+            lockDrawable.setBounds(cx - context.dipInt(7f), lockMiddleY, cx + context.dipInt(7f), lockMiddleY + context.dipInt(12f))
+            lockDrawable.draw(canvas)
+            lockArrowDrawable.setBounds(cx - context.dipInt(7.5f), lockArrowY, cx + context.dipInt(7.5f), lockArrowY + context.dipInt(9f))
+            lockArrowDrawable.draw(canvas)
+        }
     }
 
     interface Callback {

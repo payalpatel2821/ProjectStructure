@@ -5,6 +5,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -15,7 +17,9 @@
             android:layout_margin="@dimen/_5sdp"
             android:background="@drawable/chat_bg_right_first"
             android:gravity="center_vertical|start"
-            android:padding="@dimen/_5sdp">
+            android:minHeight="@dimen/_50sdp"
+            android:orientation="horizontal"
+            android:padding="@dimen/_10sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -23,7 +27,7 @@
                 android:background="@drawable/rect_rounded_bg_white"
                 android:padding="@dimen/_5sdp"
                 android:tint="@color/chat_icon_color"
-                app:srcCompat="@drawable/ic_attachment_audio" />
+                app:srcCompat="@drawable/ic_attachment_music" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,7 +65,7 @@
                         tools:text="05:30" />
                 </LinearLayout>
 
-                <com.visualizer.amplitude.AudioRecordView
+              <!--  <com.visualizer.amplitude.AudioRecordView
                     android:id="@+id/audio_player"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,8 +77,8 @@
                     app:chunkSoftTransition="true"
                     app:chunkSpace="@dimen/_2sdp"
                     app:chunkWidth="@dimen/_2sdp"
-                    app:direction="leftToRight" />
-                <!--<SeekBar
+                    app:direction="leftToRight" />-->
+                <SeekBar
                     android:id="@+id/sb_audio_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -83,7 +87,7 @@
                     android:maxHeight="@dimen/_3sdp"
                     android:progressDrawable="@drawable/seekbar_rounded_bg"
                     android:thumb="@drawable/seekbar_thumb"
-                    android:thumbOffset="0dp" />-->
+                    android:thumbOffset="0dp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

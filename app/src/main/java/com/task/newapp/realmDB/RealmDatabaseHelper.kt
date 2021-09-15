@@ -6,6 +6,7 @@ import com.task.newapp.models.chat.*
 import com.task.newapp.realmDB.models.*
 import com.task.newapp.realmDB.models.ChatContacts
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
+import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.*
@@ -1033,7 +1034,7 @@ fun clearOneToOneChat(receiverId: Int) {
 
                 item.chatContents?.let {
                     realm.where(ChatContents::class.java)
-                        .equalTo(ChatContents::chatId.name, item.chatId).findFirst()
+                        .equalTo(ChatContents::chatId.name, it.chatId).findFirst()
                         ?.deleteFromRealm()
                 }
             }
@@ -1167,40 +1168,12 @@ fun prepareChatLabelData(chatModel: ChatModel): ChatList {
         userLabelColor = grpUserTable?.labelColor ?: "#000000"
     }
     return ChatList.create(
-        randomLocalId,
-        chatModel.id.toLong(),
-        chatModel.userId,
-        chatModel.receiverId,
-        chatModel.isGroupChat,
-        chatModel.groupId,
-        chatModel.otherUserId ?: "",
-        chatModel.type,
-        messageText,
-        chatModel.isShared,
-        chatModel.isForward,
-        chatModel.isDeleted,
-        chatModel.deletedForAll,
-        chatModel.deletedBy,
-        chatModel.tick,
-        chatModel.isReply,
-        isStar = 0,
-        chatModel.isReplyToStory,
-        chatModel.isStoryReplyBackToReply,
-        chatModel.storyId,
-        chatModel.isSecret,
-        chatModel.isRead,
-        chatModel.deliverTime ?: "",
-        chatModel.readTime ?: "",
-        chatModel.createdAt,
-        chatModel.isActivityLabel,
-        chatModel.event,
-        chatModel.isBroadcastChat,
-        chatModel.broadcastId,
-        chatModel.chatId,
-        if (isContact) null else chatModel.chatContents?.let { createChatContent(chatModel.chatContents) },
-        if (isContact) arrChatContact else RealmList<ChatContents>(),
-        userLabelColor,
-        isSync = true
+        randomLocalId, chatModel.id, chatModel.userId, chatModel.receiverId, chatModel.isGroupChat, chatModel.groupId, chatModel.otherUserId ?: "",
+        chatModel.type, messageText, chatModel.isShared, chatModel.isForward, chatModel.isDeleted, chatModel.deletedForAll, chatModel.deletedBy, chatModel.tick, chatModel.isReply,
+        isStar = 0, chatModel.isReplyToStory, chatModel.isStoryReplyBackToReply, chatModel.storyId, chatModel.isSecret, chatModel.isRead, chatModel.deliverTime ?: "",
+        chatModel.readTime ?: "", chatModel.createdAt, chatModel.isActivityLabel, chatModel.event, chatModel.isBroadcastChat, chatModel.broadcastId, chatModel.chatId,
+        if (isContact) null else chatModel.chatContents?.let { createChatContent(chatModel.chatContents) }, if (isContact) arrChatContact else RealmList<ChatContents>(),
+        userLabelColor, isSync = true
     )
 
 

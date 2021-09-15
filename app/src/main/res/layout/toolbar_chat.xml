@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/activity_main_appbarlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,62 +19,97 @@
             android:theme="@style/ToolbarIconTintStyle"
             android:weightSum="1"
             app:buttonGravity="center_vertical"
-            app:menu="@menu/chat_menu"
+            app:contentInsetStart="0dp"
             app:navigationIcon="@drawable/ic_back"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
             <!--  app:contentInsetStart="0dp"-->
 
             <LinearLayout
-                android:id="@+id/ll_profile_layout"
+                android:id="@+id/ll_toolbar_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@android:dimen/app_icon_size"
+                android:layout_marginEnd="?attr/actionBarSize"
                 android:gravity="center"
                 android:onClick="onClick"
                 android:orientation="vertical"
                 android:padding="@dimen/_3sdp">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/img_profile"
-                        android:layout_width="@dimen/_25sdp"
-                        android:layout_height="@dimen/_25sdp"
-                        android:src="@drawable/logo"
-                        app:civ_border_color="@color/white"
-                        app:civ_border_width="@dimen/_1sdp" />
-
-                    <View
-                        android:id="@+id/img_online"
-                        android:layout_width="@dimen/_7sdp"
-                        android:layout_height="@dimen/_7sdp"
-                        android:layout_alignEnd="@+id/img_profile"
-                        android:layout_alignBottom="@+id/img_profile"
-                        android:layout_centerVertical="true"
-                        android:layout_margin="@dimen/_1sdp"
-                        android:background="@drawable/round_green_online_status_bg"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-                </RelativeLayout>
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txt_title"
-                    style="@style/styleTextViewNormal"
+                <LinearLayout
+                    android:id="@+id/ll_profile_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="User name"
-                    android:textAppearance="?attr/titleTextAppearance"
-                    android:textColor="@color/chat_icon_color"
-                    android:textSize="@dimen/_10ssp" />
+                    android:onClick="onClick"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/img_profile"
+                            android:layout_width="@dimen/_25sdp"
+                            android:layout_height="@dimen/_25sdp"
+                            android:src="@drawable/logo"
+                            app:civ_border_color="@color/white"
+                            app:civ_border_width="@dimen/_1sdp" />
+
+                        <View
+                            android:id="@+id/img_online"
+                            android:layout_width="@dimen/_7sdp"
+                            android:layout_height="@dimen/_7sdp"
+                            android:layout_alignEnd="@+id/img_profile"
+                            android:layout_alignBottom="@+id/img_profile"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="@dimen/_1sdp"
+                            android:background="@drawable/round_green_online_status_bg"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+                    </RelativeLayout>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt_title"
+                        style="@style/styleTextViewNormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="User name"
+                        android:textAppearance="?attr/titleTextAppearance"
+                        android:textColor="@color/chat_icon_color"
+                        android:textSize="@dimen/_10ssp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/actionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bottomsheet_bg"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/expandedImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_10sdp"
+                        android:src="@drawable/ic_call_chat"
+                        app:tint="@color/chat_icon_color" />
+
+                    <ImageView
+                        android:id="@+id/expandedImage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_10sdp"
+                        android:src="@drawable/ic_video_call_chat"
+                        app:tint="@color/chat_icon_color" />
+                </LinearLayout>
+
             </LinearLayout>
 
-
         </androidx.appcompat.widget.Toolbar>
-
     </com.google.android.material.appbar.AppBarLayout>
+
 </layout>

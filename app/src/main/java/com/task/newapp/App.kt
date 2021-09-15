@@ -3,7 +3,6 @@ package com.task.newapp
 import android.content.Context
 import android.graphics.Typeface
 import android.net.TrafficStats
-import android.os.Environment
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -27,7 +26,6 @@ import iknow.android.utils.BaseUtils
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import lv.chi.photopicker.ChiliPhotoPicker
-import java.io.File
 
 
 class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
@@ -92,6 +90,14 @@ class App : MultiDexApplication(), IApp, CameraXConfig.Provider {
         fastSave = FastSave.getInstance()
         //Realm DB initialization
         Realm.init(this)
+       /* thread {
+
+            try {
+                TrueTime.build().initialize();
+            } catch (e: Exception) {
+                showLog(TAG, e.message.toString())
+            }
+        }*/
         setRealmConfig()
         EmojiManager.install(IosEmojiProvider())
         //ImagePicker lib initialization

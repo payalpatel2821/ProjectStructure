@@ -305,5 +305,7 @@
     <string name="finish">Finish</string>
     <string name="invite">Invite</string>
     <string name="clear_all">Clear All</string>
+    <string name="message_info">Message Info</string>
+    <string name="forward">Forward</string>
 
 </resources>

@@ -33,7 +33,7 @@
         <item name="iconTint">@color/chat_icon_color</item>
         <item name="android:gravity">center_vertical</item>
         <item name="titleEnabled">false</item>
-
+        <item name="actionOverflowMenuStyle">@style/OverflowMenuStyle</item>
     </style>
 
     <!-- Styles -->

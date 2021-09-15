@@ -1,4 +1,4 @@
-package com.task.newapp.models
+package com.task.newapp.realmDB.wrapper
 
 import com.google.gson.annotations.SerializedName
 import com.task.newapp.realmDB.models.NotificationTone

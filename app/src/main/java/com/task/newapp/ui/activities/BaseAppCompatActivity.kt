@@ -17,10 +17,36 @@ import com.task.newapp.models.chat.ChatModel
 import com.task.newapp.models.chat.ResponseChatMessage
 import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.socket.SendUserDetailSocket
-import com.task.newapp.realmDB.*
+import com.task.newapp.realmDB.createFriendRequest
+import com.task.newapp.realmDB.getSingleChat
+import com.task.newapp.realmDB.getSingleChatList
+import com.task.newapp.realmDB.insertChatData
+import com.task.newapp.realmDB.insertChatListData
+import com.task.newapp.realmDB.insertFriendRequestData
+import com.task.newapp.realmDB.insertUserData
 import com.task.newapp.realmDB.models.ChatList
-import com.task.newapp.utils.*
+import com.task.newapp.realmDB.models.Chats
+import com.task.newapp.realmDB.prepareChatLabelData
+import com.task.newapp.realmDB.prepareOtherUserData
+import com.task.newapp.realmDB.updateChatListAndUserData
+import com.task.newapp.realmDB.updateChatListIdData
+import com.task.newapp.realmDB.updateChatsList
+import com.task.newapp.realmDB.updateUserOnlineStatus
+import com.task.newapp.utils.ConnectionType
+import com.task.newapp.utils.Constants
+import com.task.newapp.utils.DateTimeUtils
+import com.task.newapp.utils.NetworkMonitorUtil
+import com.task.newapp.utils.SocketConstant
+import com.task.newapp.utils.disconnectSocket
+import com.task.newapp.utils.getCurrentUserId
+import com.task.newapp.utils.getUserStatusEmitEvent
+import com.task.newapp.utils.isScreenLocked
+import com.task.newapp.utils.joinSocket
+import com.task.newapp.utils.jsonToPojo
+import com.task.newapp.utils.showLog
+import com.task.newapp.utils.showToast
 import org.json.JSONObject
+import java.util.*
 
 abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListener {
     lateinit var onSocketEventsListener: OnSocketEventsListener
@@ -318,9 +344,25 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
             if (checkChatId == null) {
                 insertChatListData(chatList)
             }
+            val singleChat = getSingleChat(if (chatModel.isGroupChat == 1) chatModel.groupId else chatModel.userId)
+            if (singleChat == null) {
+                val chats = Chats()
+                chats.id = if (chatModel.isGroupChat == 1) chatModel.groupId else chatModel.userId
+                chats.isGroup = chatModel.isGroupChat == 1
+                chats.isHook = false
+                chats.isArchive = false
+                chats.isBlock = false
+                chats.chatList = chatList
+                chats.userData = chatList.userData
+                chats.updatedAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+                chats.currentTime = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+                insertChatData(chats)
+
+            }
             updateChatsList(if (chatModel.isGroupChat == 1) chatModel.groupId else senderId, chatList) { isSuccess ->
-                if (isSuccess)
+                if (isSuccess) {
                     callback.invoke(chatList)
+                }
             }
 
         }

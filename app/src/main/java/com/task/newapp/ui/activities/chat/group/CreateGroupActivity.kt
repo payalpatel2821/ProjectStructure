@@ -17,8 +17,7 @@ import com.bumptech.glide.Glide
 import com.task.newapp.R
 import com.task.newapp.adapter.post.SelectedFriendsListAdapter
 import com.task.newapp.databinding.ActivityCreateGroupBinding
-import com.task.newapp.models.chat.SelectFriendWrapperModel
-import com.task.newapp.models.socket.PostSocket
+import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.realmDB.getSelectedFriends
 import com.task.newapp.realmDB.models.FriendRequest
 import com.task.newapp.realmDB.prepareSelectFriendWrapperModelList

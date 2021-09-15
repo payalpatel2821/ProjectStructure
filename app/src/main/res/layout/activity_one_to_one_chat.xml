@@ -10,9 +10,21 @@
         android:background="@color/bottomsheet_bg"
         tools:context=".ui.activities.chat.OneToOneChatActivity">
 
-        <include
-            android:id="@+id/toolbar_layout"
-            layout="@layout/toolbar_chat" />
+        <FrameLayout
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints">
+
+            <include
+                android:id="@+id/toolbar_layout"
+                layout="@layout/toolbar_chat" />
+
+            <ViewStub
+                android:id="@+id/cab_stub"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize" />
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/ll_content"
@@ -21,9 +33,10 @@
             android:background="@drawable/chat_bg_top_rounded"
             android:gravity="top"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar_layout">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_chat_messages"

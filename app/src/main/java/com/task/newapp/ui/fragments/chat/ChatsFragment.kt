@@ -334,12 +334,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     override fun onClearChatClick(position: Int, chats: Chats) {
-         callClearChatAPI(chats) { isSuccess ->
-             if (isSuccess) {
-                 setAdapter(false)
-             }
+        callClearChatAPI(chats) { isSuccess ->
+            if (isSuccess) {
+                setAdapter(false)
+            }
 
-         }
+        }
     }
 
     override fun onArchiveChatClick(position: Int, chats: Chats) {
@@ -473,7 +473,6 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             e.printStackTrace()
         }
     }
-
 
     private fun callHookChatAPI(chats: Chats) {
         try {
@@ -675,6 +674,10 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     }
 
     fun updateChatListItem(chatList: ChatList) {
+        //if chat thread is not available in the chats list then reload the chats
+        if (chats.none { it.chats.id == if (chatList.isGroupChat == 1) chatList.groupId else chatList.userId }) {
+            setAdapter(true)
+        }
         chats.forEachIndexed { index, chats ->
             getSingleChat(chats.chats.id)?.let {
                 this.chats[index] = chats

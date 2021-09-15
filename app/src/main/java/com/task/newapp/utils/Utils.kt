@@ -1,5 +1,6 @@
 package com.task.newapp.utils
 
+
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
@@ -1580,19 +1581,6 @@ fun getRandomColor(): Int {
     return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
 }
 
-fun convertMillieToHMmSs(millie: Long): String? {
-    val seconds = millie / 1000
-    val second = seconds % 60
-    val minute = seconds / 60 % 60
-    val hour = seconds / (60 * 60) % 24
-    val result = ""
-    return if (hour > 0) {
-        String.format("%02d:%02d:%02d", hour, minute, second)
-    } else {
-        String.format("%02d:%02d", minute, second)
-    }
-}
-
 fun checkTrimFolder(): String? {
     val root = Environment.getExternalStorageDirectory()
     val file = File(root.absolutePath + "/HOW/.trimvideo")
@@ -1619,5 +1607,36 @@ fun onShareClicked(context: Activity) {
         context.startActivity(Intent.createChooser(shareIntent, "choose one"))
     } catch (e: java.lang.Exception) {
         //e.toString();
+    }
+}
+
+
+fun getEmojiByUnicode(unicode: Int): String? {
+    return String(Character.toChars(unicode))
+}
+
+private fun Context.saveMediaToStorage(bitmap: Bitmap) {
+    val filename = "${System.currentTimeMillis()}.jpg"
+    var fos: OutputStream? = null
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentResolver?.also { resolver ->
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+            }
+            val imageUri: Uri? =
+                resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            fos = imageUri?.let { resolver.openOutputStream(it) }
+        }
+    } else {
+        val imagesDir =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val image = File(imagesDir, filename)
+        fos = FileOutputStream(image)
+    }
+    fos?.use {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        showToast("Saved to Photos")
     }
 }
