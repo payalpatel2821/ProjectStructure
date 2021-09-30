@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
@@ -7,28 +7,37 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.contact.MyContactFragment">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/txt_empty_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/contact_not_found"
+        style="@style/styleTextViewNormal"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
     <RelativeLayout
+        android:id="@+id/lay_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="true"
+        tools:visibility="visible">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_toLeftOf="@+id/sectionpicker_countries"
             android:nestedScrollingEnabled="true"
             android:padding="10sp"
-            android:visibility="gone" />
-
+            android:visibility="visible" />
 
         <com.task.newapp.sectionpicker.SectionPicker
             android:id="@+id/sectionpicker_countries"
             android:layout_width="26dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:nestedScrollingEnabled="true"
             app:SectionPicker_chosenColor="#A16CAEC4"
             app:SectionPicker_chosenStyle="bold"
             app:SectionPicker_textColor="@color/gray"
@@ -53,5 +62,59 @@
             android:text="Get Contact"
             android:textAllCaps="false" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_invite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/invite_friends"
+            android:layout_below="@+id/rv_list"
+            style="@style/styleTextViewNormal"
+            android:textColor="@color/theme_color"
+            android:padding="@dimen/_5sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:visibility="visible"/>
+
     </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:id="@+id/lay_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_app_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="true"
+            android:padding="10sp"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/lay_invite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rv_app_user"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/styleTextViewSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/invite_to_application"
+                android:textColor="@color/white" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_invite_user"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="true"
+                android:padding="10sp"
+                android:visibility="visible" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+</RelativeLayout>

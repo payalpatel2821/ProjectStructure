@@ -174,7 +174,7 @@ class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
         when (flag) {
             resources.getString(R.string.pages) -> {
                 val hashMap: HashMap<String, Any> = hashMapOf(
-                    Constants.limit to R.string.limit_20,
+                    Constants.limit to resources.getString(R.string.limit_20).toInt(),
                     Constants.offset to scrollPosition,
                     Constants.type to Constants.page,
                     Constants.id to userID
@@ -183,7 +183,7 @@ class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
             }
             resources.getString(R.string.followed_page) -> {
                 val hashMap: HashMap<String, Any> = hashMapOf(
-                    Constants.limit to R.string.limit_20,
+                    Constants.limit to resources.getString(R.string.limit_20).toInt(),
                     Constants.offset to scrollPosition,
                     Constants.type to Constants.page,
                     Constants.follow to 1,
@@ -193,7 +193,7 @@ class PageListActivity : AppCompatActivity(), Paginate.Callbacks {
             }
             resources.getString(R.string.my_pages) -> {
                 val hashMap: HashMap<String, Any> = hashMapOf(
-                    Constants.limit to R.string.limit_20,
+                    Constants.limit to resources.getString(R.string.limit_20).toInt(),
                     Constants.offset to scrollPosition,
                     Constants.type to Constants.page,
                     Constants.follow to 0,

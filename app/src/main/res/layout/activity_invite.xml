@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.activities.InviteActivity">
+
+        <include
+            android:id="@+id/toolbar_layout"
+            layout="@layout/toolbar_common" />
+
+        <include
+            android:id="@+id/search_layout"
+            layout="@layout/layout_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar_layout"
+            android:layout_marginHorizontal="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:visibility="visible" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/search_layout">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_empty_contact"
+                style="@style/styleTextViewNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/contact_not_found"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/lay_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:nestedScrollingEnabled="true"
+                tools:visibility="visible">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toLeftOf="@+id/sectionpicker_countries"
+                    android:nestedScrollingEnabled="true"
+                    android:padding="10sp"
+                    android:visibility="gone" />
+
+                <com.task.newapp.sectionpicker.SectionPicker
+                    android:id="@+id/sectionpicker_countries"
+                    android:layout_width="26dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:nestedScrollingEnabled="true"
+                    app:SectionPicker_chosenColor="#A16CAEC4"
+                    app:SectionPicker_chosenStyle="bold"
+                    app:SectionPicker_textColor="@color/gray"
+                    app:SectionPicker_textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/textview_section"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/section_txt_bg"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="30sp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+</layout>

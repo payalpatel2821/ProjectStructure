@@ -1,5 +1,6 @@
 package com.task.newapp.ui.activities.chat
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
@@ -23,17 +24,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import com.task.newapp.R
 import com.task.newapp.adapter.chat.Image_rv_adapter
 import com.task.newapp.utils.exo_video.OnItemClickListener
 import com.task.newapp.utils.exo_video.Sel_Media_RecyclerAdapter
 import com.task.newapp.utils.exo_video.Sel_Media_RecyclerView
+import com.task.newapp.utils.isImageFile
+import lv.chi.photopicker.MediaPickerFragment
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClickListener {
+class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClickListener, MediaPickerFragment.Callback {
 
 
     lateinit var image_rv_adapter: Image_rv_adapter
@@ -67,16 +71,6 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
             .setDefaultRequestOptions(options)
     }
 
-    //    @Override
-    //    protected void onResume() {
-    //        super.onResume();
-    //        if (mRecyclerView != null) {
-    //            if (mRecyclerView.trimmer_view != null) {
-    //                mRecyclerView.trimmer_view.playingAnimation();
-    //                mRecyclerView.playVideo(true);
-    //            }
-    //        }
-    //    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,8 +87,8 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         receiver_name = findViewById(R.id.receiver_name)
         trim_time = findViewById(R.id.trim_time)
 
-        val iv_back = findViewById<ImageView>(R.id.iv_back)
-        iv_back.setOnClickListener {
+        val ivBack = findViewById<ImageView>(R.id.iv_back)
+        ivBack.setOnClickListener {
             onBackPressed()
         }
         intent.getStringArrayListExtra("select_urls")!!.forEach { uri -> imageurilist!!.add(Uri.parse(uri)) }
@@ -108,6 +102,14 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         mRecyclerView.layoutManager = GridLayoutManager(this@ViewPagerActivity, 1, GridLayoutManager.HORIZONTAL, false)
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(mRecyclerView)
+        setAdapter()
+        iv_delete.setOnClickListener(this)
+        iv_crop.setOnClickListener(this)
+        imageSend.setOnClickListener(this)
+        iv_edit.setOnClickListener(this)
+    }
+
+    fun setAdapter() {
         mRecyclerView.setMediaObjects(imageurilist, uritype, caption_arr, time_arr)
         mAdapter = Sel_Media_RecyclerAdapter(this@ViewPagerActivity, imageurilist, uritype, caption_arr, time_arr, initGlide())
         mRecyclerView.adapter = mAdapter
@@ -121,16 +123,20 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         img_rv.layoutManager = HorizontalLayout
         image_rv_adapter = Image_rv_adapter(this@ViewPagerActivity, imageurilist, uritype)
         img_rv.adapter = image_rv_adapter
-        iv_delete.setOnClickListener(this)
-        iv_crop.setOnClickListener(this)
-        imageSend.setOnClickListener(this)
-        iv_edit.setOnClickListener(this)
     }
 
     override fun onClick(view: View?, position: Int) {
 
-        mRecyclerView.trimmer_view.pauseRedProgressAnimation();
-        mRecyclerView.toggleVolume();
+        runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            MediaPickerFragment.newInstance(
+                multiple = true,
+                allowCamera = true,
+                pickerType = MediaPickerFragment.PickerType.ANY,
+                maxSelection = 30,
+                theme = R.style.ChiliPhotoPicker_Light,
+            ).show(supportFragmentManager, "picker")
+        }
+
     }
 
     fun setTrimVideo(position: Int, videouri: String?) {
@@ -142,15 +148,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         val current: Int = mRecyclerView.currentItem
         when (view.id) {
             R.id.iv_delete -> try {
-//                Commons.logEvent(this@ViewPagerActivity, "Delete", "", "ViewPagerActivity", "DeleteClick")
-
-                //Add New By Hardik
-//              ArrayList<String> imageurilistClone = (ArrayList<String>) imageurilist.clone();
-//              imageurilistClone.remove(current);
-//              imageurilist.clear();
-//              imageurilist = (ArrayList<String>) imageurilistClone.clone();
                 imageurilist!!.removeAt(current)
-//                thumburilist!!.removeAt(current)
                 caption_arr!!.removeAt(current)
                 time_arr!!.removeAt(current)
                 uritype!!.removeAt(current)
@@ -160,44 +158,32 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
                     Log.println(Log.ASSERT, "caption_arr-size--=--", caption_arr!!.size.toString() + "")
                     Log.println(Log.ASSERT, "imageurilist-size--=--", imageurilist!!.size.toString() + "")
                     Log.println(Log.ASSERT, "uritype-size--=--", uritype!!.size.toString() + "")
-//                  mRecyclerView.setMediaObjects(imageurilist, uritype, caption_arr, time_arr);
-//                  mAdapter.setMediaObjects(imageurilist, uritype, caption_arr, time_arr);
                     mAdapter.notifyItemRemoved(current)
                     image_rv_adapter!!.notifyItemRemoved(current)
                     if (mAdapter.itemCount == 0) {
                         finish()
                     }
-                    //                        image_rv_adapter.notifyDataSetChanged();
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
             R.id.iv_crop -> {
-            }/*Commons.logEvent(this@ViewPagerActivity, "Crop", "", "ViewPagerActivity", "CropClick")*/
+            }
             R.id.imageSend -> {
-                Log.e("send", "click")
                 mRecyclerView.toggleVolume()
-                //mRecyclerView.trimmer_view.pauseRedProgressAnimation();
                 imageSend!!.isClickable = false
-//                Commons.logEvent(this@ViewPagerActivity, "SendImage", "", "ViewPagerActivity", "ImageSendClick")
                 compressprogress!!.visibility = View.VISIBLE
                 progreelay!!.visibility = View.VISIBLE
-                addcompressfile(abc)
+                addCompressFile(abc)
             }
             R.id.iv_edit -> {
-//                Commons.logEvent(this@ViewPagerActivity, "Edit", "", "ViewPagerActivity", "EditClick")
-//                var intent = Intent()
-//                intent = Intent(this@ViewPagerActivity, EditImageActivity::class.java)
-//                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-//                intent.putExtra("filepath", imageurilist!![current])
-//                startActivityForResult(intent, EDIT_IMAGE)
             }
+
         }
     }
 
-    fun addcompressfile(i: Int) {
-        val temp: String
-        temp = if (uritype!![i] == 1) {
+    private fun addCompressFile(i: Int) {
+        val temp: String = if (uritype!![i] == 1) {
             "image"
         } else {
             "video"
@@ -205,7 +191,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         CompressFilesTask(imageurilist!![i]!!.path!!, temp).execute()
     }
 
-    fun compressimage(context: Context?, inputFile: String): String {
+    fun compressImage(context: Context?, inputFile: String): String {
         val myfile = File(inputFile)
         val compressedImageFile: File
 //        compressedImageFile = if (myfile.length() / 1024 > 25600) {
@@ -220,7 +206,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         imagearray.add(/*compressedImageFile.absolutePath*/inputFile)
         abc++
         if (abc < imageurilist!!.size) {
-            addcompressfile(abc)
+            addCompressFile(abc)
         } else {
             runOnUiThread {
                 compressprogress!!.visibility = View.GONE
@@ -240,19 +226,17 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
 
     fun compressvideo(context: Context?, inputFile: String?): String? {
         val myfile = File(inputFile)
-//        if (myfile.length() / 1024 < 51200) {
         runOnUiThread {
             Log.e("video compress", "sccessfully")
             finalOutputFile = inputFile
             imagearray.add(inputFile)
             abc++
             if (abc < imageurilist!!.size) {
-                addcompressfile(abc)
+                addCompressFile(abc)
             } else {
                 runOnUiThread {
                     compressprogress!!.visibility = View.GONE
                     progreelay!!.visibility = View.GONE
-                    // Stuff that updates the UI
                 }
                 val intent = Intent()
                 intent.putStringArrayListExtra("select_urls", imagearray)
@@ -263,129 +247,18 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
                 finish()
             }
         }
-//        } else {
-//            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-//            val outputName = "compress$timeStamp.mp4"
-//            val outputFile: String = checkcompressfolder().toString() + "/" + outputName
-//            var complexCommand = arrayOf<String?>()
-//
-////        complexCommand = new String[]{"-y", "-i", inputFile, "-r", "25",
-////                "-vcodec", "mpeg4", "-b:v", "700k", "-b:a", "48000", "-ac", "2", "-ar", "22050", outputFile};
-//
-////            complexCommand = new String[]{"-y", "-i", inputFile, "-r", "25",
-////                    "-b:v", "6000k", "-b:a", "48000", "-ac", "2", "-ar", "22050", "-preset", "ultrafast", outputFile};
-//            complexCommand = arrayOf(
-//                "-y",
-//                "-i", inputFile,
-//                "-c:v", "libx264",
-//                "-c:a", "aac",
-//                "-vf", "scale=720:-2",
-//                "-crf", "28",
-//                "-b:a", "48000",
-//                "-preset", "ultrafast",
-//                outputFile
-//            )
-//            finalOutputFile = outputFile
-//            FFmpegCmd.exec(complexCommand, 0, object : OnEditorListener() {
-//                fun onSuccess() {
-//                    runOnUiThread {
-//                        Log.e("video compress", "sccessfully")
-//                        imagearray.add(finalOutputFile)
-//                        abc++
-//                        if (abc < thumburilist!!.size) {
-//                            addcompressfile(abc)
-//                        } else {
-//                            runOnUiThread {
-//                                compressprogress!!.visibility = View.GONE
-//                                progreelay!!.visibility = View.GONE
-//                                // Stuff that updates the UI
-//                            }
-//                            val intent = Intent()
-//                            intent.putStringArrayListExtra("select_urls", imagearray)
-//                            intent.putStringArrayListExtra("select_captions", caption_arr)
-//                            intent.putStringArrayListExtra("select_time", time_arr)
-//                            intent.putIntegerArrayListExtra("urls_mediatype", uritype)
-//                            setResult(RESULT_OK, intent)
-//                            finish()
-//                        }
-//                    }
-//                }
-//
-//                fun onFailure() {
-//                    imageSend!!.isClickable = true
-//                    runOnUiThread {
-//                        Log.e("video compress", "Failed")
-//                        //                        Toast.makeText(context, "Failed to trim", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//
-//                fun onProgress(progress: Float) {
-//                    Log.println(Log.ASSERT, "progress--==", progress.toString() + "")
-//                }
-//            })
-//        }
         return finalOutputFile
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-//        if (requestCode == EDIT_IMAGE) {
-////            Commons.logEvent(this@ViewPagerActivity, "EditImageResult", "", "ViewPagerActivity", "onActivityResult")
-//            handleEditorImage(data)
-//        } else if (requestCode == CAMERA_REQUEST) {
-//            if (data != null) {
-////                Commons.logEvent(this@ViewPagerActivity, "CameraImageResult", "", "ViewPagerActivity", "onActivityResult")
-//                imageurilist!!.clear()
-//                thumburilist!!.clear()
-//                uritype!!.clear()
-//                time_arr!!.clear()
-//                caption_arr!!.clear()
-//                imageurilist!!.addAll(data.getStringArrayListExtra(Pix.IMAGE_RESULTS)!!)
-//                thumburilist!!.addAll(data.getStringArrayListExtra(Pix.IMAGE_RESULTS)!!)
-//                uritype!!.addAll(data.getIntegerArrayListExtra(Pix.RESULTS_TYPE)!!)
-//
-//                //Add New
-////                for (int i = 0; i < imageurilist.size(); i++) {
-////                    for (int j = i + 1; j < imageurilist.size(); j++) {
-////                        if (imageurilist.get(i).equals(imageurilist.get(j))) {
-////                            imageurilist.remove(j);
-////                            thumburilist.remove(j);
-////                            uritype.remove(j);
-////                            j--;
-////                        }
-////                    }
-////                }
-//                captionarr = Arrays.asList(*arrayOfNulls(thumburilist!!.size))
-//                caption_arr!!.addAll(captionarr)
-//                timearr = Arrays.asList(*arrayOfNulls(thumburilist!!.size))
-//                time_arr!!.addAll(timearr)
-//
-////                Log.println(Log.ASSERT, "sdadasdasd-size--=--", imageurilist.size() + "");
-////                Log.println(Log.ASSERT, "thumburilist-size--=--", thumburilist.size() + "");
-////                Log.println(Log.ASSERT, "caption_arr-size--=--", captionarr.size() + "");
-////                Log.println(Log.ASSERT, "uritype-size--=--", uritype.size() + "");
-//
-////            mRecyclerView.setMediaObjects(imageurilist, uritype, caption_arr);
-////            mAdapter.notifyDataSetChanged();
-//                mRecyclerView.setMediaObjects(imageurilist, uritype, caption_arr, time_arr)
-//                mAdapter.setMediaObjects(imageurilist, uritype, caption_arr, time_arr)
-//                image_rv_adapter.setData(thumburilist, uritype)
-//            }
-//        }
     }
 
     private fun handleEditorImage(data: Intent?) {
         var newFilePath = data!!.getStringExtra("OUTPUT_PATH")
         val isImageEdit = data.getBooleanExtra("IS_IMAGE_EDITED", false)
         if (isImageEdit) {
-//            Toast.makeText(this, getString(R.string.save_path, newFilePath), Toast.LENGTH_LONG).show();
         } else {
             newFilePath = data.getStringExtra("SOURCE_PATH")
         }
         imageurilist!!.removeAt(mRecyclerView.getCurrentItem())
         imageurilist!!.add(mRecyclerView.getCurrentItem(), Uri.parse(newFilePath))
-//        thumburilist!!.removeAt(mRecyclerView.getCurrentItem())
-//        thumburilist!!.add(mRecyclerView.getCurrentItem(), newFilePath)
         mAdapter.notifyDataSetChanged()
         image_rv_adapter!!.notifyDataSetChanged()
 
@@ -397,25 +270,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     }
 
     override fun onBackPressed() {
-//        if (imageurilist!!.size == 0) {
         finish()
-//        } else {
-//            imageurilist = ArrayList()
-//            var files: Array<File> = File(checktrimfolder()).listFiles()
-//            if (files.size > 0) {
-//                for (i in files.indices) {
-//                    files[i].delete()
-//                }
-//            }
-//            val outputPath = Environment.getExternalStorageDirectory().absolutePath + File.separator + "/HOW/TrimedVideos/"
-//            files = File(outputPath).listFiles()
-//            if (files != null && files.size > 0) {
-//                for (i in files.indices) {
-//                    files[i].delete()
-//                }
-//            }
-//            finish()
-//        }
     }
 
     private inner class CompressFilesTask(var filepath: String, var temp: String) : AsyncTask<String, String, String>() {
@@ -425,10 +280,8 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
 
         override fun doInBackground(vararg strings: String): String? {
             return if (temp == "image") {
-//                Commons.logEvent(this@ViewPagerActivity, "CompressTask", "Image", "ViewPagerActivity", "AsyncTask")
-                compressimage(this@ViewPagerActivity, filepath)
+                compressImage(this@ViewPagerActivity, filepath)
             } else {
-//                Commons.logEvent(this@ViewPagerActivity, "CompressTask", "Video", "ViewPagerActivity", "AsyncTask")
                 compressvideo(this@ViewPagerActivity, filepath)
             }
         }
@@ -441,5 +294,32 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     companion object {
         lateinit var img_rv: RecyclerView
         lateinit var trim_time: TextView
+    }
+
+    override fun onMediaPicked(mediaItems: ArrayList<Uri>) {
+        var imageList: ArrayList<String?>? = ArrayList()
+        imageurilist!!.forEach { uri ->
+            imageList!!.add(uri.toString())
+        }
+        mediaItems.forEach { uri ->
+
+            imageList?.add(uri.toString())
+            caption_arr.add("")
+            time_arr.add("")
+
+            if (isImageFile(uri.toString())) {
+                uritype?.add(1)
+            } else {
+                uritype?.add(0)
+            }
+        }
+
+        val intent = Intent(this@ViewPagerActivity, ViewPagerActivity::class.java)
+        intent.putStringArrayListExtra("select_urls", imageList)
+        intent.putStringArrayListExtra("select_captions", caption_arr)
+        intent.putStringArrayListExtra("select_time", time_arr)
+        intent.putIntegerArrayListExtra("urls_mediatype", uritype)
+        startActivity(intent)
+        finish()
     }
 }

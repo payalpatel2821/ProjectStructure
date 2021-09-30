@@ -95,6 +95,7 @@ class Constants {
         const val vibrate_status = "vibrate_status"
         const val INTENT_SERVICE_PROGRESS = "INTENT_SERVICE_PROGRESS"
         const val INTENT_SERVICE_COMPLETE = "INTENT_SERVICE_COMPLETE"
+        const val INTENT_CONTACT_COMPLETE = "INTENT_CONTACT_COMPLETE"
         const val report_reason = "report_reason"
         const val about = "about"
         const val date_of_birth = "date_of_birth"
@@ -121,6 +122,14 @@ class Constants {
         const val thumb = "thumb"
         const val file = "file"
         const val duration = "duration"
+        const val callSucceed = "callSucceed"
+
+        //setting
+
+        const val isPauseNotification = "is_pause_notification"
+        const val isProfileViewNotify = "is_profile_view_notify"
+        const val isFollowRequestNotify = "is_follow_request_notify"
+        const val isAcceptFollowRequestNotify = "is_accept_follow_request_notify"
 
 
         // bundle value

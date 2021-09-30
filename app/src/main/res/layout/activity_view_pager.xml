@@ -126,7 +126,6 @@
         android:src="@drawable/ic_send"
         android:translationZ="2dp" />
 
-
     <LinearLayout
         android:id="@+id/progreelay"
         android:layout_width="match_parent"

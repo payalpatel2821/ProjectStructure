@@ -2,6 +2,7 @@ package com.task.newapp.utils.exo_video.video_trim.trim;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,17 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     }
 
     public void addBitmaps(Bitmap bitmap) {
+        Log.e("bitmaps", mBitmaps.size() + ":");
         mBitmaps.add(bitmap);
+        notifyDataSetChanged();
+    }
+
+    public int getBitmap() {
+        return mBitmaps.size();
+    }
+
+    public void resetBitmaps() {
+        mBitmaps.clear();
         notifyDataSetChanged();
     }
 

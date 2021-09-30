@@ -285,7 +285,7 @@
     <string name="hold_to_record_audio">Hold to record, release to send</string>
 
 
-<!--    contact-->
+    <!--    contact-->
     <string name="phone_storage_hidden">Phone storage (not visible by other apps)</string>
     <!-- Phone numbers -->
     <string name="main_number">Main</string>
@@ -307,5 +307,39 @@
     <string name="clear_all">Clear All</string>
     <string name="message_info">Message Info</string>
     <string name="forward">Forward</string>
+    <string name="invite_to_application">Invite To App</string>
+    <string name="contact_not_found">Contact not found</string>
+    <string name="no_recent_searches">No recent searches</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="pause_all_notification">Pause all notification</string>
+    <string name="profile">Profile</string>
+    <string name="chat">Chat</string>
+    <string name="timeline">Timeline</string>
+    <string name="reset_all_notification">Reset all notifications</string>
+    <string name="follow_request">Follow requests</string>
+    <string name="accepted_follow_request">Accepted follow requests</string>
+    <string name="viewed_your_profile">Xyz viewed your profile</string>
+    <string name="has_requested_to_follow_you">Xyz has requested to follow you</string>
+    <string name="accepted_your_follow_request">Xyz accepted your follow request</string>
+    <string name="show_notifications">Show notifications</string>
+    <string name="message_preview">Message preview</string>
+    <string name="sound">Sound</string>
+    <string name="message_requests">Message requests</string>
+    <string name="message_notification">Message notification</string>
+    <string name="group_notification">Group notification</string>
+    <string name="in_app_notification">In-app notification</string>
+    <string name="in_app_sound">In-app sound</string>
+    <string name="in_app_preview">In-app preview</string>
+    <string name="in_app_vibrate">In-app vibrate</string>
+    <string name="likes">Likes</string>
+    <string name="liked_your_photo">Xyz liked your photo</string>
+    <string name="comments">Comments</string>
+    <string name="commented_nice_photo">Xyz commented \"Nice Photo!\"</string>
+    <string name="comments_likes">Comments Likes</string>
+    <string name="like_you_comment">Xyz liked you comment: \"Nice photo!\" and other similar notification.</string>
+    <string name="likes_and_comments">Likes and comments on photo of you</string>
+    <string name="commented_on_a_post">Xyz commented on a post you\'re tagged in.</string>
+    <string name="photo_of_you">Photo of you</string>
+    <string name="tagged_in_photo">Xyz tagged you in photo.</string>
 
 </resources>

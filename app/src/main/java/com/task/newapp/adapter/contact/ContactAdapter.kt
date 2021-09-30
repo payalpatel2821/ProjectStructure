@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.task.newapp.R
-import com.task.newapp.models.ResponseIsAppUser
+import com.task.newapp.models.ResponseMyContact
 import com.task.newapp.models.contact.ContactRecyclerViewModel
 import com.task.newapp.utils.load
 import com.task.newapp.utils.onShareClicked
@@ -26,7 +26,7 @@ class ContactAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), SectionIndexer {
 
-    val TYPE_COUNTRY = 0
+    val TYPE_CONTACT = 0
     val TYPE_LETTER = 1
     private var allContact: ArrayList<ContactRecyclerViewModel> = ArrayList()
     var onItemClick: ((Int) -> Unit)? = null
@@ -35,7 +35,7 @@ class ContactAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            TYPE_COUNTRY -> {
+            TYPE_CONTACT -> {
                 val view: View = LayoutInflater.from(mainActivity).inflate(
                     R.layout.item_explore_contact_number,
                     parent,
@@ -59,7 +59,6 @@ class ContactAdapter(
                 )
                 return ContactViewHolder(view)
             }
-
         }
     }
 
@@ -67,8 +66,8 @@ class ContactAdapter(
 
         val contactRecyclerViewModel: ContactRecyclerViewModel = allContact[position]
         when (getItemViewType(position)) {
-            TYPE_COUNTRY -> {
-                val contact: ResponseIsAppUser.Data = contactRecyclerViewModel.contact!!
+            TYPE_CONTACT -> {
+                val contact: ResponseMyContact.Data = contactRecyclerViewModel.contact!!
                 if (contact != null) {
                     (holder as ContactViewHolder).bindTo(
                         holder,
@@ -135,10 +134,10 @@ class ContactAdapter(
 
         var letter = ""
         when (contactRecyclerViewModel.type) {
-            TYPE_COUNTRY -> {
-                val country: ResponseIsAppUser.Data = contactRecyclerViewModel.contact!!
-                if (country != null) {
-                    letter = country.fullname.substring(0, 1)
+            TYPE_CONTACT -> {
+                val contact: ResponseMyContact.Data = contactRecyclerViewModel.contact!!
+                if (contact != null) {
+                    letter = contact.fullName.substring(0, 1)
                 }
             }
             TYPE_LETTER -> {
@@ -168,8 +167,8 @@ class ContactAdapter(
         private val divider: View = itemView.findViewById(R.id.divider)
         private val btnInvite: View = itemView.findViewById(R.id.btn_invite)
 
-        fun bindTo(holder: ContactViewHolder, contact: ResponseIsAppUser.Data, context: Context, onItemClick: ((Int) -> Unit)?, position: Int, totalSize: Int) {
-            textViewName.text = contact.fullname
+        fun bindTo(holder: ContactViewHolder, contact: ResponseMyContact.Data, context: Context, onItemClick: ((Int) -> Unit)?, position: Int, totalSize: Int) {
+            textViewName.text = contact.fullName
             if (!contact.number.isNullOrEmpty()) {
                 textViewNumber.text = contact.number
                 textViewNumber.visibility = VISIBLE
@@ -178,7 +177,7 @@ class ContactAdapter(
             }
             imageView.load(contact.profileImage, true, textViewName.text.toString().trim(), "#6CAEC4")
 
-            showLog("size===", "$position $totalSize")
+//            showLog("size===", "$position $totalSize")
             if (position == totalSize - 1) {
                 holder.divider.visibility = GONE
             } else {

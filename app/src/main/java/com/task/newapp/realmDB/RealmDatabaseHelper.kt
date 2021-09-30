@@ -443,6 +443,17 @@ fun insertContactHistoryData(contactHistory: ContactHistory) {
     }
 }
 
+fun insertMyContactData(myContacts: RealmList<MyContacts>) {
+    val realm = App.getRealmInstance()
+    if (!realm.isInTransaction) {
+        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+            realm.copyToRealmOrUpdate(myContacts)
+        })
+    } else {
+        realm.copyToRealmOrUpdate(myContacts)
+    }
+}
+
 /**  ------------------------------------ INSERT END ---------------------------------------------------------------  */
 
 /**   ------------------------------------ READ BEGIN ---------------------------------------------------------------  */
@@ -686,6 +697,10 @@ fun getSelectedNotificationTuneNameBYID(notificationId: Int): String {
 
 fun getAllContactHistory(): List<ContactHistory> {
     return App.getRealmInstance().where(ContactHistory::class.java).findAll()
+}
+
+fun getAllMyContact(): List<MyContacts>? {
+    return App.getRealmInstance().where(MyContacts::class.java).findAll().toList()
 }
 
 //fun getSelectedGroupNotificationTuneName(friendId: Int,groupId: Int): String {
@@ -960,7 +975,6 @@ fun deleteOneContactHistory(id: Int) {
 fun clearDatabase() {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.deleteAll()
-
     })
 }
 
@@ -1044,6 +1058,13 @@ fun clearOneToOneChat(receiverId: Int) {
     })
     updateChatsList(receiverId, null)
 
+}
+
+fun clearMyContact(callback: ((isSuccess: Boolean) -> Unit)? = null) {
+    App.getRealmInstance().executeTransaction { realm ->
+        realm.where(MyContacts::class.java).findAll()?.deleteAllFromRealm()
+        callback?.invoke(true)
+    }
 }
 
 /**   ------------------------------------ DELETE END ---------------------------------------------------------------  */
@@ -1531,7 +1552,6 @@ fun prepareFriendSettingsDataForDB(friendSettings: List<FriendSetting>): RealmLi
     return friendSettingList
 }
 
-
 fun prepareSingleFriendSettingData(objUserSetting: FriendSetting): FriendSettings? {
     val usersObj: Users? = getUserByUserId(objUserSetting.friendId)
 
@@ -1654,7 +1674,6 @@ fun prepareSelectFriendWrapperModelList(friendRequest: List<FriendRequest>): Arr
     return allFriendsList
 }
 
-
 fun createFriendRequest(createRequest: FriendRequestModel): FriendRequest {
     val friendRequest = FriendRequest()
     friendRequest.id = createRequest.id
@@ -1772,8 +1791,27 @@ fun prepareContactHistoryData(exploreContact: ResponseIsAppUser.Data): ContactHi
     return contactHistory
 }
 
+fun prepareMyContactData(responseMyContact: List<ResponseMyContact.Data>): RealmList<MyContacts> {
+    val myContacts: RealmList<MyContacts> = RealmList()
+    responseMyContact.forEach { item ->
+        if (item.appUserId != getCurrentUserId()) {
+            val myContactsModel = MyContacts()
+            myContactsModel.contactId = getNewChatId()
+            myContactsModel.id = item.id
+            myContactsModel.fullName = item.fullName
+            myContactsModel.email = item.email ?: ""
+            myContactsModel.number = item.number ?: ""
+            myContactsModel.isAppUser = item.isAppUser
+            myContactsModel.appUserId = item.appUserId
+            myContactsModel.registerType = item.registerType ?: ""
+            myContactsModel.profileImage = item.profileImage ?: ""
+            myContactsModel.profileColor = item.profileColor ?: ""
+            myContacts.add(myContactsModel)
+        }
+    }
+    return myContacts
+}
+
 interface OnRealmTransactionResult {
-
     fun onSuccess(obj: Any)
-
 }
