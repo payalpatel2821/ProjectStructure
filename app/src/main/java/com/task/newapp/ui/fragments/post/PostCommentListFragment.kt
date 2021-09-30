@@ -481,8 +481,10 @@ class PostCommentListFragment : BottomSheetDialogFragment(), View.OnClickListene
                 override fun onPositiveButtonClick() {
                     if (activity!!.isNetworkConnected()) {
                         if (positionMain < postCommentAdapter.getData()!!.size) {
-                            var commentId = postCommentAdapter.getData()[positionMain].commentReplyList[positionSub]!!.id
-                            deleteComment(positionMain, positionSub, "reply", commentId)
+                            if (postCommentAdapter.getData()[positionMain].commentReplyList.size > 0) {
+                                var commentId = postCommentAdapter.getData()[positionMain].commentReplyList[positionSub]!!.id
+                                deleteComment(positionMain, positionSub, "reply", commentId)
+                            }
                         }
                     } else {
                         Toast.makeText(context, R.string.no_internet, Toast.LENGTH_SHORT).show()

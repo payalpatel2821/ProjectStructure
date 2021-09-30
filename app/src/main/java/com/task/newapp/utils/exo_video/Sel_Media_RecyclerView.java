@@ -39,7 +39,6 @@ import java.util.Objects;
 
 
 public class Sel_Media_RecyclerView extends RecyclerView {
-
     private static final String TAG = "ExoPlayerRecyclerView";
     public VideoTrimmerView trimmer_view;
     ImageView imageView;
@@ -502,5 +501,6 @@ public class Sel_Media_RecyclerView extends RecyclerView {
     private enum VolumeState {
         ON, OFF
     }
+
 }
 

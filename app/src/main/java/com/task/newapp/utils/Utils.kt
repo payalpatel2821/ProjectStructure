@@ -87,6 +87,8 @@ import kotlin.math.absoluteValue
 
 
 import com.task.newapp.BuildConfig
+import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 
 
 /**
@@ -604,9 +606,8 @@ fun SpannableString.withClickableSpan(
         override fun onClick(widget: View) = onClickListener.invoke()
         override fun updateDrawState(ds: TextPaint) {
             super.updateDrawState(ds)
-            ds.color = Color.BLACK
-            // ds.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD);
-
+            ds.color = Color.parseColor("#6CAEC4")
+            ds.typeface = Typeface.createFromAsset(App.getAppInstance().assets, "lato_regular.ttf")
             ds.isUnderlineText = false
         }
     }
@@ -1294,7 +1295,6 @@ fun Activity.callAPIGetAllNotification(mCompositeDisposable: CompositeDisposable
 }
 
 
-
 fun createEventWiseLabel(chatModel: ChatModel, msgText: String): String {
     var strMessage = ""
     strMessage = when (MessageEvents.getMessageEventFromName((chatModel.event!!))) {
@@ -1638,5 +1638,26 @@ private fun Context.saveMediaToStorage(bitmap: Bitmap) {
     fos?.use {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         showToast("Saved to Photos")
+    }
+}
+
+fun View.animateScaleView() {
+    this.animate()
+        .scaleX(0.3F)
+        .scaleY(0.3F)
+        .setDuration(150)
+        .withEndAction { this.animate().scaleX(1F).scaleY(1F).duration = 150 }
+}
+
+fun openProfileActivity(activity: Activity, userId: Int) {
+    if (userId == getCurrentUserId()) {
+        activity!!.launchActivity<MyProfileActivity> {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    } else {
+        activity!!.launchActivity<OtherUserProfileActivity> {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(Constants.user_id, userId)
+        }
     }
 }

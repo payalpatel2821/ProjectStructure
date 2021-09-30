@@ -44,7 +44,7 @@
             android:layout_toRightOf="@+id/profile_iv"
             android:gravity="center"
             android:textColor="@color/white"
-            tools:text="00dfdsf" />
+            tools:text="00" />
 
         <LinearLayout
             android:id="@+id/aaaa"
@@ -84,6 +84,7 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/bottomlay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -106,7 +107,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/img_rv"
             android:layout_width="match_parent"
-            android:layout_height="65dp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/image_rv_item" />
 
     </LinearLayout>
 
@@ -118,7 +122,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="6dp"
         android:layout_marginRight="10pt"
-        android:layout_marginBottom="137dp"
+        android:layout_marginBottom="@dimen/_50sdp"
         android:background="@drawable/btn_rounded_bg"
         android:clickable="true"
         android:elevation="10pt"

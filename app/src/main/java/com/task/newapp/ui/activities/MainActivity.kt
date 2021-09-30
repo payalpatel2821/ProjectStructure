@@ -34,12 +34,16 @@ import com.task.newapp.utils.Constants.Companion.SelectFriendsNavigation
 import com.task.newapp.utils.contactUtils.ContactsHelper
 import com.task.newapp.workmanager.WorkManagerScheduler
 import io.reactivex.disposables.CompositeDisposable
+import androidx.core.app.ActivityCompat.startActivityForResult
+
+
 
 
 class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment.OnHideShowBottomSheet {
 
     private lateinit var contactBottomSheetFragment: ContactBottomSheet
     lateinit var binding: ActivityMainBinding
+
     val chatsFragment = ChatsFragment()
     val postFragment = PostFragment()
     val thirdFragment = ChatsFragment()
@@ -66,9 +70,11 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         WorkManagerScheduler.refreshPeriodicWork(App.getAppInstance())
         callAPIGetAllNotification(mCompositeDisposable)
         initView()
+
         //Add New
         ZoomHelper.getInstance().minScale = 1f
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -405,7 +411,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         return ZoomHelper.getInstance().dispatchTouchEvent(ev!!, this) || super.dispatchTouchEvent(ev)
     }
-
     override fun onResume() {
         super.onResume()
 
@@ -416,5 +421,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
 ////            setAdapter(contacts)
 //        }
     }
+
 
 }

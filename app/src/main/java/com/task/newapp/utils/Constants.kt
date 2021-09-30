@@ -25,6 +25,7 @@ class Constants {
         const val mobile = "mobile"
         const val typeCode = "type"
         const val comment_text = "comment_text"
+        const val mention = "mention"
         const val post_id = "post_id"
         const val turn_off_comment = "turn_off_comment"
         const val main_comment_id = "main_comment_id"

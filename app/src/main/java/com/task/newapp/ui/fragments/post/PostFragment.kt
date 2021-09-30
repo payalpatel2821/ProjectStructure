@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -42,6 +44,7 @@ import com.task.newapp.adapter.post.PostFragAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentPostBinding
 import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.ResponseBlockReportUser
 import com.task.newapp.models.ResponseFollowUnfollow
 import com.task.newapp.models.post.*
 import com.task.newapp.models.socket.PostSocket
@@ -276,7 +279,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                             hasLoadedAllItems = true
                                         }
 
-                                        postFragAdapter.onItemClick = { view, position, comment ->
+                                        postFragAdapter.onItemClick = { view, position, comment, jsonArrayMention ->
                                             if (postFragAdapter.getdata().isNotEmpty()) {
 
                                                 positionAdapter = position
@@ -287,6 +290,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                 when (view.id) {
                                                     R.id.imgLike -> {
                                                         // initSocketListeners()
+
+                                                        view.animateScaleView()
 
                                                         val imgLike: ImageView = view as ImageView
 
@@ -327,6 +332,8 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                     }
 
                                                     R.id.imgSave -> {
+                                                        view.animateScaleView()
+
                                                         val imgSave: ImageView = view as ImageView
 
                                                         var saveType = ""
@@ -364,7 +371,7 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                                                         if (comment.isNotEmpty()) {
                                                             //Call API for add comment
 //                                                            callAPIPostComment(commentText = edt_comment.text.toString(), postId = post_id.toString(), position)
-                                                            callAPIPostComment(commentText = comment, postId = post_id.toString(), position)
+                                                            callAPIPostComment(commentText = comment, postId = post_id.toString(), position, jsonArrayMention)
                                                         }
                                                     }
 
@@ -785,11 +792,12 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
 //        }
 //    }
 
-    private fun callAPIPostComment(commentText: String, postId: String, position: Int) {
+    private fun callAPIPostComment(commentText: String, postId: String, position: Int, jsonArrayMention: String) {
         try {
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.post_id to postId,
-                Constants.comment_text to commentText
+                Constants.comment_text to commentText,
+                Constants.mention to jsonArrayMention
             )
 
             openProgressDialog(activity)
@@ -846,6 +854,9 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
                     DialogUtils.PostDialogActionName.FOLLOW.value, DialogUtils.PostDialogActionName.UNFOLLOW.value -> {
                         //Call API for follow
                         callAPIFollowUnFollow(if (isFollow == 1) "unfollow" else "follow", isFollow)
+                    }
+                    DialogUtils.PostDialogActionName.REPORT.value, DialogUtils.PostDialogActionName.REPORT.value -> {
+                        callAPIBlockReportUser("report")
                     }
                 }
             }
@@ -1575,5 +1586,72 @@ class PostFragment : Fragment(), View.OnClickListener, Paginate.Callbacks, Media
         txt_ok.setOnClickListener { dialog.dismiss() }
 
         dialog.show()
+    }
+
+    private fun callAPIBlockReportUser(isBlock: String) {
+        val message: String = requireActivity().resources.getString(R.string.conform_report)
+
+        DialogUtils().showReportDialog(activity as AppCompatActivity, message, object : DialogUtils.DialogCallbacks {
+            override fun onPositiveButtonClick() {
+
+            }
+
+            override fun onNegativeButtonClick() {
+
+            }
+
+            override fun onDefaultButtonClick(actionName: String) {
+                if (!requireActivity().isNetworkConnected()) {
+                    requireActivity().showToast(getString(R.string.no_internet))
+                    return
+                }
+                try {
+                    openProgressDialog(requireActivity())
+
+                    val hashMap: HashMap<String, Any> = hashMapOf(
+                        Constants.id to user_id,
+                        Constants.type to isBlock,
+                        Constants.report_reason to actionName
+                    )
+
+                    mCompositeDisposable.add(
+                        ApiClient.create()
+                            .setBlockUnblockReportSetting(hashMap)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeWith(object :
+                                DisposableObserver<ResponseBlockReportUser>() {
+                                @RequiresApi(Build.VERSION_CODES.O)
+                                override fun onNext(blockreportuserresponse: ResponseBlockReportUser) {
+                                    Log.v("onNext: ", blockreportuserresponse.toString())
+                                    requireActivity().showToast(blockreportuserresponse.message)
+
+                                    if (blockreportuserresponse.success == 1) {
+                                        postFragAdapter?.let {
+
+                                            if (allPostArrayList.isNotEmpty()) {
+                                                allPostArrayList.removeAt(positionAdapter)
+                                                postFragAdapter.setdata(allPostArrayList)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                override fun onError(e: Throwable) {
+                                    Log.v("onError: ", e.toString())
+                                    hideProgressDialog()
+                                }
+
+                                override fun onComplete() {
+                                    hideProgressDialog()
+                                }
+                            })
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        })
     }
 }

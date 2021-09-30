@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -32,6 +33,9 @@ import com.task.newapp.utils.exo_video.Sel_Media_RecyclerAdapter
 import com.task.newapp.utils.exo_video.Sel_Media_RecyclerView
 import com.task.newapp.utils.isImageFile
 import lv.chi.photopicker.MediaPickerFragment
+import com.task.newapp.utils.getPathFromURI
+import com.task.newapp.utils.photoediting.EditImageActivity
+import com.task.newapp.utils.showLog
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -55,6 +59,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     var captionarr: List<String> = ArrayList()
     var timearr: List<String> = ArrayList()
     var uritype: ArrayList<Int>? = ArrayList()
+    var currPosition: Int = 0
     lateinit var receiver_name: TextView
     var EDIT_IMAGE = 1000
     lateinit var mAdapter: Sel_Media_RecyclerAdapter
@@ -65,6 +70,7 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     var finalOutputFile: String? = null
     private var HorizontalLayout: LinearLayoutManager? = null
     private val CAMERA_REQUEST = 5
+
     private fun initGlide(): RequestManager {
         val options = RequestOptions()
         return Glide.with(applicationContext)
@@ -95,9 +101,12 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         caption_arr = ArrayList()
         time_arr = ArrayList()
         uritype = ArrayList()
+
         caption_arr = intent.getStringArrayListExtra("select_captions")!!
         time_arr = intent.getStringArrayListExtra("select_time")!!
         uritype = intent.getIntegerArrayListExtra("urls_mediatype")
+        currPosition = intent.getIntExtra("currPosition", 0)
+
         mRecyclerView = findViewById(R.id.exoPlayerRecyclerView)
         mRecyclerView.layoutManager = GridLayoutManager(this@ViewPagerActivity, 1, GridLayoutManager.HORIZONTAL, false)
         val snapHelper = PagerSnapHelper()
@@ -123,6 +132,14 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
         img_rv.layoutManager = HorizontalLayout
         image_rv_adapter = Image_rv_adapter(this@ViewPagerActivity, imageurilist, uritype)
         img_rv.adapter = image_rv_adapter
+        iv_delete.setOnClickListener(this)
+        iv_crop.setOnClickListener(this)
+        imageSend.setOnClickListener(this)
+        iv_edit.setOnClickListener(this)
+
+        //-----------------------------Add New--------------------------------
+        mRecyclerView.scrollToPosition(currPosition)
+
     }
 
     override fun onClick(view: View?, position: Int) {
@@ -146,6 +163,8 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
 
     override fun onClick(view: View) {
         val current: Int = mRecyclerView.currentItem
+        showLog("currentItem", getCurrentPosition().toString() + "," + current)
+
         when (view.id) {
             R.id.iv_delete -> try {
                 imageurilist!!.removeAt(current)
@@ -168,8 +187,9 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
                 e.printStackTrace()
             }
             R.id.iv_crop -> {
-            }
+            }/*Commons.logEvent(this@ViewPagerActivity, "Crop", "", "ViewPagerActivity", "CropClick")*/
             R.id.imageSend -> {
+                Log.e("send", "click")
                 mRecyclerView.toggleVolume()
                 imageSend!!.isClickable = false
                 compressprogress!!.visibility = View.VISIBLE
@@ -177,8 +197,12 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
                 addCompressFile(abc)
             }
             R.id.iv_edit -> {
+                var intent = Intent(this@ViewPagerActivity, EditImageActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                intent.putExtra("filepath", imageurilist!![getCurrentPosition()].toString())
+//                startActivityForResult(intent, EDIT_IMAGE)
+                editImageResultLauncher.launch(intent)
             }
-
         }
     }
 
@@ -270,6 +294,20 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     }
 
     override fun onBackPressed() {
+//        if (imageurilist!!.size == 0) {
+
+        //----------------------Add New------------------------
+//        addcompressfile(abc)
+
+        imageurilist!!.forEach {
+            imagearray.add(it?.path)
+        }
+
+        intent.putStringArrayListExtra("select_urls", imagearray)
+        intent.putStringArrayListExtra("select_captions", caption_arr)
+        intent.putStringArrayListExtra("select_time", time_arr)
+        intent.putIntegerArrayListExtra("urls_mediatype", uritype)
+        setResult(RESULT_OK, intent)
         finish()
     }
 
@@ -294,6 +332,23 @@ class ViewPagerActivity : AppCompatActivity(), View.OnClickListener, OnItemClick
     companion object {
         lateinit var img_rv: RecyclerView
         lateinit var trim_time: TextView
+    }
+
+    private var editImageResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                var mSaveImageUri = Uri.parse(result.data?.getStringExtra("mSaveImageUri"))
+                showLog("editImageResultLauncher", mSaveImageUri.toString() + "---" + getCurrentPosition())
+
+                //Update edited image path in arraylist
+                imageurilist!![getCurrentPosition()] = Uri.parse(getPathFromURI(this, mSaveImageUri))
+//                mAdapter.notifyItemChanged(getCurrentPosition())
+                mAdapter.notifyDataSetChanged()
+            }
+        }
+
+    private fun getCurrentPosition(): Int {
+        return (mRecyclerView.layoutManager as LinearLayoutManager?)!!.findFirstVisibleItemPosition()
     }
 
     override fun onMediaPicked(mediaItems: ArrayList<Uri>) {

@@ -29,6 +29,7 @@
         android:visibility="gone" />
 
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/caption_iv"
         android:layout_width="match_parent"
         android:layout_height="60dp"

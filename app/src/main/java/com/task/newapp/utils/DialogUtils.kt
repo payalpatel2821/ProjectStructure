@@ -99,9 +99,13 @@ class DialogUtils {
         val alert = AlertView(title, message, AlertStyle.IOS)
         alert.show(activity)
         alert.setCancelButtonText(activity.getString(R.string.cancel), activity.resources.getColor(com.irozon.alertview.R.color.black))
-        alert.addAction(AlertAction(PostDialogActionName.REPORT.value, AlertActionStyle.NEGATIVE) {
-            listener.onNegativeButtonClick()
-        })
+
+        if (!postByMe) {
+            alert.addAction(AlertAction(PostDialogActionName.REPORT.value, AlertActionStyle.NEGATIVE) {
+                listener.onDefaultButtonClick(PostDialogActionName.REPORT.value)
+            })
+        }
+
         alert.addAction(AlertAction(PostDialogActionName.COPYLINK.value, AlertActionStyle.DEFAULT) {
             listener.onDefaultButtonClick(PostDialogActionName.COPYLINK.value)
         })
@@ -109,14 +113,16 @@ class DialogUtils {
             listener.onDefaultButtonClick(PostDialogActionName.TURNONPOST.value)
         })
 
-        if (isFollow) {
-            alert.addAction(AlertAction(PostDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
-                listener.onDefaultButtonClick(PostDialogActionName.UNFOLLOW.value)
-            })
-        } else {
-            alert.addAction(AlertAction(PostDialogActionName.FOLLOW.value, AlertActionStyle.DEFAULT) {
-                listener.onDefaultButtonClick(PostDialogActionName.FOLLOW.value)
-            })
+        if (!postByMe) {
+            if (isFollow) {
+                alert.addAction(AlertAction(PostDialogActionName.UNFOLLOW.value, AlertActionStyle.DEFAULT) {
+                    listener.onDefaultButtonClick(PostDialogActionName.UNFOLLOW.value)
+                })
+            } else {
+                alert.addAction(AlertAction(PostDialogActionName.FOLLOW.value, AlertActionStyle.DEFAULT) {
+                    listener.onDefaultButtonClick(PostDialogActionName.FOLLOW.value)
+                })
+            }
         }
 
         if (postByMe) {
@@ -145,7 +151,7 @@ class DialogUtils {
         val balloon = Balloon.Builder(activity)
             .setLayout(binding.root)
             .setArrowSize(20)
-           // .setArrowElevation(5)
+            // .setArrowElevation(5)
             .setArrowDrawableResource(R.drawable.ic_arrow_filled_white)
             .setArrowOrientation(ArrowOrientation.BOTTOM)
             .setWidthRatio(0.60f)

@@ -35,6 +35,10 @@ data class ResponsePostComment(
         @SerializedName("updated_at")
         val updatedAt: String = "",
         @SerializedName("user_id")
-        val userId: Int = 0
+        val userId: Int = 0,
+
+        //Add New
+        @SerializedName("mention")
+        val mention: String = ""
     )
 }
