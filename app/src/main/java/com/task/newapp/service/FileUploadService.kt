@@ -22,6 +22,8 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.ModelAddPost
+import com.task.newapp.models.ModelMention
 import com.task.newapp.ui.activities.MainActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.compressor.SiliCompressor
@@ -46,6 +48,8 @@ import kotlin.collections.ArrayList
 class FileUploadService : JobIntentService() {
     //    RestApiService apiService;
     var mDisposable: Disposable? = null
+
+    lateinit var jsonArrayMention: String
     lateinit var caption: String
     lateinit var switchTurnOff: String
     lateinit var mNotificationHelper: NotificationHelper
@@ -55,7 +59,9 @@ class FileUploadService : JobIntentService() {
     var thumbarray: ArrayList<MultipartBody.Part> = ArrayList<MultipartBody.Part>()
     var imagearray: ArrayList<MultipartBody.Part> = ArrayList<MultipartBody.Part>()
     var count = 0
+    var mention = 0
     private lateinit var arrayListMedia: ArrayList<LocalMedia>
+    private lateinit var arrayListMention: ArrayList<ModelMention>
     private val mCompositeDisposable = CompositeDisposable()
 
     var onPostDoneClickListenerService: OnPostDoneClickListenerService? = null
@@ -222,12 +228,18 @@ class FileUploadService : JobIntentService() {
         Log.d(TAG, intent.toString())
 
         // get file file here
+        jsonArrayMention = intent.getStringExtra("mention").toString()
+//        val type1: Type = object : TypeToken<ArrayList<ModelMention>>() {}.type
+//        arrayListMention = Gson().fromJson(intent.getStringExtra("mention"), type1)
+
         caption = intent.getStringExtra("caption").toString()
         commaSeperatedIds = intent.getStringExtra("commaSeperatedIds").toString()
         switchTurnOff = intent.getStringExtra("switchTurnOff").toString()
 
         val type: Type = object : TypeToken<ArrayList<LocalMedia>>() {}.type
         arrayListMedia = Gson().fromJson(intent.getStringExtra("mediaItemsArray"), type)
+
+        Log.e(TAG, "onHandleWork: $jsonArrayMention")
 
 //        if (caption == null) {
 //            Log.e(TAG, "onHandleWork: Invalid file URI")
@@ -240,8 +252,8 @@ class FileUploadService : JobIntentService() {
 //        Flowable<Double> fileObservable = Flowable.create(new FlowableOnSubscribe<Double>() {
 //            @Override
 //            public void subscribe(FlowableEmitter<Double> emitter) throws Exception {
-//                apiService.onFileUpload(
-//                        FileUploadService.this.createRequestBodyFromText("info@androidwave.com"),
+//                apiService.onFileUpload(//
+    //                FileUploadService.this.createRequestBodyFromText("info@androidwave.com"),
 //                        FileUploadService.this.createMultipartBody(mFilePath, emitter))
 //                        .blockingGet();
 //                emitter.onComplete();
@@ -687,12 +699,18 @@ class FileUploadService : JobIntentService() {
             val longitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
             val location: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
             val commaSeperatedIds: RequestBody = commaSeperatedIds.toRequestBody("text/plain".toMediaTypeOrNull())
+            val jsonArrayMention: RequestBody = jsonArrayMention.toRequestBody("text/plain".toMediaTypeOrNull())  //Add New
+//
+            Log.e(TAG, "callAPIPost: $jsonArrayMention")
 
             //openProgressDialog(activity)
 
             mCompositeDisposable.add(
                 ApiClient.create()
-                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, commaSeperatedIds, captionarray, typearray, thumbarray, imagearray)
+                    .addPost(
+                        turn_off_comment, hastags, title, type, latitude, longitude, location, commaSeperatedIds, jsonArrayMention,
+                        captionarray, typearray, thumbarray, imagearray
+                    )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {

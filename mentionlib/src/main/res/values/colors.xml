@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="orange">#f16421</color>
+    <color name="orange_faded">#80f16421</color>
+    <color name="grey_light">#f3f3f3</color>
+    <color name="grey">#999999</color>
+    <color name="mentions_default_color">#6CAEC4</color>
+</resources>

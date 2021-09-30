@@ -1,43 +1,57 @@
 package com.task.newapp.adapter.post
 
 import android.app.Activity
-import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.StrictMode
-import android.text.Editable
-import android.text.Html
-import android.text.InputFilter
-import android.text.TextWatcher
+import android.text.*
+import android.text.method.LinkMovementMethod
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.*
 import com.aghajari.zoomhelper.ZoomHelper
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.percolate.mentions.sample.adapters.RecyclerItemClickListener
 import com.squareup.picasso.Picasso
-import com.task.newapp.App
 import com.task.newapp.R
+import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ItemPostBinding
-import com.task.newapp.models.post.ResponseGetAllPost
+import com.task.newapp.models.post.ResponseFriendsList
 import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data
-import com.task.newapp.models.post.ResponseGetAllPost.All_Post_Data.Tagged
 import com.task.newapp.models.post.ResponsePostComment
-import com.task.newapp.utils.enableOrDisableImageViewTint
-import com.task.newapp.utils.load
-import com.task.newapp.utils.showLog
+import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
+import com.task.newapp.utils.*
+import com.task.newapp.utils.mentionlib.adapters.UsersAdapter
+import com.task.newapp.utils.mentionlib.adapters.utils.SuggestionsListener
+import com.task.newapp.utils.mentionlib.models.Mention
+import com.task.newapp.utils.mentionlib.utils.Mentionable
+import com.task.newapp.utils.mentionlib.utils.Mentions
+import com.task.newapp.utils.mentionlib.utils.QueryListener
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
+import org.json.JSONArray
+import org.json.JSONException
+import java.util.HashMap
 
 
-class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>() {
+class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : RecyclerView.Adapter<PostFragAdapter.StatusHolder>(),
+    QueryListener, SuggestionsListener {
+
     private val VIEW_TYPE_LOCATION = 2
 
     private val VIEW_TYPE_THOUGHT = 1
@@ -47,12 +61,25 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
     var HEIGHT = 0
     var WIDTH = 0
     var all_post: ArrayList<All_Post_Data> = all_post as ArrayList<All_Post_Data>
-    var onItemClick: ((View, Int, String) -> Unit)? = null
+    var onItemClick: ((View, Int, String, String) -> Unit)? = null
     var displayMetrics: DisplayMetrics
     lateinit var fontArrayThoughts: Array<String>
 
     //    lateinit var postList: Array<String>
     private val isCaching = true
+
+    //-------------------------------------Mention-------------------------------------
+    private var mentions: Mentions? = null
+    lateinit var popupWindow: PopupWindow
+    lateinit var mentionsEmptyView: TextView
+    lateinit var mentions_list_layout: FrameLayout
+    lateinit var mentions_list: RecyclerView
+    private var usersAdapter: UsersAdapter? = null
+    var jsonArrayMention = JsonArray()
+    private val mCompositeDisposable = CompositeDisposable()
+    lateinit var edtComment: EditText
+    lateinit var layoutComment: RelativeLayout
+    private var allfriendList: ArrayList<ResponseFriendsList.Data> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StatusHolder {
 //        return
@@ -61,7 +88,14 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //        return StatusHolder(view, this)
 
         val layoutBinding: ItemPostBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_post, parent, false)
-        return StatusHolder(layoutBinding, this)
+
+        var myview = StatusHolder(layoutBinding, this)
+        myview.edtCommentListener()
+
+//        initMention(activity = context, edtComment = layoutBinding.edtComment)
+//        initPopupWindow(layoutBinding.layoutComment)
+
+        return myview //StatusHolder(layoutBinding, this)
 
 //            }
 //            VIEW_TYPE_THOUGHT -> {
@@ -196,7 +230,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
         notifyItemRemoved(position)
     }
 
-    override fun getItemCount(): Int = all_post!!.size  //if (all_post.isEmpty()) 0 else 1
+    override fun getItemCount(): Int = all_post!!.size  //if (all_post!!.isEmpty()) 0 else 5
 
 //    private inner class LoadingViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //        var progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
@@ -235,12 +269,25 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             layoutBinding.edtComment.setText("")
                             layoutBinding.edtComment.clearFocus()
 
-                            if (all_post_data!!.latest_comment?.commentText.isNullOrEmpty()) {
-                                layoutBinding.txtComment.visibility = View.GONE
-                            } else {
-                                layoutBinding.txtComment.text = all_post_data.latest_comment.commentText
-                                layoutBinding.txtComment.visibility = View.VISIBLE
+//                            if (all_post_data!!.latest_comment?.commentText.isNullOrEmpty()) {
+//                                layoutBinding.txtComment.visibility = View.GONE
+//                            } else {
+//                                layoutBinding.txtComment.text = all_post_data.latest_comment.commentText
+//                                layoutBinding.txtComment.visibility = View.VISIBLE
+//                            }
+
+                            //-----------------------Add New--------------------------
+                            all_post_data.latest_comment?.commentText?.let {
+                                if (all_post_data.latest_comment.commentText.isNullOrEmpty()) {
+                                    layoutBinding.txtComment.visibility = View.GONE
+                                } else {
+                                    layoutBinding.txtComment.visibility = View.VISIBLE
+
+                                    //----------------------Set title as per mention-----------------
+                                    setMentionLastCommentOrNormal(all_post_data.latest_comment)
+                                }
                             }
+
                             layoutBinding.txtCommentCount.text = all_post_data.commentsCount.toString()
                         }
                         "turnOnOffCommentPayload" -> {
@@ -332,7 +379,6 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             //-------------------------Add New-------------------------
                             ZoomHelper.getInstance().addOnZoomStateChangedListener(adapter)
 
-
                             layoutBinding.recyclerView.layoutManager = mLayoutManager
                             layoutBinding.recyclerView.itemAnimator = DefaultItemAnimator()
 
@@ -346,21 +392,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             //optional - to play only first visible video
                             layoutBinding.recyclerView.setPlayOnlyFirstVideo(false) // false by default
 
-
-                            //optional - by default we check if url ends with ".mp4". If your urls do not end with mp4, you can set this param to false and implement your own check to see if video points to url
-//                            layoutBinding.recyclerView.setCheckForMp4(false) //true by default
-
-                            //optional - download videos to local storage (requires "android.permission.WRITE_EXTERNAL_STORAGE" in manifest or ask in runtime)
-//                            layoutBinding.recyclerView.setDownloadPath(Environment.getExternalStorageDirectory().toString() + "/MyVideo") // (Environment.getExternalStorageDirectory() + "/Video") by default
-//                            layoutBinding.recyclerView.setDownloadVideos(true) // false by default
                             layoutBinding.recyclerView.setVisiblePercent(50f) // percentage of View that needs to be visible to start playing
-
-                            //extra - start downloading all videos in background before loading RecyclerView
-//                            val urls: MutableList<String> = java.util.ArrayList()
-//                            for (`object` in modelList) {
-//                                if (`object`.getVideo_url() != null && `object`.getVideo_url().contains("http")) urls.add(`object`.getVideo_url())
-//                            }
-                            // layoutBinding.recyclerView.preDownload(urls)
 
                             if (all_post_data?.postContents.size > 1) View.VISIBLE else View.GONE
 
@@ -373,6 +405,7 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                             layoutBinding.pageIndicator.attachToRecyclerView(layoutBinding.recyclerView)
 
                             //---------------------set normal layout--------------------------
+                            layoutBinding.postImg.setImageBitmap(null)
                             layoutBinding.postImg.visibility = View.GONE
                             layoutBinding.txtMore.visibility = View.GONE
                             layoutBinding.txtLocation.visibility = View.GONE
@@ -405,15 +438,35 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                         }
                     }
 
+//                    initMention(activity = context, edtComment = layoutBinding.edtComment)
+//                    initPopupWindow(layoutBinding.layoutComment)
+
+//                    layoutBinding.edtComment.setOnTouchListener { v, event -> // change the background color
+//                        initMention(activity = context, edtComment = layoutBinding.edtComment)
+//                        initPopupWindow(layoutBinding.layoutComment)
+//                        false
+//                    }
                     //-----------------------------Common---------------------------------
                     layoutBinding.layoutComment.visibility = if (all_post_data.turnOffComment == 0) View.VISIBLE else View.GONE
 
                     //-------------------------last Comment show--------------------------
-                    if (all_post_data.latest_comment?.commentText.isNullOrEmpty()) {
-                        layoutBinding.txtComment.visibility = View.GONE
-                    } else {
-                        layoutBinding.txtComment.text = all_post_data.latest_comment.commentText
-                        layoutBinding.txtComment.visibility = View.VISIBLE
+//                    if (all_post_data.latest_comment?.commentText.isNullOrEmpty()) {
+//                        layoutBinding.txtComment.visibility = View.GONE
+//                    } else {
+//                        layoutBinding.txtComment.text = all_post_data.latest_comment.commentText
+//                        layoutBinding.txtComment.visibility = View.VISIBLE
+//                    }ṣ
+
+                    //------------------------Add New--------------------
+                    all_post_data.latest_comment?.commentText?.let {
+                        if (all_post_data.latest_comment.commentText.isNullOrEmpty()) {
+                            layoutBinding.txtComment.visibility = View.GONE
+                        } else {
+                            layoutBinding.txtComment.visibility = View.VISIBLE
+
+                            //----------------------Set title as per mention-----------------
+                            setMentionLastCommentOrNormal(all_post_data.latest_comment)
+                        }
                     }
 
                     //-------------------------Like Dislike--------------------------
@@ -435,82 +488,82 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //                    layoutBinding.nameTxt.setTextMaxLength(100)
 
                     //-------------------------set Post Button enable/diable --------------------------
-                    layoutBinding.edtComment.addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                        }
+//                    layoutBinding.edtComment.addTextChangedListener(object : TextWatcher {
+//                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                        }
+//
+//                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                        }
+//
+//                        override fun afterTextChanged(s: Editable?) {
+//                            Log.e("afterTextChanged: ", s.toString())
+//                            if (s.toString().trim().isEmpty()) {
+//                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray3))
+////                                enableOrDisableImageViewTint(context, s.toString().trim().isNotEmpty(), layoutBinding.txtPost)
+//                            } else {
+//                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray4))
+////                                enableOrDisableImageViewTint(context, true, layoutBinding.txtPost)
+//
+//                            }
+//                        }
+//                    })
 
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        }
+//                    layoutBinding.edtComment.setOnFocusChangeListener { v, hasFocus ->
+//                        if (hasFocus) {
+//                            initMention(activity = context, edtComment = v as EditText)
+//                            initPopupWindow(layoutBinding.layoutComment)
+//                        }
+//                    }
 
-                        override fun afterTextChanged(s: Editable?) {
-                            if (s.toString().trim().isEmpty()) {
-                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray3))
-//                                enableOrDisableImageViewTint(context, s.toString().trim().isNotEmpty(), layoutBinding.txtPost)
-                            } else {
-                                layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray4))
-//                                enableOrDisableImageViewTint(context, true, layoutBinding.txtPost)
-                            }
-                        }
-                    })
 
                     //-----------------------------Turn on/off comment layout hide/show---------------------------------
 
-                    if (all_post_data.isPostForPage == 1) {
-                        if (all_post_data.page.isNotEmpty()) {
+//                    if (all_post_data.isPostForPage == 1) {
+//                        if (all_post_data.page.isNotEmpty()) {
+//
+//                            if (!all_post_data.title.isNullOrEmpty()) {
+//                                layoutBinding.titleTxt.text = all_post_data.title
+//                                layoutBinding.titleTxt.visibility = View.VISIBLE
+//                            } else {
+//                                layoutBinding.titleTxt.visibility = View.GONE
+//                            }
+//                            layoutBinding.txtUsername.text = all_post_data.page[0].name
+////                            layoutBinding.txtUsername.setContent(all_post_data.page[0].name)
+//                        }
+//                    } else {
+                    var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
 
-                            if (!all_post_data.title.isNullOrEmpty()) {
-                                layoutBinding.titleTxt.text = all_post_data.title
-                                layoutBinding.titleTxt.visibility = View.VISIBLE
-                            } else {
-                                layoutBinding.titleTxt.visibility = View.GONE
-                            }
-                            layoutBinding.txtUsername.text = all_post_data.page[0].name
-//                            layoutBinding.txtUsername.setContent(all_post_data.page[0].name)
-                        }
+                    //Check User Tag and add with name
+                    if (all_post_data.tagged.isEmpty()) {
+                        layoutBinding.txtTagUsername.visibility = View.GONE
+                        layoutBinding.txtUsername.visibility = View.VISIBLE
+                        layoutBinding.txtUsername.text = fullName
                     } else {
-                        var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
+                        layoutBinding.txtTagUsername.visibility = View.VISIBLE
+                        layoutBinding.txtUsername.visibility = View.GONE
 
-                        //Check User Tag and add with name
-                        if (all_post_data.tagged.isEmpty()) {
-                            layoutBinding.txtTagUsername.visibility = View.GONE
-                            layoutBinding.txtUsername.visibility = View.VISIBLE
-                            layoutBinding.txtUsername.text = fullName
-                        } else {
-                            layoutBinding.txtTagUsername.visibility = View.VISIBLE
-                            layoutBinding.txtUsername.visibility = View.GONE
-
-                            var commaSeperatedTagsNames = all_post_data.tagged[0].let {
-                                (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
-                            }
-                            if (all_post_data.tagged.size > 1) {
-                                commaSeperatedTagsNames = commaSeperatedTagsNames.plus("<font color='#AAA1A1'> and </font>").plus(all_post_data.tagged.size - 1).plus(" others.")
-                            }
-
-                            val styledText = "$fullName <font color='#AAA1A1'> is with </font>$commaSeperatedTagsNames"
-                            layoutBinding.txtTagUsername.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
-                            Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
+                        var commaSeperatedTagsNames = all_post_data.tagged[0].let {
+                            (it.first_name ?: "").plus(" ").plus(it.last_name ?: "")
                         }
+                        if (all_post_data.tagged.size > 1) {
+                            commaSeperatedTagsNames = commaSeperatedTagsNames.plus("<font color='#AAA1A1'> and </font>").plus(all_post_data.tagged.size - 1).plus(" others.")
+                        }
+
+                        val styledText = "$fullName <font color='#AAA1A1'> is with </font>$commaSeperatedTagsNames"
+                        layoutBinding.txtTagUsername.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE)
+                        Log.e("commaSeperatedTagsNames", "$commaSeperatedTagsNames,$adapterPosition")
                     }
+//                    }
 
                     if (all_post_data.title.isNullOrEmpty()) {
                         layoutBinding.titleTxt.visibility = View.GONE
                     } else {
                         layoutBinding.titleTxt.visibility = View.VISIBLE
-                        layoutBinding.titleTxt.text = all_post_data.title
+
+                        //----------------------Set title as per mention-----------------
+                        setMentionOrNormal(all_post_data)
                     }
 
-//                    Glide.with(context)
-//                        .load(all_post_data!!.user.profileImage)
-//                        .thumbnail(0.25f)
-//                        .apply(RequestOptions.skipMemoryCacheOf(!isCaching))
-//                        .apply(RequestOptions.diskCacheStrategyOf(if (isCaching) DiskCacheStrategy.ALL else DiskCacheStrategy.NONE))
-//                        .error(R.drawable.logo)
-//                        .into(layoutBinding.imgView)
-//
-//                    val requestOptions = RequestOptions()
-//                    requestOptions.isMemoryCacheable
-
-                    var fullName = (all_post_data.user.firstName ?: "") + " " + (all_post_data.user.lastName ?: "")
                     layoutBinding.imgView.load(all_post_data!!.user.profileImage, true, fullName, all_post_data!!.user.profileColor)
 
 //                    layoutBinding.imgPlaypause.visibility = View.VISIBLE
@@ -534,7 +587,69 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
             }
         }
 
-        fun setThought(thoughtType: String, all_post_data: All_Post_Data.PostContent) {
+        private fun setMentionOrNormal(allpostdata: All_Post_Data) {
+            try {
+                layoutBinding.titleTxt.text = allpostdata.title
+
+                allpostdata.mention?.let {
+                    val strSpannable = layoutBinding.titleTxt.text.toSpannable() as SpannableString
+
+                    var jsonArray = JSONArray(allpostdata.mention)
+                    if (jsonArray.length() > 0) {
+                        for (i in 0 until jsonArray.length()) {
+                            val item = jsonArray.getJSONObject(i)
+                            var id = item.getString("id")
+                            var name = item.getString("name")
+//                            var accountId = item.getString("accountId")
+
+                            strSpannable.withClickableSpan(name, onClickListener = ({
+                                //On click Open user profile
+//                                context.showToast("$id,$name")
+
+                                openProfileActivity(context, id.toInt())
+                            }))
+                        }
+
+                        layoutBinding.titleTxt.text = strSpannable
+                        layoutBinding.titleTxt.movementMethod = LinkMovementMethod.getInstance();
+                    }
+                }
+            } catch (e: JSONException) {
+            }
+        }
+
+        private fun setMentionLastCommentOrNormal(allpostdata: ResponsePostComment.Data) {
+            try {
+                layoutBinding.txtComment.text = allpostdata.commentText
+
+                allpostdata.mention?.let {
+                    val strSpannable = layoutBinding.txtComment.text.toSpannable() as SpannableString
+
+                    var jsonArray = JSONArray(allpostdata.mention)
+                    if (jsonArray.length() > 0) {
+                        for (i in 0 until jsonArray.length()) {
+                            val item = jsonArray.getJSONObject(i)
+                            var id = item.getString("id")
+                            var name = item.getString("name")
+//                            var accountId = item.getString("accountId")
+
+                            strSpannable.withClickableSpan(name, onClickListener = ({
+                                //On click Open user profile
+//                                context.showToast("$id,$name")
+
+                                openProfileActivity(context, id.toInt())
+                            }))
+                        }
+
+                        layoutBinding.txtComment.text = strSpannable
+                        layoutBinding.txtComment.movementMethod = LinkMovementMethod.getInstance();
+                    }
+                }
+            } catch (e: JSONException) {
+            }
+        }
+
+        private fun setThought(thoughtType: String, all_post_data: All_Post_Data.PostContent) {
 
             val backgroundType: String? = all_post_data.backgroundType   //pattern
             val color: String? = all_post_data.color
@@ -668,8 +783,6 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                     layoutBinding.txtMore.visibility = View.GONE
                 }
             }
-
-
         }
 
         init {
@@ -682,9 +795,46 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
             layoutBinding.imgView.setOnClickListener(this)
             layoutBinding.txtTagUsername.setOnClickListener(this)
 //            layoutBinding.txtUsername.setOnClickListener(this)
+
+            //----------------------------init Mention-----------------------------
+            allfriendList = ArrayList()
+            edtComment = layoutBinding.edtComment
+            layoutComment = layoutBinding.layoutComment
+
+            //------------------------------Add New----------------------------
+            //edtCommentListener()
+
         }
 
-        fun setEditTextMaxLength(length: Int) {
+        fun edtCommentListener() {
+            layoutBinding.edtComment.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    Log.e("afterTextChanged: ", s.toString())
+                    if (s.toString().trim().isEmpty()) {
+                        layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray3))
+//                                enableOrDisableImageViewTint(context, s.toString().trim().isNotEmpty(), layoutBinding.txtPost)
+                    } else {
+
+                        if (s.toString().length == 1) {
+                            initMention(activity = context, edtComment = layoutBinding.edtComment)
+                            initPopupWindow(layoutBinding.layoutComment)
+                        }
+
+                        layoutBinding.txtPost.setTextColor(context.resources.getColor(R.color.gray4))
+//                                enableOrDisableImageViewTint(context, true, layoutBinding.txtPost)
+
+                    }
+                }
+            })
+        }
+
+        private fun setEditTextMaxLength(length: Int) {
             val filterArray = arrayOfNulls<InputFilter>(1)
             filterArray[0] = InputFilter.LengthFilter(length)
             layoutBinding.txtThought.filters = filterArray
@@ -701,12 +851,15 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
                 R.id.txt_tag_username
                     /*R.id.txt_username*/ -> {
                     if (onItemClick != null) {
-                        onItemClick?.invoke(v, adapterPosition, "")
+                        onItemClick?.invoke(v, bindingAdapterPosition, "", "")
                     }
                 }
                 R.id.txtPost -> {
                     if (onItemClick != null) {
-                        onItemClick?.invoke(v, adapterPosition, layoutBinding.edtComment.text.toString().trim())
+                        mentions!!.insertedMentions?.let {
+                            (mentions!!.insertedMentions as ArrayList).clear()
+                        }
+                        onItemClick?.invoke(v, bindingAdapterPosition, layoutBinding.edtComment.text.toString().trim(), Gson().toJson(jsonArrayMention))
                     }
                 }
             }
@@ -862,5 +1015,237 @@ class PostFragAdapter(var context: Activity, all_post: List<All_Post_Data>) : Re
 //
 //        dialog.show()
 //    }
+
+    //--------------------------------------------------Mention----------------------------------------------------------
+    /**
+     * Initialize views and utility objects.
+     */
+    private fun initMention(activity: Activity, edtComment: EditText) {
+        mentions = Mentions.Builder(activity, edtComment)
+            .suggestionsListener(this)
+            .queryListener(this)
+            .build()
+    }
+
+    override fun displaySuggestions(display: Boolean) {
+        Log.e("displaySuggestions: ", display.toString())
+        if (display) {
+            if (this::mentions_list_layout.isInitialized) {
+                mentions_list_layout.visibility = View.VISIBLE
+            }
+        } else {
+            if (this::mentions_list_layout.isInitialized) {
+                mentions_list_layout.visibility = View.GONE
+            }
+        }
+    }
+
+    override fun onQueryReceived(query: String?) {
+        Log.e("onQueryReceived: ", query!!)
+
+        getFriendList(0, query!!) { users ->
+            if (users.isNotEmpty()) {
+                if (users.isNotEmpty()) {
+                    usersAdapter!!.clear()
+                    usersAdapter!!.setCurrentQuery(query!!)
+                    usersAdapter!!.addAll(users)
+                    showMentionsList(true)
+                } else {
+                    showMentionsList(false)
+                }
+            }
+        }
+    }
+
+    private fun getFriendList(currentSize: Int, searchText: String, callback: ((ArrayList<ResponseFriendsList.Data>) -> Unit)? = null) {
+        try {
+            try {
+                //openProgressDialog(activity)
+
+                val hashMap: HashMap<String, Any> = hashMapOf(
+                    Constants.flag to "mention",
+                    Constants.term to searchText
+//                        Constants.limit to requireActivity().getString(R.string.limit_20),
+//                        Constants.offset to currentSize.toString()
+                )
+
+                mCompositeDisposable.add(
+                    ApiClient.create()
+                        .search_contacts(hashMap)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(object : DisposableObserver<ResponseFriendsList>() {
+                            override fun onNext(responseFriendsList: ResponseFriendsList) {
+                                Log.v("onNext: ", responseFriendsList.toString())
+                                if (responseFriendsList != null && responseFriendsList.success == 1) {
+
+                                    if (responseFriendsList.data.isNotEmpty()) {
+
+                                        allfriendList?.let { it.clear() }
+                                        allfriendList.addAll(responseFriendsList.data as ArrayList<ResponseFriendsList.Data>)
+                                    }
+                                }
+                            }
+
+                            override fun onError(e: Throwable) {
+                                hideProgressDialog()
+                                Log.v("onError: ", e.toString())
+                                callback?.invoke(allfriendList)
+                            }
+
+                            override fun onComplete() {
+                                hideProgressDialog()
+                                callback?.invoke(allfriendList)
+                            }
+                        })
+                )
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                hideProgressDialog()
+                callback?.invoke(allfriendList)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+        }
+    }
+
+    private fun showMentionsList(display: Boolean) {
+        Log.e("showMentionsList: ", display.toString())
+
+        mentions_list_layout.visibility = View.VISIBLE
+        if (display) {
+            showPopupWindow(layoutComment)
+            mentionsEmptyView.visibility = View.GONE
+        } else {
+            popupWindow?.let {
+                mentionsEmptyView.visibility = View.VISIBLE
+                it.dismiss()
+            }
+        }
+    }
+
+    private fun initPopupWindow(anchor: View) {
+        popupWindow = PopupWindow(anchor.context).apply {
+            isOutsideTouchable = true
+            val inflater = LayoutInflater.from(context)
+            contentView = inflater.inflate(R.layout.mention_popup_layout, null)/*.apply {
+                measure(
+                    View.MeasureSpec.makeMeasureSpec(WindowManager.LayoutParams.MATCH_PARENT, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                )
+            }*/
+
+            width = WindowManager.LayoutParams.MATCH_PARENT
+            height = 800
+
+            mentionsEmptyView = contentView.findViewById(R.id.mentions_empty_view)
+            mentions_list_layout = contentView.findViewById(R.id.mentions_list_layout)
+            mentions_list = contentView.findViewById(R.id.mentions_list)
+            mentions_list.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.rect_rounded_bg_white))
+
+//            mentions_list_layout.foreground.alpha = 0
+
+            setupMentionsListForPopup(mentions_list)
+
+        }.also { popupWindow ->
+            popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            // Absolute location of the anchor view
+//            val location = IntArray(2).apply {
+//                anchor.getLocationOnScreen(this)
+//            }
+//            val size = Size(
+//                popupWindow.contentView.measuredWidth,
+//                200/*popupWindow.contentView.measuredHeight*/
+//            )
+//            popupWindow.showAtLocation(
+//                anchor,
+//                Gravity.TOP or Gravity.START,
+//                0,/*location[0] - (size.width - anchor.width) / 2,*/
+//                anchor.bottom-50/*location[1] - size.height*/
+//            )
+        }
+    }
+
+    private fun setupMentionsListForPopup(mentionsList: RecyclerView) {
+        mentionsList.layoutManager = LinearLayoutManager(context)
+        usersAdapter = UsersAdapter(context)
+        mentionsList.adapter = usersAdapter
+
+        mentionsList.addOnItemTouchListener(RecyclerItemClickListener(context, object : RecyclerItemClickListener.OnItemClickListener {
+            override fun onItemClick(view: View?, position: Int) {
+                val user = usersAdapter!!.getItem(position)
+
+                user?.let {
+                    val mention = Mention()
+                    mention.mentionName = user.firstName + " " + user.lastName
+                    mention.userId = user.id.toString()  //Add New
+                    mention.mentionAccountId = user.accountId //Add New
+                    mentions!!.insertMention(mention)
+//                    Log.e("onItemClick: ", mentions.toString())
+
+                    //----------------------------Add New----------------------------
+                    highlightMentions(commentTextView = edtComment, mentions = mentions!!.insertedMentions)
+
+                    //------------------Create JSONArray-----------------
+                    jsonArrayMention = JsonArray()
+                    mentions!!.insertedMentions.forEach { mentionable ->
+
+                        val jsonObject = JsonObject()
+                        jsonObject.addProperty("id", mentionable.userId)
+                        jsonObject.addProperty("accountId", mentionable.mentionAccountId)
+                        jsonObject.addProperty("name", mentionable.mentionName)
+                        jsonArrayMention.add(jsonObject)
+                    }
+                    Log.e("onItemClick: jsonArray", Gson().toJson(jsonArrayMention))
+                }
+            }
+        }))
+    }
+
+    private fun highlightMentions(commentTextView: EditText?, mentions: List<Mentionable>?) {
+        if (commentTextView != null && mentions != null && mentions.isNotEmpty()) {
+//            val spannable: Spannable = SpannableString(commentTextView.text)
+            for (mention in mentions) {
+                if (mention != null) {
+                    val start = mention.mentionOffset
+                    val end = start + mention.mentionLength
+                    if (commentTextView.length() >= end) {
+//                        spannable.setSpan(ForegroundColorSpan(orange), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//                        commentTextView.setText(spannable, TextView.BufferType.SPANNABLE)
+
+                        //-----------------------Add New-------------------------
+                        val strSpannable = commentTextView.text.toSpannable() as SpannableString
+                        strSpannable.withClickableSpan(mention.mentionName!!, onClickListener = ({
+                            Toast.makeText(context, mention.mentionName, Toast.LENGTH_SHORT).show()
+
+                            openProfileActivity(context, mention.userId!!.toInt())
+                        }))
+                        commentTextView.movementMethod = LinkMovementMethod.getInstance()
+//                        commentTextView.text = strSpannable
+                        commentTextView.setText(strSpannable)
+
+                    } else {
+                        //Something went wrong.  The expected text that we're trying to highlight does not
+                        // match the actual text at that position.
+                        Log.w("Mentions Sample", "Mention lost. [$mention]")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showPopupWindow(anchor: View) {
+        popupWindow?.let {
+//            popupWindow.showAsDropDown(anchor)/*, 10, -(location[1] - anchor.height), Gravity.TOP)*/
+//            popupWindow.showAsDropDown(anchor)
+
+            popupWindow.showAtLocation(anchor, Gravity.TOP, 0, 0);
+
+//            popupWindow.showAsDropDown(anchor, 0, -(anchor.height + popupWindow.height))
+        }
+    }
 
 }

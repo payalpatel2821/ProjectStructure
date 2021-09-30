@@ -4,8 +4,8 @@ package com.task.newapp.models.post
 import com.google.gson.annotations.SerializedName
 
 data class ResponseGetAllPost(
-    @SerializedName("count")
-    val count: Count,
+//    @SerializedName("count")
+//    val count: Count,
     @SerializedName("data")
     val `data`: List<All_Post_Data>,
     @SerializedName("message")
@@ -105,6 +105,8 @@ data class ResponseGetAllPost(
         val views: List<Any>,
         @SerializedName("tagged")
         val tagged: List<Tagged>,
+        @SerializedName("mention")
+        val mention: String,
     ) {
         data class PostContent(
             @SerializedName("alignment")

@@ -8,6 +8,8 @@ import com.task.newapp.models.chat.ResponseGetUnreadMessage
 import com.task.newapp.models.chat.ResponseGroupData
 import com.task.newapp.models.contact.ContactSyncAPIModel
 import com.task.newapp.models.post.*
+import com.task.newapp.utils.mentionlib.models.Mention
+import com.task.newapp.utils.mentionlib.utils.Mentionable
 import io.reactivex.Observable
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -101,6 +103,7 @@ interface ApiHelper {
         @Part("longitude") longitude: RequestBody,
         @Part("location") location: RequestBody,
         @Part("user_tags") user_tags: RequestBody,
+        @Part("mention") mention: RequestBody,  //Add New
         @Part captionarray: List<MultipartBody.Part>,
         @Part typearray: List<MultipartBody.Part>,
         @Part thumbarray: List<MultipartBody.Part>,

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/_15sdp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layout_comment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtComment"
+        android:layout_margin="@dimen/_8sdp"
+        android:background="@drawable/post_caption_bg">
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edt_caption"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_32sdp"
+            android:background="@color/transparent"
+            android:fontFamily="@font/bogleregular"
+            android:hint="Add a caption.."
+            android:inputType="textCapSentences|textMultiLine"
+            android:paddingLeft="@dimen/_15sdp"
+            android:paddingRight="@dimen/_15sdp"
+            android:textSize="@dimen/_12ssp" />
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/_10sdp">
+
+        <LinearLayout
+            android:id="@+id/mentions_list_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:ignore="RtlHardcoded">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mentions_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/item_mention_user" />
+
+            <TextView
+                android:id="@+id/mentions_empty_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingTop="5dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="20dp"
+                android:text="@string/no_matches_found"
+                android:textColor="@color/grey_light" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey_light" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -2,6 +2,7 @@ package com.task.newapp.utils.photoediting;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -95,15 +96,11 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         super.onCreate(savedInstanceState);
         makeFullScreen();
         setContentView(R.layout.activity_edit_image_lib);
-
-        initViews();
-
-        handleIntentImage(mPhotoEditorView.getSource());
-
         imagepath = getIntent().getStringExtra("filepath");
 
+        initViews();
+        handleIntentImage(mPhotoEditorView.getSource());
         mWonderFont = Typeface.createFromAsset(getAssets(), "beyond_wonderland.ttf");
-
         mPropertiesBSFragment = new PropertiesBSFragment();
         mEmojiBSFragment = new EmojiBSFragment();
         mStickerBSFragment = new StickerBSFragment();
@@ -136,7 +133,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         mPhotoEditor.setOnPhotoEditorListener(this);
 
         //Set Image Dynamically
-        File imgFile = new File(imagepath); //imagepath
+        File imgFile = new File(Uri.parse(imagepath).getPath()); //imagepath
         if (imgFile.exists()) {
 //            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 //            mPhotoEditorView.getSource().setImageBitmap(myBitmap);
@@ -332,7 +329,10 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
                             mPhotoEditorView.getSource().setImageURI(mSaveImageUri);
 
                             //------------------------Add New--------------------------
-
+                            //Finish Activity and return path
+                            Intent intent = new Intent().putExtra("mSaveImageUri", mSaveImageUri.toString());
+                            setResult(Activity.RESULT_OK, intent);
+                            finish();
                         }
 
                         @Override

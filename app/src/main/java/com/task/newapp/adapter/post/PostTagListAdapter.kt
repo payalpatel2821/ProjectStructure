@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.task.newapp.R
 import com.task.newapp.databinding.ItemTaglistPostBinding
 import com.task.newapp.models.OtherUserModel
+import com.task.newapp.models.post.ResponseFriendsList
 import com.task.newapp.models.post.ResponseGetAllPost
 import com.task.newapp.utils.load
 import com.task.newapp.utils.showLog
@@ -16,16 +17,16 @@ import com.task.newapp.utils.showLog
 
 class PostTagListAdapter(
     context: FragmentActivity,
-    arrayListPattern: ArrayList<OtherUserModel>
+    arrayListPattern: ArrayList<ResponseFriendsList.Data>
 
 ) : RecyclerView.Adapter<PostTagListAdapter.ViewHolder>() {
     var context: FragmentActivity = context as FragmentActivity
-    var arrayList: ArrayList<OtherUserModel> = arrayListPattern as ArrayList<OtherUserModel>
+    var arrayList: ArrayList<ResponseFriendsList.Data> = arrayListPattern as ArrayList<ResponseFriendsList.Data>
     var onItemClick: ((String, String) -> Unit)? = null
 
     var commaSeperatedIds: String = ""
     var commaSeperatedNames: String = ""
-    var arrayListTemp: ArrayList<OtherUserModel> = ArrayList()
+    var arrayListTemp: ArrayList<ResponseFriendsList.Data> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostTagListAdapter.ViewHolder {
         val layoutBinding: ItemTaglistPostBinding = DataBindingUtil.inflate(
@@ -39,7 +40,7 @@ class PostTagListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val otherUserModel: OtherUserModel = arrayList[position]
+        val otherUserModel: ResponseFriendsList.Data = arrayList[position]
         viewHolder.populateItemRows(otherUserModel)
     }
 
@@ -55,7 +56,7 @@ class PostTagListAdapter(
 
     inner class ViewHolder(val layoutBinding: ItemTaglistPostBinding) : RecyclerView.ViewHolder(layoutBinding.root) {
 
-        fun populateItemRows(otherUserModel: OtherUserModel) {
+        fun populateItemRows(otherUserModel: ResponseFriendsList.Data) {
             layoutBinding.txtName.text = (otherUserModel.firstName ?: "") + " " + (otherUserModel.lastName ?: "")
 
 //            otherUserModel.profileImage?.let {
@@ -112,7 +113,7 @@ class PostTagListAdapter(
         }
     }
 
-    fun setData(data: ArrayList<OtherUserModel>, isRefresh: Boolean) {
+    fun setData(data: ArrayList<ResponseFriendsList.Data>, isRefresh: Boolean) {
 
         if (isRefresh) {
             arrayList.clear()
@@ -129,10 +130,10 @@ class PostTagListAdapter(
 
     fun setSelectedName() {
         try {
-            commaSeperatedNames = arrayListTemp.filter(OtherUserModel::isSelected)
+            commaSeperatedNames = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
                 .joinToString(separator = ", ") { if (it.isSelected) (it.firstName ?: "") + " " + (it.lastName ?: "") else "" }
 
-            commaSeperatedIds = arrayListTemp.filter(OtherUserModel::isSelected)
+            commaSeperatedIds = arrayListTemp.filter(ResponseFriendsList.Data::isSelected)
                 .joinToString(separator = ",") { if (it.isSelected) it.id.toString() else "" }
 
             onItemClick?.invoke(commaSeperatedNames, commaSeperatedIds)

@@ -61,7 +61,7 @@ public class Image_rv_adapter extends RecyclerView.Adapter<Image_rv_adapter.MyVi
         }
 
         Glide.with(mycontext)
-                .load(myimgurls.get(position)) // Uri of the picture
+                .load(myimgurls.get(position))
                 .into(holder.img_iv);
     }
 
@@ -87,14 +87,12 @@ public class Image_rv_adapter extends RecyclerView.Adapter<Image_rv_adapter.MyVi
             img_iv = itemView.findViewById(R.id.img_iv);
             img_play = itemView.findViewById(R.id.img_play);
             img_iv_border = itemView.findViewById(R.id.img_iv_border);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    selectedPosition = getLayoutPosition();
-                    Log.e("item position click", selectedPosition + "::");
-                    ((ViewPagerActivity) mycontext).mRecyclerView.smoothScrollToPosition(selectedPosition);
-                    notifyDataSetChanged();
-                }
+
+            itemView.setOnClickListener(view -> {
+                selectedPosition = getLayoutPosition();
+                Log.e("item position click", selectedPosition + "::");
+                ((ViewPagerActivity) mycontext).mRecyclerView.smoothScrollToPosition(selectedPosition);
+                notifyDataSetChanged();
             });
         }
     }

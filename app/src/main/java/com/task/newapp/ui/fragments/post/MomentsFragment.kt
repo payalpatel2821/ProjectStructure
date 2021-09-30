@@ -4,24 +4,36 @@ package com.task.newapp.ui.fragments.post
 
 import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
+import android.util.Size
+import android.view.*
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.content.ContextCompat
+import androidx.core.text.toSpannable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.appizona.yehiahd.fastsave.FastSave
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -32,35 +44,45 @@ import com.luck.picture.lib.instagram.PictureSelectorInstagramStyleActivity
 import com.luck.picture.lib.listener.OnResultCallbackListener
 import com.luck.picture.lib.permissions.PermissionChecker
 import com.luck.picture.lib.tools.PictureFileUtils
-import com.task.newapp.App
+import com.task.newapp.utils.mentionlib.utils.QueryListener
+import com.percolate.mentions.sample.adapters.RecyclerItemClickListener
+import com.task.newapp.utils.mentionlib.adapters.UsersAdapter
+import com.task.newapp.utils.mentionlib.models.Mention
+import com.task.newapp.utils.mentionlib.utils.MentionsLoaderUtils
 import com.task.newapp.R
 import com.task.newapp.adapter.post.CreatePostAdapter
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentMomentzBinding
-import com.task.newapp.models.CommonResponse
-import com.task.newapp.models.post.Post_Uri_Model
+import com.task.newapp.models.post.ResponseFriendsList
 import com.task.newapp.service.FileUploadService
-import com.task.newapp.ui.activities.post.PostPagerActivity
+import com.task.newapp.ui.activities.chat.ViewPagerActivity
 import com.task.newapp.utils.*
 import com.task.newapp.utils.instapicker.GlideCacheEngine
 import com.task.newapp.utils.instapicker.GlideEngine
-import com.task.newapp.utils.photoediting.EditImageActivity
+import com.task.newapp.utils.mentionlib.adapters.utils.SuggestionsListener
+import com.task.newapp.utils.mentionlib.utils.Mentionable
+import com.task.newapp.utils.mentionlib.utils.Mentions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import lv.chi.photopicker.MediaPickerFragment
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.lang.ref.WeakReference
 import java.lang.reflect.Type
+import java.util.HashMap
 import kotlin.collections.ArrayList
 
 
 class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //MediaPickerFragment.Callback,
-    PostTagFriendListFragment.OnPostTagDoneClickListener {
+    PostTagFriendListFragment.OnPostTagDoneClickListener,
+    QueryListener, SuggestionsListener /*Mention*/ {
+
+    var select_captions = ArrayList<String>()
+    var select_time = ArrayList<String>()
+    var targetList = ArrayList<String>()
+    var return_mediatype = ArrayList<Int>()
 
     private lateinit var mediaItemsArray: ArrayList<Uri>
     private lateinit var binding: FragmentMomentzBinding
@@ -79,6 +101,30 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 
     //Add New
 //    private var gridImageAdapter: GridImageAdapter? = null
+
+    //------------------------------------Mention-------------------------------------------
+    lateinit var dialogMention: Dialog
+    lateinit var popupWindow: PopupWindow
+    lateinit var mentionsEmptyView: TextView
+    lateinit var mentions_list_layout: FrameLayout
+    lateinit var mentions_list: RecyclerView
+    var jsonArrayMention = JsonArray()
+
+    /**
+     * Mention object provided by library to configure at mentions.
+     */
+    private var mentions: Mentions? = null
+
+    /**
+     * Adapter to display suggestions.
+     */
+    private var usersAdapter: UsersAdapter? = null
+
+    /**
+     * Utility class to load from a JSON file.
+     */
+    private var mentionsLoaderUtils: MentionsLoaderUtils? = null
+
 
     fun newInstance(mediaItems: ArrayList<Uri>, selection: String): MomentsFragment {
         val f = MomentsFragment()
@@ -102,6 +148,7 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //        }
 //
         arrayListMedia = ArrayList()
+        allfriendList = ArrayList()
 //        mediaItemsArray.forEachIndexed { index, uri ->
 //
 //            var postUriModel = Post_Uri_Model(
@@ -255,6 +302,13 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //                mItemTouchHelper.startDrag(holder)
 //            }
 //        }
+
+        //-------------------------------Mention-----------------------------------
+        initMention()
+        setupMentionsList()
+//        initMentionUserDialog()
+
+        initPopupWindow(binding.edtCaption)
     }
 
     fun spanRecyclerView(data: List<LocalMedia?>?) {
@@ -396,9 +450,10 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
                 arrayListMedia.addAll(createPostAdapter.getData() as ArrayList<LocalMedia>)
 
                 val mIntent = Intent(context, FileUploadService::class.java)
+                mIntent.putExtra("mention", Gson().toJson(jsonArrayMention))  //Add New
                 mIntent.putExtra("caption", binding.edtCaption.text.toString().trim())
                 mIntent.putExtra("commaSeperatedIds", commaSeperatedIds)
-//                mIntent.putExtra("mediaItemsArray", Gson().toJson(arrayListMedia))
+//                mIntent.putExtpra("mediaItemsArray", Gson().toJson(arrayListMedia))
                 mIntent.putExtra("mediaItemsArray", Gson().toJson(createPostAdapter.getData() as ArrayList<LocalMedia>))
                 mIntent.putExtra("switchTurnOff", if (binding.switchTurnOff.isChecked) "1" else "0")
                 FileUploadService.shouldContinue = true
@@ -623,353 +678,6 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
     var imagearray: ArrayList<MultipartBody.Part> = ArrayList<MultipartBody.Part>()
     var count = 0
 
-//    private fun uploadPost() {
-//        try {
-//            count = 0
-//            //get all data and compress if required
-//            if (!mediaItemsArray.isNullOrEmpty()) {
-//                arrayListMedia = ArrayList()
-//
-//                mediaItemsArray.forEachIndexed { index, uri ->
-//
-//                    var postUriModel = Post_Uri_Model(
-//                        mediaItemsArray[index].path.toString(),
-//                        if (isImageFile(mediaItemsArray[index].path)) "image" else "video"
-//                    )
-//                    postUriModel?.let { arrayListMedia.add(postUriModel) }
-//                }
-//                Log.e("uploadPost_arrayList:", arrayListMedia.toString())
-//
-//                //----------------------------Check and compress---------------------------------
-//
-//                captionarray = ArrayList()
-//                typearray = ArrayList()
-//                thumbarray = ArrayList()
-//                imagearray = ArrayList()
-//
-//                openProgressDialog(activity)
-//
-//                arrayListMedia.forEachIndexed { index, postUriModel ->
-//                    try {
-//                        val cap_name = "contents[$index][caption]"
-//                        val type_name = "contents[$index][type]"
-//                        val thumb_name = "contents[$index][thumb]"
-//                        val image_name = "contents[$index][file]"
-//
-//                        captionarray.add(MultipartBody.Part.createFormData(cap_name, binding.edtCaption.text.toString()))
-//                        typearray.add(MultipartBody.Part.createFormData(type_name, postUriModel.type))
-//
-//                        val myfile: File = File(postUriModel.file_path)
-//
-//                        val mainFolder = File(Environment.getExternalStorageDirectory().absolutePath + "/HOW")
-//                        if (!mainFolder.exists()) {
-//                            mainFolder.mkdir()
-//                            mainFolder.mkdirs()
-//                        }
-//                        val fileImage = File(mainFolder.absolutePath + "/.temp")
-//                        if (!fileImage.exists()) {
-//                            fileImage.mkdir()
-//                            fileImage.mkdirs()
-//                        }
-//
-//                        val storedThumbPath: File = File(fileImage, System.currentTimeMillis().toString() + "_thumb.jpg")
-//
-//                        //Check image or video
-//                        if (postUriModel.type == "image") {
-//
-////                            if (myfile.length() / 1024 > 25600) {  // More than 25 MB
-//                            Log.e("uploadPost: >25MB ", myfile.toString())
-//
-//                            //Compress and Stored in .temp folder
-//                            val filePath: String = SiliCompressor.with(getActivity()).compress(
-//                                postUriModel.file_path,
-//                                storedThumbPath,
-//                                0
-//                            )
-//                            thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
-//                            //thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))
-////                            }
-////                            else {
-////                                Log.e("uploadPost: ", postUriModel.file_path.toString())
-////                                thumbarray.add(prepareFilePart(thumb_name, postUriModel.file_path, "image/*"))
-////                            }
-//                            //Original
-//                            imagearray.add(prepareFilePart(image_name, postUriModel.file_path, "image/*"))
-//                            count++
-//
-//                            if (count == arrayListMedia.size) {
-//                                showLog("VideoCompress", "callAPIPost_$count")
-//                                callAPIPost(binding.edtCaption.text.toString().trim())
-//                            }
-//
-//                        } else {
-//                            //Video
-//
-//                            if (myfile.length() / 1024 > 51200) {  // More than 51 MB
-//                                Log.e("uploadPost: >51MB ", myfile.toString())
-//                                //Compress
-//
-//                                //Stored in .temp folder
-////                                val filePath: String = SiliCompressor.with(activity).compress(
-////                                    postUriModel.file_path,
-////                                    storedThumbPath
-////                                )
-////                                thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
-//
-//                                //-----------------------Compress Video-----------------------------
-//                                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-//                                val outputName = "compress$timeStamp.mp4"
-//
-//                                val outputFile: String = checkCompressfolder().toString() + "/" + outputName  // /HOW/.compressvideo
-//
-//                                //Stored in .compressvideo folder
-////                                val compressVideoPath: String = SiliCompressor.with(activity).compressVideo(
-////                                    postUriModel.file_path,
-////                                    outputFile
-////                                )
-//
-//                                val destPath: String = outputFile
-//
-//                                VideoCompress.compressVideoLow(postUriModel.file_path, destPath, object : VideoCompress.CompressListener {
-//                                    override fun onStart() {
-//                                        showLog("VideoCompress", "onStart")
-////                                        tv_indicator.setText(
-////                                            "Compressing..." + "\n"
-////                                                    + "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date())
-////                                        )
-////                                        pb_compress.setVisibility(View.VISIBLE)
-////                                        startTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()) + "\n")
-//                                    }
-//
-//                                    override fun onSuccess() {
-//                                        showLog("VideoCompress", "onSuccess")
-////                                        val previous: String = tv_indicator.getText().toString()
-////                                        tv_indicator.setText(
-////                                            (previous + "\n"
-////                                                    + "Compress Success!" + "\n"
-////                                                    + "End at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()))
-////                                        )
-////                                        pb_compress.setVisibility(View.INVISIBLE)
-////                                        endTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "End at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()) + "\n")
-////                                        Util.writeFile(this@MainActivity, "Total: " + ((endTime - startTime) / 1000) + "s" + "\n")
-////                                        Util.writeFile(this@MainActivity)
-//
-//                                        //---------------------------New added-----------------------------
-//                                        val retriever = MediaMetadataRetriever()
-//                                        retriever.setDataSource(destPath)
-//                                        val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-//                                        val bitmap: Bitmap = if (extractedImage!!.height > 500 && extractedImage.width > 500) {
-//                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width / 3, extractedImage.height / 3, true)
-//                                        } else {
-//                                            Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
-//                                        }
-//
-//                                        //------------------------------thumb------------------------------
-//                                        if (storeImage(bitmap, storedThumbPath)) {
-//                                            thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
-//                                        }
-//
-//                                        //Original
-//                                        imagearray.add(prepareFilePart(image_name, destPath, "video/*"))
-//
-//                                        count++
-//                                        if (count == arrayListMedia.size) {
-//                                            showLog("VideoCompress", "callAPIPost_$count")
-//                                            callAPIPost(binding.edtCaption.text.toString().trim())
-//                                        }
-//                                    }
-//
-//                                    override fun onFail() {
-//                                        count++
-//                                        showLog("VideoCompress", "onFail")
-//
-//                                        if (count == arrayListMedia.size) {
-//                                            showLog("VideoCompress", "callAPIPost_$count")
-//                                            callAPIPost(binding.edtCaption.text.toString().trim())
-//                                        }
-//
-////                                        tv_indicator.setText("Compress Failed!")
-////                                        pb_compress.setVisibility(View.INVISIBLE)
-////                                        endTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "Failed Compress!!!" + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()))
-//                                    }
-//
-//                                    override fun onProgress(percent: Float) {
-//                                        showLog("VideoCompress", "onProgress_$percent")
-////                                        tv_progress.setText("$percent%")
-//                                    }
-//                                })
-//
-////                                //---------------------------New added-----------------------------
-////                                val retriever = MediaMetadataRetriever()
-////                                retriever.setDataSource(destPath)
-////                                val extractedImage = retriever.getFrameAtTime(100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-////                                val bitmap: Bitmap = if (extractedImage!!.height > 500 && extractedImage.width > 500) {
-////                                    Bitmap.createScaledBitmap(extractedImage, extractedImage.width / 3, extractedImage.height / 3, true)
-////                                } else {
-////                                    Bitmap.createScaledBitmap(extractedImage, extractedImage.width, extractedImage.height, true)
-////                                }
-////
-////                                //------------------------------thumb------------------------------
-////                                if (storeImage(bitmap, storedThumbPath)) {
-////                                    thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
-////                                }
-////
-////                                //Original
-////                                imagearray.add(prepareFilePart(image_name, destPath, "video/*"))
-//
-//                            } else {
-//                                Log.e("uploadPost: ", postUriModel.file_path.toString())
-//
-//                                //Stored in .temp folder
-////                                val filePath: String = SiliCompressor.with(activity).compressVideo(
-////                                    postUriModel.file_path,
-////                                    storedThumbPath.path
-////                                )
-//
-//                                VideoCompress.compressVideoLow(postUriModel.file_path, storedThumbPath.path, object : VideoCompress.CompressListener {
-//                                    override fun onStart() {
-//                                        showLog("VideoCompress", "onStart")
-////                                        tv_indicator.setText(
-////                                            "Compressing..." + "\n"
-////                                                    + "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date())
-////                                        )
-////                                        pb_compress.setVisibility(View.VISIBLE)
-////                                        startTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "Start at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()) + "\n")
-//                                    }
-//
-//                                    override fun onSuccess() {
-//                                        count++
-//                                        showLog("VideoCompress", "onSuccess")
-//
-//                                        if (count == arrayListMedia.size) {
-//                                            showLog("VideoCompress", "callAPIPost_$count")
-//                                            callAPIPost(binding.edtCaption.text.toString().trim())
-//                                        }
-//
-////                                        val previous: String = tv_indicator.getText().toString()
-////                                        tv_indicator.setText(
-////                                            (previous + "\n"
-////                                                    + "Compress Success!" + "\n"
-////                                                    + "End at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()))
-////                                        )
-////                                        pb_compress.setVisibility(View.INVISIBLE)
-////                                        endTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "End at: " + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()) + "\n")
-////                                        Util.writeFile(this@MainActivity, "Total: " + ((endTime - startTime) / 1000) + "s" + "\n")
-////                                        Util.writeFile(this@MainActivity)
-//
-//                                        //---------------------------New added-----------------------------
-//                                        thumbarray.add(prepareFilePart(thumb_name, storedThumbPath.path, "image/*"))
-//                                    }
-//
-//                                    override fun onFail() {
-//                                        count++
-//                                        showLog("VideoCompress", "onFail")
-//
-//                                        if (count == arrayListMedia.size) {
-//                                            showLog("VideoCompress", "callAPIPost_$count")
-//                                            callAPIPost(binding.edtCaption.text.toString().trim())
-//                                        }
-////                                        tv_indicator.setText("Compress Failed!")
-////                                        pb_compress.setVisibility(View.INVISIBLE)
-////                                        endTime = System.currentTimeMillis()
-////                                        Util.writeFile(this@MainActivity, "Failed Compress!!!" + SimpleDateFormat("HH:mm:ss", getLocale()).format(Date()))
-//                                    }
-//
-//                                    override fun onProgress(percent: Float) {
-//                                        showLog("VideoCompress", "onProgress_$percent")
-////                                        tv_progress.setText("$percent%")
-//                                    }
-//                                })
-//
-////                                thumbarray.add(prepareFilePart(thumb_name, filePath, "image/*"))
-////
-////                                //Original
-//                                imagearray.add(prepareFilePart(image_name, postUriModel.file_path, "video/*"))
-//                            }
-//                        }
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                        count++
-//
-//                        if (count == arrayListMedia.size) {
-//                            showLog("VideoCompress", "callAPIPost_$count")
-//                            callAPIPost(binding.edtCaption.text.toString().trim())
-//                        }
-//                    }
-//                }
-//
-//            }
-//
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//    }
-
-    private fun callAPIPost(title: String) {
-        try {
-            val isComment = if (binding.switchTurnOff.isChecked) "1" else "0"
-
-            val turn_off_comment: RequestBody = isComment.toRequestBody("text/plain".toMediaTypeOrNull())
-            val hastags: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
-            val title: RequestBody = title.toRequestBody("text/plain".toMediaTypeOrNull())
-            val type: RequestBody = "simple".toRequestBody("text/plain".toMediaTypeOrNull())
-            val latitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
-            val longitude: RequestBody = "0".toRequestBody("text/plain".toMediaTypeOrNull())
-            val location: RequestBody = "".toRequestBody("text/plain".toMediaTypeOrNull())
-            val user_tags: RequestBody = commaSeperatedIds.toRequestBody("text/plain".toMediaTypeOrNull())
-
-            //openProgressDialog(activity)
-            mCompositeDisposable.add(
-                ApiClient.create()
-                    .addPost(turn_off_comment, hastags, title, type, latitude, longitude, location, user_tags, captionarray, typearray, thumbarray, imagearray)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(object : DisposableObserver<CommonResponse>() {
-                        override fun onNext(commonResponse: CommonResponse) {
-
-//                            if (commonResponse.success == 1) {
-                            activity.showToast(commonResponse.message)
-
-                            //Close bottom sheet and refresh post list
-                            dismiss()
-//                            onPostDoneClickListener?.onPostClick()
-
-//                            }
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.v("onError: ", e.toString())
-                            hideProgressDialog()
-                        }
-
-                        override fun onComplete() {
-                            hideProgressDialog()
-                        }
-                    })
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            hideProgressDialog()
-        }
-    }
-
-//    /**
-//     * interface for post done click
-//     *
-//     */
-//    interface OnPostDoneClickListener {
-//        fun onPostClick()
-//    }
-//
-//    fun setListener(listener: OnPostDoneClickListener) {
-//        onPostDoneClickListener = listener
-//    }
-
     private fun itemClick() {
         createPostAdapter?.let {
             createPostAdapter.onItemClick = { position ->
@@ -983,11 +691,14 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
 //                intent.putExtra("filepath", path)
 //                startActivity(intent)
 
-                val intent = Intent(activity, PostPagerActivity::class.java)
-//                intent.putExtra("arraylist", Gson().toJson(arrayListMedia))
-                intent.putExtra("arraylist", Gson().toJson(createPostAdapter.getData()))
-                intent.putExtra("position", position)
-                resultLauncher.launch(intent)
+//                val intent = Intent(activity, PostPagerActivity::class.java)
+////                intent.putExtra("arraylist", Gson().toJson(arrayListMedia))
+//                intent.putExtra("arraylist", Gson().toJson(createPostAdapter.getData()))
+//                intent.putExtra("position", position)
+//                resultLauncher.launch(intent)
+
+                //-----------------------------Add New---------------------------------
+                openViewPagerActivity(createPostAdapter.getData() as List<LocalMedia>, position)
             }
         }
     }
@@ -1113,4 +824,479 @@ class MomentsFragment : BottomSheetDialogFragment(), View.OnClickListener, //Med
         }
     }
 
+    private fun openViewPagerActivity(mediaItems: List<LocalMedia>, currPosition: Int) {
+        showLog("item_selected: ", mediaItems.toString())
+
+        clearAll()
+
+        mediaItems!!.forEach { localMedia ->
+            targetList.add(Uri.fromFile(File(localMedia.path.toString())).toString())
+
+            if (isImageFile(localMedia.path)) {
+                return_mediatype.add(1)
+            } else {
+                return_mediatype.add(0)
+            }
+        }
+
+        val captionarr = Array(mediaItems.size) { "" }
+        select_captions.addAll(captionarr)
+
+        var timearr = Array(mediaItems.size) { "" }
+        select_time.addAll(timearr)
+
+        val intent = Intent(activity, ViewPagerActivity::class.java)
+        intent.putStringArrayListExtra("select_urls", targetList /*Gson().toJson(mediaItems)*/)
+        intent.putStringArrayListExtra("select_captions", select_captions)
+        intent.putStringArrayListExtra("select_time", select_time)
+        intent.putIntegerArrayListExtra("urls_mediatype", return_mediatype)
+        intent.putExtra("currPosition", currPosition)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        viewPagerResultLauncher.launch(intent)
+    }
+
+    private var viewPagerResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == AppCompatActivity.RESULT_OK) {
+                targetList = ArrayList()
+                select_captions = ArrayList()
+                select_time = ArrayList()
+                return_mediatype = ArrayList()
+
+                targetList = result.data!!.getStringArrayListExtra("select_urls")!!
+                select_captions = result.data!!.getStringArrayListExtra("select_captions")!!
+                select_time = result.data!!.getStringArrayListExtra("select_time")!!
+                return_mediatype = result.data!!.getIntegerArrayListExtra("urls_mediatype")!!
+
+                showLog("data", "$targetList $select_captions $select_time $return_mediatype")
+
+                //------------------Add New----------------------
+//                val data: Intent? = result.data
+
+//                val type: Type = object : TypeToken<ArrayList<LocalMedia>>() {}.type
+//                arrayListMedia = Gson().fromJson(data!!.getStringExtra("arraylist"), type)
+
+                arrayListMedia.clear()
+
+                targetList.forEachIndexed { index, path ->
+                    var localMedia = LocalMedia()
+                    localMedia.path = path
+                    arrayListMedia.add(localMedia)
+                }
+
+                if (arrayListMedia.isNotEmpty()) {
+                    createPostAdapter.setData(arrayListMedia)
+                    spanRecyclerView(createPostAdapter.getData())
+                } else {
+                    binding.rvPhotoVideo.visibility = View.GONE
+                }
+            }
+        }
+
+    private fun clearAll() {
+        targetList = ArrayList()
+        select_captions = ArrayList()
+        select_time = ArrayList()
+        return_mediatype = ArrayList()
+    }
+
+    //------------------------------------Mention-------------------------------------------
+    /**
+     * Initialize views and utility objects.
+     */
+    private fun initMention() {
+//        edt_caption = ViewUtils.findViewById(this, com.percolate.mentions.sample.R.id.comment_field)
+//        sendCommentButton = ViewUtils.findViewById(this, com.percolate.mentions.sample.R.id.send_comment)
+        mentions = Mentions.Builder(activity, binding.edtCaption)
+            .suggestionsListener(this)
+            .queryListener(this)
+            .build()
+        mentionsLoaderUtils = MentionsLoaderUtils(activity)
+    }
+
+    /**
+     * Setups the mentions suggestions list. Creates and sets and adapter for
+     * the mentions list and sets the on item click listener.
+     */
+    private fun setupMentionsList() {
+        binding.mentionsList.layoutManager = LinearLayoutManager(activity)
+        usersAdapter = UsersAdapter(activity)
+        binding.mentionsList.adapter = usersAdapter
+
+        binding.mentionsList.addOnItemTouchListener(RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
+            override fun onItemClick(view: View?, position: Int) {
+                val user = usersAdapter!!.getItem(position)
+
+                user?.let {
+                    val mention = Mention()
+                    mention.mentionName = user.firstName + " " + user.lastName
+                    mention.userId = user.id.toString()  //Add New
+                    mention.mentionAccountId = user.accountId //Add New
+                    mentions!!.insertMention(mention)
+//                    Log.e("onItemClick: ", mentions.toString())
+
+                    //----------------------------Add New----------------------------
+                    highlightMentions(commentTextView = binding.edtCaption, mentions = mentions!!.insertedMentions)
+
+                    //------------------Create JSONArray-----------------
+                    jsonArrayMention = JsonArray()
+                    mentions!!.insertedMentions.forEach { mentionable ->
+
+//                        val jsonRequest = JsonObject()
+//                        jsonRequest.addProperty("id", mentionable.userId)
+//                        jsonRequest.addProperty("mention", mentionable.mentionAccountId)
+//
+//                        jsonArrayMention.add(jsonRequest)
+
+                        val jsonObject = JsonObject()
+                        jsonObject.addProperty("id", mentionable.userId)
+                        jsonObject.addProperty("accountId", mentionable.mentionAccountId)
+                        jsonObject.addProperty("name", mentionable.mentionName)
+                        jsonArrayMention.add(jsonObject)
+                    }
+                    Log.e("onItemClick: jsonArray", Gson().toJson(jsonArrayMention))
+                }
+            }
+        }))
+    }
+
+    override fun displaySuggestions(display: Boolean) {
+        if (display) {
+            //Add New
+            //showDialogMention()
+
+//            binding.mentionsListLayout.visibility = View.VISIBLE
+            mentions_list_layout.visibility = View.VISIBLE
+        } else {
+            //Add New
+            //hideDialogMention()
+
+//            binding.mentionsListLayout.visibility = View.GONE
+            mentions_list_layout.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Toggle the mentions list's visibility if there are search results returned for search
+     * query. Shows the empty list view
+     *
+     * @param display boolean   true if the mentions list should be shown or false if
+     * the empty suggestions list view should be shown.
+     */
+    private fun showMentionsList(display: Boolean) {
+        //Add New
+        //showDialogMention()
+
+//        binding.mentionsListLayout.visibility = View.VISIBLE
+//        if (display) {
+//            binding.mentionsList.visibility = View.VISIBLE
+//            binding.mentionsEmptyView.visibility = View.GONE
+//
+//        } else {
+//            binding.mentionsList.visibility = View.GONE
+//            binding.mentionsEmptyView.visibility = View.VISIBLE
+//        }
+
+        mentions_list_layout.visibility = View.VISIBLE
+        if (display) {
+            showPopupWindow(binding.edtCaption)
+            mentionsEmptyView.visibility = View.GONE
+        } else {
+            popupWindow?.let {
+                mentionsEmptyView.visibility = View.VISIBLE
+                it.dismiss()
+            }
+        }
+    }
+
+    override fun onQueryReceived(query: String?) {
+        Log.e("onQueryReceived: ", query!!)
+
+        getFriendList(0, query!!) { users ->
+            if (users.isNotEmpty()) {
+                if (users.isNotEmpty()) {
+                    usersAdapter!!.clear()
+                    usersAdapter!!.setCurrentQuery(query!!)
+                    usersAdapter!!.addAll(users)
+                    showMentionsList(true)
+                } else {
+                    showMentionsList(false)
+                }
+            }
+        }
+    }
+
+    private lateinit var allfriendList: ArrayList<ResponseFriendsList.Data>
+
+    private fun getFriendList(currentSize: Int, searchText: String, callback: ((ArrayList<ResponseFriendsList.Data>) -> Unit)? = null) {
+        try {
+            try {
+                //openProgressDialog(activity)
+
+                val hashMap: HashMap<String, Any> = hashMapOf(
+                    Constants.flag to "mention",
+                    Constants.term to searchText
+//                        Constants.limit to requireActivity().getString(R.string.limit_20),
+//                        Constants.offset to currentSize.toString()
+                )
+
+                mCompositeDisposable.add(
+                    ApiClient.create()
+                        .search_contacts(hashMap)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(object : DisposableObserver<ResponseFriendsList>() {
+                            override fun onNext(responseFriendsList: ResponseFriendsList) {
+                                Log.v("onNext: ", responseFriendsList.toString())
+                                if (responseFriendsList != null && responseFriendsList.success == 1) {
+
+                                    if (responseFriendsList.data.isNotEmpty()) {
+
+                                        allfriendList?.let { it.clear() }
+                                        allfriendList.addAll(responseFriendsList.data as ArrayList<ResponseFriendsList.Data>)
+                                    }
+                                }
+                            }
+
+                            override fun onError(e: Throwable) {
+                                hideProgressDialog()
+                                Log.v("onError: ", e.toString())
+                                callback?.invoke(allfriendList)
+                            }
+
+                            override fun onComplete() {
+                                hideProgressDialog()
+                                callback?.invoke(allfriendList)
+                            }
+                        })
+                )
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                hideProgressDialog()
+                callback?.invoke(allfriendList)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+        }
+    }
+
+    private fun highlightMentions(commentTextView: EditText?, mentions: List<Mentionable>?) {
+        if (commentTextView != null && mentions != null && mentions.isNotEmpty()) {
+//            val spannable: Spannable = SpannableString(commentTextView.text)
+            for (mention in mentions) {
+                if (mention != null) {
+                    val start = mention.mentionOffset
+                    val end = start + mention.mentionLength
+                    if (commentTextView.length() >= end) {
+//                        spannable.setSpan(ForegroundColorSpan(orange), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//                        commentTextView.setText(spannable, TextView.BufferType.SPANNABLE)
+
+                        //-----------------------Add New-------------------------
+                        val strSpannable = commentTextView.text.toSpannable() as SpannableString
+                        strSpannable.withClickableSpan(mention.mentionName!!, onClickListener = ({
+                            Toast.makeText(context, mention.mentionName, Toast.LENGTH_SHORT).show()
+                            
+                            openProfileActivity(activity, mention.userId!!.toInt())
+                        }))
+                        commentTextView.movementMethod = LinkMovementMethod.getInstance()
+//                        commentTextView.text = strSpannable
+                        commentTextView.setText(strSpannable)
+
+                    } else {
+                        //Something went wrong.  The expected text that we're trying to highlight does not
+                        // match the actual text at that position.
+                        Log.w("Mentions Sample", "Mention lost. [$mention]")
+                    }
+                }
+            }
+        }
+    }
+
+    //---------------------------------Mention Dialog----------------------------------
+//    private fun initMentionUserDialog() {
+//        dialogMention = Dialog(activity)
+//        dialogMention.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+//        dialogMention.requestWindowFeature(Window.FEATURE_NO_TITLE)
+//        dialogMention.setContentView(R.layout.dialog_mention_user)
+//
+//        val mentionsList: RecyclerView = dialogMention.findViewById(R.id.mentions_list)!!
+//        val edtCaption: AppCompatEditText = dialogMention.findViewById(R.id.edt_caption)!!
+//
+////        dialogMention.show()
+//
+//        //------------------------Add New---------------------------
+//        //init mention
+//        mentions = Mentions.Builder(activity, edtCaption)
+//            .suggestionsListener(this)
+//            .queryListener(this)
+//            .build()
+//        mentionsLoaderUtils = MentionsLoaderUtils(activity)
+//
+//        //init recyclerview
+//        mentionsList.layoutManager = LinearLayoutManager(activity)
+//        usersAdapter = UsersAdapter(activity)
+//        mentionsList.adapter = usersAdapter
+//
+//        mentionsList.addOnItemTouchListener(RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
+//            override fun onItemClick(view: View?, position: Int) {
+//                val user = usersAdapter!!.getItem(position)
+//
+//                user?.let {
+//                    val mention = Mention()
+//                    mention.mentionName = user.firstName + " " + user.lastName
+//                    mention.userId = user.id.toString()  //Add New
+//                    mention.mentionAccountId = user.accountId //Add New
+//                    mentions!!.insertMention(mention)
+////                    Log.e("onItemClick: ", mentions.toString())
+//
+//                    //----------------------------Add New----------------------------
+////                    highlightMentions(commentTextView = binding.edtCaption, mentions = mentions!!.insertedMentions)
+//
+////                    highlightMentions(commentTextView = edtCaption, mentions = mentions!!.insertedMentions)
+//
+//                    //------------------Create JSONArray-----------------
+//                    jsonArrayMention = JsonArray()
+//                    mentions!!.insertedMentions.forEach { mentionable ->
+//
+////                        val jsonRequest = JsonObject()
+////                        jsonRequest.addProperty("id", mentionable.userId)
+////                        jsonRequest.addProperty("mention", mentionable.mentionAccountId)
+////
+////                        jsonArrayMention.add(jsonRequest)
+//
+//                        val jsonObject = JsonObject()
+//                        jsonObject.addProperty("id", mentionable.userId)
+//                        jsonObject.addProperty("accountId", mentionable.mentionAccountId)
+//                        jsonObject.addProperty("name", mentionable.mentionName)
+//                        jsonArrayMention.add(jsonObject)
+//                    }
+//                    Log.e("onItemClick: jsonArray", Gson().toJson(jsonArrayMention))
+//
+//                    //----------hide dialog and append value in moment edittext
+//                    hideDialogMention()
+//
+//                    binding.edtCaption.setText(binding.edtCaption.text.toString().plus(edtCaption.text.toString()))
+//
+//                }
+//            }
+//        }))
+//    }
+
+//    private fun hideDialogMention() {
+//        dialogMention?.let {
+//            if (dialogMention.isShowing) it.hide()
+//        }
+//    }
+//
+//    private fun showDialogMention() {
+//        dialogMention?.let {
+//            it.show()
+//        }
+//    }
+
+    private fun initPopupWindow(anchor: View) {
+        popupWindow = PopupWindow(anchor.context).apply {
+            isOutsideTouchable = true
+            val inflater = LayoutInflater.from(anchor.context)
+            contentView = inflater.inflate(R.layout.mention_popup_layout, null)/*.apply {
+                measure(
+                    View.MeasureSpec.makeMeasureSpec(WindowManager.LayoutParams.MATCH_PARENT, View.MeasureSpec.UNSPECIFIED),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                )
+            }*/
+
+            width = WindowManager.LayoutParams.MATCH_PARENT
+            height = 800
+
+            mentionsEmptyView = contentView.findViewById(R.id.mentions_empty_view)
+            mentions_list_layout = contentView.findViewById(R.id.mentions_list_layout)
+            mentions_list = contentView.findViewById(R.id.mentions_list)
+            mentions_list.setBackgroundDrawable(ContextCompat.getDrawable(activity, R.drawable.rect_rounded_bg_white))
+
+//            mentions_list_layout.foreground.alpha = 0
+
+            setupMentionsListForPopup(mentions_list)
+
+        }.also { popupWindow ->
+            popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+            // Absolute location of the anchor view
+//            val location = IntArray(2).apply {
+//                anchor.getLocationOnScreen(this)
+//            }
+//            val size = Size(
+//                popupWindow.contentView.measuredWidth,
+//                200/*popupWindow.contentView.measuredHeight*/
+//            )
+//            popupWindow.showAtLocation(
+//                anchor,
+//                Gravity.TOP or Gravity.START,
+//                0,/*location[0] - (size.width - anchor.width) / 2,*/
+//                anchor.bottom-50/*location[1] - size.height*/
+//            )
+        }
+    }
+
+    private fun showPopupWindow(anchor: View) {
+        popupWindow?.let {
+//            val location = IntArray(2).apply {
+//                anchor.getLocationOnScreen(this)
+//            }
+
+//            popupWindow.showAsDropDown(anchor, 10, -950, Gravity.TOP)
+            popupWindow.showAsDropDown(anchor)/*, 10, -(location[1] - anchor.height), Gravity.TOP)*/
+
+            //            popupWindow.showAtLocation(
+//                anchor,
+//                Gravity.TOP or Gravity.START,
+//                0,/*location[0] - (size.width - anchor.width) / 2,*/
+//                anchor.bottom-50/*location[1] - size.height*/
+//            )
+        }
+    }
+
+    private fun setupMentionsListForPopup(mentionsList: RecyclerView) {
+        mentionsList.layoutManager = LinearLayoutManager(activity)
+        usersAdapter = UsersAdapter(activity)
+        mentionsList.adapter = usersAdapter
+
+        mentionsList.addOnItemTouchListener(RecyclerItemClickListener(activity, object : RecyclerItemClickListener.OnItemClickListener {
+            override fun onItemClick(view: View?, position: Int) {
+                val user = usersAdapter!!.getItem(position)
+
+                user?.let {
+                    val mention = Mention()
+                    mention.mentionName = user.firstName + " " + user.lastName
+                    mention.userId = user.id.toString()  //Add New
+                    mention.mentionAccountId = user.accountId //Add New
+                    mentions!!.insertMention(mention)
+//                    Log.e("onItemClick: ", mentions.toString())
+
+                    //----------------------------Add New----------------------------
+                    highlightMentions(commentTextView = binding.edtCaption, mentions = mentions!!.insertedMentions)
+
+                    //------------------Create JSONArray-----------------
+                    jsonArrayMention = JsonArray()
+                    mentions!!.insertedMentions.forEach { mentionable ->
+
+//                        val jsonRequest = JsonObject()
+//                        jsonRequest.addProperty("id", mentionable.userId)
+//                        jsonRequest.addProperty("mention", mentionable.mentionAccountId)
+//
+//                        jsonArrayMention.add(jsonRequest)
+
+                        val jsonObject = JsonObject()
+                        jsonObject.addProperty("id", mentionable.userId)
+                        jsonObject.addProperty("accountId", mentionable.mentionAccountId)
+                        jsonObject.addProperty("name", mentionable.mentionName)
+                        jsonArrayMention.add(jsonObject)
+                    }
+                    Log.e("onItemClick: jsonArray", Gson().toJson(jsonArrayMention))
+                }
+            }
+        }))
+    }
 }
+
