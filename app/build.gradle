@@ -18,7 +18,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
-
         renderscriptTargetApi 27
         renderscriptSupportModeEnabled true
     }
@@ -31,22 +30,22 @@ android {
 
         debug {
 //Live
-//             buildConfigField "String", "call_url", "\"http://howmessenger.com:6000/\""
-//             buildConfigField "String", "call_url", "\"http://howmessenger.com:2222/\""
-//            buildConfigField "String", "port_url", "\"http://howmessenger.com:9000/\""
+//          buildConfigField "String", "call_url", "\"http://howmessenger.com:6000/\""
+//          buildConfigField "String", "call_url", "\"http://howmessenger.com:2222/\""
+//          buildConfigField "String", "port_url", "\"http://howmessenger.com:9000/\""
             buildConfigField "String", "server_url", "\"http://192.168.100.49:8000/\""
-//            buildConfigField "String", "server_url", "\"http://howmessenger.com\""
-//            buildConfigField "String", "server_url", "\"http://14.97.16.164\""
+//          buildConfigField "String", "server_url", "\"http://howmessenger.com\""
+//          buildConfigField "String", "server_url", "\"http://14.97.16.164\""
 
             //TODO backup server domain
-//            buildConfigField "String", "call_url", "\"http://developers.howmessenger.com:6000/\""
+//          buildConfigField "String", "call_url", "\"http://developers.howmessenger.com:6000/\""
             buildConfigField "String", "port_url", "\"http://developers.howmessenger.com:9000/\""
-//            buildConfigField "String", "server_url", "\"http://developers.howmessenger.com\""
+//          buildConfigField "String", "server_url", "\"http://developers.howmessenger.com\""
 
             //TODO backup server private IP
             /* buildConfigField "String", "port_url", "\"http://192.168.100.212:9000/\""
-             buildConfigField "String", "call_url", "\"http://192.168.100.212:6000/\""
-             buildConfigField "String", "server_url", "\"http://192.168.100.212\""*/
+            buildConfigField "String", "call_url", "\"http://192.168.100.212:6000/\""
+            buildConfigField "String", "server_url", "\"http://192.168.100.212\""*/
 
             //TODO backup server public IP
             buildConfigField "String", "call_url", "\"http://14.97.16.164:2222/\""
@@ -248,7 +247,8 @@ dependencies {
     //ViewPagerBottomSheet
     implementation "biz.laenger.android:vpbs:0.0.6"
 
-
+    // For WorkManager.
+    implementation "androidx.lifecycle:lifecycle-extensions:2.0.0"
 
     //Pager Indicator
     implementation "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:1.2.1"

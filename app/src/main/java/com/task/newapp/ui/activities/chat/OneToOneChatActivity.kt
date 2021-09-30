@@ -446,6 +446,10 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                             }
                         }
                         PHOTOS -> {
+                            select_captions = java.util.ArrayList<String>()
+                            select_time = java.util.ArrayList<String>()
+                            targetList = java.util.ArrayList<String>()
+                            return_mediatype = java.util.ArrayList<Int>()
                             runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
                                 MediaPickerFragment.newInstance(
                                     multiple = true,
@@ -792,6 +796,7 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
         var timearr = Array(mediaItems.size) { "" }
         select_time.addAll(timearr)
+
 
 
         val intent = Intent(this@OneToOneChatActivity, ViewPagerActivity::class.java)

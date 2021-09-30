@@ -25,6 +25,7 @@ import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.ui.activities.chat.SelectFriendsActivity
 import com.task.newapp.ui.activities.chat.broadcast.BroadcastListActivity
 import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.setting.NotificationsActivity
 import com.task.newapp.ui.fragments.chat.ChatsFragment
 import com.task.newapp.ui.fragments.contact.ContactBottomSheet
 import com.task.newapp.ui.fragments.post.PostFragment
@@ -44,7 +45,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     val thirdFragment = ChatsFragment()
     private val mCompositeDisposable = CompositeDisposable()
 
-
     override fun onStart() {
         super.onStart()
         runWithPermissions(Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS) {
@@ -52,8 +52,8 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
                 val gson = Gson()
                 val json: String = gson.toJson(contactSync)
                 FastSave.getInstance().saveString(Constants.contact, json)
-//                callAPISyncContactToAPI(contactSync as ArrayList<ContactSyncAPIModel>, mCompositeDisposable)
-                WorkManagerScheduler.refreshPeriodicWorkContact(App.getAppInstance())
+                //callAPISyncContactToAPI(contactSync as ArrayList<ContactSyncAPIModel>, mCompositeDisposable)
+                WorkManagerScheduler.refreshPeriodicWorkContact(/*App.getAppInstance()*/this)
 
             }
         }
@@ -70,12 +70,15 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         ZoomHelper.getInstance().minScale = 1f
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         WorkManagerScheduler.cancel(App.getAppInstance())
         if (isFinishing && App.fastSave.getBoolean(Constants.isLogin, false))
             disconnectSocket(App.fastSave.getInt(Constants.prefUserId, 0), App.fastSave.getString(Constants.prefUserName, ""))
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     private fun initView() {
@@ -85,6 +88,7 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
         binding.imgProfile.load(url = getCurrentUserProfilePicture(), isProfile = true, name = getCurrentUserFullName(), color = getCurrentUserProfileColor())
         setupNavigationDrawer()
         setupBottomNavigationBar()
+        contactBottomSheetFragment = ContactBottomSheet()
     }
 
     private fun setupNavigationDrawer() {
@@ -236,7 +240,8 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
                 showToast(getString(R.string.chat_appearance))
             }
             R.id.txt_notifications -> {
-                showToast(getString(R.string.notifications))
+//                showToast(getString(R.string.notifications))
+                launchActivity<NotificationsActivity> {  }
             }
             R.id.txt_post -> {
                 showToast(getString(R.string.post))
@@ -271,7 +276,6 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
                 launchActivity<MyProfileActivity> { }
             }
             R.id.img_center -> {
-                contactBottomSheetFragment = ContactBottomSheet()
                 contactBottomSheetFragment!!.show(supportFragmentManager, "Dialog")
 
 //                launchActivity<ContactActivity> { }
@@ -405,13 +409,12 @@ class MainActivity : BaseAppCompatActivity(), View.OnClickListener, PostFragment
     override fun onResume() {
         super.onResume()
 
-        ContactsHelper(this).getContacts { contacts ->
-            val gson = Gson()
-            val json: String = gson.toJson(contacts)
-            FastSave.getInstance().saveString(Constants.contact, json)
-//            setAdapter(contacts)
-        }
+//        ContactsHelper(this).getContacts { contacts ->
+//            val gson = Gson()
+//            val json: String = gson.toJson(contacts)
+//            FastSave.getInstance().saveString(Constants.contact, json)
+////            setAdapter(contacts)
+//        }
     }
-
 
 }

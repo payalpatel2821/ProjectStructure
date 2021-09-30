@@ -1,11 +1,15 @@
 package com.task.newapp.workmanager
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.work.*
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkInfo.State.RUNNING
 import com.google.common.util.concurrent.ListenableFuture
+import com.task.newapp.utils.Constants
 import com.task.newapp.utils.showLog
+import com.task.newapp.utils.showToast
 import java.util.concurrent.ExecutionException
 
 
@@ -55,26 +59,9 @@ object WorkManagerScheduler {
 
     }
 
-    fun refreshPeriodicWorkContact(context: Context) {
+    fun refreshPeriodicWorkContact(context: AppCompatActivity) {
         showLog(TAG, "WORK START")
 
-/*
-        val currentDate = Calendar.getInstance()
-        val dueDate = Calendar.getInstance()
-
-        // Set Execution around 04:00:00 AM
-        dueDate.set(Calendar.HOUR_OF_DAY, 17)
-        dueDate.set(Calendar.MINUTE, 45)
-        dueDate.set(Calendar.SECOND, 0)
-        if (dueDate.before(currentDate)) {
-            dueDate.add(Calendar.HOUR_OF_DAY, 24)
-        }
-
-        val timeDiff = dueDate.timeInMillis - currentDate.timeInMillis
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(timeDiff)
-
-        Log.d("MyWorker", "time difference $minutes")
-*/
 
         //define constraints
         val myConstraints = Constraints.Builder()
@@ -87,8 +74,20 @@ object WorkManagerScheduler {
             .addTag(WORK_MANAGER_CONTACT)
             .build()
 
-        if (!isWorkScheduled(WORK_MANAGER_CONTACT))
+
+        if (!isWorkScheduled(WORK_MANAGER_CONTACT)) {
             WorkManager.getInstance(context).enqueueUniqueWork(WORK_MANAGER_CONTACT, ExistingWorkPolicy.REPLACE, refreshWork)
+        }
+//        WorkManager.getInstance(context).getWorkInfoByIdLiveData(refreshWork.id)
+//            .observe(context, Observer<WorkInfo?> { workInfo ->
+//                if (workInfo != null) {
+//                    val message = workInfo.outputData.getBoolean(Constants.callSucceed, false)
+//                    //mTextView.setText(message)
+//                    if (message)
+//                        showLog("Was work ","successful?-")
+//                }
+//            })
+
 //        WorkManager.getInstance(context).enqueue(refreshWork)
 
 

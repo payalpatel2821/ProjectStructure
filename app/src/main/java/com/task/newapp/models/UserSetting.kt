@@ -1,6 +1,8 @@
 package com.task.newapp.models
 
+
 import com.google.gson.annotations.SerializedName
+
 
 data class UserSetting(
     @SerializedName("id")

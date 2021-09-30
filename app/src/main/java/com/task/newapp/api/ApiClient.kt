@@ -9,6 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class ApiClient {
     companion object {
@@ -23,7 +24,9 @@ class ApiClient {
 //                .build()
 
             val builder = OkHttpClient.Builder()
-
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
             builder.addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
 
                 .addInterceptor { chain ->
@@ -33,7 +36,7 @@ class ApiClient {
                         .header(
                             "Authorization",
                             if (FastSave.getInstance().getString(Constants.prefToken, "") != "") {
-                                "bearer "+FastSave.getInstance().getString(Constants.prefToken, "")
+                                "bearer " + FastSave.getInstance().getString(Constants.prefToken, "")
                             } else {
                                 ""
                             }

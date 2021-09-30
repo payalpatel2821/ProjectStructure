@@ -88,8 +88,6 @@ class ContactsHelper(val context: Context) {
                 resultContacts.addAll(tempContacts)
             }
 
-
-
             Contact.sorting = context.config.sorting
             Contact.startWithSurname = context.config.startNameWithSurname
             resultContacts.sort()

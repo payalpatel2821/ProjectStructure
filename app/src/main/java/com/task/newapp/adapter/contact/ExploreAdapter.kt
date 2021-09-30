@@ -22,7 +22,7 @@ import com.task.newapp.utils.load
 import okhttp3.internal.notify
 
 class ExploreAdapter(
-    private val mainActivity: FragmentActivity
+    private val mainActivity: FragmentActivity, private val listener: OnExploreContactListener
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var allUser: ArrayList<ResponseIsAppUser.Data> = ArrayList<ResponseIsAppUser.Data>()
@@ -35,7 +35,7 @@ class ExploreAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = allUser[position]
-        (holder as ExploreViewHolder).populateItemRows(item, isHistory,position,allUser,this)
+        (holder as ExploreViewHolder).populateItemRows(item, isHistory, position, allUser, this)
 
         holder.itemView.setOnClickListener {
             insertContactHistoryData(prepareContactHistoryData(item))
@@ -49,6 +49,10 @@ class ExploreAdapter(
 
     override fun getItemCount(): Int {
         return allUser.size
+    }
+
+    interface OnExploreContactListener {
+        fun onRemoveItemClick(contactId: Int, position: Int)
     }
 
     fun setData(arrayList: ArrayList<ResponseIsAppUser.Data>, isHistory: Boolean) {
@@ -73,10 +77,8 @@ class ExploreAdapter(
             } else {
                 layoutBinding.ivRemoveContact.visibility = GONE
             }
-            layoutBinding.ivRemoveContact.setOnClickListener{
-                deleteOneContactHistory(item.id)
-                allUser.removeAt(position)
-                exploreAdapter.notifyDataSetChanged()
+            layoutBinding.ivRemoveContact.setOnClickListener {
+                exploreAdapter.listener.onRemoveItemClick(item.id, position)
             }
         }
     }

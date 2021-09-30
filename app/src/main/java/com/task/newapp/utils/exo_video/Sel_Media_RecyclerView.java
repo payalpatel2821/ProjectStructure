@@ -1,8 +1,7 @@
 package com.task.newapp.utils.exo_video;
 
 
-
-
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.media.MediaMetadataRetriever;
@@ -16,7 +15,6 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -31,6 +29,7 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.task.newapp.R;
 import com.task.newapp.ui.activities.chat.ViewPagerActivity;
 import com.task.newapp.utils.DateTimeUtils;
+import com.task.newapp.utils.UtilsKt;
 import com.task.newapp.utils.exo_video.video_trim.interfaces.VideoTrimListener;
 import com.task.newapp.utils.exo_video.video_trim.widget.VideoTrimmerView;
 
@@ -98,34 +97,28 @@ public class Sel_Media_RecyclerView extends RecyclerView {
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                    if (mediaCoverImage != null) {
-//                        // show the old thumbnail
-//                        mediaCoverImage.setVisibility(VISIBLE);
-//                    }
-
                     playVideo(!recyclerView.canScrollHorizontally(1));
                 }
+
             }
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (caption_edt != null) {
-                    hideSoftKeyboard(caption_edt);
-                }
+//                UtilsKt.hideSoftKeyboard((Activity) context);
             }
         });
 
 
     }
 
-    private void hideSoftKeyboard(EditText ettext) {
+ /*   private void hideSoftKeyboard(EditText ettext) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             InputMethodManager inputMethodManager = (InputMethodManager) this.context.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(ettext.getWindowToken(), 0);
         }
-    }
+    }*/
 
     public int getCurrentItem() {
         return targetPosition;
@@ -212,14 +205,8 @@ public class Sel_Media_RecyclerView extends RecyclerView {
             ((ViewPagerActivity) getContext()).iv_crop.setVisibility(View.GONE);
             ((ViewPagerActivity) getContext()).trim_time.setVisibility(View.VISIBLE);
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-
-//                retriever.setDataSource(getRealName(targetPosition));
-            if (Build.VERSION.SDK_INT >= 14) {
-                retriever.setDataSource(imageurilist.get(targetPosition).getPath()/*, new HashMap<String, String>()*/);
-            } else {
-                retriever.setDataSource(imageurilist.get(targetPosition).getPath());
-            }
+//          retriever.setDataSource(getRealName(targetPosition));
+            retriever.setDataSource(imageurilist.get(targetPosition).getPath()/*, new HashMap<String, String>()*/);
             String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             long timeInMillisec = Long.parseLong(time);
             retriever.release();
@@ -259,14 +246,11 @@ public class Sel_Media_RecyclerView extends RecyclerView {
         }
 
         if (type != 1) {
-//            progressBar.setVisibility(View.VISIBLE);
             trimmer_view.setVisibility(View.VISIBLE);
             imageView.setVisibility(View.GONE);
 
 
             viewHolderParent.setOnClickListener(videoViewClickListener);
-
-//            String mediaUrl =getRealName(targetPosition);
             String mediaUrl = imageurilist.get(targetPosition).getPath();
 
             if (mediaUrl != null) {
@@ -348,9 +332,9 @@ public class Sel_Media_RecyclerView extends RecyclerView {
 //                        }
 //
 //                    } else {
-                        Log.println(Log.ASSERT, "trimmer_view-----", "chating");
+                    Log.println(Log.ASSERT, "trimmer_view-----", "chating");
 
-                        trimmer_view.initVideoByURI(Uri.parse(mediaUrl), timeInMillisec, duration, 0);
+                    trimmer_view.initVideoByURI(Uri.parse(mediaUrl), timeInMillisec, duration, 0);
 //                    }
 
                 }
@@ -361,6 +345,9 @@ public class Sel_Media_RecyclerView extends RecyclerView {
             imageView.setVisibility(View.VISIBLE);
         }
 
+        trimmer_view.onVideoReset();
+        trimmer_view.setRestoreState(true);
+        trimmer_view.pauseRedProgressAnimation();
 
     }
 

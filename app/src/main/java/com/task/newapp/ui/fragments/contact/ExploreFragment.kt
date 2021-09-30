@@ -14,6 +14,7 @@ import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.FragmentExploreBinding
 import com.task.newapp.models.ResponseIsAppUser
 import com.task.newapp.realmDB.deleteContactHistory
+import com.task.newapp.realmDB.deleteOneContactHistory
 import com.task.newapp.realmDB.getAllContactHistory
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -25,7 +26,7 @@ import java.util.*
 /**
  * A placeholder fragment containing a simple view.
  */
-class ExploreFragment : Fragment(),View.OnClickListener {
+class ExploreFragment : Fragment(), View.OnClickListener {
 
     private lateinit var disposable: DisposableObserver<ResponseIsAppUser>
     private var _binding: FragmentExploreBinding? = null
@@ -52,7 +53,15 @@ class ExploreFragment : Fragment(),View.OnClickListener {
     private fun initView() {
         linearLayoutManager = LinearLayoutManager(requireActivity())
         _binding!!.rvList.layoutManager = linearLayoutManager
-        adapter = ExploreAdapter(requireActivity())
+        adapter = ExploreAdapter(requireActivity(), object : ExploreAdapter.OnExploreContactListener {
+            override fun onRemoveItemClick(contactId: Int, position: Int) {
+                deleteOneContactHistory(contactId)
+                allUser.removeAt(position)
+                adapter.setData(allUser, true)
+                adapter.notifyDataSetChanged()
+                setClearBtnVisibility()
+            }
+        })
         _binding!!.rvList.adapter = adapter
         getAllContactHistoryFromDB()
         binding.txtClearAll.setOnClickListener(this)
@@ -75,19 +84,28 @@ class ExploreFragment : Fragment(),View.OnClickListener {
             allUser.add(contactHistory)
         }
         adapter.setData(allUser, true)
+
+        setClearBtnVisibility()
+    }
+
+    fun setClearBtnVisibility() {
+        binding.txtEmptyContact.text = resources.getString(R.string.no_recent_searches)
         if (allUser.isNullOrEmpty()) {
             binding.txtClearAll.visibility = GONE
+            binding.txtEmptyContact.visibility = VISIBLE
         } else {
             binding.txtClearAll.visibility = VISIBLE
+            binding.txtEmptyContact.visibility = GONE
         }
     }
 
-    override fun onClick(view: View){
-        when(view.id){
-            R.id.txt_clear_all->{
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.txt_clear_all -> {
                 deleteContactHistory()
                 allUser.clear()
                 adapter.setData(allUser, true)
+                setClearBtnVisibility()
             }
         }
     }
@@ -98,13 +116,19 @@ class ExploreFragment : Fragment(),View.OnClickListener {
     }
 
     fun filter(query: String) {
-        allUser.clear()
-        if (query == "") {
-            getAllContactHistoryFromDB()
-        } else {
-            this.query = query
-            showLog("filter", "call")
-            callAPISearchUser(query, 0)
+        try {
+            allUser.clear()
+            if (query == "") {
+                binding.txtClearAll.visibility = VISIBLE
+                getAllContactHistoryFromDB()
+            } else {
+                binding.txtClearAll.visibility = GONE
+                this.query = query
+                showLog("filter", "call")
+                callAPISearchUser(query, 0)
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -124,9 +148,13 @@ class ExploreFragment : Fragment(),View.OnClickListener {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(object : DisposableObserver<ResponseIsAppUser>() {
                         override fun onNext(responseIsAppUser: ResponseIsAppUser) {
-                            if (responseIsAppUser.success == 1) {
-                                allUser.addAll(responseIsAppUser.data)
-                                adapter.setData(allUser, false)
+                            allUser.addAll(responseIsAppUser.data)
+                            adapter.setData(allUser, false)
+                            binding.txtEmptyContact.text = resources.getString(R.string.contact_not_found)
+                            if (allUser.isNullOrEmpty()) {
+                                binding.txtEmptyContact.visibility = VISIBLE
+                            } else {
+                                binding.txtEmptyContact.visibility = GONE
                             }
                         }
 

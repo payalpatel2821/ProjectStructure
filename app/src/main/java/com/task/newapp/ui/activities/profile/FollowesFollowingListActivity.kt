@@ -117,13 +117,13 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
         showLog("loadmore", scrollPosition.toString())
         when (from) {
             "profile_view" -> {
-                callAPIGetProfileViewer(R.string.limit_20, scrollPosition)
+                callAPIGetProfileViewer(resources.getString(R.string.limit_20).toInt(), scrollPosition)
             }
             "friend" -> {
-                callAPIGetFriendList(from, R.string.limit_20, scrollPosition)
+                callAPIGetFriendList(from, resources.getString(R.string.limit_20).toInt(), scrollPosition)
             }
             else -> {
-                callAPIGetFollower(from, R.string.limit_20, scrollPosition)
+                callAPIGetFollower(from, resources.getString(R.string.limit_20).toInt(), scrollPosition)
             }
         }
     }
@@ -175,8 +175,6 @@ class FollowesFollowingListActivity : AppCompatActivity(), Paginate.Callbacks {
                 Constants.limit to limit,
                 Constants.offset to offset,
             )
-
-//            openProgressDialog(this)
 
             mCompositeDisposable.add(
                 ApiClient.create()

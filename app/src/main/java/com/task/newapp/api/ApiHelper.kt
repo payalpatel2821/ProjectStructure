@@ -205,7 +205,6 @@ interface ApiHelper {
     @POST(set_group_setting_url)
     fun setGroupSetting(@Body hashMap: HashMap<String, Any>): Observable<ResponseGroupSetting>
 
-
     @POST(send_chat_message)
     fun sendChatMessage(@Body data: RequestBody): Observable<ResponseChatMessage>
 
@@ -225,8 +224,12 @@ interface ApiHelper {
     fun searchAppUser(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
 
     @POST(contact_sync)
-    fun contactSync(@Body contactSyncAPIModel: List<ContactSyncAPIModel>): Observable<CommonResponse>
+    fun contactSync(@Body contactSyncAPIModel: List<ContactSyncAPIModel>): Observable<ResponseMyContact>
 
     @POST(search_sync_contact)
     fun searchContactSync(@Body hashMap: HashMap<String, Any>): Observable<ResponseIsAppUser>
+
+    @POST(getSettings)
+    fun getSettings(@Body hashMap: HashMap<String, Any>): Observable<ResponseGetSetting>
+
 }

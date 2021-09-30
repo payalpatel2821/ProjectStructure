@@ -31,13 +31,14 @@
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fillViewport="true">
+                    android:fillViewport="true"
+                    >
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="@dimen/_20sdp">
+                        android:padding="@dimen/_10sdp">
 
 
                         <androidx.appcompat.widget.AppCompatImageView
@@ -91,14 +92,14 @@
                                             android:drawableTint="@color/black"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/chat_appearance" />
 
                                         <View
                                             android:layout_width="match_parent"
                                             android:layout_height="@dimen/_1sdp"
-                                            android:layout_marginTop="@dimen/_3sdp"
-                                            android:layout_marginBottom="@dimen/_3sdp"
+                                            android:layout_marginTop="@dimen/_2sdp"
+                                            android:layout_marginBottom="@dimen/_2sdp"
                                             android:background="@drawable/divider_black_gradient" />
 
                                         <androidx.appcompat.widget.AppCompatTextView
@@ -111,7 +112,7 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/notifications" />
                                     </LinearLayout>
 
@@ -159,14 +160,14 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/post" />
 
                                         <View
                                             android:layout_width="match_parent"
                                             android:layout_height="@dimen/_1sdp"
-                                            android:layout_marginTop="@dimen/_3sdp"
-                                            android:layout_marginBottom="@dimen/_3sdp"
+                                            android:layout_marginTop="@dimen/_2sdp"
+                                            android:layout_marginBottom="@dimen/_2sdp"
                                             android:background="@drawable/divider_black_gradient" />
 
                                         <androidx.appcompat.widget.AppCompatTextView
@@ -179,7 +180,7 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/story" />
                                     </LinearLayout>
 
@@ -227,14 +228,14 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/privacy" />
 
                                         <View
                                             android:layout_width="match_parent"
                                             android:layout_height="@dimen/_1sdp"
-                                            android:layout_marginTop="@dimen/_3sdp"
-                                            android:layout_marginBottom="@dimen/_3sdp"
+                                            android:layout_marginTop="@dimen/_2sdp"
+                                            android:layout_marginBottom="@dimen/_2sdp"
                                             android:background="@drawable/divider_black_gradient" />
 
                                         <androidx.appcompat.widget.AppCompatTextView
@@ -247,7 +248,7 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/data_storage" />
                                     </LinearLayout>
 
@@ -295,14 +296,14 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/help" />
 
                                         <View
                                             android:layout_width="match_parent"
                                             android:layout_height="@dimen/_1sdp"
-                                            android:layout_marginTop="@dimen/_3sdp"
-                                            android:layout_marginBottom="@dimen/_3sdp"
+                                            android:layout_marginTop="@dimen/_2sdp"
+                                            android:layout_marginBottom="@dimen/_2sdp"
                                             android:background="@drawable/divider_black_gradient" />
 
                                         <androidx.appcompat.widget.AppCompatTextView
@@ -315,7 +316,7 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/about" />
                                     </LinearLayout>
 
@@ -363,7 +364,7 @@
                                             android:drawablePadding="@dimen/_15sdp"
                                             android:gravity="center_vertical"
                                             android:onClick="onClick"
-                                            android:padding="@dimen/_5sdp"
+                                            android:padding="@dimen/_3sdp"
                                             android:text="@string/recent_calls" />
 
                                     </LinearLayout>

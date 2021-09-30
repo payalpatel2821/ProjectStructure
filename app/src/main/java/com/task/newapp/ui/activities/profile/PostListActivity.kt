@@ -52,8 +52,6 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
         type = intent.getStringExtra(Constants.type)!!
     }
 
-
-
     private fun setAdapter() {
         // If RecyclerView was recently bound, unbind
         if (paginate != null) {
@@ -90,7 +88,7 @@ class PostListActivity : AppCompatActivity(), Paginate.Callbacks {
     override fun onLoadMore() {
         isloading = true
         val scrollPosition: Int = postListAdapter.itemCount
-        callAPIGetPostList(type, R.string.limit_20, scrollPosition)
+        callAPIGetPostList(type, resources.getString(R.string.limit_20).toInt(), scrollPosition)
     }
 
     override fun isLoading(): Boolean {
