@@ -256,6 +256,8 @@ dependencies {
     //Pager Indicator
     implementation "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:1.2.1"
 
+    //Square Progress loader on image
+    implementation 'ch.halcyon:squareprogressbar:1.6.4'
     //Mention
     implementation 'org.apache.commons:commons-lang3:3.4'
 

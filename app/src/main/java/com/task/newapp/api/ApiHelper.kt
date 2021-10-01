@@ -56,6 +56,9 @@ interface ApiHelper {
     @POST(delete_chat)
     fun deleteChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
 
+    @POST(delete_msg_from_chat)
+    fun deleteMessageFromChat(@Body hashMap: HashMap<String, Any>): Observable<CommonResponse>
+
     @GET(get_all_posts)
     fun get_all_posts(@Path("limit") limit: Int, @Path("offset") offset: Int): Observable<ResponseGetAllPost>
 

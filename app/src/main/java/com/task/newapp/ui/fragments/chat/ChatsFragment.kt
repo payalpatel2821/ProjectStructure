@@ -129,6 +129,11 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         //destroySocketListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        setAdapter(true)
+        callGetUnreadMessageAPI()
+    }
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_archive -> {
@@ -144,8 +149,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     private fun initView() {
         initListeners()
         initSearchView()
-        setAdapter(true)
-        callGetUnreadMessageAPI()
+
 
     }
 

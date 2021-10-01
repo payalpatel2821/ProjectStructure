@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,6 +20,7 @@ import android.widget.AdapterView.OnItemLongClickListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
@@ -33,16 +35,17 @@ import com.skydoves.balloon.Balloon
 import com.task.newapp.App
 import com.task.newapp.R
 import com.task.newapp.adapter.chat.OneToOneChatAdapter
+import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.ActivityOneToOneChatBinding
+import com.task.newapp.models.CommonResponse
+import com.task.newapp.models.chat.ContactInfo
+import com.task.newapp.models.chat.DocumentInfo
 import com.task.newapp.models.chat.ImageCaption
 import com.task.newapp.models.chat.VoiceInfo
-import com.task.newapp.realmDB.getOneToOneChat
-import com.task.newapp.realmDB.getSingleChat
-import com.task.newapp.realmDB.insertChatListData
+import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.ChatContents
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
-import com.task.newapp.realmDB.updateChatsList
 import com.task.newapp.realmDB.wrapper.ChatListWrapperModel
 import com.task.newapp.ui.activities.BaseAppCompatActivity
 import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
@@ -57,11 +60,15 @@ import com.task.newapp.utils.recorderview.AudioRecordView
 import com.task.newapp.utils.recorderview.AudioRecorder
 import com.task.newapp.utils.recorderview.toast
 import com.task.newapp.workmanager.WorkManagerScheduler
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import io.realm.RealmList
 import lv.chi.photopicker.MediaPickerFragment
 import java.io.File
 import java.io.PrintWriter
+import java.net.URLConnection
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -69,6 +76,7 @@ import kotlin.collections.ArrayList
 class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     OneToOneChatAdapter.OnChatItemClickListener, OnItemClickListener, OnItemLongClickListener, AudioRecordView.Callback, MediaPickerFragment.Callback {
 
+    private val TAG: String = OneToOneChatActivity::class.java.simpleName
     var select_captions = java.util.ArrayList<String>()
     var select_time = java.util.ArrayList<String>()
     var targetList = java.util.ArrayList<String>()
@@ -101,85 +109,104 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     }
     private var audioRecord: AudioRecorder? = null
     private var audioPlayer: AudioPlayer? = null
-    private var audioResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                //the selected audio.
-                val resultData: Intent? = result.data
-                if (resultData?.data != null) {
-                    val uri: Uri? = resultData?.data
-                    shareAudioFile(uri)
-                } else {
-                    resultData?.clipData?.let { data ->
-                        for (i in 0 until data.itemCount) {
-                            showLog("AUDIO URIs : ", data.getItemAt(i).uri.toString())
-                            shareAudioFile(data.getItemAt(i).uri)
-                        }
+    private var audioResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            //the selected audio.
+            val resultData: Intent? = result.data
+            if (resultData?.data != null) {
+                val uri: Uri? = resultData?.data
+                shareAudioFile(uri)
+            } else {
+                resultData?.clipData?.let { data ->
+                    for (i in 0 until data.itemCount) {
+                        showLog("AUDIO URIs : ", data.getItemAt(i).uri.toString())
+                        shareAudioFile(data.getItemAt(i).uri)
+                    }
 
+                }
+            }
+        }
+    }
+
+    private var documentResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            //the selected audio.
+            val resultData: Intent? = result.data
+            if (resultData?.data != null) {
+                val uri: Uri? = resultData?.data
+                showLog("AUDIO URIs : ", uri.toString())
+                shareDocumentFile(uri)
+            } else {
+                resultData?.clipData?.let { data ->
+                    for (i in 0 until data.itemCount) {
+                        showLog("AUDIO URIs : ", data.getItemAt(i).uri.toString())
+                        shareDocumentFile(data.getItemAt(i).uri)
+                    }
+
+                }
+            }
+        }
+    }
+    private var cameraResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
+
+            val selectedImage = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", file)
+//            showLog("path=====", selectedImage.path.toString())
+            showLog("path=====", selectedImage!!.path.toString())
+            shareImageVideoFile((selectedImage), "", "")
+        }
+    }
+    private var galleryResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // val selectedMediaUri: Uri = result.data?.data!!
+            val resultData: Intent? = result.data
+            if (resultData?.data != null) {
+                val selectedMediaUri: Uri? = resultData?.data
+                if (selectedMediaUri.toString().contains("image")) {
+                    //handle image
+                    showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
+                } else if (selectedMediaUri.toString().contains("video")) {
+                    //handle video
+                    showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
+                }
+                // shareImageVideoFile(selectedMediaUri)
+            } else {
+                resultData?.clipData?.let { data ->
+                    for (i in 0 until data.itemCount) {
+                        val selectedMediaUri: Uri? = data.getItemAt(i).uri
+                        if (selectedMediaUri.toString().contains("image")) {
+                            //handle image
+                            showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
+                        } else if (selectedMediaUri.toString().contains("video")) {
+                            //handle video
+                            showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
+
+                        }
+                        //    shareImageVideoFile(selectedMediaUri)
                     }
                 }
             }
         }
+    }
+    private var viewPagerResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            targetList = ArrayList()
+            select_captions = ArrayList()
+            select_time = ArrayList()
+            return_mediatype = ArrayList()
+            targetList = result.data!!.getStringArrayListExtra("select_urls")!!
+            select_captions = result.data!!.getStringArrayListExtra("select_captions")!!
+            select_time = result.data!!.getStringArrayListExtra("select_time")!!
+            return_mediatype = result.data!!.getIntegerArrayListExtra("urls_mediatype")!!
 
-    private var cameraResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val selectedImage = imageUri!!
-                showLog("path=====", selectedImage.path.toString())
-                shareImageVideoFile(selectedImage)
+            targetList.forEachIndexed { index, s ->
+                shareImageVideoFile(Uri.parse(targetList[index]), select_captions[index], select_time[index])
             }
+
+            showLog("data", "$targetList $select_captions $select_time $return_mediatype")
         }
-
-    private var galleryResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                // val selectedMediaUri: Uri = result.data?.data!!
-                val resultData: Intent? = result.data
-                if (resultData?.data != null) {
-                    val selectedMediaUri: Uri? = resultData?.data
-                    if (selectedMediaUri.toString().contains("image")) {
-                        //handle image
-                        showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
-                    } else if (selectedMediaUri.toString().contains("video")) {
-                        //handle video
-                        showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
-                    }
-                    shareImageVideoFile(selectedMediaUri)
-                } else {
-                    resultData?.clipData?.let { data ->
-                        for (i in 0 until data.itemCount) {
-                            val selectedMediaUri: Uri? = data.getItemAt(i).uri
-                            if (selectedMediaUri.toString().contains("image")) {
-                                //handle image
-                                showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
-                            } else if (selectedMediaUri.toString().contains("video")) {
-                                //handle video
-                                showLog("path=====", getPathFromURI(this@OneToOneChatActivity, selectedMediaUri!!).toString())
-
-                            }
-                            shareImageVideoFile(selectedMediaUri)
-                        }
-                    }
-                }
-            }
-        }
-
-
-    private var viewPagerResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                targetList = ArrayList()
-                select_captions = ArrayList()
-                select_time = ArrayList()
-                return_mediatype = ArrayList()
-                targetList = result.data!!.getStringArrayListExtra("select_urls")!!
-                select_captions = result.data!!.getStringArrayListExtra("select_captions")!!
-                select_time = result.data!!.getStringArrayListExtra("select_time")!!
-                return_mediatype = result.data!!.getIntegerArrayListExtra("urls_mediatype")!!
-
-                showLog("data", targetList.toString() + " " + select_captions.toString() + " " + select_time.toString() + " " + return_mediatype.toString())
-            }
-        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -220,21 +247,26 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                 setTheme(R.style.ToolbarIconTintStyle)
                 titleColor(R.color.gray4)
                 popupTheme(R.style.ThemeOverlay_AppCompat_Light)
+
                 menu(R.menu.chat_options_menu)
                 fadeIn()
                 onCreate { cab, menu ->
                     if (menu is MenuBuilder) {
-                        (menu as MenuBuilder).setOptionalIconsVisible(true)
+                        menu.setOptionalIconsVisible(true)
                     }
                     // menuInflater.inflate(R.menu.chat_options_menu, menu)
                     cab.title(literal = "${chatsAdapter.getSelectedMessageCount()} Selected")
                 }
 
                 onSelection { item ->
+                    when (item.itemId) {
+                        R.id.action_delete -> deleteMessage()
+                    }
                     true
                 }
                 onDestroy { cab ->
-                    chatsAdapter.deselectAllMessages()
+                    if (chatsAdapter.getSelectedMessageCount() > 0)
+                        chatsAdapter.deselectAllMessages()
                     true
                 }
 
@@ -460,8 +492,28 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                                 ).show(supportFragmentManager, "picker")
                             }
                         }
-                        DOCUMENTS -> showToast(actionName)
-                        CONTACTS -> showToast(actionName)
+                        DOCUMENTS -> {
+                            runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+                                val intentUpload = Intent()
+                                intentUpload.type = "*/*"
+                                intentUpload.action = Intent.ACTION_GET_CONTENT
+                                intentUpload.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                                documentResultLauncher.launch(intentUpload)
+                            }
+                        }
+                        CONTACTS -> {
+                            val picker: ContactPicker? = ContactPicker.create(
+                                activity = this@OneToOneChatActivity,
+                                onContactPicked = {
+                                    val contactArray = ArrayList<ContactInfo>()
+                                    contactArray.add(ContactInfo(it.name ?: "", it.number, it.email.toString().replace("[", "").replace("]", ""), ""))
+                                    showLog("TAG", it.name + ": " + it.number + ": " + it.email)
+                                    saveContactChatLocalAndSendToServer(contactArray)
+                                },
+                                onFailure = { showLog("TAG", it.localizedMessage) })
+
+                            picker?.pick()
+                        }
                         LOCATION -> showToast(actionName)
                         AUDIO -> {
                             runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
@@ -489,9 +541,12 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     private var imageUri: Uri? = null
     fun takePhoto() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val photo = File(Environment.getExternalStorageDirectory(), "Pic" + DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMdd.label) + ".jpg")
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo))
-        imageUri = Uri.fromFile(photo)
+        val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
+        imageUri = FileProvider.getUriForFile(this, this.applicationContext.packageName + ".fileprovider", file)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+//        val photo = File(Environment.getExternalStorageDirectory(), "Pic" + DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMdd.label) + ".jpg")
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo))
+//        imageUri = Uri.fromFile(photo)
         cameraResultLauncher.launch(intent)
     }
 
@@ -525,7 +580,22 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
             isBroadcastChat = 0, broadcastId = 0, chatId = 0, chatContents = chat_contents, contacts = contacts, groupLabelColor = "#000000", isSync = false
         )
         insertChatListData(chatMessage)
-        updateChatsList(opponentId, chatMessage)
+        val singleChat = getSingleChat(opponentId)
+        if (singleChat == null) {
+            val chat = Chats()
+            chat.id = opponentId
+            chat.isGroup = false
+            chat.isHook = false
+            chat.isArchive = false
+            chat.isBlock = false
+            chat.chatList = chatMessage
+            chat.updatedAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+            chat.currentTime = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+            insertChatData(chat)
+
+        } else {
+            updateChatsList(opponentId, chatMessage)
+        }
         if (chatsAdapter.isChatTypingIndicatorAdded())
             chats.add(chats.size - 1, ChatListWrapperModel(chatMessage))
         else chats.add(ChatListWrapperModel(chatMessage))
@@ -670,16 +740,53 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         saveAudioChatLocalAndSendToServer(voiceInfo)
     }
 
-    private fun shareImageVideoFile(uri: Uri?) {
-        val file = File(getPathFromURI(this, uri!!))
+    private fun shareImageVideoFile(uri: Uri?, caption: String?, time: String) {
+        val file = File(uri!!.path)
         file.setReadable(true, false);
         showLog("path=====", file.toString())
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(file.path)
-        //  val duration: String? = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-        //  val millSecond = duration?.toInt()
-        val imageCaption = ImageCaption("", uri!!, 0.0, 0.0, 0.0, false, file)
-        saveImageChatLocalAndSendToServer(imageCaption)
+
+        if (isImageFile(file.path)) {
+            val imageCaption = ImageCaption(caption ?: "", uri!!, 0.0, 0.0, 0.0, false, data = file)
+            saveImageChatLocalAndSendToServer(imageCaption)
+        } else {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(file.path)
+            val duration: String? = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            val millSecond = duration?.toDouble()
+            val imageCaption = ImageCaption(caption ?: "", uri!!, 0.0, millSecond ?: 0.0, 0.0, false, file)
+            saveImageChatLocalAndSendToServer(imageCaption)
+        }
+    }
+
+    private fun shareDocumentFile(uri: Uri?) {
+        val documentFile = File(getPathFromURI(this, uri!!))
+//        val documentpath = Uri.fromFile(documentFile)
+        showLog("path====", documentFile.toString())
+        val documentInfo = DocumentInfo(ChatContentType.DOCUMENT.contentType, "", documentFile!!.readBytes(), documentFile.absolutePath, 0.0, documentFile.name, documentFile.length().toDouble(), 0)
+        saveDocumentChatLocalAndSendToServer(documentInfo)
+    }
+
+    private fun saveDocumentChatLocalAndSendToServer(documentInfo: DocumentInfo) {
+        val chatContents = ChatContents()
+        val chatContentId = getNewChatId()
+
+        chatContents.contentId = chatContentId
+        chatContents.id = chatContentId
+        chatContents.content = documentInfo.localUrl
+        chatContents.type = documentInfo.chatType
+        chatContents.caption = ""
+        chatContents.size = 0.0
+        chatContents.duration = 0.0
+        chatContents.title = documentInfo.fileName
+        chatContents.localPath = documentInfo.localUrl
+        chatContents.createdAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+        chatContents.updatedAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+        chatContents.isDownload = true
+        chatContents.data = documentInfo.data
+
+        showLog("Chat content data:", documentInfo.localUrl)
+        prepareNewMessage(messageText = "", type = MessageType.MIX.type, chat_contents = chatContents, contacts = RealmList())
+
     }
 
     private fun saveVoiceChatLocalAndSendToServer(voiceInfo: VoiceInfo) {
@@ -729,16 +836,15 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     }
 
     private fun saveImageChatLocalAndSendToServer(imageCaption: ImageCaption) {
-        val duration = 0.0
         val chatContentId = getNewChatId()
         val chatContents = ChatContents()
         chatContents.contentId = chatContentId
         chatContents.id = chatContentId
         chatContents.content = ""
-        chatContents.type = if (imageCaption.imgVideoData.toString().contains("image")) ChatContentType.IMAGE.contentType else ChatContentType.VIDEO.contentType
+        chatContents.type = if (URLConnection.guessContentTypeFromName(imageCaption.imgVideoData.path).contains("image")) ChatContentType.IMAGE.contentType else ChatContentType.VIDEO.contentType
         chatContents.caption = ""
         chatContents.size = 0.0
-        chatContents.duration = duration
+        chatContents.duration = imageCaption.endTime
         chatContents.title = imageCaption.data.name
         chatContents.email = ""
         chatContents.profileImage = ""
@@ -747,10 +853,39 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         chatContents.localPath = imageCaption.data.absolutePath
         chatContents.isDownload = true
         chatContents.data = imageCaption.data.readBytes()
-
         showLog("Chat content data:", imageCaption.data.path.toString())
         prepareNewMessage(messageText = "", type = MessageType.MIX.type, chat_contents = chatContents, contacts = RealmList())
 
+    }
+
+    private fun saveContactChatLocalAndSendToServer(contactArray: ArrayList<ContactInfo>) {
+        val chatContactArray = RealmList<ChatContents>()
+        contactArray.forEach {
+            val chatContent = ChatContents()
+            val chatContentId = getNewChatId()
+            chatContent.contentId = chatContentId
+            chatContent.id = chatContentId
+            chatContent.content = ""
+            chatContent.type = ChatContentType.CONTACT.contentType
+            chatContent.name = it.name
+            chatContent.number = it.number
+            chatContent.email = it.email
+            chatContent.profileImage = it.profileImg
+            chatContent.caption = ""
+            chatContent.caption = ""
+            chatContent.size = 0.0
+            chatContent.duration = 0.0
+            chatContent.title = ""
+            chatContent.localPath = ""
+            chatContent.createdAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+            chatContent.updatedAt = DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMddHHmmss.label).toString()
+            chatContent.isDownload = true
+            chatContactArray.add(chatContent)
+        }
+        if (chatContactArray.isNotEmpty()) {
+            showLog("Chat content data:", contactArray.map { it.name }.toString())
+            prepareNewMessage(messageText = "", type = MessageType.CONTACT.type, null, contacts = chatContactArray)
+        }
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -798,7 +933,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         select_time.addAll(timearr)
 
 
-
         val intent = Intent(this@OneToOneChatActivity, ViewPagerActivity::class.java)
         intent.putStringArrayListExtra("select_urls", targetList/*Gson().toJson(mediaItems)*/)
         intent.putStringArrayListExtra("select_captions", select_captions)
@@ -807,5 +941,142 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 //        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         viewPagerResultLauncher.launch(intent)
 
+    }
+
+    /*
+    @IBAction func btnClickDeleteMsg(_ sender: UIButton) {
+
+        var chatids = ""
+        var localchatids = ""
+
+        arrDeleteChat.forEach { obj in
+            if obj.isSync{
+                if chatids == ""{
+                    chatids = "\(obj.chatid)"
+                }else{
+                    chatids = chatids + "," + "\(obj.chatid)"
+                }
+            }else{
+                if localchatids == ""{
+                    localchatids = "\(obj.primaryid)"
+                }else{
+                    localchatids = localchatids + "," + "\(obj.primaryid)"
+                }
+            }
+        }
+
+
+        let parameters = [
+            Parameters.Chatlist.chat_id: chatids] as [String : Any]
+
+            let chatviewModel = ChatViewModel()
+            chatviewModel.CallWS_DeleteChat(flags: selInfoChatData?.flagType ?? "", senderid: currentUserId, receiverid: self.selInfoChatData?.selid ?? 0, chatids: chatids, param: parameters){ (isSuccess) in
+                if isSuccess{
+                       let chatids = self.arrDeleteChat.filter({$0.isSync == true}).map({$0.chatid})
+                        let isPlayingAudioCount = self.arrDeleteChat.filter({$0.primaryid == currentPlayingChatID})
+                        if isPlayingAudioCount.count > 0{
+                            self.stopAudioVoicePlaying()
+                        }
+
+                        if self.selInfoChatData?.flagType.lowercased() == flag.broadcast.rawValue.lowercased(){
+
+                            let arrChatIDS = chatids
+                            var bchatids = [Int64]()
+                            var bchatcontactids = [Int64]()
+
+                            arrChatIDS.forEach { broadcastid in
+                                let allBroadcastData = RealmManager.sharedInstance.getAllBroadcastChatidwise(broadcast_chat_id:  Int(broadcastid))
+                                if allBroadcastData.count > 0 {
+                                     bchatids = allBroadcastData.filter({$0.isSync == true && $0.type != chatcontentType.contact.rawValue}).map({$0.id})
+                                    bchatcontactids = allBroadcastData.filter({$0.isSync == true && $0.type == chatcontentType.contact.rawValue}).map({$0.id})
+                                }
+                            }
+                            if bchatids.count > 0 {
+                                RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: bchatids)
+                            }
+                            if bchatcontactids.count > 0 {
+                                RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: bchatcontactids)
+                            }
+
+                        }
+
+                        if chatids.count > 0 {
+                            RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: chatids)
+                        }
+
+                        let contactchatids = self.arrDeleteChat.filter({$0.isSync == true && $0.messageType == chatcontentType.contact.rawValue}).map({$0.chatid})
+
+                        if contactchatids.count > 0{
+                            RealmManager.sharedInstance.deleteChatContact(query: "\(DBTables.chatcontents.id) IN %@", ids: contactchatids)
+                        }
+
+
+
+                        let selindex = self.arrDeleteChat.map({$0.index})
+                        if selindex.count > 0{
+                            _ = self.arrChatslist.remove(elementsAtIndices: selindex)
+                            selindex.forEach { index in
+                                if let index = self.arrDeleteChat.firstIndex(where: {$0.index == index}) {
+                                    self.arrDeleteChat.remove(at: index)
+                                }
+                            }
+                        }
+                        self.deleteWithoutSync()
+                }else{
+                    // Delete without Sync
+                    self.deleteWithoutSync()
+                }
+            }
+
+
+    }*/
+    private fun deleteMessage() {
+        val chatIds = chatsAdapter.getSelectedMessage().map { it.chatList.id }.joinToString(",")
+        showLog("Delete selected : ", chatIds)
+        callAPIDeleteSelectedMessage(chatIds)
+    }
+
+    private fun callAPIDeleteSelectedMessage(chatIds: String, callback: ((Boolean) -> Unit)? = null) {
+        try {
+            if (!isNetworkConnected()) {
+                showToast(getString(R.string.no_internet))
+                return
+            }
+
+            openProgressDialog(this)
+            val hashMap: HashMap<String, Any> = hashMapOf(
+                Constants.chat_id to chatIds
+
+            )
+            mCompositeDisposable.add(
+                ApiClient.create()
+                    .deleteMessageFromChat(hashMap)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(object : DisposableObserver<CommonResponse>() {
+                        override fun onNext(commonResponse: CommonResponse) {
+                            if (commonResponse.success == 1) {
+                                deletePrivateMessageEmitEvent(chatIds, getCurrentUserId(), opponentId)
+                                callback?.invoke(true)
+                            } else
+                                callback?.invoke(false)
+                        }
+
+                        override fun onError(e: Throwable) {
+                            Log.v("onError: ", e.toString())
+                            hideProgressDialog()
+                            callback?.invoke(false)
+                        }
+
+                        override fun onComplete() {
+                            hideProgressDialog()
+                            callback?.invoke(false)
+                        }
+                    })
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            callback?.invoke(false)
+        }
     }
 }

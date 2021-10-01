@@ -17,6 +17,7 @@
             android:layout_gravity="end"
             android:layout_margin="@dimen/_5sdp"
             android:background="@drawable/chat_bg_right_first"
+            android:elevation="@dimen/_2sdp"
             android:gravity="center_vertical|start"
             android:padding="@dimen/_5sdp">
 

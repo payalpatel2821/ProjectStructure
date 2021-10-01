@@ -4,7 +4,6 @@ import com.task.newapp.App
 import com.task.newapp.models.*
 import com.task.newapp.models.chat.*
 import com.task.newapp.realmDB.models.*
-import com.task.newapp.realmDB.models.ChatContacts
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.utils.*
@@ -355,61 +354,6 @@ fun insertChatContent(chatContents: RealmList<ChatContents>) {
 
 }
 
-fun insertChatContacts(chatContacts: RealmList<ChatContacts>) {
-    val realm = App.getRealmInstance()
-    if (!realm.isInTransaction) {
-        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-            realm.copyToRealmOrUpdate(chatContacts)
-        })
-    } else {
-        realm.copyToRealmOrUpdate(chatContacts)
-    }
-}
-
-fun insertChatVoice(chatVoice: RealmList<ChatVoice>) {
-    val realm = App.getRealmInstance()
-    if (!realm.isInTransaction) {
-        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-            realm.copyToRealmOrUpdate(chatVoice)
-        })
-    } else {
-        realm.copyToRealmOrUpdate(chatVoice)
-    }
-}
-
-fun insertChatDocument(chatDocument: RealmList<ChatDocument>) {
-    val realm = App.getRealmInstance()
-    if (!realm.isInTransaction) {
-        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-            realm.copyToRealmOrUpdate(chatDocument)
-        })
-    } else {
-        realm.copyToRealmOrUpdate(chatDocument)
-    }
-}
-
-fun insertChatLocation(chatLocation: ChatLocation) {
-    val realm = App.getRealmInstance()
-    if (!realm.isInTransaction) {
-        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-            realm.copyToRealmOrUpdate(chatLocation)
-        })
-    } else {
-        realm.copyToRealmOrUpdate(chatLocation)
-    }
-}
-
-fun insertChatAudio(chatAudio: RealmList<ChatAudio>) {
-    val realm = App.getRealmInstance()
-    if (!realm.isInTransaction) {
-        App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-            realm.copyToRealmOrUpdate(chatAudio)
-        })
-    } else {
-        realm.copyToRealmOrUpdate(chatAudio)
-    }
-}
-
 fun insertNotificationToneData(notificationTone: RealmList<NotificationTone>) {
     val realm = App.getRealmInstance()
     if (!realm.isInTransaction) {
@@ -509,31 +453,6 @@ fun getGroupsFromGroupId(groupId: List<Int>): List<Groups> {
 fun getSingleChatContent(chatId: Int): ChatContents? {
     return App.getRealmInstance().where(ChatContents::class.java)
         .equalTo(ChatContents::chatId.name, chatId).findFirst()
-}
-
-fun getSingleChatAudio(chatId: Int): ChatAudio? {
-    return App.getRealmInstance().where(ChatAudio::class.java)
-        .equalTo(ChatAudio::chat_id.name, chatId).findFirst()
-}
-
-fun getSingleChatContact(chatId: Int): ChatContacts? {
-    return App.getRealmInstance().where(ChatContacts::class.java)
-        .equalTo(ChatContacts::chat_id.name, chatId).findFirst()
-}
-
-fun getSingleChatLocation(chatId: Int): ChatLocation? {
-    return App.getRealmInstance().where(ChatLocation::class.java)
-        .equalTo(ChatLocation::chat_id.name, chatId).findFirst()
-}
-
-fun getSingleChatVoice(chatId: Int): ChatVoice? {
-    return App.getRealmInstance().where(ChatVoice::class.java)
-        .equalTo(ChatVoice::chat_id.name, chatId).findFirst()
-}
-
-fun getSingleChatDocument(chatId: Int): ChatDocument? {
-    return App.getRealmInstance().where(ChatDocument::class.java)
-        .equalTo(ChatDocument::chat_id.name, chatId).findFirst()
 }
 
 fun getSingleChat(id: Int): Chats? {
@@ -703,9 +622,6 @@ fun getAllMyContact(): List<MyContacts>? {
     return App.getRealmInstance().where(MyContacts::class.java).findAll().toList()
 }
 
-//fun getSelectedGroupNotificationTuneName(friendId: Int,groupId: Int): String {
-//    return App.getRealmInstance().where(GroupUser::class.java).equalTo(GroupUser::user_id.name, friendId).and().equalTo(GroupUser::grp_id.name, groupId).findFirst()?.sound ?: ""
-//}
 
 /**   ------------------------------------ READ END ---------------------------------------------------------------  */
 
@@ -735,9 +651,10 @@ fun updateChatListUserData(id: Int, user: Users) {
 fun updateChatsList(id: Int, chatList: ChatList?, callback: ((Boolean) -> Unit)? = null) {
 
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
-        val data = realm.copyFromRealm(
-            realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
-        )
+        val data = realm.where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()?.let {
+            realm.copyFromRealm(it)
+        }
+
         if (data != null) {
             data.updatedAt = chatList?.createdAt
             data.currentTime = chatList?.createdAt
@@ -753,9 +670,9 @@ fun updateChatsList(id: Int, chatList: ChatList?, callback: ((Boolean) -> Unit)?
 
 fun updateChatsList(id: Int, chatList: ChatList, listener: OnRealmTransactionResult) {
 
-    val data = App.getRealmInstance().copyFromRealm(
-        App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()
-    )
+    val data =  App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()?.let {
+        App.getRealmInstance().copyFromRealm(it)
+    }
     if (data != null) {
         data.updatedAt = chatList.createdAt
         data.currentTime = chatList.createdAt
@@ -995,37 +912,6 @@ fun deleteBroadCasts(ids: List<Int>) {
 
     })
 }
-/*    func clearOnetoOneFriendChat(currentUserID:Int,receiverID:Int){
-        let realm = self.getRealm()
-
-        let query = "\(DBTables.chatlisttable.user_id) == \(currentUserID) AND \(DBTables.chatlisttable.receiver_id) == \(receiverID)
-        OR \(DBTables.chatlisttable.user_id) == \(receiverID) AND \(DBTables.chatlisttable.receiver_id) == \(currentUserID)"
-
-        let listToClearChatList = realm.objects(CHAT_LIST.self).filter(query)
-        try! realm.write{
-            for item in listToClearChatList {
-
-                if item.contacts.count > 0 {
-                    item.contacts.forEach { (objChatContact) in
-                        realm.delete(realm.objects(ChatContents.self).filter("\(DBTables.chatcontents.chat_id) == %@", (objChatContact.chat_id)).first!)
-                    }
-                }
-
-                if item.chatcontents != nil{
-                    realm.delete(realm.objects(ChatContents.self).filter("\(DBTables.chatcontents.chat_id) == %@", (item.chat_id)).first!)
-                }
-            }
-            realm.delete(listToClearChatList)
-        }
-
-        updateChatslist(fieldkey: DBTables.chatstable.id , id: receiverID, chatlist: nil, completion: { isSuccess in
-            if isSuccess{
-                DLog(isSuccess)
-            }
-        })
-
-
-    }*/
 
 fun clearOneToOneChat(receiverId: Int) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
@@ -1236,30 +1122,6 @@ fun createChatContent(chatContentsModel: ChatContentsModel?): ChatContents? {
 fun prepareGroupUserData(groupUserWithSettings: List<GetAllGroup.GroupUserWithSetting>): RealmList<GroupUser> {
     val groupUserSettingsList = RealmList<GroupUser>()
     for (groupUserWithSetting in groupUserWithSettings) {
-        val groupUserObj = GroupUser()
-        /*groupUserObj.id = groupUserWithSetting.id
-        groupUserObj.userId = groupUserWithSetting.userId
-        groupUserObj.groupId = groupUserWithSetting.groupId
-        groupUserObj.labelColor = groupUserWithSetting.labelColor
-        groupUserObj.location = groupUserWithSetting.location
-        groupUserObj.isAdmin = groupUserWithSetting.isAdmin
-        groupUserObj.isAllowToAddPost = groupUserWithSetting.isAllowToAddPost
-        groupUserObj.isMuteNotification = groupUserWithSetting.isMuteNotification
-        groupUserObj.isReport = groupUserWithSetting.isReport
-        groupUserObj.status = groupUserWithSetting.status
-        groupUserObj.isDeleted = groupUserWithSetting.isDeleted
-        groupUserObj.isAllowToEditInfo = groupUserWithSetting.isAllowToEditInfo
-        groupUserObj.muteTime = groupUserWithSetting.muteTime
-        groupUserObj.endMuteTime = groupUserWithSetting.endMuteTime
-        groupUserObj.mediaViewable = groupUserWithSetting.isMediaViewable
-        groupUserObj.customNotificationEnable = groupUserWithSetting.isCustomNotificationEnable
-        groupUserObj.vibrateStatus = groupUserWithSetting.vibrateStatus
-        groupUserObj.isPopupNotification = groupUserWithSetting.isPopupNotification
-        groupUserObj.light = groupUserWithSetting.light
-        groupUserObj.useHighPriorityNotification = groupUserWithSetting.useHighPriorityNotification
-        groupUserObj.notificationToneId = groupUserWithSetting.notificationToneId
-        groupUserObj.createdAt = groupUserWithSetting.createdAt
-        groupUserObj.updatedAt = groupUserWithSetting.updatedAt*/
         groupUserSettingsList.add(prepareSingleGroupUsersData(groupUserWithSetting))
         insertUserData(prepareOtherUserData(groupUserWithSetting.user))
 
@@ -1704,35 +1566,6 @@ fun createGroupTickManageData(chatList: ChatList, receiverId: Int): GroupManageT
     grpTickManage.readTime = chatList.readTime ?: ""
     return grpTickManage
 }
-
-/*  func clearAllChatList(fieldkey:String,currentUserID:Int,id:Int,type:String){
-//        let realm = self.getRealm()
-//
-//        let predicate = NSPredicate(format: "\(DBTables.chatlisttable.event) != '\(EventType.create.rawValue)' AND \(fieldkey) == \(id)")
-//        let chatlist = realm.objects(CHAT_LIST.self).filter(predicate)
-//        try! realm.write{
-//            realm.delete(chatlist)
-//        }
-        switch type {
-        case flag.groups.rawValue:
-            self.clearGroupChat(groupid: id)
-            break
-        case flag.broadcast.rawValue:
-
-            let broadcastChatlist = getAllBroadcastChatlist(id: id)
-            if broadcastChatlist.count > 0{
-                updateBroadcastChatlist(fieldkey: DBTables.broadcasttable.broadcast_id , id: id, chatlist: broadcastChatlist[0])
-            }
-            break
-        case flag.flgprivate.rawValue:
-            self.clearOnetoOneFriendChat(currentUserID: currentUserID, receiverID: id)
-            break
-        default:
-            break
-        }
-
-
-    }*/
 
 fun clearAllChatList(receiverId: Int, type: ChatTypeFlag) {
     when (type) {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:width="@dimen/_25sdp"
+        android:height="@dimen/_25sdp"
+        android:drawable="@drawable/rect_rounded_bg_white" />
+    <item
+        android:width="@dimen/_15sdp"
+        android:height="@dimen/_15sdp"
+        android:gravity="center">
+
+        <bitmap android:gravity="center"
+             android:tint="@color/chat_icon_color" android:src="@drawable/ic_attachment_download"
+            />
+    </item>
+
+</layer-list>

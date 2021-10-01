@@ -17,7 +17,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
@@ -32,6 +31,8 @@ import com.task.newapp.models.ResponseFollowUnfollow
 import com.task.newapp.models.ResponseFriendSetting
 import com.task.newapp.models.ResponseMyProfile
 import com.task.newapp.realmDB.getCommonGroup
+import com.task.newapp.ui.activities.BaseAppCompatActivity
+import com.task.newapp.ui.activities.chat.OneToOneChatActivity
 import com.task.newapp.utils.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -39,9 +40,8 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToInt
 
-class OtherUserProfileActivity : AppCompatActivity() {
+class OtherUserProfileActivity : BaseAppCompatActivity() {
 
     private lateinit var profileData: ResponseMyProfile.MyProfileData
     private var User_ID: Int = 0
@@ -135,10 +135,10 @@ class OtherUserProfileActivity : AppCompatActivity() {
         contentOtherProfile.txtFollowerCount.text = data.followers.toString()
         contentOtherProfile.txtFollowingCount.text = data.following.toString()
         contentOtherProfile.txtUsername.text = data.first_name + " " + data.last_name
-        contentOtherProfile.txtPwldCount.text="0"
-        contentOtherProfile.txtStarCount.text="0"
+        contentOtherProfile.txtPwldCount.text = "0"
+        contentOtherProfile.txtStarCount.text = "0"
         initPeakPop(data.profile_image, contentOtherProfile.txtUsername.text.trim().toString(), data.profile_color)
-        binding.ivProfile.load(data.profile_image, true, contentOtherProfile.txtUsername.text.toString(),data.profile_color)
+        binding.ivProfile.load(data.profile_image, true, contentOtherProfile.txtUsername.text.toString(), data.profile_color)
 
         contentOtherProfile.txtAccId.text = data.account_id
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -193,7 +193,7 @@ class OtherUserProfileActivity : AppCompatActivity() {
         sheetBehavior.state = BottomSheetBehavior.STATE_DRAGGING
         binding.layoutContentOtherprofile.bottomSheet.requestLayout()
 
-        sheetBehavior.isHideable=false
+        sheetBehavior.isHideable = false
     }
 
     private fun getContactIdFromPhoneNumber(phone: String): String? {
@@ -337,6 +337,11 @@ class OtherUserProfileActivity : AppCompatActivity() {
             }
             R.id.btn_message -> {
                 showToast("click message")
+                launchActivity<OneToOneChatActivity> {
+                    putExtra(Constants.bundle_opponent_id, profileData.id)
+                        .putExtra(Constants.bundle_is_typing, false)
+                }
+
             }
         }
     }

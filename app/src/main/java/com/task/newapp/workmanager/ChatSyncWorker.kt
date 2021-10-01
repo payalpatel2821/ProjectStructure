@@ -15,16 +15,7 @@ import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.ChatContentType
-import com.task.newapp.utils.Constants.Companion.ChatContentType.AUDIO
-import com.task.newapp.utils.Constants.Companion.ChatContentType.CONTACT
-import com.task.newapp.utils.Constants.Companion.ChatContentType.CURRENT
-import com.task.newapp.utils.Constants.Companion.ChatContentType.DOCUMENT
-import com.task.newapp.utils.Constants.Companion.ChatContentType.IMAGE
-import com.task.newapp.utils.Constants.Companion.ChatContentType.LOCATION
-import com.task.newapp.utils.Constants.Companion.ChatContentType.PDF
-import com.task.newapp.utils.Constants.Companion.ChatContentType.VIDEO
-import com.task.newapp.utils.Constants.Companion.ChatContentType.VOICE
-import com.task.newapp.utils.Constants.Companion.ChatTypeFlag
+import com.task.newapp.utils.Constants.Companion.ChatContentType.*
 import com.task.newapp.utils.Constants.Companion.MessageType
 import com.task.newapp.utils.Constants.Companion.MessageType.LABEL
 import com.task.newapp.utils.Constants.Companion.MessageType.MIX
@@ -129,18 +120,13 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                 .addFormDataPart(Constants.type, chatList.type ?: "")
 
 
-            var flag = ChatTypeFlag.PRIVATE
-
             when {
                 chatList.isGroupChat == 1 -> {
-                    flag = ChatTypeFlag.GROUPS
-
                     parameters.addFormDataPart(Constants.group_id, chatList.groupId.toString()).addFormDataPart(Constants.is_group_chat, "1")
                 }
                 chatList.isBroadcastChat == 1 -> {
-                    flag = ChatTypeFlag.BROADCAST
-                    if (chatList.receiverId != 0) {
 
+                    if (chatList.receiverId != 0) {
                         parameters.addFormDataPart(Constants.receiver_id, chatList.receiverId.toString())
                             .addFormDataPart(Constants.broadcast_chat_id, chatList.broadcastChatId.toString())
                     }
@@ -149,17 +135,12 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                         .addFormDataPart(Constants.is_broadcast_chat, "1")
                 }
                 chatList.isSecret == 1 -> {
-                    flag = ChatTypeFlag.SECRET
                 }
                 else -> {
-                    flag = ChatTypeFlag.PRIVATE
                     parameters.addFormDataPart(Constants.receiver_id, chatList.receiverId.toString())
                 }
-
-
             }
             if (chatList.isReply == 1) {
-
                 parameters.addFormDataPart(Constants.is_reply, chatList.isReply.toString())
                     .addFormDataPart(Constants.chat_id, chatList.chatId.toString())
 
@@ -203,12 +184,36 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
                         PDF -> {
                         }
                         DOCUMENT -> {
+
+                            val typeKey = "${Constants.contents}[${Constants.type}]"
+                            val fileKey = "${Constants.contents}[${Constants.file}]"
+                            val titleKey = "${Constants.contents}[${Constants.title}]"
+
+                            val requestBody: RequestBody = RequestBody.create(chatContent.type.toMediaTypeOrNull(), chatContent.data!!)
+                            parameters.addFormDataPart(fileKey, chatContent.title, requestBody)
+                                .addFormDataPart(titleKey, chatContent.title)
+                                .addFormDataPart(typeKey, chatContent.type)
                         }
                         LOCATION -> {
                         }
                     }
                 }
             } else if (MessageType.getMessageTypeFromText(chatList.type ?: "") == MessageType.CONTACT) {
+                val contactsArray = ArrayList<ChatContents>()
+                chatList.contacts.forEachIndexed { index, chatContents ->
+                    contactsArray.add(chatContents)
+                    val keyName = "${Constants.contacts}[$index][${Constants.name}]"
+                    val keyNumber = "${Constants.contacts}[$index][${Constants.number}]"
+                    val keyEmail = "${Constants.contacts}[$index][${Constants.email}]"
+                    val keyProfileImage = "${Constants.contacts}[$index][${Constants.profileImage}]"
+                    val keyType = "${Constants.contacts}[$index][${Constants.type}]"
+
+                    parameters.addFormDataPart(keyName, chatContents.name)
+                        .addFormDataPart(keyNumber, chatContents.number)
+                        .addFormDataPart(keyEmail, chatContents.email)
+                        .addFormDataPart(keyProfileImage, chatContents.profileImage)
+                        .addFormDataPart(keyType, chatContents.type)
+                }
             }
             val requestBody: RequestBody = parameters.build()
             showLog(TAG, parameters.toString())

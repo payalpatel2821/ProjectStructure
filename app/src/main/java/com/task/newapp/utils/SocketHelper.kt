@@ -110,3 +110,16 @@ fun addPostDeleteEmitEvent(postSocket: PostSocket) {
     showLog(Constants.socket_tag, "addPostDeleteEmitEvent :$addPostDeletePayload")
     App.getSocketInstance().emit(SocketConstant.add_post_delete, addPostDeletePayload)
 }
+
+fun deletePrivateMessageEmitEvent(chatIds: String, senderId: Int, receiverId: Int) {
+    val deleteMessagePayload = Gson().toJson(
+        hashMapOf<String, Any>(
+            Constants.sender_id to senderId,
+            Constants.receiver_id to receiverId,
+            Constants.chat_ids to chatIds
+        )
+    )
+    showLog(Constants.socket_tag,"deletePrivateChatMessage :$deleteMessagePayload")
+    App.getSocketInstance().emit(SocketConstant.delete_private_chat,deleteMessagePayload)
+
+}

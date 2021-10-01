@@ -49,6 +49,7 @@ import com.google.android.exoplayer2.DefaultLoadControl
 
 import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ui.PlayerView
+import com.task.newapp.utils.initializePlayer
 
 
 class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<All_Post_Data.PostContent>, p: Picasso) : AAH_VideosAdapter(),
@@ -307,78 +308,12 @@ class PostFragImageVideoViewPager2Adapter(var context: Activity, all_post: List<
 //                Log.e("filepath", filePath)
 //                showDialog(context, filePath)
 
-                initializePlayer(postContent.content)
+                context.initializePlayer(postContent.content)
             }
         }
     }
 
-    private fun initializePlayer(videoUrl: String) {
-        try {
-            if (dialog != null) {
-                dialog!!.dismiss()
-                dialog = null
-            }
 
-            dialog = Dialog(context)
-            dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog!!.setContentView(R.layout.dialog_video_new)
-            dialog!!.setCanceledOnTouchOutside(true)
-
-            var playerView: PlayerView = dialog!!.findViewById(R.id.video_view)
-            var imgFullScreen: ImageView = dialog!!.findViewById(R.id.imgFullScreen)
-
-            val player: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
-                context,
-                DefaultRenderersFactory(context),
-                DefaultTrackSelector(AdaptiveTrackSelection.Factory(DefaultBandwidthMeter())),
-                DefaultLoadControl()
-            )
-
-//            val filePath = Environment.getExternalStorageDirectory().toString() + File.separator +
-////                    "video" + File.separator +
-//                    "registration.mp4"
-//            Log.e("filepath", filePath)
-
-//            val uri = Uri.parse(filePath)
-            val uri = Uri.parse(videoUrl)
-
-            val audioSource = ExtractorMediaSource(
-                uri,
-                DefaultDataSourceFactory(context, "MyExoplayer"),
-                DefaultExtractorsFactory(),
-                null,
-                null
-            )
-            player.prepare(audioSource)
-            playerView.player = player
-            player.playWhenReady = true
-
-            imgFullScreen.setOnClickListener {
-                var orientation = context.resources.configuration.orientation
-                when (orientation) {
-                    Configuration.ORIENTATION_PORTRAIT -> context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    Configuration.ORIENTATION_LANDSCAPE -> context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                }
-            }
-
-            dialog!!.setOnDismissListener {
-                if (player != null)
-                    player!!.release()
-
-                //stop player
-                var orientation = context.resources.configuration.orientation
-                when (orientation) {
-                    Configuration.ORIENTATION_LANDSCAPE -> context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                }
-            }
-
-            if (dialog != null && !dialog!!.isShowing) {
-                dialog!!.show()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     var dialog: Dialog? = null
 

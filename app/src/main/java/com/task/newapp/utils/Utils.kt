@@ -10,7 +10,9 @@ import android.app.Activity
 import android.app.Dialog
 import android.app.KeyguardManager
 import android.content.*
+import android.content.pm.ActivityInfo
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.database.Cursor
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
@@ -27,9 +29,7 @@ import android.os.Environment
 import android.os.PowerManager
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.provider.MediaStore.Audio
-import android.provider.MediaStore.Images
-import android.provider.MediaStore.Video
+import android.provider.MediaStore.*
 import android.text.*
 import android.text.style.ClickableSpan
 import android.util.DisplayMetrics
@@ -50,9 +50,21 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.DefaultRenderersFactory
+import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection.Factory
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.task.newapp.App
+import com.task.newapp.BuildConfig
 import com.task.newapp.R
 import com.task.newapp.api.ApiClient
 import com.task.newapp.databinding.LayoutCustomToastBinding
@@ -85,8 +97,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
 
-
-import com.task.newapp.BuildConfig
 import com.task.newapp.ui.activities.profile.MyProfileActivity
 import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 
@@ -1545,6 +1555,8 @@ fun getPathFromURI(context: Context, uri: Uri): String? {
                 contentUri = Video.Media.EXTERNAL_CONTENT_URI
             } else if ("audio" == type) {
                 contentUri = Audio.Media.EXTERNAL_CONTENT_URI
+            } else {
+                contentUri = Files.getContentUri("external")
             }
             val selection = "_id=?"
             val selectionArgs = arrayOf(
@@ -1571,7 +1583,7 @@ fun getDataColumns(context: Context, uri: Uri?, selection: String?, selectionArg
             return cursor.getString(column_index)
         }
     } finally {
-        if (cursor != null) cursor.close()
+        cursor?.close()
     }
     return null
 }
@@ -1615,7 +1627,7 @@ fun getEmojiByUnicode(unicode: Int): String? {
     return String(Character.toChars(unicode))
 }
 
-private fun Context.saveMediaToStorage(bitmap: Bitmap) {
+fun Context.saveMediaToStorage(bitmap: Bitmap) {
     val filename = "${System.currentTimeMillis()}.jpg"
     var fos: OutputStream? = null
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -1639,6 +1651,78 @@ private fun Context.saveMediaToStorage(bitmap: Bitmap) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         showToast("Saved to Photos")
     }
+}
+
+fun Activity.initializePlayer(videoUrl: String) {
+    try {
+        if (dialog != null) {
+            dialog!!.dismiss()
+            dialog = null
+        }
+
+        dialog = Dialog(this)
+        dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog!!.setContentView(R.layout.dialog_video_new)
+        dialog!!.setCanceledOnTouchOutside(true)
+
+        var playerView: PlayerView = dialog!!.findViewById(R.id.video_view)
+        var imgFullScreen: ImageView = dialog!!.findViewById(R.id.imgFullScreen)
+
+        val player: SimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
+            this,
+            DefaultRenderersFactory(this),
+            DefaultTrackSelector(Factory(DefaultBandwidthMeter())),
+            DefaultLoadControl()
+        )
+
+//            val filePath = Environment.getExternalStorageDirectory().toString() + File.separator +
+////                    "video" + File.separator +
+//                    "registration.mp4"
+//            Log.e("filepath", filePath)
+
+//            val uri = Uri.parse(filePath)
+        val uri = Uri.parse(videoUrl)
+
+        val audioSource = ExtractorMediaSource(
+            uri,
+            DefaultDataSourceFactory(this, "MyExoplayer"),
+            DefaultExtractorsFactory(),
+            null,
+            null
+        )
+        player.prepare(audioSource)
+        playerView.player = player
+        player.playWhenReady = true
+
+        imgFullScreen.setOnClickListener {
+            var orientation = this.resources.configuration.orientation
+            when (orientation) {
+                Configuration.ORIENTATION_PORTRAIT -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                Configuration.ORIENTATION_LANDSCAPE -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+
+        dialog!!.setOnDismissListener {
+            if (player != null)
+                player!!.release()
+
+            //stop player
+            var orientation = this.resources.configuration.orientation
+            when (orientation) {
+                Configuration.ORIENTATION_LANDSCAPE -> this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        }
+
+        if (dialog != null && !dialog!!.isShowing) {
+            dialog!!.show()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun getContactDataFromString(contact: String, which: Int): String? {
+    return contact.split(";").toTypedArray()[which]
 }
 
 fun View.animateScaleView() {

@@ -66,6 +66,8 @@ class Constants {
         const val archive_id = "archive_id"
         const val is_archive = "is_archive"
         const val receiver_id = "receiver_id"
+        const val sender_id = "sender_id"
+        const val chat_ids = "chat_ids"
         const val broadcast_id = "broadcast_id"
         const val is_secret = "is_secret"
         const val contact = "contact"
@@ -110,6 +112,8 @@ class Constants {
         const val remove_user = "remove_user"
         const val users = "users"
         const val name = "name"
+        const val number = "number"
+        const val profileImage = "profileImage"
         const val icon = "icon"
         const val local_id = "local_id"
         const val message_text = "message_text"
@@ -119,6 +123,7 @@ class Constants {
         const val is_reply = "is_reply"
         const val chat_id = "chat_id"
         const val contents = "contents"
+        const val contacts = "contacts"
         const val caption = "caption"
         const val thumb = "thumb"
         const val file = "file"
@@ -342,6 +347,7 @@ class SocketConstant {
         const val new_message_group = "new_message_group"
         const val manage_tick_private = "manage_tick_private"
         const val manage_tick_group = "manage_tick_group"
+        const val delete_private_chat = "delete_private_chat"
         const val add_post_delete = "add_post_delete"
 
 

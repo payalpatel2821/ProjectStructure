@@ -20,6 +20,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="@drawable/chat_bg_right_first"
+            android:elevation="@dimen/_2sdp"
             android:gravity="center_vertical|start"
             android:minHeight="@dimen/_50sdp"
             android:orientation="horizontal"
@@ -30,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/rect_rounded_bg_white"
                 android:padding="@dimen/_5sdp"
-                android:tint="@color/chat_icon_color"
+                android:tint="@color/chat_seen_message_bubble_color"
                 app:srcCompat="@drawable/ic_attachment_audio" />
 
             <LinearLayout

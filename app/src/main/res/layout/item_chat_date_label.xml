@@ -16,6 +16,7 @@
             android:layout_gravity="center"
             android:layout_margin="@dimen/_5sdp"
             android:background="@drawable/chat_date_label_bg"
+            android:elevation="@dimen/_2sdp"
             android:gravity="center"
             android:paddingStart="@dimen/_15sdp"
             android:paddingTop="@dimen/_3sdp"

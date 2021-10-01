@@ -69,7 +69,7 @@
     <color name="chat_delivered_message_bubble_color">#F6EBE9</color>
     <color name="chat_seen_message_bubble_color">#F2E3E0</color>
     <color name="chat_message_selection_bg_color">#F2F2F7</color>
-
+    <color name="chat_sender_attachment_icon_color">#D8A3A4</color>
     <color name="edit_profile_text_color">#647B99</color>
 
     <!--photo editor-->

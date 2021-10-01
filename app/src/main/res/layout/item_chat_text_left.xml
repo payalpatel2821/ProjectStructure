@@ -4,10 +4,10 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:paddingStart="@dimen/_10sdp"
-        android:paddingEnd="@dimen/_10sdp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp">
 
         <LinearLayout
             android:id="@+id/ll_content"
@@ -16,6 +16,7 @@
             android:layout_gravity="start"
             android:layout_margin="@dimen/_5sdp"
             android:background="@drawable/chat_bg_left_first"
+            android:elevation="@dimen/_2sdp"
             android:gravity="center_vertical|start"
             android:padding="@dimen/_5sdp">
 

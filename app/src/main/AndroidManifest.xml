@@ -278,6 +278,13 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar"/>
+        android:name=".ui.activities.chat.ViewPagerActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/NoActionBar" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 
 </manifest>
