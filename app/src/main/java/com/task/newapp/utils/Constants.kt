@@ -99,6 +99,7 @@ class Constants {
         const val INTENT_SERVICE_PROGRESS = "INTENT_SERVICE_PROGRESS"
         const val INTENT_SERVICE_COMPLETE = "INTENT_SERVICE_COMPLETE"
         const val INTENT_CONTACT_COMPLETE = "INTENT_CONTACT_COMPLETE"
+        const val BROADCAST_MESSAGE_SYNC_DONE = "BROADCAST_MESSAGE_SYNC_DONE"
         const val report_reason = "report_reason"
         const val about = "about"
         const val date_of_birth = "date_of_birth"
@@ -328,6 +329,7 @@ class SocketConstant {
         const val delete_post_comment_response = "delete_post_comment_response"
         const val add_post_comment_reply_response = "add_post_comment_reply_response"
         const val add_post_delete_response = "add_post_delete_response"
+        const val delete_private_chat_response = "delete_private_chat_response_"
 
         // emit events
         const val join = "join"

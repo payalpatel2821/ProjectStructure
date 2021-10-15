@@ -15,36 +15,13 @@ import com.task.newapp.App
 import com.task.newapp.interfaces.OnSocketEventsListener
 import com.task.newapp.models.chat.ChatModel
 import com.task.newapp.models.chat.ResponseChatMessage
+import com.task.newapp.models.socket.DeleteChatSocket
 import com.task.newapp.models.socket.PostSocket
 import com.task.newapp.models.socket.SendUserDetailSocket
-import com.task.newapp.realmDB.createFriendRequest
-import com.task.newapp.realmDB.getSingleChat
-import com.task.newapp.realmDB.getSingleChatList
-import com.task.newapp.realmDB.insertChatData
-import com.task.newapp.realmDB.insertChatListData
-import com.task.newapp.realmDB.insertFriendRequestData
-import com.task.newapp.realmDB.insertUserData
+import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
-import com.task.newapp.realmDB.prepareChatLabelData
-import com.task.newapp.realmDB.prepareOtherUserData
-import com.task.newapp.realmDB.updateChatListAndUserData
-import com.task.newapp.realmDB.updateChatListIdData
-import com.task.newapp.realmDB.updateChatsList
-import com.task.newapp.realmDB.updateUserOnlineStatus
-import com.task.newapp.utils.ConnectionType
-import com.task.newapp.utils.Constants
-import com.task.newapp.utils.DateTimeUtils
-import com.task.newapp.utils.NetworkMonitorUtil
-import com.task.newapp.utils.SocketConstant
-import com.task.newapp.utils.disconnectSocket
-import com.task.newapp.utils.getCurrentUserId
-import com.task.newapp.utils.getUserStatusEmitEvent
-import com.task.newapp.utils.isScreenLocked
-import com.task.newapp.utils.joinSocket
-import com.task.newapp.utils.jsonToPojo
-import com.task.newapp.utils.showLog
-import com.task.newapp.utils.showToast
+import com.task.newapp.utils.*
 import org.json.JSONObject
 import java.util.*
 
@@ -139,6 +116,8 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         socket.on(SocketConstant.new_message_response_private + getCurrentUserId(), onNewMessageResponsePrivate)
         socket.on(SocketConstant.user_typing_response + getCurrentUserId(), onUserTypingResponse)
         socket.on(SocketConstant.user_stop_typing_response + getCurrentUserId(), onUserStopTypingResponse)
+        socket.on(SocketConstant.delete_private_chat_response + getCurrentUserId(), onDeletePrivateChatResponse)
+
         socket.on(SocketConstant.add_post_comment_response, onAddPostCommentResponse)
         socket.on(SocketConstant.delete_post_comment_response, onDeletePostCommentResponse)
         socket.on(SocketConstant.add_post_comment_reply_response, onAddPostCommentReplyResponse)
@@ -153,6 +132,7 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         socket.off(SocketConstant.new_message_response_private + getCurrentUserId(), onNewMessageResponsePrivate)
         socket.off(SocketConstant.user_typing_response + getCurrentUserId(), onUserTypingResponse)
         socket.off(SocketConstant.user_stop_typing_response + getCurrentUserId(), onUserStopTypingResponse)
+        socket.off(SocketConstant.delete_private_chat_response + getCurrentUserId(), onDeletePrivateChatResponse)
         socket.off(SocketConstant.add_post_comment_response, onAddPostCommentResponse)
         socket.off(SocketConstant.delete_post_comment_response, onDeletePostCommentResponse)
         socket.off(SocketConstant.add_post_comment_reply_response, onAddPostCommentReplyResponse)
@@ -262,12 +242,20 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
         }
     }
 
+    private val onDeletePrivateChatResponse = Emitter.Listener { args ->
+        runOnUiThread {
+            val data = args[0] as String
+            showLog(Constants.socket_tag, "onDeletePrivateChatResponse $data")
+            val deleteChatSocket: DeleteChatSocket = Gson().fromJson(data, DeleteChatSocket::class.java)
+            onSocketEventsListener.onDeletePrivateChatMessageResponse(deleteChatSocket)
+        }
+    }
+
     override fun onOnlineOfflineSocketEvent(userId: Int, status: Boolean) {
         updateUserOnlineStatus(userId, status)
     }
 
     override fun onPostLikeDislikeSocketEvent(postSocket: PostSocket) {
-        showLog("onPostLikeDislikeSocketEvent", "onPostLikeDislikeSocketEvent")
     }
 
     override fun onNewMessagePrivateSocketEvent(chatList: ChatList) {
@@ -296,6 +284,34 @@ abstract class BaseAppCompatActivity : AppCompatActivity(), OnSocketEventsListen
 
     override fun onDeletePostSocketEvent(postSocket: PostSocket) {
 
+    }
+
+    override fun onDeletePrivateChatMessageResponse(deleteChatSocket: DeleteChatSocket) {
+        val chatIds = deleteChatSocket.chat_ids.split(",")
+        if (chatIds.isNotEmpty()) {
+            val chatIdArray = chatIds.map { it.toLong() }
+            deleteChatContent(chatIdArray)
+        }
+        /*let allChatlist = RealmManager.sharedInstance.getOnetoOneChatList(senderid: APP_DELEGATE.currentUser?.user?.id ?? 0, receiverid: deleteData.sender_id ?? 0,strFlg: flag.flgprivate.rawValue, id: deleteData.receiver_id ?? 0)
+
+                            if allChatlist.count > 0 {
+                                RealmManager.sharedInstance.updateChatslist(fieldkey: DBTables.chatstable.id, id: deleteData.sender_id ?? 0, chatlist: allChatlist.last!, completion: { isSuccess in
+                                    if isSuccess{
+                                    }
+                                })
+                                NotificationCenter.default.post(name:.deleteprivatechat, object: deleteData.sender_id ?? 0, userInfo:nil )
+
+                            }*/
+        val allChat = getOneToOneChat(getCurrentUserId(), deleteChatSocket.sender_id)
+        allChat?.let {
+            if (allChat.isNotEmpty()) {
+                updateChatsList(deleteChatSocket.sender_id, allChat.last()) { isSuccess ->
+                    if (isSuccess)
+                        onSocketEventsListener.onDeletePrivateChatMessageResponse(deleteChatSocket)
+                }
+            }
+
+        }
     }
 
     private fun insertUpdateChatListDataUsingSocket(chatModel: ResponseChatMessage?, callback: (chatList: ChatList) -> Unit) {

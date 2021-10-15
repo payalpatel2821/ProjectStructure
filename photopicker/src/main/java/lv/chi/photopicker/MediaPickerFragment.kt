@@ -454,7 +454,7 @@ class MediaPickerFragment : DialogFragment() {
 
     private fun orientation() = requireContext().resources.configuration.orientation
 
-    private object Request {
+    public object Request {
         const val MEDIA_ACCESS_PERMISSION = 1
         const val ADD_MEDIA_CAMERA = 2
         const val ADD_MEDIA_GALLERY = 3

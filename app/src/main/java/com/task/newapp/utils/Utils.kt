@@ -75,6 +75,8 @@ import com.task.newapp.realmDB.getSingleUserDetails
 import com.task.newapp.realmDB.insertNotificationToneData
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.prepareNotificationToneData
+import com.task.newapp.ui.activities.profile.MyProfileActivity
+import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 import com.task.newapp.utils.Constants.Companion.MessageEvents
 import com.task.newapp.utils.Constants.Companion.MessageEvents.*
 import com.task.newapp.utils.avatarGenerator.AvatarGenerator
@@ -96,9 +98,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.absoluteValue
-
-import com.task.newapp.ui.activities.profile.MyProfileActivity
-import com.task.newapp.ui.activities.profile.OtherUserProfileActivity
 
 
 /**
@@ -1118,6 +1117,7 @@ fun calculateInSampleSize(context: Context, sourceUri: Uri?, requestSize: Int): 
     return inSampleSize
 }
 
+/*
 fun getPathFromUri(context: Context, uri: Uri): String? {
     val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
 
@@ -1166,6 +1166,7 @@ fun getPathFromUri(context: Context, uri: Uri): String? {
     }
     return null
 }
+*/
 
 /**
  * @param uri The Uri to check.
@@ -1744,4 +1745,20 @@ fun openProfileActivity(activity: Activity, userId: Int) {
             putExtra(Constants.user_id, userId)
         }
     }
+}
+
+fun Activity.getRootView(): View {
+    return findViewById<View>(android.R.id.content)
+}
+
+fun Activity.isKeyboardOpen(): Boolean {
+    val visibleBounds = Rect()
+    this.getRootView().getWindowVisibleDisplayFrame(visibleBounds)
+    val heightDiff = getRootView().height - visibleBounds.height()
+    val marginOfError = Math.round(dpToPx(this, 50F).toDouble())
+    return heightDiff > marginOfError
+}
+
+fun Activity.isKeyboardClosed(): Boolean {
+    return !this.isKeyboardOpen()
 }

@@ -12,12 +12,8 @@ data class LoginResponse(
     val success: Int,
     @SerializedName("message")
     val message: String,
-    @SerializedName("backup")
-    val backup: Int,
     @SerializedName("data")
     val `data`: Data,
-    @SerializedName("get_all_request")
-    val getAllRequest: List<GetAllRequest>,
     @SerializedName("block_user")
     val blockUser: List<OtherUserModel>,
     @SerializedName("user_setting")
@@ -32,14 +28,18 @@ data class LoginResponse(
     val getAllGroup: List<GetAllGroup>,
     @SerializedName("broadcast")
     val broadcast: List<Broadcast>,
+    @SerializedName("friend_settings")
+    val friendSettings: List<FriendSetting>,
+    @SerializedName("backup")
+    val backup: Int,
+    /*@SerializedName("get_all_request")
+    val getAllRequest: List<GetAllRequest>,
     @SerializedName("birthday_reminder")
     val birthdayReminder: List<Any>,
     @SerializedName("wedding_reminder")
     val weddingReminder: List<Any>,
     @SerializedName("friend_reminder")
-    val friendReminder: List<Any>,
-    @SerializedName("friend_settings")
-    val friendSettings: List<FriendSetting>
+    val friendReminder: List<Any>,*/
 ) {
     data class ArchiveData(
         @SerializedName("id")

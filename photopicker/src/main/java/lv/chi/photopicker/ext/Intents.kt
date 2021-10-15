@@ -3,7 +3,7 @@ package lv.chi.photopicker.ext
 import android.content.Intent
 import android.net.Uri
 
-internal class Intents {
+public class Intents {
     companion object {
         fun getUriResult(data: Intent?): ArrayList<Uri>? {
             return data?.data?.let { arrayListOf(it) } ?:

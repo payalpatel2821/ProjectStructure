@@ -2,13 +2,14 @@ package com.task.newapp.ui.activities.chat
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.ParcelFileDescriptor
-import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -20,7 +21,6 @@ import android.widget.AdapterView.OnItemLongClickListener
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
@@ -42,6 +42,7 @@ import com.task.newapp.models.chat.ContactInfo
 import com.task.newapp.models.chat.DocumentInfo
 import com.task.newapp.models.chat.ImageCaption
 import com.task.newapp.models.chat.VoiceInfo
+import com.task.newapp.models.socket.DeleteChatSocket
 import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.ChatContents
 import com.task.newapp.realmDB.models.ChatList
@@ -66,6 +67,8 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import io.realm.RealmList
 import lv.chi.photopicker.MediaPickerFragment
+import lv.chi.photopicker.ext.Intents
+import lv.chi.photopicker.utils.CameraActivity
 import java.io.File
 import java.io.PrintWriter
 import java.net.URLConnection
@@ -82,6 +85,7 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     var targetList = java.util.ArrayList<String>()
     var return_mediatype = java.util.ArrayList<Int>()
     lateinit var binding: ActivityOneToOneChatBinding
+    lateinit var chatMessageBroadcastReceiver: BroadcastReceiver
     private val mCompositeDisposable = CompositeDisposable()
     private var opponentId: Int = 0
     private var chatObj: Chats? = null
@@ -149,14 +153,25 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
     }
     private var cameraResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
-
-            val selectedImage = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", file)
+//            val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
+//
+//            val selectedImage = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".fileprovider", file)
 //            showLog("path=====", selectedImage.path.toString())
-            showLog("path=====", selectedImage!!.path.toString())
-            shareImageVideoFile((selectedImage), "", "")
+
+            Intents.getUriResult(result.data)?.let {
+                it.forEachIndexed { index, uri ->
+                    val temp = getPathFromURI(this@OneToOneChatActivity, uri)
+                    it[index] = Uri.parse(temp)
+
+                }
+                onMediaPicked(it)
+//                showLog("path=====", it[0].toString())
+            }
+//            showLog("path=====", selectedImage!!.path.toString())
+//            shareImageVideoFile((selectedImage), "", "")
         }
     }
+
     private var galleryResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
             // val selectedMediaUri: Uri = result.data?.data!!
@@ -218,6 +233,8 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
     private fun initView() {
         initListeners()
+        initReceiver()
+        registerReceiver()
         opponentId = intent.getIntExtra(Constants.bundle_opponent_id, 0)
 
         getChatObj(opponentId)
@@ -236,6 +253,30 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         }
 
     }
+
+    private fun initReceiver() {
+        chatMessageBroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == Constants.BROADCAST_MESSAGE_SYNC_DONE) {
+                    val chatId = intent.getLongExtra(Constants.chat_id, 0)
+                    val chatList = getSingleChatList(chatId)
+                    chatList?.let {
+                        chats[chats.indexOf(chatsAdapter.getChatItemFromLocalId(chatList.localChatId))].chatList = chatList
+                        chatsAdapter.setData(chats, false)
+
+
+                    }
+                }
+            }
+        }
+    }
+
+    private fun registerReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(Constants.BROADCAST_MESSAGE_SYNC_DONE)
+        registerReceiver(chatMessageBroadcastReceiver, filter)
+    }
+
 
     @SuppressLint("RestrictedApi")
     private fun createCab() {
@@ -313,12 +354,10 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
         binding.rvChatMessages.isFocusableInTouchMode = true
 
         binding.rvChatMessages.setOnTouchListener { v, event ->
-            hideSoftKeyboard(this)
+            // hideSoftKeyboard(this)
             stopTyping()
-
             false
         }
-
 
     }
 
@@ -393,7 +432,7 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            android.R.id.home -> finish()
+            android.R.id.home -> onBackPressed()
 
         }
 
@@ -485,7 +524,7 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                             runWithPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
                                 MediaPickerFragment.newInstance(
                                     multiple = true,
-                                    allowCamera = true,
+                                    allowCamera = false,
                                     pickerType = MediaPickerFragment.PickerType.ANY,
                                     maxSelection = 30,
                                     theme = R.style.ChiliPhotoPicker_Light,
@@ -540,14 +579,24 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
     private var imageUri: Uri? = null
     fun takePhoto() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
-        imageUri = FileProvider.getUriForFile(this, this.applicationContext.packageName + ".fileprovider", file)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-//        val photo = File(Environment.getExternalStorageDirectory(), "Pic" + DateTimeUtils.instance?.formatDateTime(Date(), DateTimeUtils.DateFormats.yyyyMMdd.label) + ".jpg")
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo))
-//        imageUri = Uri.fromFile(photo)
-        cameraResultLauncher.launch(intent)
+        /*  val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+          val file = File(Environment.getExternalStorageDirectory(), "MyPhoto.jpg")
+          imageUri = FileProvider.getUriForFile(this, this.applicationContext.packageName + ".fileprovider", file)
+          intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+          cameraResultLauncher.launch(intent)*/
+
+//        startActivityForResult(
+//            CameraActivity.createIntent(
+//                this,
+//                CameraActivity.CaptureMode.Photo
+//            ), MediaPickerFragment.Request.ADD_MEDIA_CAMERA
+//        )
+        cameraResultLauncher.launch(
+            CameraActivity.createIntent(
+                this,
+                CameraActivity.CaptureMode.Photo
+            )
+        )
     }
 
     fun openGallery() {
@@ -669,6 +718,13 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
             getChatObj(userId)
     }
 
+    override fun onDeletePrivateChatMessageResponse(deleteChatSocket: DeleteChatSocket) {
+        super.onDeletePrivateChatMessageResponse(deleteChatSocket)
+        if (deleteChatSocket.sender_id == opponentId) {
+            setAdapter()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         //  requestPermission()
@@ -676,16 +732,18 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
     override fun onBackPressed() {
         // super.onBackPressed()
-        val intent = Intent().putExtra(Constants.bundle_is_typing, isOpponentTyping)
-            .putExtra(Constants.bundle_opponent_id, opponentId)
+
+        val intent = Intent().putExtra(Constants.bundle_is_typing, isOpponentTyping).putExtra(Constants.bundle_opponent_id, opponentId)
         setResult(RESULT_OK, intent)
         finish()
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         if (isFinishing)
             stopTyping()
+        unregisterReceiver(chatMessageBroadcastReceiver)
     }
 
     override fun onRecordStart() {
@@ -943,97 +1001,56 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
     }
 
-    /*
-    @IBAction func btnClickDeleteMsg(_ sender: UIButton) {
-
-        var chatids = ""
-        var localchatids = ""
-
-        arrDeleteChat.forEach { obj in
-            if obj.isSync{
-                if chatids == ""{
-                    chatids = "\(obj.chatid)"
-                }else{
-                    chatids = chatids + "," + "\(obj.chatid)"
+    private fun deleteMessage() {
+        val chatIds = chatsAdapter.getSelectedMessages().filter { it.chatList.isSync }.map { it.chatList.id }.joinToString(",")
+        showLog("Delete selected : ", chatIds)
+        callAPIDeleteSelectedMessage(chatIds) { isSuccess ->
+            if (isSuccess) {
+                val chatIdsList = chatsAdapter.getSelectedMessages().filter { it.chatList.isSync }.map { it.chatList.id }
+                val contactChatIds = chatsAdapter.getSelectedMessages().filter { it.chatList.isSync && it.chatList.type == ChatContentType.CONTACT.contentType }.map { it.chatList.id }
+                val selectedIndices = chatsAdapter.getSelectedMessages().filter { it.chatList.isSync }
+                if (chatIdsList.isNotEmpty()) {
+                    deleteChatContent(chatIdsList)
                 }
-            }else{
-                if localchatids == ""{
-                    localchatids = "\(obj.primaryid)"
-                }else{
-                    localchatids = localchatids + "," + "\(obj.primaryid)"
+                if (contactChatIds.isNotEmpty()) {
+                    deleteChatContact(contactChatIds)
                 }
+
+                if (selectedIndices.isNotEmpty()) {
+                    selectedIndices.forEach { chatListWrapperModel ->
+                        chats.remove(chatListWrapperModel)
+                        chatsAdapter.deleteSelectedMessage(chatListWrapperModel)
+                    }
+                }
+                deleteWithoutSync()
+
+            } else {
+                deleteWithoutSync()
             }
+
+        }
+    }
+
+    private fun deleteWithoutSync() {
+        val chatIds = chatsAdapter.getSelectedMessages().filter { !it.chatList.isSync }.map { it.chatList.id }
+        val chatContactIds = chatsAdapter.getSelectedMessages().filter { !it.chatList.isSync && it.chatList.type == ChatContentType.CONTACT.contentType }.map { it.chatList.id }
+        val selectedIndices = chatsAdapter.getSelectedMessages().filter { !it.chatList.isSync }
+
+        if (chatIds.isNotEmpty()) {
+            deleteChatContent(chatIds)
         }
 
+        if (chatContactIds.isNotEmpty()) {
+            deleteChatContact(chatContactIds)
+        }
 
-        let parameters = [
-            Parameters.Chatlist.chat_id: chatids] as [String : Any]
-
-            let chatviewModel = ChatViewModel()
-            chatviewModel.CallWS_DeleteChat(flags: selInfoChatData?.flagType ?? "", senderid: currentUserId, receiverid: self.selInfoChatData?.selid ?? 0, chatids: chatids, param: parameters){ (isSuccess) in
-                if isSuccess{
-                       let chatids = self.arrDeleteChat.filter({$0.isSync == true}).map({$0.chatid})
-                        let isPlayingAudioCount = self.arrDeleteChat.filter({$0.primaryid == currentPlayingChatID})
-                        if isPlayingAudioCount.count > 0{
-                            self.stopAudioVoicePlaying()
-                        }
-
-                        if self.selInfoChatData?.flagType.lowercased() == flag.broadcast.rawValue.lowercased(){
-
-                            let arrChatIDS = chatids
-                            var bchatids = [Int64]()
-                            var bchatcontactids = [Int64]()
-
-                            arrChatIDS.forEach { broadcastid in
-                                let allBroadcastData = RealmManager.sharedInstance.getAllBroadcastChatidwise(broadcast_chat_id:  Int(broadcastid))
-                                if allBroadcastData.count > 0 {
-                                     bchatids = allBroadcastData.filter({$0.isSync == true && $0.type != chatcontentType.contact.rawValue}).map({$0.id})
-                                    bchatcontactids = allBroadcastData.filter({$0.isSync == true && $0.type == chatcontentType.contact.rawValue}).map({$0.id})
-                                }
-                            }
-                            if bchatids.count > 0 {
-                                RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: bchatids)
-                            }
-                            if bchatcontactids.count > 0 {
-                                RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: bchatcontactids)
-                            }
-
-                        }
-
-                        if chatids.count > 0 {
-                            RealmManager.sharedInstance.deleteChatContent(query: "\(DBTables.chatcontents.chat_id) IN %@", ids: chatids)
-                        }
-
-                        let contactchatids = self.arrDeleteChat.filter({$0.isSync == true && $0.messageType == chatcontentType.contact.rawValue}).map({$0.chatid})
-
-                        if contactchatids.count > 0{
-                            RealmManager.sharedInstance.deleteChatContact(query: "\(DBTables.chatcontents.id) IN %@", ids: contactchatids)
-                        }
-
-
-
-                        let selindex = self.arrDeleteChat.map({$0.index})
-                        if selindex.count > 0{
-                            _ = self.arrChatslist.remove(elementsAtIndices: selindex)
-                            selindex.forEach { index in
-                                if let index = self.arrDeleteChat.firstIndex(where: {$0.index == index}) {
-                                    self.arrDeleteChat.remove(at: index)
-                                }
-                            }
-                        }
-                        self.deleteWithoutSync()
-                }else{
-                    // Delete without Sync
-                    self.deleteWithoutSync()
-                }
+        if (selectedIndices.isNotEmpty()) {
+            selectedIndices.forEach { chatListWrapperModel ->
+                chats.remove(chatListWrapperModel)
+                chatsAdapter.deleteSelectedMessage(chatListWrapperModel)
             }
-
-
-    }*/
-    private fun deleteMessage() {
-        val chatIds = chatsAdapter.getSelectedMessage().map { it.chatList.id }.joinToString(",")
-        showLog("Delete selected : ", chatIds)
-        callAPIDeleteSelectedMessage(chatIds)
+        }
+        mainCab?.destroy()
     }
 
     private fun callAPIDeleteSelectedMessage(chatIds: String, callback: ((Boolean) -> Unit)? = null) {
@@ -1056,7 +1073,8 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
                         override fun onNext(commonResponse: CommonResponse) {
                             if (commonResponse.success == 1) {
-                                deletePrivateMessageEmitEvent(chatIds, getCurrentUserId(), opponentId)
+                                val deleteChatSocket = DeleteChatSocket(chat_ids = chatIds, receiver_id = getCurrentUserId(), sender_id = opponentId)
+                                deletePrivateMessageEmitEvent(deleteChatSocket)
                                 callback?.invoke(true)
                             } else
                                 callback?.invoke(false)
@@ -1070,7 +1088,6 @@ class OneToOneChatActivity : BaseAppCompatActivity(), OnClickListener,
 
                         override fun onComplete() {
                             hideProgressDialog()
-                            callback?.invoke(false)
                         }
                     })
             )

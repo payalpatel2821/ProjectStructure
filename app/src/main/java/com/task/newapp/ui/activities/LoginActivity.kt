@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.appizona.yehiahd.fastsave.FastSave
 import com.task.newapp.App
@@ -184,7 +185,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         when {
             binding.edtPassword.text.toString().trim().isEmpty() -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_password)
-                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(ContextCompat.getColor(this, R.color.red))
                 requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -192,7 +193,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
             binding.edtPassword.text.toString().length < 6 -> {
                 binding.inputLayoutPassword.error = getString(R.string.enter_pass_validate)
-                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.red))
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(ContextCompat.getColor(this, R.color.red))
                 requestFocus(this, binding.edtPassword)
                 flagPass = false
                 checkAndEnable()
@@ -200,7 +201,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             }
             else -> {
                 binding.inputLayoutPassword.isErrorEnabled = false
-                binding.inputLayoutPassword.endIconDrawable!!.setTint(resources.getColor(R.color.black))
+                binding.inputLayoutPassword.endIconDrawable!!.setTint(ContextCompat.getColor(this, R.color.black))
                 flagPass = true
                 checkAndEnable()
             }
@@ -211,13 +212,13 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private fun validateUserName(): Boolean {
         if (binding.edtUsername.text.toString().trim().isEmpty()) {
             binding.inputLayoutName.error = getString(R.string.enter_your_username_or_phone_number)
-            binding.inputLayoutName.endIconDrawable!!.setTint(resources.getColor(R.color.red))
+            binding.inputLayoutName.endIconDrawable!!.setTint(ContextCompat.getColor(this, R.color.red))
             flagUser = false
             checkAndEnable()
             return false
         } else {
             binding.inputLayoutName.isErrorEnabled = false
-            binding.inputLayoutName.endIconDrawable!!.setTint(resources.getColor(R.color.black))
+            binding.inputLayoutName.endIconDrawable!!.setTint(ContextCompat.getColor(this, R.color.black))
             flagUser = true
             checkAndEnable()
         }
@@ -235,7 +236,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
      */
     private fun insertLoginResponseToDatabase(loginResponse: LoginResponse) {
         insertUserSettingsData(prepareLoggedInUserSettings(loginResponse))
-        insertFriendRequestData(prepareRequestDataForDB(loginResponse.getAllRequest))
+        //  insertFriendRequestData(prepareRequestDataForDB(loginResponse.getAllRequest))
         val (groups, groupUser, chatList, addUserChatList, chats) = prepareAllGroupDataForDB(loginResponse.getAllGroup)
         insertGroupData(
             groups as RealmList<Groups>,
@@ -244,7 +245,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
             addUserChatList as RealmList<ChatList>,
             chats as RealmList<Chats>
         )
-        loginResponse.hookData?.let {
+        loginResponse.hookData.let {
             insertHookData(prepareHookData(loginResponse.hookData))
         }
         insertArchiveData(prepareArchiveData(loginResponse.archiveData))

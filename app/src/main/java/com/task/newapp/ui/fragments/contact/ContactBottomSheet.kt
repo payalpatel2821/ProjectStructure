@@ -85,6 +85,7 @@ class ContactBottomSheet : ViewPagerBottomSheetDialogFragment()/*, SearchView.On
         return binding.root
     }
 
+
     private fun initReceiver() {
         serviceBroadRequestReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {

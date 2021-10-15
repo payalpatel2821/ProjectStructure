@@ -9,120 +9,92 @@ data class UserSetting(
     val id: Int,
     @SerializedName("user_id")
     val userId: Int,
-    @SerializedName("theme_id")
-    val themeId: Int,
-    @SerializedName("wallpaper_id")
-    val wallpaperId: Int,
-    @SerializedName("is_chat_notification")
-    val isChatNotification: Int,
-    @SerializedName("is_new_post_notify")
-    val isNewPostNotify: Int,
-    @SerializedName("is_tag_notification")
-    val isTagNotification: Int,
-    @SerializedName("profile_image")
-    val profileImage: String,
-    @SerializedName("notification_tone_id")
-    val notificationToneId: Int,
-    @SerializedName("is_followers_viewable")
-    val isFollowersViewable: Int,
-    @SerializedName("is_friend_enable")
-    val isFriendEnable: Int,
-    @SerializedName("is_image_wallpaper")
-    val isImageWallpaper: Int,
-    @SerializedName("is_color_wallpaper")
-    val isColorWallpaper: Int,
-    @SerializedName("wall_paper_color")
-    val wallPaperColor: String,
-    @SerializedName("is_default_wallpaper")
-    val isDefaultWallpaper: Int,
-    @SerializedName("is_no_wallpaper")
-    val isNoWallpaper: Int,
-    @SerializedName("is_gallery_wallpaper")
-    val isGalleryWallpaper: Int,
-    @SerializedName("gallery_image")
-    val galleryImage: String,
-    @SerializedName("font_size")
-    val fontSize: String,
-    @SerializedName("languages")
-    val languages: String,
-    @SerializedName("is_enter_send")
-    val isEnterSend: Int,
-    @SerializedName("is_media_visible")
-    val isMediaVisible: Int,
-    @SerializedName("is_photo_autodownload")
-    val isPhotoAutodownload: Int,
-    @SerializedName("is_audio_autodownload")
-    val isAudioAutodownload: Int,
-    @SerializedName("is_video_autodownload")
-    val isVideoAutodownload: Int,
-    @SerializedName("is_document_autodownload")
-    val isDocumentAutodownload: Int,
-    @SerializedName("is_photo_autodownload_wifi")
-    val isPhotoAutodownloadWifi: Int,
-    @SerializedName("is_audio_autodownload_wifi")
-    val isAudioAutodownloadWifi: Int,
-    @SerializedName("is_video_autodownload_wifi")
-    val isVideoAutodownloadWifi: Int,
-    @SerializedName("is_document_autodownload_wifi")
-    val isDocumentAutodownloadWifi: Int,
-    @SerializedName("is_photo_autodownload_roaming")
-    val isPhotoAutodownloadRoaming: Int,
-    @SerializedName("is_audio_autodownload_roaming")
-    val isAudioAutodownloadRoaming: Int,
-    @SerializedName("is_video_autodownload_roaming")
-    val isVideoAutodownloadRoaming: Int,
-    @SerializedName("is_document_autodownload_roaming")
-    val isDocumentAutodownloadRoaming: Int,
-    @SerializedName("is_delete_request")
-    val isDeleteRequest: Int,
-    @SerializedName("story_view")
-    val storyView: String,
-    @SerializedName("story_download")
-    val storyDownload: String,
-    @SerializedName("vibrate_status")
-    val vibrateStatus: String,
-    @SerializedName("is_popup_notification")
-    val isPopupNotification: Int,
-    @SerializedName("use_high_priority_notification")
-    val useHighPriorityNotification: Int,
-    @SerializedName("last_seen")
-    val lastSeen: String,
-    @SerializedName("is_visible")
-    val isVisible: Int,
-    @SerializedName("profile_seen")
-    val profileSeen: String,
-    @SerializedName("call_rigtone")
-    val callRigtone: String,
-    @SerializedName("call_vibrate")
-    val callVibrate: String,
+    @SerializedName("audio_auto_download")
+    val audioAutoDownload: String,
+    @SerializedName("background_color")
+    val backgroundColor: String,
+    @SerializedName("background_image")
+    val backgroundImage: String,
+    @SerializedName("background_type")
+    val backgroundType: String,
     @SerializedName("created_at")
     val createdAt: String,
+    @SerializedName("document_auto_download")
+    val documentAutoDownload: String,
+    @SerializedName("font_size")
+    val fontSize: Int,
+    @SerializedName("group_notification_tone_id")
+    val groupNotificationToneId: String,
+    @SerializedName("image_auto_download")
+    val imageAutoDownload: String,
+    @SerializedName("is_accept_follow_request_notify")
+    val isAcceptFollowRequestNotify: Int,
+    @SerializedName("is_allow_message_from_other")
+    val isAllowMessageFromOther: Int,
+    @SerializedName("is_chat_message_preview_notify")
+    val isChatMessagePreviewNotify: Int,
+    @SerializedName("is_chat_vibrate_status")
+    val isChatVibrateStatus: Int,
+    @SerializedName("is_follow_request_notify")
+    val isFollowRequestNotify: Int,
+    @SerializedName("is_group_message_preview_notify")
+    val isGroupMessagePreviewNotify: Int,
+    @SerializedName("is_group_vibrate_status")
+    val isGroupVibrateStatus: Int,
+    @SerializedName("is_in_app_preview")
+    val isInAppPreview: Int,
+    @SerializedName("is_in_app_sound")
+    val isInAppSound: Int,
+    @SerializedName("is_in_app_vibrate")
+    val isInAppVibrate: Int,
+    @SerializedName("is_pause_notification")
+    val isPauseNotification: Int,
+    @SerializedName("is_post_comment_notify")
+    val isPostCommentNotify: Int,
+    @SerializedName("is_post_like_notify")
+    val isPostLikeNotify: Int,
+    @SerializedName("is_profile_view_notify")
+    val isProfileViewNotify: Int,
+    @SerializedName("is_saved_edited_image")
+    val isSavedEditedImage: Int,
+    @SerializedName("is_show_chat_notify")
+    val isShowChatNotify: Int,
+    @SerializedName("is_show_group_notify")
+    val isShowGroupNotify: Int,
+    @SerializedName("is_story_sharing_as_message")
+    val isStorySharingAsMessage: Int,
+    @SerializedName("is_tagged_post_like_comment_notify")
+    val isTaggedPostLikeCommentNotify: Int,
+    @SerializedName("is_tagged_post_notify")
+    val isTaggedPostNotify: Int,
+    @SerializedName("notification_tone_id")
+    val notificationToneId: String,
+    @SerializedName("open_link_in")
+    val openLinkIn: String,
+    @SerializedName("story_download")
+    val storyDownload: String,
+    @SerializedName("story_reply")
+    val storyReply: String,
+    @SerializedName("story_view")
+    val storyView: String,
     @SerializedName("updated_at")
     val updatedAt: String,
-    @SerializedName("about_seen")
-    val aboutSeen: String,
-    @SerializedName("who_can_add_me_in_group")
-    val whoCanAddMeInGroup: String,
-    @SerializedName("live_location_sharing")
-    val liveLocationSharing: Int,
-    @SerializedName("is_fingerprint_lock_enabled")
-    val isFingerprintLockEnabled: Int,
-    @SerializedName("is_show_security_notification")
-    val isShowSecurityNotification: Int,
-    @SerializedName("is_two_step_verification_enabled")
-    val isTwoStepVerificationEnabled: Int,
-    @SerializedName("group_vibrate_status")
-    val groupVibrateStatus: String,
-    @SerializedName("group_is_popup_notification")
-    val groupIsPopupNotification: Int,
-    @SerializedName("group_use_high_priority_notification")
-    val groupUseHighPriorityNotification: Int,
-    @SerializedName("group_notification_tone_id")
-    val groupNotificationToneId: Int,
-    @SerializedName("near_location")
-    val nearLocation: Int,
-    @SerializedName("tone_name")
-    val toneName: String,
-    @SerializedName("profile_color")
-    val profileColor: String
+    @SerializedName("video_auto_download")
+    val videoAutoDownload: String,
+    @SerializedName("wallpaper_id")
+    val wallpaperId: Int,
+    @SerializedName("who_can_add_group")
+    val whoCanAddGroup: String,
+    @SerializedName("who_can_mention")
+    val whoCanMention: String,
+    @SerializedName("who_can_message_me")
+    val whoCanMessageMe: String,
+    @SerializedName("who_can_tag")
+    val whoCanTag: String,
+    @SerializedName("who_see_about")
+    val whoSeeAbout: String,
+    @SerializedName("who_see_last_seen")
+    val whoSeeLastSeen: String,
+    @SerializedName("who_see_profile_photo")
+    val whoSeeProfilePhoto: String
 )

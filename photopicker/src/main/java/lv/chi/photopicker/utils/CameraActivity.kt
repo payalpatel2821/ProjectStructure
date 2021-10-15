@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.File
 
-internal class CameraActivity : AppCompatActivity() {
+public class CameraActivity : AppCompatActivity() {
 
     companion object {
         private lateinit var captureMode: CaptureMode

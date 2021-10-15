@@ -25,45 +25,17 @@ import com.task.newapp.models.CommonResponse
 import com.task.newapp.models.chat.ChatModel
 import com.task.newapp.models.chat.ResponseGetUnreadMessage
 import com.task.newapp.models.chat.ResponseGroupData
-import com.task.newapp.realmDB.clearAllChatList
-import com.task.newapp.realmDB.createFriendRequest
-import com.task.newapp.realmDB.deleteArchive
-import com.task.newapp.realmDB.deleteHook
-import com.task.newapp.realmDB.getAllChats
-import com.task.newapp.realmDB.getArchivedChatCount
-import com.task.newapp.realmDB.getChatPosition
-import com.task.newapp.realmDB.getHookCount
-import com.task.newapp.realmDB.getSingleChat
-import com.task.newapp.realmDB.getSingleChatList
-import com.task.newapp.realmDB.insertArchiveData
-import com.task.newapp.realmDB.insertChatData
-import com.task.newapp.realmDB.insertChatListData
-import com.task.newapp.realmDB.insertFriendRequestData
-import com.task.newapp.realmDB.insertHookData
-import com.task.newapp.realmDB.insertUserData
+import com.task.newapp.realmDB.*
 import com.task.newapp.realmDB.models.ChatList
 import com.task.newapp.realmDB.models.Chats
 import com.task.newapp.realmDB.models.UserArchive
 import com.task.newapp.realmDB.models.UserHook
-import com.task.newapp.realmDB.prepareChatLabelData
-import com.task.newapp.realmDB.prepareOtherUserData
-import com.task.newapp.realmDB.updateChatListAndUserData
-import com.task.newapp.realmDB.updateChatsIsArchive
-import com.task.newapp.realmDB.updateChatsIsHook
-import com.task.newapp.realmDB.updateChatsList
-import com.task.newapp.realmDB.updateUserOnlineStatus
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.ui.activities.chat.ArchivedChatsListActivity
 import com.task.newapp.ui.activities.chat.OneToOneChatActivity
-import com.task.newapp.utils.Constants
+import com.task.newapp.utils.*
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.GROUPS
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.PRIVATE
-import com.task.newapp.utils.DateTimeUtils
-import com.task.newapp.utils.hideProgressDialog
-import com.task.newapp.utils.isNetworkConnected
-import com.task.newapp.utils.openProgressDialog
-import com.task.newapp.utils.showLog
-import com.task.newapp.utils.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -134,6 +106,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
         setAdapter(true)
         callGetUnreadMessageAPI()
     }
+
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.txt_archive -> {
@@ -299,9 +272,9 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                         }
                     }
                 }
-                messageObj.request?.let {
+                /*messageObj.request?.let {
                     insertFriendRequestData(createFriendRequest(messageObj.request))
-                }
+                }*/
 
                 messageObj.sender?.let {
                     insertUserData(prepareOtherUserData(messageObj.sender)) { users ->
@@ -340,9 +313,13 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
     override fun onClearChatClick(position: Int, chats: Chats) {
         callClearChatAPI(chats) { isSuccess ->
             if (isSuccess) {
+                if (chats.isHook)
+                    callHookChatAPI(chats)
+
+                deleteChats(chats.id)
+                this.chats.removeAt(position)
                 setAdapter(false)
             }
-
         }
     }
 
@@ -358,10 +335,10 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                 Intent(requireActivity(), OneToOneChatActivity::class.java).putExtra(Constants.bundle_opponent_id, chats[position].chats.id)
                     .putExtra(Constants.bundle_is_typing, chats[position].isTyping)
             )
-        /*  requireActivity().launchActivity<OneToOneChatActivity> {
-              putExtra(Constants.bundle_opponent_id, chats[position].chats.id)
-              putExtra(Constants.bundle_is_typing, chats[position].isTyping)
-          }*/
+        /*requireActivity().launchActivity<OneToOneChatActivity> {
+            putExtra(Constants.bundle_opponent_id, chats[position].chats.id)
+            putExtra(Constants.bundle_is_typing, chats[position].isTyping)
+        }*/
 
     }
 
@@ -370,12 +347,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
             binding.llEmptyChat.visibility = VISIBLE
             binding.rvChats.visibility = GONE
             binding.divider.visibility = GONE
-            // binding.searchLayout.llSearch.visibility = GONE
+            //binding.searchLayout.llSearch.visibility = GONE
         } else {
             binding.llEmptyChat.visibility = GONE
             binding.rvChats.visibility = VISIBLE
             binding.divider.visibility = VISIBLE
-            //   binding.searchLayout.llSearch.visibility = VISIBLE
+            //binding.searchLayout.llSearch.visibility = VISIBLE
         }
     }
 
@@ -487,12 +464,12 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
 
             openProgressDialog(activity)
             val type = if (chats.isGroup) Constants.group else Constants.friend
-            val hook_id = chats.id
-            val is_hook = if (chats.isHook) 0 else 1
+            val hookId = chats.id
+            val isHook = if (chats.isHook) 0 else 1
             val hashMap: HashMap<String, Any> = hashMapOf(
                 Constants.type to type,
-                Constants.hook_id to hook_id,
-                Constants.is_hook to is_hook,
+                Constants.hook_id to hookId,
+                Constants.is_hook to isHook,
             )
             mCompositeDisposable.add(
                 ApiClient.create()
@@ -502,11 +479,11 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                     .subscribeWith(object : DisposableObserver<CommonResponse>() {
                         override fun onNext(commonResponse: CommonResponse) {
                             if (commonResponse.success == 1) {
-                                if (is_hook != 1) {
-                                    deleteHook(if (type == Constants.group) UserHook::groupId.name else UserHook::friendId.name, hook_id)
+                                if (isHook != 1) {
+                                    deleteHook(if (type == Constants.group) UserHook::groupId.name else UserHook::friendId.name, hookId)
                                 } else {
                                     val userHook = UserHook()
-                                    userHook.id = hook_id
+                                    userHook.id = hookId
                                     userHook.userId = App.fastSave.getInt(Constants.prefUserId, 0)
                                     if (chats.isGroup) {
                                         userHook.friendId = 0
@@ -523,7 +500,7 @@ class ChatsFragment : Fragment(), View.OnClickListener, ChatListAdapter.OnChatIt
                                     insertHookData(userHook)
 
                                 }
-                                updateChatsIsHook(hook_id)
+                                updateChatsIsHook(hookId)
                                 setAdapter(true)
                             }
 

@@ -18,7 +18,6 @@ import android.view.View.VISIBLE
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -125,52 +124,65 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setData(data: ResponseMyProfile.MyProfileData) {
         val contentOtherProfile = binding.layoutContentOtherprofile
-        isfollow = data.is_follow
+        isfollow = data.isFollow
 
-        data.friendsetting?.let {
+        data.friendSetting?.let {
             manageIsMuteOrNot(it.muteNotification)
             setOnOffText(it.isCustomNotificationEnable, it.notificationToneId, it.vibrateStatus)
         }
-        contentOtherProfile.txtPostCount.text = data.count_post.toString()
+        contentOtherProfile.txtPostCount.text = data.countPost.toString()
         contentOtherProfile.txtFollowerCount.text = data.followers.toString()
         contentOtherProfile.txtFollowingCount.text = data.following.toString()
-        contentOtherProfile.txtUsername.text = data.first_name + " " + data.last_name
+        contentOtherProfile.txtUsername.text = data.firstName + " " + data.lastName
         contentOtherProfile.txtPwldCount.text = "0"
         contentOtherProfile.txtStarCount.text = "0"
-        initPeakPop(data.profile_image, contentOtherProfile.txtUsername.text.trim().toString(), data.profile_color)
-        binding.ivProfile.load(data.profile_image, true, contentOtherProfile.txtUsername.text.toString(), data.profile_color)
+        initPeakPop(data.profileImage, contentOtherProfile.txtUsername.text.trim().toString(), data.profileColor)
+        binding.ivProfile.load(data.profileImage, true, contentOtherProfile.txtUsername.text.toString(), data.profileColor)
 
-        contentOtherProfile.txtAccId.text = data.account_id
+        contentOtherProfile.txtAccId.text = data.accountId
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-        contentOtherProfile.txtLastseen.text = DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(data.last_seen_time, formatter))
+        contentOtherProfile.txtLastseen.text = DateTimeUtils.instance!!.getConversationTimestamp(DateTimeUtils.instance!!.getLongFromDateString(data.lastSeenTime, formatter))
         contentOtherProfile.txtStatus.text = data.about
         if (data.about == null) {
             contentOtherProfile.txtStatus.visibility = GONE
         } else {
             contentOtherProfile.txtStatus.visibility = VISIBLE
         }
-        contentOtherProfile.txtPostsCount.text = data.count_post.toString()
+        contentOtherProfile.txtPostsCount.text = data.countPost.toString()
         contentOtherProfile.txtGrpcommonCount.text = getCommonGroup(User_ID).size.toString()
-        contentOtherProfile.txtPagescommonCount.text = data.count_common_pages.toString()
-        contentOtherProfile.txtFrdscommonCount.text = data.count_common_friends.toString()
-        if (data.is_follow) {
+        //contentOtherProfile.txtPagescommonCount.text = data.count_common_pages.toString()
+        //contentOtherProfile.txtFrdscommonCount.text = data.count_common_friends.toString()
+        if (data.isFollow) {
             setTag(1)
+            contentOtherProfile.rlPosts.visibility = VISIBLE
         } else {
             setTag(0)
+            contentOtherProfile.rlPosts.visibility = GONE
         }
-        if (data.is_friend) {
-            contentOtherProfile.cv1.visibility = VISIBLE
-            contentOtherProfile.llImagebutton.visibility = VISIBLE
+        if (data.isCanMessageMe) {
+            contentOtherProfile.btnMessage.visibility = VISIBLE
+            contentOtherProfile.btnCall.visibility = VISIBLE
         } else {
-            contentOtherProfile.cv1.visibility = GONE
-            contentOtherProfile.llImagebutton.visibility = GONE
+            contentOtherProfile.btnMessage.visibility = GONE
+            contentOtherProfile.btnCall.visibility = GONE
         }
-        if (data.is_block == 1) {
+        if (data.isShowLastSeen) {
+            contentOtherProfile.txtLastseen.visibility = VISIBLE
+        } else {
+            contentOtherProfile.txtLastseen.visibility = GONE
+        }
+
+        if (data.isBlock == 1) {
             contentOtherProfile.txtBlock.text = resources.getString(R.string.unblock)
         } else {
             contentOtherProfile.txtBlock.text = resources.getString(R.string.block)
         }
-        if (data.is_reported_by_admin == 1) {
+        if (data.isSeeAbout) {
+            contentOtherProfile.txtStatus.visibility = VISIBLE
+        } else {
+            contentOtherProfile.txtStatus.visibility = GONE
+        }
+        if (data.isReportedByAdmin == 1) {
             binding.layoutContentOtherprofile.txtReport.visibility = GONE
         } else {
             binding.layoutContentOtherprofile.txtReport.visibility = VISIBLE
@@ -310,14 +322,14 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
                 }
             }
             R.id.btn_mute -> {
-                if (profileData.friendsetting.muteNotification == 1) {
+                if (profileData.friendSetting.muteNotification == 1) {
                     callAPIMuteNotification(0)
                 } else {
                     callAPIMuteNotification(1)
                 }
             }
             R.id.txt_block -> {
-                if (profileData.is_block == 1) {
+                if (profileData.isBlock == 1) {
                     callAPIBlockReportUser("unblock")
                 } else {
                     callAPIBlockReportUser("block")
@@ -328,15 +340,14 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
             }
             R.id.ll_custom_notification -> {
                 val intent = Intent(this, CustomNotificationActivity::class.java)
-                intent.putExtra(Constants.bundle_custom_notification, profileData.friendsetting.isCustomNotificationEnable)
-                intent.putExtra(Constants.bundle_notification_tone, profileData.friendsetting.notificationToneId)
-                intent.putExtra(Constants.bundle_vibration, profileData.friendsetting.vibrateStatus)
+                intent.putExtra(Constants.bundle_custom_notification, profileData.friendSetting.isCustomNotificationEnable)
+                intent.putExtra(Constants.bundle_notification_tone, profileData.friendSetting.notificationToneId)
+                intent.putExtra(Constants.bundle_vibration, profileData.friendSetting.vibrateStatus)
                 intent.putExtra(Constants.user_id, User_ID)
                 resultLauncher1.launch(intent)
 
             }
             R.id.btn_message -> {
-                showToast("click message")
                 launchActivity<OneToOneChatActivity> {
                     putExtra(Constants.bundle_opponent_id, profileData.id)
                         .putExtra(Constants.bundle_is_typing, false)
@@ -387,9 +398,9 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
     }
 
     private fun setOnOffText(isCustomNotification: Int, notiToneId: Int, vibrate: String) {
-        profileData.friendsetting.isCustomNotificationEnable = isCustomNotification
-        profileData.friendsetting.notificationToneId = notiToneId
-        profileData.friendsetting.vibrateStatus = vibrate
+        profileData.friendSetting.isCustomNotificationEnable = isCustomNotification
+        profileData.friendSetting.notificationToneId = notiToneId
+        profileData.friendSetting.vibrateStatus = vibrate
         if (isCustomNotification == 1) {
             binding.layoutContentOtherprofile.txtCustomNotificationStatus.text =
                 resources.getString(R.string.on)
@@ -514,8 +525,8 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
                             showToast(loginResponse.message)
 
                             if (loginResponse.success == 1) {
-                                profileData.friendsetting.muteNotification = mute
-                                manageIsMuteOrNot(profileData.friendsetting.muteNotification)
+                                profileData.friendSetting.muteNotification = mute
+                                manageIsMuteOrNot(profileData.friendSetting.muteNotification)
                             }
                         }
 
@@ -581,11 +592,11 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
 
                                             if (blockreportuserresponse.success == 1) {
                                                 if (isBlock == "block" || isBlock == "unblock") {
-                                                    if (profileData.is_block == 1) {
-                                                        profileData.is_block = 0
+                                                    if (profileData.isBlock == 1) {
+                                                        profileData.isBlock = 0
                                                         manageBlockUnblockText(0)
                                                     } else {
-                                                        profileData.is_block = 1
+                                                        profileData.isBlock = 1
                                                         manageBlockUnblockText(1)
                                                     }
                                                 } else {
@@ -655,11 +666,11 @@ class OtherUserProfileActivity : BaseAppCompatActivity() {
 
                                         if (blockreportuserresponse.success == 1) {
                                             if (isBlock == "block" || isBlock == "unblock") {
-                                                if (profileData.is_block == 1) {
-                                                    profileData.is_block = 0
+                                                if (profileData.isBlock == 1) {
+                                                    profileData.isBlock = 0
                                                     manageBlockUnblockText(0)
                                                 } else {
-                                                    profileData.is_block = 1
+                                                    profileData.isBlock = 1
                                                     manageBlockUnblockText(1)
                                                 }
                                             } else {

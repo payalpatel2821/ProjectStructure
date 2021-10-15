@@ -95,6 +95,8 @@ data class GetAllGroup(
         val useHighPriorityNotification: Int,
         @SerializedName("notification_tone_id")
         val notificationToneId: Int,
+        @SerializedName("tone_name")
+        val toneName: String,
         @SerializedName("is_send")
         val isSend: Int,
         @SerializedName("user")

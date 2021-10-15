@@ -1,6 +1,7 @@
 package com.task.newapp.workmanager
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
@@ -34,7 +35,7 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
     CoroutineWorker(appContext, workerParams) {
     private val mCompositeDisposable = CompositeDisposable()
     val TAG: String = ChatSyncWorker::class.java.simpleName
-
+    var context = appContext
     private var chatListArray: ArrayList<ChatList> = ArrayList()
     var syncOneToOneChatCount = 0
 
@@ -231,9 +232,10 @@ class ChatSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
 
                                 updateChatList(chatList.id, responseChatMessage) { success ->
-                                    if (success)
+                                    if (success) {
                                         callback?.invoke(true)
-                                    else
+                                        context.sendBroadcast(Intent(Constants.BROADCAST_MESSAGE_SYNC_DONE).putExtra(Constants.chat_id, responseChatMessage.data?.id))
+                                    } else
                                         callback?.invoke(false)
                                 }
                             } else

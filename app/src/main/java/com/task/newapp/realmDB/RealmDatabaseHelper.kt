@@ -7,6 +7,7 @@ import com.task.newapp.realmDB.models.*
 import com.task.newapp.realmDB.wrapper.ChatsWrapperModel
 import com.task.newapp.realmDB.wrapper.SelectFriendWrapperModel
 import com.task.newapp.utils.*
+import com.task.newapp.utils.Constants.Companion.ChatContentType
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag
 import com.task.newapp.utils.Constants.Companion.ChatTypeFlag.*
 import com.task.newapp.utils.Constants.Companion.MessageType
@@ -89,7 +90,7 @@ fun filterUserByName(username: String): String {
 }*/
 
 
-/**   ------------------------------------ INSERT BEGIN ---------------------------------------------------------------  */
+/**   ------------------------------------ INSERT BEGIN ------------------------------------  */
 
 /**
  * Insert user object to the Users Table
@@ -217,13 +218,7 @@ fun insertFriendSettingsData(friendSettings: RealmList<FriendSettings>) {
  * @param addUserChatList   : contains group add user label data
  * @param chats             : contains main list object of chat list
  */
-fun insertGroupData(
-    groups: RealmList<Groups>,
-    groupUser: RealmList<GroupUser>,
-    chatlist: RealmList<ChatList>,
-    addUserChatList: RealmList<ChatList>,
-    chats: RealmList<Chats>
-) {
+fun insertGroupData(groups: RealmList<Groups>, groupUser: RealmList<GroupUser>, chatlist: RealmList<ChatList>, addUserChatList: RealmList<ChatList>, chats: RealmList<Chats>) {
     val realm = App.getRealmInstance()
     if (!realm.isInTransaction) {
         App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
@@ -240,7 +235,6 @@ fun insertGroupData(
         realm.copyToRealmOrUpdate(addUserChatList)
         realm.copyToRealmOrUpdate(chats)
     }
-
 }
 
 /**
@@ -398,9 +392,9 @@ fun insertMyContactData(myContacts: RealmList<MyContacts>) {
     }
 }
 
-/**  ------------------------------------ INSERT END ---------------------------------------------------------------  */
+/**  ------------------------------------ INSERT END ------------------------------------  */
 
-/**   ------------------------------------ READ BEGIN ---------------------------------------------------------------  */
+/**  ------------------------------------ READ BEGIN ------------------------------------  */
 
 fun getUserByUserId(userID: Int): Users? {
     return App.getRealmInstance().where(Users::class.java).equalTo(Users::receiverId.name, userID)
@@ -484,7 +478,6 @@ fun getAllGroupsInCommon(otherUserId: Int): List<GroupUser> {
     return App.getRealmInstance().where(GroupUser::class.java)
         .equalTo(GroupUser::userId.name, otherUserId).findAll()
 }
-
 
 fun getArchivedChatCount(): Int {
     return App.getRealmInstance().where(Chats::class.java).equalTo(Chats::isArchive.name, true)
@@ -623,9 +616,9 @@ fun getAllMyContact(): List<MyContacts>? {
 }
 
 
-/**   ------------------------------------ READ END ---------------------------------------------------------------  */
+/**   ------------------------------------ READ END ------------------------------------  */
 
-/**   ------------------------------------ UPDATE BEGIN ---------------------------------------------------------------  */
+/**   ------------------------------------ UPDATE BEGIN ------------------------------------  */
 
 fun updateChatUserData(id: Int, user: Users) {
     val result =
@@ -670,7 +663,7 @@ fun updateChatsList(id: Int, chatList: ChatList?, callback: ((Boolean) -> Unit)?
 
 fun updateChatsList(id: Int, chatList: ChatList, listener: OnRealmTransactionResult) {
 
-    val data =  App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()?.let {
+    val data = App.getRealmInstance().where(Chats::class.java).equalTo(Chats::id.name, id).findFirst()?.let {
         App.getRealmInstance().copyFromRealm(it)
     }
     if (data != null) {
@@ -778,7 +771,7 @@ fun updateChatListIdData(id: Long, chatList: ChatModel, isSync: Boolean, callbac
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         val data = getSingleChatListByLocalId(id)
         if (data != null) {
-            data.id = chatList.id.toLong()
+            data.id = chatList.id
             data.isGroupChat = chatList.isGroupChat
             data.isShared = chatList.isShared
             data.isForward = chatList.isForward
@@ -841,9 +834,9 @@ fun updateChatContent(chatId: Long, chatContents: ChatContents) {
 }
 
 
-/**   ------------------------------------ UPDATE END ---------------------------------------------------------------  */
+/**   ------------------------------------ UPDATE END ------------------------------------  */
 
-/**   ------------------------------------ DELETE  BEGIN ---------------------------------------------------------------  */
+/**   ------------------------------------ DELETE  BEGIN ------------------------------------  */
 
 fun deleteHooks(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
@@ -904,6 +897,45 @@ fun deleteGroups(ids: List<Int>) {
 }
 
 
+fun deleteChats(id: Int) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(Chats::class.java)
+            .equalTo(Chats::id.name, id).findFirst()?.deleteFromRealm()
+    })
+}
+/*func deleteChatContent(query:String,ids:[Int64]){
+        let realm = self.getRealm()
+        let listToDeleteChatContents = realm.objects(ChatContents.self).filter(query, ids)
+        try! realm.write{
+            realm.delete(listToDeleteChatContents)
+            realm.delete(realm.objects(CHAT_LIST.self).filter("\(DBTables.chatlisttable.id) IN %@", ids))
+        }
+    }*/
+
+fun deleteChatContent(ids: List<Long>) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(ChatContents::class.java).`in`(ChatContents::chatId.name, ids.toTypedArray()).findAll().deleteAllFromRealm()
+        realm.where(ChatList::class.java).`in`(ChatList::id.name, ids.toTypedArray()).findAll().deleteAllFromRealm()
+    })
+}
+
+/*func deleteChatContact(query:String,ids:[Int64?]){
+        let realm = self.getRealm()
+        let listToDeleteChatContact = realm.objects(ChatContents.self).filter(query, ids)
+        try! realm.write{
+            realm.delete(listToDeleteChatContact)
+            realm.delete(realm.objects(CHAT_LIST.self).filter("contacts.@count == 0 AND \(DBTables.chatlisttable.type) == 'contact'"))
+        }
+    }*/
+fun deleteChatContact(ids: List<Long>) {
+    App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
+        realm.where(ChatContents::class.java).`in`(ChatContents::chatId.name, ids.toTypedArray()).findAll().deleteAllFromRealm()
+        realm.where(ChatList::class.java).rawPredicate("${ChatList::contacts.name}.@count ==0 AND ${ChatList::type} == ${ChatContentType.CONTACT.contentType}").findAll().deleteAllFromRealm()
+
+
+    })
+}
+
 fun deleteBroadCasts(ids: List<Int>) {
     App.getRealmInstance().executeTransaction(Realm.Transaction { realm ->
         realm.where(BroadcastTable::class.java)
@@ -953,7 +985,7 @@ fun clearMyContact(callback: ((isSuccess: Boolean) -> Unit)? = null) {
     }
 }
 
-/**   ------------------------------------ DELETE END ---------------------------------------------------------------  */
+/**   ------------------------------------ DELETE END ------------------------------------  */
 
 
 fun prepareLoggedInUserData(user: User): Users {
@@ -1156,66 +1188,54 @@ fun prepareLoggedInUserSettings(loginResponse: LoginResponse): UserSettings {
     //Insert loggedIn user info to Users Table
     val loggedInUser: Users = prepareLoggedInUserData(loginResponse.data.user)
     insertUserData(loggedInUser)
-
     userSettingsObj.id = userSetting.id
     userSettingsObj.userId = userSetting.userId
-    userSettingsObj.themeId = userSetting.themeId
-    userSettingsObj.wallpaperId = userSetting.wallpaperId
-    userSettingsObj.isChatNotification = userSetting.isChatNotification
-    userSettingsObj.isNewPostNotify = userSetting.isNewPostNotify
-    userSettingsObj.isTagNotification = userSetting.isTagNotification
-    userSettingsObj.profileImage = userSetting.profileImage
-    userSettingsObj.notificationToneId = userSetting.notificationToneId
-    userSettingsObj.isFollowersViewable = userSetting.isFollowersViewable
-    userSettingsObj.isFriendEnable = userSetting.isFriendEnable
-    userSettingsObj.isImageWallpaper = userSetting.isImageWallpaper
-    userSettingsObj.isColorWallpaper = userSetting.isColorWallpaper
-    userSettingsObj.wallpaperColor = userSetting.wallPaperColor
-    userSettingsObj.isDefaultWallpaper = userSetting.isDefaultWallpaper
-    userSettingsObj.isNoWallpaper = userSetting.isNoWallpaper
-    userSettingsObj.isGalleryWallpaper = userSetting.isGalleryWallpaper
-    userSettingsObj.galleryImage = userSetting.galleryImage
+    userSettingsObj.audioAutoDownload = userSetting.audioAutoDownload
+    userSettingsObj.backgroundColor = userSetting.backgroundColor
+    userSettingsObj.backgroundImage = userSetting.backgroundImage
+    userSettingsObj.backgroundType = userSetting.backgroundType
+    userSettingsObj.createdAt = userSetting.createdAt
+    userSettingsObj.documentAutoDownload = userSetting.documentAutoDownload
     userSettingsObj.fontSize = userSetting.fontSize
-    userSettingsObj.languages = userSetting.languages
-    userSettingsObj.isEnterSend = userSetting.isEnterSend
-    userSettingsObj.isMediaVisible = userSetting.isMediaVisible
-    userSettingsObj.isPhotoAutoDownload = userSetting.isPhotoAutodownload
-    userSettingsObj.isAudioAutoDownload = userSetting.isAudioAutodownload
-    userSettingsObj.isVideoAutoDownload = userSetting.isVideoAutodownload
-    userSettingsObj.isDocumentAutoDownload = userSetting.isDocumentAutodownload
-    userSettingsObj.isPhotoAutoDownloadWifi = userSetting.isPhotoAutodownloadWifi
-    userSettingsObj.isAudioAutoDownloadWifi = userSetting.isAudioAutodownloadWifi
-    userSettingsObj.isVideoAutoDownloadWifi = userSetting.isVideoAutodownloadWifi
-    userSettingsObj.isDocumentAutoDownloadWifi = userSetting.isDocumentAutodownloadWifi
-    userSettingsObj.isPhotoAutoDownloadRoaming = userSetting.isPhotoAutodownloadRoaming
-    userSettingsObj.isAudioAutoDownloadRoaming = userSetting.isAudioAutodownloadRoaming
-    userSettingsObj.isVideoAutoDownloadRoaming = userSetting.isVideoAutodownloadRoaming
-    userSettingsObj.isDocumentAutoDownloadRoaming = userSetting.isDocumentAutodownloadRoaming
-    userSettingsObj.isDeleteRequest = userSetting.isDeleteRequest
-    userSettingsObj.storyView = userSetting.storyView
-    userSettingsObj.storyDownload = userSetting.storyDownload
-    userSettingsObj.vibrateStatus = userSetting.vibrateStatus
-    userSettingsObj.isPopupNotification = userSetting.isPopupNotification
-    userSettingsObj.useHighPriorityNotification = userSetting.useHighPriorityNotification
-    userSettingsObj.lastSeen = userSetting.lastSeen
-    userSettingsObj.isVisible = userSetting.isVisible
-    userSettingsObj.profileSeen = userSetting.profileSeen
-    userSettingsObj.callRingtone = userSetting.callRigtone
-    userSettingsObj.callVibrate = userSetting.callVibrate
-    userSettingsObj.aboutSeen = userSetting.aboutSeen
-    userSettingsObj.whoCanAddMeInGroup = userSetting.whoCanAddMeInGroup
-    userSettingsObj.liveLocationSharing = userSetting.liveLocationSharing
-    userSettingsObj.isFingerprintLockEnabled = userSetting.isFingerprintLockEnabled
-    userSettingsObj.isShowSecurityNotification = userSetting.isShowSecurityNotification
-    userSettingsObj.isTwoStepVerificationEnabled = userSetting.isTwoStepVerificationEnabled
-    userSettingsObj.groupVibrateStatus = userSetting.groupVibrateStatus
-    userSettingsObj.groupIsPopupNotification = userSetting.groupIsPopupNotification
-    userSettingsObj.groupUseHighPriorityNotification = userSetting.groupUseHighPriorityNotification
     userSettingsObj.groupNotificationToneId = userSetting.groupNotificationToneId
-    userSettingsObj.nearLocation = userSetting.nearLocation
-    userSettingsObj.toneName = userSetting.toneName
-    userSettingsObj.user = loggedInUser
+    userSettingsObj.imageAutoDownload = userSetting.imageAutoDownload
+    userSettingsObj.isAcceptFollowRequestNotify = userSetting.isAcceptFollowRequestNotify
+    userSettingsObj.isAllowMessageFromOther = userSetting.isAllowMessageFromOther
+    userSettingsObj.isChatMessagePreviewNotify = userSetting.isChatMessagePreviewNotify
+    userSettingsObj.isChatVibrateStatus = userSetting.isChatVibrateStatus
+    userSettingsObj.isFollowRequestNotify = userSetting.isFollowRequestNotify
+    userSettingsObj.isGroupMessagePreviewNotify = userSetting.isGroupMessagePreviewNotify
+    userSettingsObj.isGroupVibrateStatus = userSetting.isGroupVibrateStatus
+    userSettingsObj.isInAppPreview = userSetting.isInAppPreview
+    userSettingsObj.isInAppSound = userSetting.isInAppSound
+    userSettingsObj.isInAppVibrate = userSetting.isInAppVibrate
+    userSettingsObj.isPauseNotification = userSetting.isPauseNotification
+    userSettingsObj.isPostCommentNotify = userSetting.isPostCommentNotify
+    userSettingsObj.isPostLikeNotify = userSetting.isPostLikeNotify
+    userSettingsObj.isProfileViewNotify = userSetting.isProfileViewNotify
+    userSettingsObj.isSavedEditedImage = userSetting.isSavedEditedImage
+    userSettingsObj.isShowChatNotify = userSetting.isShowChatNotify
+    userSettingsObj.isShowGroupNotify = userSetting.isShowGroupNotify
+    userSettingsObj.isStorySharingAsMessage = userSetting.isStorySharingAsMessage
+    userSettingsObj.isTaggedPostLikeCommentNotify = userSetting.isTaggedPostLikeCommentNotify
+    userSettingsObj.isTaggedPostNotify = userSetting.isTaggedPostNotify
+    userSettingsObj.notificationToneId = userSetting.notificationToneId
+    userSettingsObj.openLinkIn = userSetting.openLinkIn
+    userSettingsObj.storyDownload = userSetting.storyDownload
+    userSettingsObj.storyReply = userSetting.storyReply
+    userSettingsObj.storyView = userSetting.storyView
     userSettingsObj.updatedAt = userSetting.updatedAt
+    userSettingsObj.videoAutoDownload = userSetting.videoAutoDownload
+    userSettingsObj.wallpaperId = userSetting.wallpaperId
+    userSettingsObj.whoCanAddGroup = userSetting.whoCanAddGroup
+    userSettingsObj.whoCanMention = userSetting.whoCanMention
+    userSettingsObj.whoCanMessageMe = userSetting.whoCanMessageMe
+    userSettingsObj.whoCanTag = userSetting.whoCanTag
+    userSettingsObj.whoSeeAbout = userSetting.whoSeeAbout
+    userSettingsObj.whoSeeLastSeen = userSetting.whoSeeLastSeen
+    userSettingsObj.whoSeeProfilePhoto = userSetting.whoSeeProfilePhoto
+
+
     return userSettingsObj
 }
 
@@ -1408,7 +1428,10 @@ fun prepareFriendSettingsDataForDB(friendSettings: List<FriendSetting>): RealmLi
     val friendSettingList: RealmList<FriendSettings> = RealmList()
     friendSettings.let {
         for (objUserSetting in friendSettings) {
-            friendSettingList.add(prepareSingleFriendSettingData(objUserSetting))
+            prepareSingleFriendSettingData(objUserSetting)?.let {
+                friendSettingList.add(it)
+
+            }
         }
     }
     return friendSettingList
@@ -1420,18 +1443,23 @@ fun prepareSingleFriendSettingData(objUserSetting: FriendSetting): FriendSetting
     if (usersObj != null) {
         val friendSettingObj = FriendSettings()
         friendSettingObj.id = objUserSetting.id
-        friendSettingObj.userId = objUserSetting.userId
+        //friendSettingObj.userId = objUserSetting.userId
         friendSettingObj.friendId = objUserSetting.friendId
         friendSettingObj.notificationToneId = objUserSetting.notificationToneId
         friendSettingObj.muteNotification = objUserSetting.muteNotification
         friendSettingObj.isCustomNotificationEnable = objUserSetting.isCustomNotificationEnable
         friendSettingObj.vibrateStatus = objUserSetting.vibrateStatus
-        friendSettingObj.isPopupNotification = objUserSetting.isPopupNotification
-        friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
-        friendSettingObj.callRingtone = objUserSetting.callRingtone
-        friendSettingObj.callVibrate = objUserSetting.callVibrate
+        //friendSettingObj.isPopupNotification = objUserSetting.isPopupNotification
+        //friendSettingObj.useHighPriorityNotification = objUserSetting.useHighPriorityNotification
+        //friendSettingObj.callRingtone = objUserSetting.callRingtone
+        //friendSettingObj.callVibrate = objUserSetting.callVibrate
         friendSettingObj.toneName = objUserSetting.toneName
         friendSettingObj.user = usersObj
+        objUserSetting.friend?.let {
+            if (objUserSetting.friend.id != App.fastSave.getInt(Constants.prefUserId, 0)) {
+                insertUserData(prepareOtherUserData(objUserSetting.friend))
+            }
+        }
         return friendSettingObj
     }
     return null

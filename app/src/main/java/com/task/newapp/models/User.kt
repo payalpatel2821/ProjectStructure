@@ -3,7 +3,7 @@ package com.task.newapp.models
 import com.google.gson.annotations.SerializedName
 
 data class User(
-    @SerializedName("id")
+      @SerializedName("id")
     val id: Int,
     @SerializedName("account_id")
     val accountId: String,
@@ -26,7 +26,7 @@ data class User(
     @SerializedName("date_of_birth")
     val dateOfBirth: String,
     @SerializedName("age")
-    val age: Any,
+    val age: String,
     @SerializedName("gender")
     val gender: String,
     @SerializedName("status")
@@ -71,6 +71,8 @@ data class User(
     val profileViews: Int,
     @SerializedName("profile_image")
     var profileImage: String = "",
+    @SerializedName("is_visible")
+    val isVisible: Int? = null,
     @SerializedName("device_arn")
     val deviceArn: String,
     @SerializedName("device_token")
@@ -82,7 +84,7 @@ data class User(
     @SerializedName("blood_gp")
     val bloodGp: String,
     @SerializedName("secret_password")
-    val secretPassword: Any,
+    val secretPassword: String,
     @SerializedName("is_login")
     val isLogin: Int,
     @SerializedName("last_logout_time")

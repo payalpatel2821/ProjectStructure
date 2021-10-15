@@ -88,8 +88,20 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         notifyDataSetChanged()
     }
 
-    fun getSelectedMessage(): List<ChatListWrapperModel> {
+    fun getSelectedMessages(): List<ChatListWrapperModel> {
         return messages.filter { it.isSelect }
+    }
+
+    fun getSelectedMessageIndices(): ArrayList<Int> {
+        val indices: ArrayList<Int> = arrayListOf()
+        getSelectedMessages().forEach {
+            indices.add(messages.indexOf(it))
+        }
+        /*messages.forEachIndexed { index, chatListWrapperModel ->
+            if (chatListWrapperModel.isSelect)
+                indices.add(index)
+        }*/
+        return indices
     }
 
     fun getSelectedMessageCount(): Int {
@@ -107,6 +119,12 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
         }
         isMultiSelectionEnable = false
         notifyItemRangeChanged(0, messages.size, CHAT_ITEM_SELECTION)
+    }
+
+    fun deleteSelectedMessage(chatListWrapperModel: ChatListWrapperModel) {
+        val position= messages.indexOf(chatListWrapperModel)
+        messages.remove(chatListWrapperModel)
+        notifyItemRemoved(position)
     }
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener?) {
@@ -364,7 +382,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 refreshChatItemSelection()
                 binding.txtMessage.text = chats.chatList.messageText
                 val messageStatus = MessageStatus.getMessageStatusFromId(chats.chatList.tick)
-                binding.txtMessage.setTextColor(ContextCompat.getColor(mActivity, getChatTextColor(messageStatus)));
+                binding.txtMessage.setTextColor(ContextCompat.getColor(mActivity, getChatTextColor(messageStatus)))
                 updateChatBubbleBackground(mActivity, getChatBubbleColor(messageStatus), binding.llContent.background, binding.llContent)
             }
 
@@ -540,7 +558,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
 
             fun setData(chats: ChatListWrapperModel) {
                 refreshChatItemSelection()
-                chats.chatList.contacts?.let { contactList ->
+                chats.chatList.contacts.let { contactList ->
 
                     contactList.forEach {
                         binding.txtTitle.text = it.name
@@ -578,7 +596,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 refreshChatItemSelection()
                 val messageStatus = MessageStatus.getMessageStatusFromId(chats.chatList.tick)
                 updateChatBubbleBackground(mActivity, getChatBubbleColor(messageStatus), binding.llContent.background, binding.llContent)
-                chats.chatList.contacts?.let { contactList ->
+                chats.chatList.contacts.let { contactList ->
 
                     contactList.forEach {
                         binding.txtTitle.text = it.name
@@ -673,7 +691,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                     showLog("PAYLOAD :", Gson().toJson(listPayload))
                     for (payload in listPayload) {
                         when (payload as OneToOneChatAdapterChangedPayloadType) {
-                               CHAT_ITEM_SELECTION -> refreshChatItemSelection()
+                            CHAT_ITEM_SELECTION -> refreshChatItemSelection()
                             else -> setData(chats)
                         }
                     }
@@ -702,7 +720,7 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                     showLog("PAYLOAD :", Gson().toJson(listPayload))
                     for (payload in listPayload) {
                         when (payload as OneToOneChatAdapterChangedPayloadType) {
-                             CHAT_ITEM_SELECTION -> refreshChatItemSelection()
+                            CHAT_ITEM_SELECTION -> refreshChatItemSelection()
                             else -> setData(chats)
                         }
                     }
@@ -743,12 +761,13 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
 
                 Glide.with(mActivity)
                     .load(chats.chatList.chatContents?.content)
-                    //.skipMemoryCache(true)
                     .thumbnail(0.01f)
-//                .thumbnail(Glide.with(context).load(postContent.thumb))
-//                .transition(DrawableTransitionOptions.withCrossFade())
                     .apply(requestOptions)
                     .into(binding.ivInfo)
+
+                binding.flMainVideo.setOnClickListener {
+                    mActivity.initializePlayer(chats.chatList.chatContents?.content!!)
+                }
             }
 
         }
@@ -777,14 +796,17 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
                 refreshChatItemSelection()
                 val requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL)
 
+                showLog("Video : ", chats.chatList.chatContents?.content.toString())
+
                 Glide.with(mActivity)
                     .load(chats.chatList.chatContents?.content)
-                    //.skipMemoryCache(true)
                     .thumbnail(0.01f)
-//                .thumbnail(Glide.with(context).load(postContent.thumb))
-//                .transition(DrawableTransitionOptions.withCrossFade())
                     .apply(requestOptions)
                     .into(binding.ivInfo)
+
+                binding.flMainVideo.setOnClickListener {
+                    mActivity.initializePlayer(chats.chatList.chatContents?.content!!)
+                }
             }
 
         }
@@ -886,11 +908,6 @@ class OneToOneChatAdapter(private val mActivity: Activity, private val listener:
             val newPostData: ChatListWrapperModel = mNewMessagesList[newItemPosition]
 
             return oldPostData == newPostData
-        }
-
-        override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
-            // Implement method if you're going to use ItemAnimator
-            return super.getChangePayload(oldItemPosition, newItemPosition)
         }
 
     }

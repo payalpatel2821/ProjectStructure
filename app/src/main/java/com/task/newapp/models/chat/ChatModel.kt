@@ -1,7 +1,6 @@
 package com.task.newapp.models.chat
 
 import com.google.gson.annotations.SerializedName
-import com.task.newapp.models.FriendRequestModel
 import com.task.newapp.models.OtherUserModel
 
 data class ChatModel(
@@ -17,7 +16,7 @@ data class ChatModel(
     @SerializedName("group_id")
     val groupId: Int,
     @SerializedName("other_user_id")
-    val otherUserId: String?="",
+    val otherUserId: String? = "",
     @SerializedName("type")
     val type: String,
     @SerializedName("message_text")
@@ -94,8 +93,8 @@ data class ChatModel(
     val contacts: List<ChatContentsModel>?,
     @SerializedName("story")
     val story: List<String>,
-    @SerializedName("request")
-    val request: FriendRequestModel?,
+    /* @SerializedName("request")
+     val request: FriendRequestModel?,*/
     @SerializedName("sender")
     val sender: OtherUserModel?,
     @SerializedName("receiver")

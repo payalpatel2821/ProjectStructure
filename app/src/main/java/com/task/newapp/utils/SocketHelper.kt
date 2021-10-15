@@ -7,8 +7,9 @@ import com.task.newapp.App
 import com.task.newapp.BuildConfig
 import com.task.newapp.models.User
 import com.task.newapp.models.chat.ResponseChatMessage
-import com.task.newapp.models.socket.SendUserDetailSocket
+import com.task.newapp.models.socket.DeleteChatSocket
 import com.task.newapp.models.socket.PostSocket
+import com.task.newapp.models.socket.SendUserDetailSocket
 import java.net.URI
 
 fun joinSocket() {
@@ -62,7 +63,7 @@ fun getUserStatusEmitEvent(user_id: Int, receiver_id: Int) {
 
 fun sendOneToOneMessageEmitEvent(message: ResponseChatMessage) {
     val messagePayload = Gson().toJson(message)
-    showLog(Constants.socket_tag, "userTypingEmitEvent :$messagePayload")
+    showLog(Constants.socket_tag, "sendOneToOneMessageEmitEvent :$messagePayload")
     App.getSocketInstance().emit(SocketConstant.new_message_private, messagePayload)
 
 }
@@ -77,6 +78,7 @@ fun userTypingEmitEvent(userId: Int, receiverId: Int, userName: String) {
 fun userStopTypingEmitEvent(userId: Int, receiverId: Int, userName: String) {
     val sendUserDetailSocket = SendUserDetailSocket(userId, receiverId, userName)
     val userStopTypingPayload = Gson().toJson(sendUserDetailSocket)
+    showLog(Constants.socket_tag, "userStopTypingEmitEvent :$userStopTypingPayload")
     App.getSocketInstance().emit(SocketConstant.user_stop_typing, userStopTypingPayload)
 
 }
@@ -111,15 +113,9 @@ fun addPostDeleteEmitEvent(postSocket: PostSocket) {
     App.getSocketInstance().emit(SocketConstant.add_post_delete, addPostDeletePayload)
 }
 
-fun deletePrivateMessageEmitEvent(chatIds: String, senderId: Int, receiverId: Int) {
-    val deleteMessagePayload = Gson().toJson(
-        hashMapOf<String, Any>(
-            Constants.sender_id to senderId,
-            Constants.receiver_id to receiverId,
-            Constants.chat_ids to chatIds
-        )
-    )
-    showLog(Constants.socket_tag,"deletePrivateChatMessage :$deleteMessagePayload")
-    App.getSocketInstance().emit(SocketConstant.delete_private_chat,deleteMessagePayload)
+fun deletePrivateMessageEmitEvent(deleteChatSocket: DeleteChatSocket) {
+    val deleteMessagePayload = Gson().toJson(deleteChatSocket)
+    showLog(Constants.socket_tag, "deletePrivateChatMessage :$deleteMessagePayload")
+    App.getSocketInstance().emit(SocketConstant.delete_private_chat, deleteMessagePayload)
 
 }

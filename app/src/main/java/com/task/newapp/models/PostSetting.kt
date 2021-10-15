@@ -3,7 +3,7 @@ package com.task.newapp.models
 import com.google.gson.annotations.SerializedName
 
 data class PostSetting(
-    @SerializedName("id")
+        @SerializedName("id")
     val id: Int,
     @SerializedName("user_id")
     val userId: Int,

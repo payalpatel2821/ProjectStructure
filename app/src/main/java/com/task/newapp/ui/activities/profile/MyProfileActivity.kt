@@ -93,20 +93,20 @@ class MyProfileActivity : AppCompatActivity() {
         val contentMyProfile: ContentMyProfileActivityBinding = binding.layoutContentMyprofile
         contentMyProfile.txtFollowingCount.text = data.following
         contentMyProfile.txtFollowerCount.text = data.followers
-        contentMyProfile.txtProfileviewCount.text = data.profile_views.toString()
+        contentMyProfile.txtProfileviewCount.text = data.profileViews.toString()
 
-        contentMyProfile.txtUsername.text = data.first_name + " " + data.last_name
-        contentMyProfile.txtAccId.text = data.account_id
+        contentMyProfile.txtUsername.text = data.firstName + " " + data.lastName
+        contentMyProfile.txtAccId.text = data.accountId
         contentMyProfile.txtStatus.text = data.about
-        initPeakPop(data.profile_image, contentMyProfile.txtUsername.text.trim().toString(), data.profile_color)
-        binding.ivProfile.load(data.profile_image, true, contentMyProfile.txtUsername.text.toString(), data.profile_color)
+        initPeakPop(data.profileImage, contentMyProfile.txtUsername.text.trim().toString(), data.profileColor)
+        binding.ivProfile.load(data.profileImage, true, contentMyProfile.txtUsername.text.toString(), data.profileColor)
 
-        contentMyProfile.switchVisibility.isChecked = data.usersetting.is_visible == 1
-        contentMyProfile.switchShowmenearby.isChecked = data.usersetting.near_location == 1
+        contentMyProfile.switchVisibility.isChecked = data.isVisible == 1
+        //contentMyProfile.switchShowmenearby.isChecked = data.near_location == 1
 
         contentMyProfile.txtGrpCount.text = getMyGroup().size.toString()
-        contentMyProfile.txtPagesCount.text = data.count_common_pages.toString()
-        contentMyProfile.txtFrdsCount.text = data.count_common_friends.toString()
+        //contentMyProfile.txtPagesCount.text = data.countcommonpages.toString()
+        //contentMyProfile.txtFrdsCount.text = data.countcommonfriends.toString()
 
         callAPISetVisibility()
         callAPISetShowNearBy()
